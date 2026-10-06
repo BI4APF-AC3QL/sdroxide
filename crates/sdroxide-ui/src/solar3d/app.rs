@@ -51,6 +51,7 @@ impl SolarApp {
         // operator's theme out of the shared storage before applying — the
         // native 3D window instead shares the main app's context and atomics
         // and never gets here.
+        crate::language_plugin::initialize(cc.storage);
         let ui = crate::app::persist::load_ui_settings(cc.storage);
         crate::theme::set_look(ui.theme, ui.button_style, ui.window_style);
         crate::theme::set_font_sizes(

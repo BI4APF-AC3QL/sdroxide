@@ -1248,7 +1248,7 @@ fn body_labels(s: &mut Scene, st: &SolarUi, b: &Bodies, cam: &Camera, view_h: f3
         }
         s.labels.push(Label {
             world: pos.arr(),
-            text: name.to_string(),
+            text: crate::language_plugin::solar_name(name),
             color: if st.focus() == focus { ink::CYAN } else { color },
             offset: [10.0, -6.0],
             click: Click::Focus(focus),

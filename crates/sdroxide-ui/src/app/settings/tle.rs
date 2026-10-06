@@ -30,29 +30,29 @@ pub(in crate::app) fn settings_tle_tab(ui: &mut egui::Ui, io: &mut SettingsIo) {
     use crate::theme;
 
     ui.label(
-        RichText::new("Satellites: element sets and frequencies")
+        RichText::new(crate::language_plugin::text("common.satellites_element_sets_and_frequencies", "Satellites: element sets and frequencies"))
             .size(14.0)
             .strong()
             .color(theme::CYAN()),
     );
     ui.add_space(4.0);
     if !io.sat_seeded {
-        ui.label(RichText::new("Waiting for the station's satellite configuration…").weak());
+        ui.label(RichText::new(crate::language_plugin::text("common.waiting_for_the_station_s_satellite_configuration", "Waiting for the station's satellite configuration…")).weak());
         return;
     }
     ui.label(
         RichText::new(
-            "The tracker already fetches CelesTrak's amateur group on its own. This is for \
+            crate::language_plugin::text("settings.tle.text_45", "The tracker already fetches CelesTrak's amateur group on its own. This is for \
              everything else: the NOAA weather birds, a cubesat too new to be in the group, or \
              a fresher element set than the one that arrived. The listings are fetched — and \
              kept — where the radio engine runs, so this is the same set of satellites wherever \
-             the app is open.",
+             the app is open."),
         )
         .weak(),
     );
     if !io.sat_ui.note.is_empty() {
         ui.add_space(4.0);
-        ui.label(RichText::new(&io.sat_ui.note).color(theme::YELLOW()).size(11.0));
+        ui.label(RichText::new(io.sat_ui.note.display()).color(theme::YELLOW()).size(11.0));
     }
 
     ui.add_space(10.0);
@@ -71,11 +71,11 @@ pub(in crate::app) fn settings_tle_tab(ui: &mut egui::Ui, io: &mut SettingsIo) {
 fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
     use crate::theme;
 
-    ui.label(RichText::new("Subscriptions").strong());
+    ui.label(RichText::new(crate::language_plugin::text("common.subscriptions", "Subscriptions")).strong());
     ui.label(
         RichText::new(
-            "Listings fetched and kept current, on the same six-hourly cadence as the amateur \
-             set. Refreshed while the solar window is open, and by UPDATE NOW here.",
+            crate::language_plugin::text("settings.tle.text_77", "Listings fetched and kept current, on the same six-hourly cadence as the amateur \
+             set. Refreshed while the solar window is open, and by UPDATE NOW here."),
         )
         .weak()
         .size(11.0),
@@ -87,26 +87,26 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
         let st = io.sat_subs.iter().find(|s| s.url.trim() == sub.url.trim());
         ui.push_id(("tle-sub", i), |ui| {
             ui.horizontal(|ui| {
-                crate::chrome::checkbox(ui, &mut sub.enabled, "").on_hover_text("Fetch and track this listing");
+                crate::chrome::checkbox(ui, &mut sub.enabled, "").on_hover_text(crate::language_plugin::text("common.fetch_and_track_this_listing", "Fetch and track this listing"));
                 crate::chrome::field(ui, egui::TextEdit::singleline(&mut sub.name)
                         .desired_width(120.0)
-                        .hint_text("name"),
+                        .hint_text(crate::language_plugin::text("common.name", "name")),
                 );
                 crate::chrome::field(ui, egui::TextEdit::singleline(&mut sub.url)
                         .desired_width(300.0)
                         .hint_text("https://…"),
                 );
-                if ui.button("✕").on_hover_text("Remove this subscription").clicked() {
+                if ui.button("✕").on_hover_text(crate::language_plugin::text("common.remove_this_subscription", "Remove this subscription")).clicked() {
                     remove = Some(i);
                 }
             });
             ui.horizontal(|ui| {
                 ui.add_space(24.0);
-                ui.label(RichText::new("Orbits").color(theme::CYAN_DIM()).size(9.5).strong())
+                ui.label(RichText::new(crate::language_plugin::text("common.orbits", "Orbits")).color(theme::CYAN_DIM()).size(9.5).strong())
                     .on_hover_text(
-                        "Which satellites in this listing get an orbit ring and a label. A whole \
+                        crate::language_plugin::text("settings.tle.text_107", "Which satellites in this listing get an orbit ring and a label. A whole \
                          group wants \"curated\": ninety rings at once is unreadable, and none \
-                         at all leaves ninety anonymous dots.",
+                         at all leaves ninety anonymous dots."),
                     );
                 // The middle position keys off sdroxide's own curated list,
                 // which is ten *amateur* satellites — so for a weather or GNSS
@@ -122,9 +122,9 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
                         })
                         .inner;
                     let hint = if dead {
-                        "Nothing in this listing is in sdroxide's curated list — that list is                          ten amateur satellites, so this would behave exactly like \"none\"."
+                        crate::language_plugin::text("boundaries.app.settings.tle.text_125_5cb72e", "Nothing in this listing is in sdroxide's curated list — that list is                          ten amateur satellites, so this would behave exactly like \"none\".")
                     } else {
-                        o.hint()
+                        o.hint().to_owned()
                     };
                     if resp.on_hover_text(hint).clicked() && !dead {
                         sub.orbits = o;
@@ -133,11 +133,11 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 let mut only = sub.only_text();
                 let resp = crate::chrome::field(ui, egui::TextEdit::singleline(&mut only)
                             .desired_width(180.0)
-                            .hint_text("all satellites"),
+                            .hint_text(crate::language_plugin::text("common.all_satellites", "all satellites")),
                     )
                     .on_hover_text(
-                        "Catalogue numbers to keep, comma separated. Empty tracks everything the \
-                         listing carries.",
+                        crate::language_plugin::text("settings.tle.text_139", "Catalogue numbers to keep, comma separated. Empty tracks everything the \
+                         listing carries."),
                     );
                 if resp.changed() {
                     sub.set_only_text(&only);
@@ -147,18 +147,14 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 // rather than by position — the two lists are edited apart.
                 let (text, color) = match (sub.problem(), st) {
                     (Some(p), _) => (p.to_string(), theme::ALERT()),
-                    (None, None) => ("not fetched yet".to_string(), theme::LINE_LIT()),
+                    (None, None) => (crate::language_plugin::text("boundaries.app.settings.tle.text_150_fa5d5a", "not fetched yet").to_string(), theme::LINE_LIT()),
                     (None, Some(s)) => match &s.error {
                         Some(e) => (e.clone(), theme::ALERT()),
                         None if s.fetched_unix == 0 => {
-                            ("not fetched yet".to_string(), theme::LINE_LIT())
+                            (crate::language_plugin::text("boundaries.app.settings.tle.text_154_fa5d5a", "not fetched yet").to_string(), theme::LINE_LIT())
                         }
                         None => (
-                            format!(
-                                "{} satellites · {} old",
-                                s.count,
-                                sdroxide_solar::timefmt::age(now_unix() - s.fetched_unix)
-                            ),
+                            { let __lp_arg_0 = &(s.count); let __lp_arg_1 = &(crate::language_plugin::solar_age(now_unix() - s.fetched_unix)); crate::language_plugin::format("boundaries.app.settings.tle.text_158_ae3c19", "{} satellites · {} old", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
                             theme::GREEN(),
                         ),
                     },
@@ -174,17 +170,17 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
 
     ui.add_space(4.0);
     ui.horizontal_wrapped(|ui| {
-        if ui.button("+ Subscription").clicked() {
-            io.sat_edit.subs.push(sdroxide_types::TleSubscription::new("New", ""));
+        if ui.button(crate::language_plugin::text("common.subscription", "+ Subscription")).clicked() {
+            io.sat_edit.subs.push(sdroxide_types::TleSubscription::new(&crate::language_plugin::text("settings.tle.new_subscription", "New"), ""));
         }
         if crate::chrome::chip_accent(
             ui,
             false,
-            RichText::new(" UPDATE NOW ").strong(),
+            RichText::new(crate::language_plugin::text("common.update_now", " UPDATE NOW ")).strong(),
             theme::GREEN(),
             theme::INK_ON_CYAN(),
         )
-        .on_hover_text("Ask the radio engine to fetch every enabled subscription now")
+        .on_hover_text(crate::language_plugin::text("common.ask_the_radio_engine_to_fetch_every_enabled_subscription_now", "Ask the radio engine to fetch every enabled subscription now"))
         .clicked()
         {
             *io.sat_sub_refresh = true;
@@ -192,7 +188,7 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
     });
 
     ui.add_space(6.0);
-    ui.label(RichText::new("CelesTrak groups").color(theme::CYAN_DIM()).size(10.0).strong());
+    ui.label(RichText::new(crate::language_plugin::text("common.celestrak_groups", "CelesTrak groups")).color(theme::CYAN_DIM()).size(10.0).strong());
     ui.horizontal_wrapped(|ui| {
         for g in sdroxide_types::CELESTRAK_GROUPS {
             let have = io.sat_edit.has_sub(g.url);
@@ -200,7 +196,7 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 let mut sub = sdroxide_types::TleSubscription::new(g.name, g.url);
                 sub.orbits = g.orbits;
                 io.sat_edit.subs.push(sub);
-                io.sat_ui.note = format!("Subscribed to {}. Press UPDATE NOW to fetch it.", g.name);
+                io.sat_ui.note = crate::language_plugin::UiNotice::new(format!("Subscribed to {}. Press UPDATE NOW to fetch it.", g.name), "Subscribed to {}. Press UPDATE NOW to fetch it.", vec![g.name.to_string()]);
             }
         }
     });
@@ -210,12 +206,12 @@ fn settings_tle_subscriptions(ui: &mut egui::Ui, io: &mut SettingsIo) {
 fn settings_tle_pasted(ui: &mut egui::Ui, io: &mut SettingsIo) {
     use crate::theme;
 
-    ui.label(RichText::new("Pasted element sets").strong());
+    ui.label(RichText::new(crate::language_plugin::text("common.pasted_element_sets", "Pasted element sets")).strong());
     ui.label(
         RichText::new(
-            "For a one-off. These do not update themselves, and SGP4 stops propagating an \
+            crate::language_plugin::text("settings.tle.text_216", "For a one-off. These do not update themselves, and SGP4 stops propagating an \
              element set once it is a fortnight past its epoch — subscribe instead for anything \
-             you mean to keep.",
+             you mean to keep."),
         )
         .weak()
         .size(11.0),
@@ -227,10 +223,10 @@ fn settings_tle_pasted(ui: &mut egui::Ui, io: &mut SettingsIo) {
     for (i, t) in io.sat_edit.tles.iter_mut().enumerate() {
         ui.push_id(("tle-set", i), |ui| {
             ui.horizontal(|ui| {
-                crate::chrome::checkbox(ui, &mut t.enabled, "").on_hover_text("Track this one");
+                crate::chrome::checkbox(ui, &mut t.enabled, "").on_hover_text(crate::language_plugin::text("common.track_this_one", "Track this one"));
                 crate::chrome::field(
                     ui,
-                    egui::TextEdit::singleline(&mut t.name).desired_width(180.0).hint_text("name"),
+                    egui::TextEdit::singleline(&mut t.name).desired_width(180.0).hint_text(crate::language_plugin::text("common.name", "name")),
                 );
                 match t.problem() {
                     Some(p) => {
@@ -242,40 +238,28 @@ fn settings_tle_pasted(ui: &mut egui::Ui, io: &mut SettingsIo) {
                             // Past where SGP4 is worth anything, which is the
                             // whole reason a paste is a stopgap.
                             Some(a) if a > 14 * 86_400 => (
-                                format!(
-                                    "NORAD {} · {} old — too stale to propagate",
-                                    t.norad_id().unwrap_or(0),
-                                    sdroxide_solar::timefmt::age(a)
-                                ),
+                                { let __lp_arg_0 = &(t.norad_id().unwrap_or(0)); let __lp_arg_1 = &(crate::language_plugin::solar_age(a)); crate::language_plugin::format("boundaries.app.settings.tle.text_246_fbe4c6", "NORAD {} · {} old — too stale to propagate", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
                                 theme::ALERT(),
                             ),
                             Some(a) if a > 3 * 86_400 => (
-                                format!(
-                                    "NORAD {} · {} old",
-                                    t.norad_id().unwrap_or(0),
-                                    sdroxide_solar::timefmt::age(a)
-                                ),
+                                { let __lp_arg_0 = &(t.norad_id().unwrap_or(0)); let __lp_arg_1 = &(crate::language_plugin::solar_age(a)); crate::language_plugin::format("boundaries.app.settings.tle.text_254_3bc3f5", "NORAD {} · {} old", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
                                 theme::YELLOW(),
                             ),
                             Some(a) => (
-                                format!(
-                                    "NORAD {} · {} old",
-                                    t.norad_id().unwrap_or(0),
-                                    sdroxide_solar::timefmt::age(a)
-                                ),
+                                { let __lp_arg_0 = &(t.norad_id().unwrap_or(0)); let __lp_arg_1 = &(crate::language_plugin::solar_age(a)); crate::language_plugin::format("boundaries.app.settings.tle.text_262_3bc3f5", "NORAD {} · {} old", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
                                 theme::GREEN(),
                             ),
                             None => {
-                                (format!("NORAD {}", t.norad_id().unwrap_or(0)), theme::LINE_LIT())
+                                (tle_norad_fallback(t.norad_id().unwrap_or(0)), theme::LINE_LIT())
                             }
                         };
                         ui.label(RichText::new(text).color(color).size(10.5));
                     }
                 }
-                if ui.button("✎").on_hover_text("Show the two element lines").clicked() {
+                if ui.button("✎").on_hover_text(crate::language_plugin::text("common.show_the_two_element_lines", "Show the two element lines")).clicked() {
                     io.sat_ui.open_tle = (io.sat_ui.open_tle != Some(i)).then_some(i);
                 }
-                if ui.button("✕").on_hover_text("Remove").clicked() {
+                if ui.button("✕").on_hover_text(crate::language_plugin::text("common.remove_c3812fc4", "Remove")).clicked() {
                     remove = Some(i);
                 }
             });
@@ -305,15 +289,15 @@ fn settings_tle_pasted(ui: &mut egui::Ui, io: &mut SettingsIo) {
             .desired_rows(3)
             .desired_width(600.0)
             .font(egui::TextStyle::Monospace)
-            .hint_text("Paste two- or three-line element sets here"),
+            .hint_text(crate::language_plugin::text("common.paste_two_or_three_line_element_sets_here", "Paste two- or three-line element sets here")),
     );
     ui.add_space(4.0);
     ui.horizontal(|ui| {
-        if ui.button("+ Add pasted").clicked() {
+        if ui.button(crate::language_plugin::text("common.add_pasted", "+ Add pasted")).clicked() {
             let found = sdroxide_types::parse_tle_block(&io.sat_ui.paste);
             io.sat_ui.note =
                 match found.len() {
-                    0 => "Nothing in the paste box looked like an element set.".to_string(),
+                    0 => crate::language_plugin::UiNotice::literal("Nothing in the paste box looked like an element set."),
                     n => {
                         // Replace rather than duplicate: pasting a fresher set for
                         // a satellite already listed is the common case, and a
@@ -336,16 +320,33 @@ fn settings_tle_pasted(ui: &mut egui::Ui, io: &mut SettingsIo) {
                         }
                         io.sat_ui.paste.clear();
                         match replaced {
-                            0 => format!("Added {n} element set(s)."),
-                            r => format!("Added {} and refreshed {r} element set(s).", n - r),
+                            0 => crate::language_plugin::UiNotice::new(format!("Added {n} element set(s)."), "Added {n} element set(s).", vec![n.to_string()]),
+                            r => crate::language_plugin::UiNotice::new(format!("Added {} and refreshed {r} element set(s).", n - r), "Added {} and refreshed {r} element set(s).", vec![(n - r).to_string(), r.to_string()]),
                         }
                     }
                 };
         }
-        if ui.button("Clear box").clicked() {
+        if ui.button(crate::language_plugin::text("common.clear_box", "Clear box")).clicked() {
             io.sat_ui.paste.clear();
         }
     });
+}
+
+fn tle_norad_fallback(norad_id: u64) -> String {
+    crate::language_plugin::format("settings.tle.norad_fallback", "NORAD {}", &[norad_id.to_string()])
+}
+
+#[cfg(test)]
+mod language_fallback_tests {
+    use super::*;
+
+    #[test]
+    fn missing_satellite_name_localizes_norad_label_and_preserves_number() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(tle_norad_fallback(12345), if enabled { "NORAD 编号 12345" } else { "NORAD 12345" });
+        }
+    }
 }
 
 /// Age of a pasted element set, in seconds, from the epoch in columns 19–32 of
@@ -374,12 +375,12 @@ fn tle_epoch_age(t: &sdroxide_types::CustomTle, now_unix: i64) -> Option<i64> {
 fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
     use crate::theme;
 
-    ui.label(RichText::new("Frequencies").strong());
+    ui.label(RichText::new(crate::language_plugin::text("common.frequencies", "Frequencies")).strong());
     ui.label(
         RichText::new(
-            "Shown under the pass table in the solar window. An entry here replaces the \
+            crate::language_plugin::text("settings.tle.text_380", "Shown under the pass table in the solar window. An entry here replaces the \
              built-in one for that catalogue number outright, so start from a copy of it unless \
-             you mean to drop the rest.",
+             you mean to drop the rest."),
         )
         .weak()
         .size(11.0),
@@ -397,14 +398,14 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 ui.label(RichText::new(format!("NORAD {}", f.norad_id)).color(theme::CYAN_DIM()));
                 crate::chrome::field(
                     ui,
-                    egui::TextEdit::singleline(&mut f.name).desired_width(180.0).hint_text("name"),
+                    egui::TextEdit::singleline(&mut f.name).desired_width(180.0).hint_text(crate::language_plugin::text("common.name", "name")),
                 );
                 ui.label(
-                    RichText::new(format!("{} link(s)", f.links.len()))
+                    RichText::new({ let __lp_arg_0 = &(f.links.len()); crate::language_plugin::format("settings.tle.text_403", "{} link(s)", &[format!("{}", __lp_arg_0)]) })
                         .color(theme::LINE_LIT())
                         .size(10.5),
                 );
-                if ui.button("✕").on_hover_text("Remove this satellite's entry").clicked() {
+                if ui.button("✕").on_hover_text(crate::language_plugin::text("common.remove_this_satellite_s_entry", "Remove this satellite's entry")).clicked() {
                     remove = Some(i);
                 }
             });
@@ -413,8 +414,8 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
             }
             let mut drop_link = None;
             egui::Grid::new("sat-links").num_columns(6).spacing([8.0, 4.0]).show(ui, |ui| {
-                for h in ["LINK", "DOWNLINK", "UPLINK", "MODE", "NOTE", ""] {
-                    ui.label(RichText::new(h).color(theme::CYAN_DIM()).size(9.5).strong());
+                for h in [crate::language_plugin::text("settings.tle.header.link", "LINK"), crate::language_plugin::text("settings.tle.header.downlink", "DOWNLINK"), crate::language_plugin::text("settings.tle.header.uplink", "UPLINK"), crate::language_plugin::text("settings.tle.header.mode", "MODE"), crate::language_plugin::text("settings.tle.header.note", "NOTE"), String::new()] {
+                    ui.label(RichText::new(tle_link_header(&h)).color(theme::CYAN_DIM()).size(9.5).strong());
                 }
                 ui.end_row();
                 for (k, l) in f.links.iter_mut().enumerate() {
@@ -422,7 +423,7 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
                         ui,
                         egui::TextEdit::singleline(&mut l.label)
                             .desired_width(120.0)
-                            .hint_text("FM repeater"),
+                            .hint_text(crate::language_plugin::text("settings.tle.text_425", "FM repeater")),
                     );
                     freq_box(ui, (k, "down"), &mut l.downlink, "145.800");
                     freq_box(ui, (k, "up"), &mut l.uplink, "435.250");
@@ -446,7 +447,7 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 f.links.remove(k);
             }
             ui.horizontal(|ui| {
-                if ui.button("+ Link").clicked() {
+                if ui.button(crate::language_plugin::text("common.link_031ece6b", "+ Link")).clicked() {
                     f.links.push(Default::default());
                 }
                 // The built-in row is almost always what you want to start
@@ -454,11 +455,8 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 // beacon, the telemetry and the transponder as well.
                 if let Some(b) = sdroxide_solar::satfreq::builtin_for(f.norad_id) {
                     if ui
-                        .button("Copy built-in")
-                        .on_hover_text(format!(
-                            "Replace these links with the built-in ones for {}",
-                            b.name
-                        ))
+                        .button(crate::language_plugin::text("common.copy_built_in", "Copy built-in"))
+                        .on_hover_text({ let __lp_arg_0 = &(b.name); crate::language_plugin::format("settings.tle.text_459", "Replace these links with the built-in ones for {}", &[format!("{}", __lp_arg_0)]) })
                         .clicked()
                     {
                         f.links = b.links.clone();
@@ -471,8 +469,8 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
             ui.add_space(4.0);
             ui.label(
                 RichText::new(
-                    "A frequency is either one number (145.800) or a transponder passband \
-                     written 145.950-145.970. Leave a direction blank for a beacon.",
+                    crate::language_plugin::text("settings.tle.text_474", "A frequency is either one number (145.800) or a transponder passband \
+                     written 145.950-145.970. Leave a direction blank for a beacon."),
                 )
                 .weak()
                 .size(10.0),
@@ -497,9 +495,9 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
             ui,
             egui::TextEdit::singleline(&mut io.sat_ui.new_freq_name)
                 .desired_width(160.0)
-                .hint_text("name"),
+                .hint_text(crate::language_plugin::text("common.name", "name")),
         );
-        if ui.button("+ Satellite").clicked() {
+        if ui.button(crate::language_plugin::text("common.satellite", "+ Satellite")).clicked() {
             match io.sat_ui.new_freq_id.trim().parse::<u64>() {
                 Ok(id) if id > 0 => {
                     let name = io.sat_ui.new_freq_name.trim().to_string();
@@ -525,8 +523,7 @@ fn settings_tle_freqs(ui: &mut egui::Ui, io: &mut SettingsIo) {
                 }
                 _ => {
                     io.sat_ui.note =
-                        "A frequency entry needs the satellite's NORAD catalogue number."
-                            .to_string()
+                        crate::language_plugin::UiNotice::literal("A frequency entry needs the satellite's NORAD catalogue number.")
                 }
             }
         }
@@ -559,5 +556,61 @@ fn freq_box(
         // actually stored — a half-typed "145." must not keep showing as if it
         // were a frequency the table holds.
         ui.data_mut(|d| d.remove_temp::<String>(id));
+    }
+}
+
+
+fn tle_link_header(header: &str) -> String {
+    let (key, fallback) = match header {
+        "LINK" => ("settings.tle.header.link", "LINK"),
+        "DOWNLINK" => ("settings.tle.header.downlink", "DOWNLINK"),
+        "UPLINK" => ("settings.tle.header.uplink", "UPLINK"),
+        "MODE" => ("settings.tle.header.mode", "MODE"),
+        "NOTE" => ("settings.tle.header.note", "NOTE"),
+        _ => return header.to_owned(),
+    };
+    crate::language_plugin::text(key, fallback)
+}
+
+#[cfg(test)]
+mod link_header_language_tests {
+    use super::*;
+    #[test]
+    fn link_headers_render_in_chinese_and_fall_back_to_english() {
+        let cases=[("LINK","链路"),("DOWNLINK","下行"),("UPLINK","上行"),("MODE","模式"),("NOTE","备注")];
+        let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);
+        let ctx=egui::Context::default();ctx.set_fonts(fonts);
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (en,zh) in cases {
+                let label=tle_link_header(en);assert_eq!(label,if enabled {zh}else{en});
+                let output=ctx.run_ui(egui::RawInput::default(),|ui|{ui.label(&label);});
+                let drawn:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();
+                output.drop_without_applying_deltas();assert!(drawn.iter().any(|x|x==&label),"{drawn:?}");
+            }
+        }
+    }
+}
+
+
+#[cfg(test)]
+mod new_subscription_language_tests {
+    use eframe::egui;
+    #[test]
+    fn new_subscription_default_renders_chinese_and_falls_back_to_english() {
+        let mut fonts=egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        let ctx=egui::Context::default(); ctx.set_fonts(fonts);
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let name=crate::language_plugin::text("settings.tle.new_subscription", "New");
+            assert_eq!(name,if enabled { "新订阅" } else { "New" });
+            let output=ctx.run_ui(egui::RawInput::default(),|ui|{ui.label(&name);});
+            let rendered:Vec<_>=output.shapes.iter().filter_map(|shape|match &shape.shape {
+                egui::epaint::Shape::Text(text)=>Some(text.galley.job.text.clone()),_=>None,
+            }).collect();
+            output.drop_without_applying_deltas();
+            assert!(rendered.iter().any(|text|text==&name),"{rendered:?}");
+        }
     }
 }

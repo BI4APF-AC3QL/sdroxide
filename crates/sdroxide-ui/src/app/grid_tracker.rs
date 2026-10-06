@@ -217,7 +217,7 @@ impl SdroxideApp {
 
         let mut open = self.show_grid;
         let tracker = &mut self.grid_tracker;
-        egui::Window::new("GRID TRACKER")
+        egui::Window::new(crate::language_plugin::text("window.grid_tracker.text_220_6e9ad6", "GRID TRACKER")).id(egui::Id::new("GRID TRACKER"))
             .id(crate::layout::salted_id(ctx, "GRID TRACKER"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -228,26 +228,26 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.horizontal(|ui| {
                     ui.label(
-                        egui::RichText::new(format!("{} worked", worked.len()))
+                        egui::RichText::new({ let __lp_arg_0 = &(worked.len()); crate::language_plugin::format("window.grid_tracker.text_231_4340cc", "{} worked", &[format!("{}", __lp_arg_0)]) })
                             .color(theme::YELLOW())
                             .monospace(),
                     );
                     ui.label(
-                        egui::RichText::new(format!("{confirmed} confirmed"))
+                        egui::RichText::new(crate::language_plugin::format("window.grid_tracker.text_236_0d81d7", "{confirmed} confirmed", &[format!("{confirmed}")]))
                             .color(theme::GREEN())
                             .monospace(),
                     );
                     if ui
                         .selectable_label(
                             tracker.show_heard,
-                            egui::RichText::new(format!("{} heard", heard.len()))
+                            egui::RichText::new({ let __lp_arg_0 = &(heard.len()); crate::language_plugin::format("window.grid_tracker.text_243_bfd450", "{} heard", &[format!("{}", __lp_arg_0)]) })
                                 .color(theme::CYAN())
                                 .monospace(),
                         )
                         .on_hover_text(
-                            "Shade the squares heard on the live decode list, not only the \
+                            crate::language_plugin::text("window.grid_tracker.text_248_52f729", "Shade the squares heard on the live decode list, not only the \
                              ones in the log — what is on the air now, in cyan under the \
-                             worked squares.",
+                             worked squares."),
                         )
                         .clicked()
                     {
@@ -262,8 +262,8 @@ impl SdroxideApp {
                 ui.separator();
                 ui.label(
                     egui::RichText::new(
-                        "Drag to pan, wheel to zoom. Amber = worked, green = confirmed, \
-                         cyan = heard.",
+                        crate::language_plugin::text("window.grid_tracker.text_265_90648e", "Drag to pan, wheel to zoom. Amber = worked, green = confirmed, \
+                         cyan = heard."),
                     )
                     .size(10.0)
                     .color(theme::gray(150)),

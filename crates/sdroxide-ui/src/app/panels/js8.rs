@@ -206,23 +206,17 @@ impl SdroxideApp {
                 // survive the whole row being lit.
                 let tx = js8.speed == speed;
                 let face = if multi && tx {
-                    format!("▸{}", speed.label())
+                    format!("▸{}", crate::language_plugin::js8_speed_display(speed))
                 } else {
-                    speed.label().to_string()
+                    crate::language_plugin::js8_speed_display(speed).to_string()
                 };
                 if crate::chrome::chip(ui, multi || tx, face)
                     .on_hover_text(if multi && tx {
-                        format!(
-                            "Every speed is being decoded; ▸ marks {}, the one you transmit at",
-                            speed.label()
-                        )
+                        { let __lp_arg_0 = &(crate::language_plugin::js8_speed_display(speed)); crate::language_plugin::format("panels.js8.text_216_cae5af", "Every speed is being decoded; ▸ marks {}, the one you transmit at", &[format!("{}", __lp_arg_0)]) }
                     } else if multi {
-                        format!(
-                            "Every speed is being decoded. Click to transmit at {} instead",
-                            speed.label()
-                        )
+                        { let __lp_arg_0 = &(crate::language_plugin::js8_speed_display(speed)); crate::language_plugin::format("panels.js8.text_221_0397b8", "Every speed is being decoded. Click to transmit at {} instead", &[format!("{}", __lp_arg_0)]) }
                     } else {
-                        format!("Transmit and decode at {}", speed.label())
+                        { let __lp_arg_0 = &(crate::language_plugin::js8_speed_display(speed)); crate::language_plugin::format("panels.js8.text_225_1b0bb7", "Transmit and decode at {}", &[format!("{}", __lp_arg_0)]) }
                     })
                     .clicked()
                     && !tx
@@ -238,12 +232,12 @@ impl SdroxideApp {
             // because it is not a fifth speed and a row of five identical chips
             // reads as one (issue #389).
             ui.add_space(10.0);
-            if crate::chrome::chip(ui, multi, "MULTI")
+            if crate::chrome::chip(ui, multi, crate::language_plugin::text("panels.js8.text_241_51a128", "MULTI"))
                 .on_hover_text(
-                    "Decode every JS8 speed, not only the one you transmit at. The four \
+                    crate::language_plugin::text("panels.js8.text_243_df8ab9", "Decode every JS8 speed, not only the one you transmit at. The four \
                      speeds share the sub-band and are four different waveforms, so without \
                      this a station on another speed is invisible — and an exchange between \
-                     two speeds cannot happen at all. Costs about four times the receive CPU.",
+                     two speeds cannot happen at all. Costs about four times the receive CPU."),
                 )
                 .clicked()
             {
@@ -266,13 +260,13 @@ impl SdroxideApp {
             // Lit by what the engine is *doing*, not by what is configured: at
             // Turbo the interval is set and nothing beacons, and a chip that
             // claimed otherwise would be the one place this must not be wrong.
-            let hb_on = crate::chrome::chip(ui, js8.next_hb_in_s.is_some(), "HB AUTO")
+            let hb_on = crate::chrome::chip(ui, js8.next_hb_in_s.is_some(), crate::language_plugin::text("panels.js8.text_269_649441", "HB AUTO"))
                 .on_hover_text(match js8.next_hb_in_s {
-                    Some(_) => format!("Beaconing every {hb_min} min — click to stop"),
+                    Some(_) => crate::language_plugin::format("panels.js8.text_271_783e66", "Beaconing every {hb_min} min — click to stop", &[format!("{hb_min}")]),
                     None if js8.speed == Js8Speed::Turbo => {
-                        "Turbo does not beacon — it is the local and VHF speed".to_string()
+                        crate::language_plugin::text("panels.js8.text_273_2a097e", "Turbo does not beacon — it is the local and VHF speed").to_string()
                     }
-                    None => "Beacon your callsign and grid every 15 minutes".to_string(),
+                    None => crate::language_plugin::text("panels.js8.text_275_d584a3", "Beacon your callsign and grid every 15 minutes").to_string(),
                 })
                 .clicked();
             if hb_on {
@@ -287,7 +281,7 @@ impl SdroxideApp {
                         .monospace()
                         .color(crate::theme::CYAN_DIM()),
                 )
-                .on_hover_text("Until the next heartbeat");
+                .on_hover_text(crate::language_plugin::text("panels.js8.text_290_d6c06c", "Until the next heartbeat"));
             }
             // Beacons do not go out on the working frequency, so the waterfall
             // shows a burst where the panel's marker is not. Saying where it
@@ -295,16 +289,12 @@ impl SdroxideApp {
             // sub-band convention working.
             if let Some(hz) = js8.hb_hz {
                 ui.label(
-                    RichText::new(format!("HB {hz:.0} Hz"))
+                    RichText::new(crate::language_plugin::format("panels.js8.text_298_1485b3", "HB {hz:.0} Hz", &[format!("{hz:.0}")]))
                         .monospace()
                         .color(crate::theme::GREEN()),
                 )
-                .on_hover_text(format!(
-                    "The last beacon went out at {hz:.0} Hz — a free slot in the {:.0}–{:.0} Hz \
-                     heartbeat sub-band, chosen so it lands clear of the signals being decoded.",
-                    sdroxide_types::HB_BAND_LO_HZ,
-                    sdroxide_types::HB_BAND_HI_HZ,
-                ));
+                .on_hover_text({ let __lp_arg_0 = &(sdroxide_types::HB_BAND_LO_HZ); let __lp_arg_1 = &(sdroxide_types::HB_BAND_HI_HZ); crate::language_plugin::format("panels.js8.text_303_8bf459", "The last beacon went out at {hz:.0} Hz — a free slot in the {:.0}–{:.0} Hz \
+                     heartbeat sub-band, chosen so it lands clear of the signals being decoded.", &[format!("{hz:.0}"), format!("{:.0}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) });
             }
             crate::chrome::row_tail(ui, |ui| {
                 // Every setting this mode has — callsign, groups, auto-reply,
@@ -312,22 +302,18 @@ impl SdroxideApp {
                 // window, and the JS8 panel is the only one with no other way
                 // in: FT8 reaches it from the QSO area, and the keyboard modes
                 // keep their parameters in the header instead.
-                if crate::chrome::chip(ui, self.show_digi_settings, "⚙ SETUP").clicked() {
+                if crate::chrome::chip(ui, self.show_digi_settings, crate::language_plugin::text("panels.js8.text_315_3b3b5d", "⚙ SETUP")).clicked() {
                     self.show_digi_settings = !self.show_digi_settings;
                 }
                 if transmitting {
-                    ui.label(RichText::new("● TX").color(crate::theme::ALERT()).strong());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.js8.text_319_548c99", "● TX")).color(crate::theme::ALERT()).strong());
                 }
                 // A long message takes minutes, not seconds. Saying so while it
                 // is going out is the difference between "stuck" and "working".
                 if js8.tx_frames_total > 0 {
                     let left = f64::from(js8.tx_frames_pending) * js8.speed.slot_s();
                     ui.label(
-                        RichText::new(format!(
-                            "{}/{} frames · {left:.0}s",
-                            js8.tx_frames_total - js8.tx_frames_pending,
-                            js8.tx_frames_total
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(js8.tx_frames_total - js8.tx_frames_pending); let __lp_arg_1 = &(js8.tx_frames_total); crate::language_plugin::format("panels.js8.text_327_66b4a6", "{}/{} frames · {left:.0}s", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{left:.0}")]) })
                         .monospace()
                         .color(crate::theme::YELLOW()),
                     );
@@ -369,7 +355,7 @@ impl SdroxideApp {
             ui.vertical(|ui| {
                 ui.set_width(left_w);
                 ui.label(
-                    RichText::new("HEARD").size(10.5).strong().color(crate::theme::CYAN_DIM()),
+                    RichText::new(crate::language_plugin::text("panels.js8.text_372_0e6586", "HEARD")).size(10.5).strong().color(crate::theme::CYAN_DIM()),
                 );
                 self.js8_heard_list(ui, &js8, avail_h - 18.0, left_w);
             });
@@ -539,7 +525,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if js8.heard.is_empty() {
-                    ui.label(RichText::new("— nothing heard yet —").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.js8.text_542_64b98d", "— nothing heard yet —")).weak());
                 }
                 for (i, h) in js8.heard.iter().enumerate() {
                     let msg = last_msg.get(h.call.as_str()).copied();
@@ -606,7 +592,7 @@ impl SdroxideApp {
                     )
                     .truncate();
                     let badge_lbl =
-                        egui::Label::new(RichText::new(badge).size(9.5).strong().color(badge_col));
+                        egui::Label::new(RichText::new(crate::language_plugin::novelty_badge(badge)).size(9.5).strong().color(badge_col));
                     let cont_lbl = egui::Label::new(
                         RichText::new(continent).monospace().size(11.0).strong().color(if dupe {
                             crate::theme::gray(85)
@@ -624,7 +610,7 @@ impl SdroxideApp {
                         crate::chrome::chip_accent(
                             ui,
                             false,
-                            RichText::new("REPLY").size(12.0).strong(),
+                            RichText::new(crate::language_plugin::text("panels.js8.text_627_623026", "REPLY")).size(12.0).strong(),
                             if to_me {
                                 crate::theme::YELLOW()
                             } else if calling {
@@ -871,7 +857,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if js8.messages.is_empty() {
-                    ui.label(RichText::new("— no messages —").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.js8.text_874_816399", "— no messages —")).weak());
                 }
                 for (i, m) in js8.messages.iter().enumerate() {
                     let selected =
@@ -904,7 +890,7 @@ impl SdroxideApp {
                                             .monospace()
                                             .color(crate::theme::PINK()),
                                     )
-                                    .on_hover_text(format!("Decoded at {}", m.speed.label()));
+                                    .on_hover_text({ let __lp_arg_0 = &(crate::language_plugin::js8_speed_display(m.speed)); crate::language_plugin::format("panels.js8.text_907_b0778b", "Decoded at {}", &[format!("{}", __lp_arg_0)]) });
                                 }
                                 if to_me {
                                     ui.label(RichText::new("★").color(crate::theme::YELLOW()));
@@ -946,7 +932,7 @@ impl SdroxideApp {
                                 ui.label(if m.complete { body } else { body.weak() });
                                 if !m.complete {
                                     ui.label(
-                                        RichText::new(format!("… ({} frames)", m.frames)).weak(),
+                                        RichText::new({ let __lp_arg_0 = &(m.frames); crate::language_plugin::format("panels.js8.text_949_313011", "… ({} frames)", &[format!("{}", __lp_arg_0)]) }).weak(),
                                     );
                                 }
                             });
@@ -967,8 +953,8 @@ impl SdroxideApp {
                     if !m.from.is_empty() && (row.hovered() || row.clicked()) {
                         let draft = js8_reply_for(m, &me);
                         row = row.on_hover_text(match &draft {
-                            Some(d) => format!("Reply to {}: “{d}”", m.from),
-                            None => format!("Address the composer at {}", m.from),
+                            Some(d) => { let __lp_arg_0 = &(m.from); crate::language_plugin::format("panels.js8.text_970_f40af5", "Reply to {}: “{d}”", &[format!("{}", __lp_arg_0), format!("{d}")]) },
+                            None => { let __lp_arg_0 = &(m.from); crate::language_plugin::format("panels.js8.text_971_a7b614", "Address the composer at {}", &[format!("{}", __lp_arg_0)]) },
                         });
                         if row.clicked() {
                             pick = Some((m.from.clone(), draft));
@@ -1050,11 +1036,11 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             // `chip_enabled` rather than a scope around the pair: this row
             // wraps, and a child `Ui` in a wrapping row does not.
-            if rx_only_hint(crate::chrome::chip_enabled(ui, tx_ok, false, " CQ "), tx_ok).clicked()
+            if rx_only_hint(crate::chrome::chip_enabled(ui, tx_ok, false, crate::language_plugin::text("panels.js8.text_1053_10e7f9", " CQ ")), tx_ok).clicked()
             {
                 self.text_tx = "CQ".to_string();
             }
-            if rx_only_hint(crate::chrome::chip_enabled(ui, tx_ok, false, " HB "), tx_ok).clicked()
+            if rx_only_hint(crate::chrome::chip_enabled(ui, tx_ok, false, crate::language_plugin::text("panels.js8.text_1057_1eb2ca", " HB ")), tx_ok).clicked()
             {
                 self.text_tx = "HB".to_string();
             }
@@ -1064,7 +1050,7 @@ impl SdroxideApp {
             // sometimes are chips nobody discovers.
             ui.add_enabled_ui(has_target && tx_ok, |ui| {
                 for q in ["SNR?", "GRID?", "HEARING?", "STATUS?", "HW CPY?"] {
-                    if rx_only_hint(crate::chrome::chip(ui, false, q), tx_ok).clicked() {
+                    if rx_only_hint(crate::chrome::chip(ui, false, crate::language_plugin::js8_command_display(q)), tx_ok).clicked() {
                         self.text_tx = q.to_string();
                     }
                 }
@@ -1072,7 +1058,7 @@ impl SdroxideApp {
                 // they are the most-typed things on the band, and typing them
                 // is the one moment an operator is not watching the panel.
                 for q in ["RR", "73"] {
-                    if rx_only_hint(crate::chrome::chip(ui, false, q), tx_ok).clicked() {
+                    if rx_only_hint(crate::chrome::chip(ui, false, crate::language_plugin::js8_command_display(q)), tx_ok).clicked() {
                         self.text_tx = q.to_string();
                     }
                 }
@@ -1087,17 +1073,17 @@ impl SdroxideApp {
                 ui,
                 has_target,
                 false,
-                " CLEAR TO ",
+                crate::language_plugin::text("panels.js8.text_1090_23fc64", " CLEAR TO "),
                 Some(10.5),
                 crate::theme::CYAN(),
                 crate::theme::INK_ON_CYAN(),
             );
             let clear_to = if has_target {
                 clear_to.on_hover_text(
-                    "Forget the selected station — the composer goes back to @ALLCALL",
+                    crate::language_plugin::text("panels.js8.text_1097_713bd5", "Forget the selected station — the composer goes back to @ALLCALL"),
                 )
             } else {
-                clear_to.on_disabled_hover_text("Already addressing @ALLCALL")
+                clear_to.on_disabled_hover_text(crate::language_plugin::text("panels.js8.text_1100_ca76dc", "Already addressing @ALLCALL"))
             };
             if clear_to.clicked() {
                 self.js8_target.clear();
@@ -1124,14 +1110,14 @@ impl SdroxideApp {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 // Stop lives next to send: they are the two things you reach
                 // for in a hurry, and a long message takes minutes to drain.
-                if crate::chrome::chip(ui, false, " STOP ").clicked() {
+                if crate::chrome::chip(ui, false, crate::language_plugin::text("panels.js8.text_1127_4c4cd5", " STOP ")).clicked() {
                     cmds.push(Command::DigiAbortTx);
                 }
                 send = tx_gated(ui, tx_ok, |ui| {
                     crate::chrome::chip_accent(
                         ui,
                         false,
-                        " SEND ",
+                        crate::language_plugin::text("controls.app.panels.js8.text_1134_3f326b", " SEND "),
                         crate::theme::ALERT(),
                         crate::theme::INK_ON_CYAN(),
                     )
@@ -1143,10 +1129,7 @@ impl SdroxideApp {
                 if !self.text_tx.trim().is_empty() {
                     let frames = js8_frame_estimate(&self.text_tx);
                     ui.label(
-                        RichText::new(format!(
-                            "{frames}f · {:.0}s",
-                            f64::from(frames) * js8.speed.slot_s()
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(f64::from(frames) * js8.speed.slot_s()); crate::language_plugin::format("panels.js8.text_1147_b76a5f", "{frames}f · {:.0}s", &[format!("{frames}"), format!("{:.0}", __lp_arg_0)]) })
                         .monospace()
                         .weak(),
                     );
@@ -1155,7 +1138,7 @@ impl SdroxideApp {
                     ui,
                     egui::TextEdit::singleline(&mut self.text_tx)
                         .desired_width(ui.available_width().max(60.0))
-                        .hint_text("Message…"),
+                        .hint_text(crate::language_plugin::text("panels.js8.text_1158_fc7150", "Message…")),
                 );
                 // Return does what SEND does, so it has to be shut off with it.
                 send |= tx_ok && resp.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
@@ -1351,5 +1334,36 @@ mod js8_panel_tests {
         let mut free = msg(None, "");
         free.text = "GOOD MORNING FROM VIENNA".into();
         assert_eq!(js8_msg_summary(&free), "GOOD MORNING FROM VIENNA");
+    }
+}
+
+#[cfg(test)]
+mod fixed_command_language_tests25 {
+    use super::*;
+    use sdroxide_types::Js8Speed;
+    #[test]
+    fn translated_query_faces_leave_composer_and_addressed_protocol_bytes_unchanged() {
+        let queries=[("SNR?","询问信噪比（SNR?）"),("GRID?","询问网格定位符（GRID?）"),("HEARING?","询问已听到的电台（HEARING?）"),("STATUS?","询问台站状态（STATUS?）"),("HW CPY?","询问抄收情况（HW CPY?）"),("RR","确认收到（RR）"),("73","祝好（73）")];
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            for (raw,zh) in queries {
+                let command=raw.to_owned();let before=command.clone();
+                assert_eq!(crate::language_plugin::js8_command_display(&command),if enabled{zh}else{raw});
+                assert_eq!(js8_addressed("BI4APF",&command),format!("BI4APF {raw}"));assert_eq!(js8_addressed("",&command),raw);assert_eq!(command,before);
+            }
+            for raw in ["CQ","HB","HEARTBEAT","@ALLCALL CQ"] {assert_eq!(js8_addressed("BI4APF",raw),raw);}
+            for raw in ["new command","GRID? {grid}",""] {assert_eq!(crate::language_plugin::js8_command_display(raw),raw);}
+        }
+    }
+    #[test]
+    fn typed_js8_speed_faces_preserve_enum_order_tags_and_slot_timing() {
+        let order=Js8Speed::UI_ORDER;let wire=Js8Speed::ALL;
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            for (speed,zh) in [(Js8Speed::Slow,"慢速"),(Js8Speed::Normal,"正常"),(Js8Speed::Fast,"快速"),(Js8Speed::Turbo,"极速")] {
+                let before=(serde_json::to_string(&speed).unwrap(),speed.tag(),speed.slot_s());
+                assert_eq!(crate::language_plugin::js8_speed_display(speed),if enabled{zh}else{speed.label()});
+                assert_eq!((serde_json::to_string(&speed).unwrap(),speed.tag(),speed.slot_s()),before);
+            }
+            assert_eq!(Js8Speed::UI_ORDER,order);assert_eq!(Js8Speed::ALL,wire);
+        }
     }
 }

@@ -796,7 +796,7 @@ pub fn show(
         p.text(
             pos2(rect.right() - 5.0, rect.bottom() - 4.0),
             Align2::RIGHT_BOTTOM,
-            "DOUBLE-CLICK TO REFRAME",
+            crate::language_plugin::text("map.world.painter.text_799_79d3d8", "DOUBLE-CLICK TO REFRAME"),
             FontId::proportional(9.0),
             map.hint,
         );

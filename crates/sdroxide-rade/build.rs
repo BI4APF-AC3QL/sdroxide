@@ -33,11 +33,15 @@ fn main() {
 
     // Always Release: the neural encoder/decoder is unusably slow unoptimized,
     // including under a plain `cargo build`.
-    let dst = cmake::Config::new(&wrapper)
-        .define("RADE_C_DIR", rade_c.to_string_lossy().as_ref())
-        .profile("Release")
-        .build_target("rade_static")
-        .build();
+    let mut config = cmake::Config::new(&wrapper);
+    config.define("RADE_C_DIR", rade_c.to_string_lossy().as_ref());
+    if let Ok(archive) = std::env::var("SDROXIDE_OPUS_ARCHIVE") {
+        config.define("OPUS_URL", archive.replace('\\', "/"));
+    }
+    if let Ok(model) = std::env::var("SDROXIDE_OPUS_MODEL") {
+        config.define("SDROXIDE_OPUS_MODEL", model.replace('\\', "/"));
+    }
+    let dst = config.profile("Release").build_target("rade_static").build();
 
     let build = dst.join("build");
     // ExternalProject's default layout for rade_c's `build_opus` target, which
@@ -50,8 +54,25 @@ fn main() {
         opus_lib_dir.display()
     );
 
+    // CMake already copies the same headers to this shorter build directory on
+    // Windows. libclang cannot resolve sibling headers through long \\?\ paths.
+    // Bind against those unchanged copies, without touching the vendored code.
+    let rade_headers = if cfg!(target_os = "windows") {
+        let headers = build.join("rade_src");
+        std::fs::create_dir_all(&headers).expect("create short header directory");
+        // CMake's GLOB can miss headers when the source uses a long-path prefix.
+        for entry in std::fs::read_dir(rade_c.join("src")).expect("read RADE headers") {
+            let path = entry.expect("RADE header entry").path();
+            if path.extension().is_some_and(|e| e == "h") {
+                std::fs::copy(&path, headers.join(path.file_name().unwrap())).expect("copy unchanged RADE header");
+            }
+        }
+        headers
+    } else {
+        rade_c.join("src")
+    };
     let includes: Vec<PathBuf> = vec![
-        rade_c.join("src"),
+        rade_headers.clone(),
         opus_src.clone(),
         opus_src.join("dnn"),
         opus_src.join("celt"),
@@ -74,7 +95,7 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib=m");
 
     let mut builder = bindgen::Builder::default()
-        .header(rade_c.join("src/rade_api.h").to_string_lossy())
+        .header(rade_headers.join("rade_api.h").to_string_lossy())
         .header(manifest.join("src/shim.h").to_string_lossy())
         .allowlist_function("rade_.*")
         .allowlist_function("sdrx_voc_.*")
@@ -101,6 +122,8 @@ fn main() {
     println!("cargo:rerun-if-changed=src/shim.h");
     println!("cargo:rerun-if-changed={}", rade_c.join("src").display());
     println!("cargo:rerun-if-changed={}", rade_c.join("cmake").display());
+    println!("cargo:rerun-if-env-changed=SDROXIDE_OPUS_ARCHIVE");
+    println!("cargo:rerun-if-env-changed=SDROXIDE_OPUS_MODEL");
 }
 
 /// Generate the wrapper CMake project into `OUT_DIR` and return its path.
@@ -129,6 +152,16 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Fetches and patches the FARGAN/LPCNet-enabled Opus, and defines the imported
 # `opus` target plus its include directories for everything below.
 include(${RADE_C_DIR}/cmake/BuildOpus.cmake)
+
+if(DEFINED SDROXIDE_OPUS_MODEL)
+    ExternalProject_Add_Step(build_opus local_model
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${SDROXIDE_OPUS_MODEL}
+            <SOURCE_DIR>/opus_data-4ed9445b96698bad25d852e912b41495ddfa30c8dbc8a55f9cde5826ed793453.tar.gz
+        DEPENDEES patch
+        DEPENDERS configure
+    )
+endif()
 
 # Upstream's own targets, unmodified. We never build its shared `rade`; we only
 # borrow the target's source list.

@@ -50,11 +50,11 @@ impl SdroxideApp {
         ui.add_space(2.0);
 
         ui.horizontal(|ui| {
-            if crate::chrome::chip_enabled(ui, true, cfg.enabled, "LISTEN")
+            if crate::chrome::chip_enabled(ui, true, cfg.enabled, crate::language_plugin::text("window.hfdl.text_53_b4d43d", "LISTEN"))
                 .on_hover_text(
-                    "Switches the engine's HFDL downconverter and decoder on or \
+                    crate::language_plugin::text("window.hfdl.text_55_87b2f3", "Switches the engine's HFDL downconverter and decoder on or \
                              off. Decoding costs a 24 kHz lane and a worker thread whether \
-                             the window is open or not.",
+                             the window is open or not."),
                 )
                 .clicked()
             {
@@ -66,9 +66,9 @@ impl SdroxideApp {
                 egui::DragValue::new(&mut khz).range(2_800.0..=30_000.0).speed(1.0).suffix(" kHz"),
             )
             .on_hover_text(
-                "The channel (the assigned frequency) to listen on. Anything in the \
+                crate::language_plugin::text("window.hfdl.text_69_a33e67", "The channel (the assigned frequency) to listen on. Anything in the \
                          band works — HFDL stations transmit on 2.8 to 22 MHz — against a \
-                         fixed 24 kHz lane centred here.",
+                         fixed 24 kHz lane centred here."),
             );
             if khz != old_khz {
                 cfg.frequency_hz = khz * 1e3;
@@ -79,7 +79,7 @@ impl SdroxideApp {
                     ui,
                     !log.is_empty(),
                     "sdroxide-hfdl-log.txt",
-                    "Save the HFDL decode log to a file",
+                    crate::language_plugin::text("window.hfdl.text_82_ff5e2f", "Save the HFDL decode log to a file"),
                     || crate::app::save_text::hfdl_log_text(log),
                 );
             });
@@ -93,10 +93,10 @@ impl SdroxideApp {
                 let on = (cfg.frequency_hz / 1e3).round() as u32 == khz;
                 if crate::chrome::chip(ui, on, format!("{:.3} M", khz as f32 / 1e3))
                     .on_hover_text(if khz == 21_931 {
-                        "Riverhead (northern Atlantic/north America) — the default, \
-                                 and the channel the decoder was validated on."
+                        crate::language_plugin::text("window.hfdl.text_96_16c7d4", "Riverhead (northern Atlantic/north America) — the default, \
+                                 and the channel the decoder was validated on.")
                     } else {
-                        "An HFDL assigned frequency."
+                        crate::language_plugin::text("window.hfdl.text_99_cab080", "An HFDL assigned frequency.")
                     })
                     .clicked()
                 {
@@ -116,7 +116,7 @@ impl SdroxideApp {
             ui.horizontal_wrapped(|ui| {
                 ui.label(RichText::new("⚠").size(13.0).color(ink));
                 ui.label(
-                    RichText::new("HFDL is selected but decoding is off — press LISTEN above")
+                    RichText::new(crate::language_plugin::text("window.hfdl.text_119_e4d567", "HFDL is selected but decoding is off — press LISTEN above"))
                         .size(11.5)
                         .color(ink),
                 );
@@ -171,10 +171,10 @@ impl SdroxideApp {
     fn hfdl_log_pane(&mut self, ui: &mut egui::Ui, avail_h: f32) {
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(20.0);
-            ui.label(RichText::new("DECODES").size(10.5).strong().color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.hfdl.text_174_9da4a4", "DECODES")).size(10.5).strong().color(crate::theme::CYAN_DIM()));
             ui.add(
                 egui::TextEdit::singleline(&mut self.hfdl_filter)
-                    .hint_text("filter")
+                    .hint_text(crate::language_plugin::text("window.hfdl.text_177_dfc337", "filter"))
                     .desired_width(90.0),
             );
         });
@@ -197,10 +197,10 @@ impl SdroxideApp {
                 }
                 if shown == 0 {
                     let text = if log.is_empty() {
-                        "Nothing decoded yet — a ground station's squitter repeats every \
-                         ~32 s once one is in the channel."
+                        crate::language_plugin::text("window.hfdl.text_200_79e75a", "Nothing decoded yet — a ground station's squitter repeats every \
+                         ~32 s once one is in the channel.")
                     } else {
-                        "No decode matches the filter."
+                        crate::language_plugin::text("window.hfdl.text_203_70c95a", "No decode matches the filter.")
                     };
                     ui.label(RichText::new(text).size(10.5).color(crate::theme::gray(120)));
                 }
@@ -248,9 +248,9 @@ fn hfdl_status_slots(ui: &mut egui::Ui, status: Option<&HfdlStatus>, aircraft: u
     // channel" instead of "not switched on" (issue #497). The word itself says
     // which: DECODING rather than a bare RUNNING/OFF.
     let (run_text, run_ink) = if running {
-        ("DECODING", crate::theme::GREEN())
+        (crate::language_plugin::text("controls.app.hfdl.text_251_ce8133", "DECODING"), crate::theme::GREEN())
     } else {
-        ("DECODING OFF", crate::theme::HAZARD())
+        (crate::language_plugin::text("controls.app.hfdl.text_253_639457", "DECODING OFF"), crate::theme::HAZARD())
     };
     slot(ui, 108.0, run_text, run_ink);
     let level_text = match level {
@@ -258,9 +258,9 @@ fn hfdl_status_slots(ui: &mut egui::Ui, status: Option<&HfdlStatus>, aircraft: u
         _ => "— dBFS".to_string(),
     };
     slot(ui, 76.0, &level_text, crate::theme::gray(150));
-    slot(ui, 76.0, &format!("{} aircraft", count(aircraft as u64)), crate::theme::CYAN());
-    slot(ui, 64.0, &format!("{} bursts", count(bursts)), crate::theme::gray(150));
-    slot(ui, 64.0, &format!("{} decodes", count(decodes)), crate::theme::gray(120));
+    slot(ui, 76.0, &{ let __lp_arg_0 = &(count(aircraft as u64)); crate::language_plugin::format("controls.app.hfdl.text_261_4b990b", "{} aircraft", &[format!("{}", __lp_arg_0)]) }, crate::theme::CYAN());
+    slot(ui, 64.0, &{ let __lp_arg_0 = &(count(bursts)); crate::language_plugin::format("controls.app.hfdl.text_262_79abfe", "{} bursts", &[format!("{}", __lp_arg_0)]) }, crate::theme::gray(150));
+    slot(ui, 64.0, &{ let __lp_arg_0 = &(count(decodes)); crate::language_plugin::format("controls.app.hfdl.text_263_0fbef1", "{} decodes", &[format!("{}", __lp_arg_0)]) }, crate::theme::gray(120));
 }
 
 /// One decoded event, as a row of the log: time, kind, the ground station it
@@ -292,7 +292,7 @@ fn hfdl_log_row(ui: &mut egui::Ui, d: &HfdlDecode) {
         }
         if let Some(fec) = d.fec_corrected.filter(|f| *f > 0) {
             ui.label(
-                RichText::new(format!("{} fixed", count(u64::from(fec))))
+                RichText::new({ let __lp_arg_0 = &(count(u64::from(fec))); crate::language_plugin::format("window.hfdl.text_295_749c20", "{} fixed", &[format!("{}", __lp_arg_0)]) })
                     .size(10.5)
                     .color(crate::theme::gray(120)),
             );
@@ -349,7 +349,8 @@ fn count(n: u64) -> String {
 
 /// A readout in a slot of fixed width, so a number that grows a digit cannot
 /// re-flow the header.
-fn slot(ui: &mut egui::Ui, w: f32, text: &str, color: egui::Color32) {
+fn slot(ui: &mut egui::Ui, w: f32, text: impl AsRef<str>, color: egui::Color32) {
+    let text = text.as_ref();
     let (rect, _) = ui.allocate_exact_size(egui::vec2(w, 16.0), egui::Sense::hover());
     if !ui.is_rect_visible(rect) {
         return;
@@ -440,5 +441,26 @@ mod tests {
     #[test]
     fn details_are_tidied_for_the_row() {
         assert_eq!(tidy_details(r#"{"gs_id":4,"lpdus":3}"#), "gs_id:4  lpdus:3");
+    }
+}
+
+#[cfg(test)]
+mod language_status_render_tests {
+    use super::*;
+    #[test]
+    fn decoder_strip_renders_translated_states_and_preserves_numbers() {
+        for enabled in [true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for running in [true,false] {for width in [360.0,600.0,1000.0] {
+                let status=HfdlStatus{running,level_dbfs:-42.0,bursts:12,decodes:3,..Default::default()};let before=status.clone();
+                let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,200.0))),..Default::default()},|ui|hfdl_status_strip(ui,Some(&status),7));
+                let rendered:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();output.drop_without_applying_deltas();
+                let state=match(enabled,running){(true,true)=>"正在解码",(true,false)=>"解码已关闭",(false,true)=>"DECODING",(false,false)=>"DECODING OFF"};
+                for text in [state,"-42 dBFS",if enabled {"7 架飞机"} else {"7 aircraft"},if enabled {"12 个突发"} else {"12 bursts"},if enabled {"3 条解码"} else {"3 decodes"}] {assert!(rendered.contains(&text.to_owned()),"{rendered:?}");}
+                assert_eq!(status,before);
+            }}
+        }
     }
 }

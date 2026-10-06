@@ -340,21 +340,18 @@ impl SdroxideApp {
         let ceiling =
             self.display_class.map_or(waterfall_gpu::DEFAULT_TEX_W, waterfall_gpu::manual_ceiling);
         let reason = match self.display_class {
-            None => "This window has no GPU renderer, so the waterfall stays at its                      standard width."
+            None => crate::language_plugin::text("boundaries.app.spectrum.text_343_2c89f5", "This window has no GPU renderer, so the waterfall stays at its                      standard width.")
                 .to_string(),
             Some(c) if c.device_type == crate::egui_wgpu::wgpu::DeviceType::Cpu => {
-                "This machine is drawing without a GPU — every column of the waterfall                  is the processor's work, and it is already sharing that with the radio."
+                crate::language_plugin::text("boundaries.app.spectrum.text_346_e97c8a", "This machine is drawing without a GPU — every column of the waterfall                  is the processor's work, and it is already sharing that with the radio.")
                     .to_string()
             }
             Some(c) if c.backend == crate::egui_wgpu::wgpu::Backend::Gl => {
-                "This window renders through OpenGL, which is sdroxide's compatibility                  path — a Raspberry Pi, an older graphics chip, or a browser without                  WebGPU. A wider waterfall is not worth the frame rate there."
+                crate::language_plugin::text("boundaries.app.spectrum.text_350_722030", "This window renders through OpenGL, which is sdroxide's compatibility                  path — a Raspberry Pi, an older graphics chip, or a browser without                  WebGPU. A wider waterfall is not worth the frame rate there.")
                     .to_string()
             }
-            Some(c) if c.max_texture_dim < waterfall_gpu::MAX_TEX_W => format!(
-                "This renderer will not hold a texture wider than {} pixels.",
-                c.max_texture_dim
-            ),
-            Some(_) => "Wider than this renderer can draw.".to_string(),
+            Some(c) if c.max_texture_dim < waterfall_gpu::MAX_TEX_W => { let __lp_arg_0 = &(c.max_texture_dim); crate::language_plugin::format("boundaries.app.spectrum.text_354_0003d1", "This renderer will not hold a texture wider than {} pixels.", &[format!("{}", __lp_arg_0)]) },
+            Some(_) => crate::language_plugin::text("boundaries.app.spectrum.text_357_6d71cb", "Wider than this renderer can draw.").to_string(),
         };
         DetailReport { chosen: self.bins_for_detail(detail), ceiling, reason }
     }
@@ -688,8 +685,8 @@ impl SdroxideApp {
                     id: m.id,
                     freq_hz: m.freq_hz,
                     text: match folder {
-                        Some(f) => format!("Mem: {f} / {}", m.name),
-                        None => format!("Mem: {}", m.name),
+                        Some(f) => { let __lp_arg_0 = &(m.name); crate::language_plugin::format("boundaries.app.spectrum.text_691_319d93", "Mem: {f} / {}", &[format!("{f}"), format!("{}", __lp_arg_0)]) },
+                        None => { let __lp_arg_0 = &(m.name); crate::language_plugin::format("boundaries.app.spectrum.text_692_bd072d", "Mem: {}", &[format!("{}", __lp_arg_0)]) },
                     },
                 }
             })

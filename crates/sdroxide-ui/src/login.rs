@@ -572,14 +572,14 @@ fn card(
     ui.add_space(12.0);
 
     ui.add_enabled_ui(!checking, |ui| {
-        ui.label(RichText::new("Username").size(11.5).weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.general.username", "Username")).size(11.5).weak());
         let user = crate::chrome::field_sized(
             ui,
             [ui.available_width(), field_h],
             egui::TextEdit::singleline(&mut form.username),
         );
         ui.add_space(8.0);
-        ui.label(RichText::new("Password").size(11.5).weak());
+        ui.label(RichText::new(crate::language_plugin::text("common.password", "Password")).size(11.5).weak());
         let pass = crate::chrome::field_sized(
             ui,
             [ui.available_width(), field_h],
@@ -606,16 +606,16 @@ fn card(
     ui.add_space(10.0);
     // The wording is the hint on a touched layout: there is no pointer to hover
     // with, so a tooltip there is a sentence nobody will ever read.
-    let remember = crate::chrome::checkbox(ui, &mut form.remember, "Remember on this device");
+    let remember = crate::chrome::checkbox(ui, &mut form.remember, crate::language_plugin::text("window.login.text_609_020b8f", "Remember on this device"));
     if !touch {
         remember.on_hover_text(
-            "Signs in without asking next time, and lets the 3D view's tab in without asking at \
+            crate::language_plugin::text("window.login.text_612_f932e9", "Signs in without asking next time, and lets the 3D view's tab in without asking at \
              all. The password is kept in the clear, so leave this off on a machine other people \
-             use.",
+             use."),
         );
     } else {
         ui.label(
-            RichText::new("Keeps the password on this device, in the clear.")
+            RichText::new(crate::language_plugin::text("window.login.text_618_c76bd7", "Keeps the password on this device, in the clear."))
                 .size(10.5)
                 .color(crate::theme::gray(140)),
         );
@@ -623,7 +623,7 @@ fn card(
 
     ui.add_space(12.0);
     ui.horizontal(|ui| {
-        let label = if checking { " CHECKING… " } else { " SIGN IN " };
+        let label = sign_in_action_label(checking);
         let button = crate::chrome::chip_accent(
             ui,
             false,
@@ -636,13 +636,13 @@ fn card(
 
     if let Some(why) = refused {
         ui.add_space(10.0);
-        ui.label(RichText::new(why).size(12.0).color(crate::theme::ALERT()));
+        ui.label(RichText::new(crate::language_plugin::login_refusal_status(why)).size(12.0).color(crate::theme::ALERT()));
     } else if checking {
         ui.add_space(10.0);
         ui.label(
             RichText::new(
-                "A wrong password shuts the server's door for a few seconds, so this can take a \
-                 moment.",
+                crate::language_plugin::text("window.login.text_644_a8e8ca", "A wrong password shuts the server's door for a few seconds, so this can take a \
+                 moment."),
             )
             .size(11.0)
             .color(crate::theme::gray(140)),
@@ -1044,5 +1044,35 @@ mod tests {
         assert!(!tab(station).claim_gate(1000.0 + GATE_HOLD_S + 2.0));
         next.release_gate();
         assert!(SIGNING_IN.lock().unwrap().get(station).is_none());
+    }
+}
+
+fn sign_in_action_label(checking: bool) -> String {
+    if checking {
+        crate::language_plugin::text("window.login.actions.checking", " CHECKING… ")
+    } else {
+        crate::language_plugin::text("window.login.actions.sign_in", " SIGN IN ")
+    }
+}
+#[cfg(test)]
+mod sign_in_language_tests {
+    use super::*;
+    #[test]
+    fn sign_in_and_checking_faces_render_and_fall_back_exactly() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let mut fonts = egui::FontDefinitions::default();
+            crate::language_plugin::add_fonts(&mut fonts);
+            let ctx = egui::Context::default();
+            ctx.set_fonts(fonts);
+            for (checking, expected) in [(false, if enabled { " 登录 " } else { " SIGN IN " }), (true, if enabled { " 检查中… " } else { " CHECKING… " })] {
+                let output = ctx.run_ui(egui::RawInput::default(), |ui| { ui.label(sign_in_action_label(checking)); });
+                let rendered: Vec<_> = output.shapes.iter().filter_map(|s| match &s.shape {
+                    egui::epaint::Shape::Text(t) => Some(t.galley.job.text.clone()), _ => None,
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(rendered.iter().any(|text| text == expected), "{rendered:?}");
+            }
+        }
     }
 }

@@ -50,7 +50,7 @@ impl SdroxideApp {
             return;
         }
         let mut open = self.show_hd;
-        let resp = egui::Window::new("HD Radio")
+        let resp = egui::Window::new(crate::language_plugin::text("window.hd.title", "HD Radio"))
             .id(crate::layout::salted_id(ctx, "HD Radio"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -75,14 +75,14 @@ impl SdroxideApp {
         let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
 
         let Some(d) = self.hd.clone() else {
-            ui.label(dim("waiting for the receiver…"));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_78_128cfd", "waiting for the receiver…")));
             return cmds;
         };
 
         if self.state.rx[0].mode != Mode::HdRadio {
             ui.label(dim(
-                "Not in HD Radio. Set the mode to HD Radio on an FM broadcast carrying the \
-                 digital sidecars — the dial goes on the analog carrier's centre, not beside it.",
+                &crate::language_plugin::text("window.hd.text_84_6ec9b7", "Not in HD Radio. Set the mode to HD Radio on an FM broadcast carrying the \
+                 digital sidecars — the dial goes on the analog carrier's centre, not beside it."),
             ));
             ui.add_space(6.0);
         }
@@ -91,14 +91,14 @@ impl SdroxideApp {
         ui.add_space(8.0);
 
         if let Some(why) = d.unavailable.as_deref() {
-            ui.label(dim(why));
+            ui.label(dim(&crate::language_plugin::backend_status(why)));
             return cmds;
         }
         if !d.locked {
             ui.label(dim(
-                "No HD Radio lock. The digital sidebands are transmitted about 20 dB below \
+                &crate::language_plugin::text("window.hd.text_99_77d1dc", "No HD Radio lock. The digital sidebands are transmitted about 20 dB below \
                  the analog carrier, so a listenable station can still be too noisy to \
-                 decode: the decoder needs a few seconds on a clean one.",
+                 decode: the decoder needs a few seconds on a clean one."),
             ));
             return cmds;
         }
@@ -122,8 +122,8 @@ impl SdroxideApp {
             ui.painter().circle_filled(rect.center(), 3.5, ink);
         };
         let stages = [
-            ("SYNC", d.locked, "OFDM frame timing recovered"),
-            ("AUDIO", d.audio, "Audio frames decoding"),
+            (crate::language_plugin::text("window.hd.text_125_7dcad6", "SYNC"), d.locked, crate::language_plugin::text("window.hd.text_125_28deda", "OFDM frame timing recovered")),
+            (crate::language_plugin::text("window.hd.text_126_859e89", "AUDIO"), d.audio, crate::language_plugin::text("window.hd.text_126_6d8b28", "Audio frames decoding")),
         ];
         ui.horizontal_wrapped(|ui| {
             for (label, on, hover) in stages {
@@ -154,10 +154,10 @@ impl SdroxideApp {
     fn hd_quality_history(&self, ui: &mut egui::Ui) {
         let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
         ui.horizontal(|ui| {
-            ui.label(dim("QUALITY"));
-            ui.label(RichText::new("LOWER").size(9.0).color(Color32::from_rgb(90, 190, 230)));
-            ui.label(RichText::new("UPPER").size(9.0).color(Color32::from_rgb(150, 210, 120)));
-            ui.label(dim("last minute"));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_157_272776", "QUALITY")));
+            ui.label(RichText::new(crate::language_plugin::text("window.hd.text_158_86543e", "LOWER")).size(9.0).color(Color32::from_rgb(90, 190, 230)));
+            ui.label(RichText::new(crate::language_plugin::text("window.hd.text_159_9cba1c", "UPPER")).size(9.0).color(Color32::from_rgb(150, 210, 120)));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_160_503737", "last minute")));
         });
 
         let (rect, _) =
@@ -172,7 +172,7 @@ impl SdroxideApp {
             p.text(
                 rect.center(),
                 egui::Align2::CENTER_CENTER,
-                "waiting for a locked signal",
+                crate::language_plugin::text("window.hd.text_175_052eb4", "waiting for a locked signal"),
                 egui::FontId::proportional(10.0),
                 dim_ink(),
             );
@@ -226,31 +226,31 @@ impl SdroxideApp {
         let val = |s: String| RichText::new(s).size(11.0);
 
         egui::Grid::new("hd-signal").num_columns(4).spacing([14.0, 3.0]).show(ui, |ui| {
-            ui.label(dim("MER L"));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_229_8c217f", "MER L")));
             ui.label(val(format!("{:.1} dB", d.mer_lower_db)))
-                .on_hover_text("Modulation error ratio of the lower digital sideband.");
-            ui.label(dim("MER U"));
+                .on_hover_text(crate::language_plugin::text("window.hd.text_231_33b64e", "Modulation error ratio of the lower digital sideband."));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_232_8163e9", "MER U")));
             ui.label(val(format!("{:.1} dB", d.mer_upper_db)))
-                .on_hover_text("Modulation error ratio of the upper digital sideband.");
+                .on_hover_text(crate::language_plugin::text("window.hd.text_234_57def9", "Modulation error ratio of the upper digital sideband."));
             ui.end_row();
 
             ui.label(dim("CBER"));
             ui.label(val(format!("{:.2e}", d.cber))).on_hover_text(
-                "Channel bit-error ratio after the inner code. Below about 1e-3 the outer \
-                 code can correct it; above that the audio starts to break up.",
+                crate::language_plugin::text("window.hd.text_239_ace6bc", "Channel bit-error ratio after the inner code. Below about 1e-3 the outer \
+                 code can correct it; above that the audio starts to break up."),
             );
-            ui.label(dim("OFFSET"));
+            ui.label(dim(&crate::language_plugin::text("window.hd.text_242_82047f", "OFFSET")));
             ui.label(val(format!("{:+.0} Hz", d.freq_offset_hz))).on_hover_text(
-                "Residual carrier frequency offset. Large and steady means the receiver's \
-                 reference is off, not the broadcast.",
+                crate::language_plugin::text("window.hd.text_244_348a79", "Residual carrier frequency offset. Large and steady means the receiver's \
+                 reference is off, not the broadcast."),
             );
             ui.end_row();
 
             if d.psmi > 0 {
                 ui.label(dim("PSMI"));
                 ui.label(val(format!("MP{}", d.psmi))).on_hover_text(
-                    "Primary Service Mode Indicator: which of the FM hybrid service modes \
-                     the station is transmitting.",
+                    crate::language_plugin::text("window.hd.text_252_b54ada", "Primary Service Mode Indicator: which of the FM hybrid service modes \
+                     the station is transmitting."),
                 );
                 ui.label("");
                 ui.label("");
@@ -273,13 +273,13 @@ impl SdroxideApp {
         if d.audio_services.len() > 1 {
             ui.add_space(4.0);
             ui.horizontal(|ui| {
-                ui.label(dim("PROGRAMME"));
+                ui.label(dim(&crate::language_plugin::text("window.hd.text_276_e299e2", "PROGRAMME")));
                 for svc in &d.audio_services {
                     let on = svc.program == d.program;
                     let label = format!("HD-{}", svc.program_number());
-                    let mut hover = format!("Decode {} ({})", label, svc.codec_label());
+                    let mut hover = { let __lp_arg_0 = &(label); let __lp_arg_1 = &(svc.codec_label()); crate::language_plugin::format("window.hd.text_280_8f0dda", "Decode {} ({})", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) };
                     if svc.restricted() {
-                        hover.push_str(" — restricted access");
+                        hover.push_str(&crate::language_plugin::text("window.hd.text_282_b1917b", " — restricted access"));
                     }
                     if crate::chrome::chip(ui, on, label).on_hover_text(hover).clicked() && !on {
                         cmds.push(Command::SetHdProgram { program: svc.program });

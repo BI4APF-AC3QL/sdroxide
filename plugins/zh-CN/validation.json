@@ -1,0 +1,1914 @@
+{
+  "generated_at": "2026-10-06T14:57:21.4276873+08:00",
+  "completeness": "complete",
+  "catalog_entries": 5345,
+  "catalog_sha256": "6855501f11dd35198336b9e7eddec5020021a9f8ad7dc506cfb5e2e0954167ca",
+  "direct_display_adapters": 3862,
+  "unresolved_generated_adapters": 0,
+  "placeholders": "passed; catalog format descriptors validated by language-pack tests",
+  "original_checkout": "git status --porcelain empty",
+  "checks": {
+    "core": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestCore.log",
+      "log_modified": "2026-10-06T14:32:59.1456478+08:00",
+      "log_sha256": "8cea7b143d55b74d8419b1e1c7f01d39d3c22b8bcef527007b5de990bce2b525",
+      "matched_results": [
+        "language-pack: 5 passed; bundled pack/font: 3 passed; manifest completeness asserted complete"
+      ],
+      "passed_tests": 8
+    },
+    "plugin_ui": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestUI.log",
+      "log_modified": "2026-10-06T14:45:06.8667749+08:00",
+      "log_sha256": "b871b7d49bf0d34e9e72b00a6ee3cb346ce38ec8dc4f082fb374166dce962b58",
+      "matched_results": [
+        "test result: ok. 43 passed; 0 failed"
+      ],
+      "passed_tests": 43
+    },
+    "wasm_compile": {
+      "status": "passed",
+      "log": "outputs/build-logs/CheckWasm.log",
+      "log_modified": "2026-10-06T14:46:23.6824137+08:00",
+      "log_sha256": "774c24e88fe2dac25de83187b87edcfdd203091442cfd97a5cacf1d4a3652d5f",
+      "matched_results": [
+        "Finished dev profile for wasm32-unknown-unknown"
+      ]
+    },
+    "native_compile": {
+      "status": "passed",
+      "log": "outputs/build-logs/CheckNative.log",
+      "log_modified": "2026-10-05T16:35:21.313364+08:00",
+      "log_sha256": "a811cd36cdedcb83f9fa6bce16ee4d2bbfb20be0b6a27313be565bb9d7d7290e",
+      "matched_results": [
+        "Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.15s"
+      ]
+    },
+    "web_release": {
+      "status": "passed",
+      "log": "outputs/build-logs/BuildWeb.log",
+      "log_modified": "2026-10-06T14:47:26.4608989+08:00",
+      "log_sha256": "b59026b24413de4a7a6330d88c3e7278f07aadb3a04a9ce11693b1ce9bef3c5c",
+      "matched_results": [
+        "Current browser release compiled after translation catalog and completeness metadata changes"
+      ]
+    },
+    "native_release": {
+      "status": "passed",
+      "log": "outputs/build-logs/BuildEmbedded.log",
+      "log_modified": "2026-10-06T14:53:53.3283961+08:00",
+      "log_sha256": "22f580de035cf7b9e41cf5d6a81a45a1c475e2e73efef517ef6d6ad6090fd5da",
+      "matched_results": [
+        "Finished release profile for Windows x86_64 GNU; version 1.6.9-zhCN.0.2.2-preview"
+      ]
+    },
+    "plugin_fallback": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestAllUI.log",
+      "log_sha256": "c99fd80394b121cf56a4b2afaca70c1b762069904f4cbad0d3c77eb307ee9ffb",
+      "matched_results": [
+        "test language_plugin::tests::switching_and_source_changes_fall_back_without_touching_values ... ok",
+        "test language_plugin::tests::no_radio_placeholder_localizes_and_real_capability_labels_are_preserved ... ok",
+        "test result: ok. 796 passed; 0 failed"
+      ]
+    },
+    "plugin_language_suite": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestAllUI.log",
+      "log_modified": "2026-10-06T11:52:46.703218+08:00",
+      "log_sha256": "3cd3366e21b746e77a0ab80f979b5e55adf1706181f459d78984ae359aa70559",
+      "matched_results": [],
+      "passed_tests": 796
+    },
+    "all_ui": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestAllUI.log",
+      "log_modified": "2026-10-06T14:46:05.3469142+08:00",
+      "log_sha256": "b0b0537293736341d858dd6454a0c718be4ec8b2df0dfb67252ca1b2208e7431",
+      "matched_results": [
+        "test result: ok. 800 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out"
+      ],
+      "passed_tests": 800
+    },
+    "ism_backend_status_fallback": {
+      "status": "passed",
+      "log": "outputs\\build-logs\\TestAllUI.log",
+      "matched_results": [
+        "test app::ism::language_ism_header_tests::rtl433_header_status_translates_and_falls_back_without_radio_activity ... ok"
+      ]
+    },
+    "manual_structure": {
+      "status": "passed",
+      "report": "outputs/SDRoxide_最终三章手册结构与源码复核_20261004.json",
+      "verified_at": "2026-10-05T15:49:23.420403+08:00",
+      "matched_results": [
+        "All 244 translation fragments across 17 manual sections pass source-range, heading, fence, and link-target checks.",
+        "All 986429 source characters are covered. JSONC example comments may be localized while executable JSON structure remains equal."
+      ],
+      "manual_sha256": "9d9d803a8c042ef75ab4880d117c1e8132c294402e18029e571876bd7010fb31",
+      "report_sha256": "851ae04796a06a461f9793365a44526744db65ddbad1037f7144ef36377d1e81"
+    },
+    "manual_tests": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestHelp.log",
+      "log_modified": "2026-10-06T14:34:00.4942751+08:00",
+      "log_sha256": "6432216c89841c8b23dc2a12a0943c2744fcf9e16d003672b2265482d2762ac3",
+      "matched_results": [
+        "test result: ok. 18 passed; 0 failed"
+      ],
+      "passed_tests": 18
+    },
+    "remote_ui": {
+      "status": "passed",
+      "log": "outputs/build-logs/TestRemoteUI.log",
+      "log_modified": "2026-10-05T16:42:07.913883+08:00",
+      "log_sha256": "f5f74ef44718565f9d892d0aa872623c4ede3c907f6ab6995681dbe42b10f008",
+      "matched_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 804 filtered out; finished in 0.00s"
+      ],
+      "passed_tests": 2
+    },
+    "release_cli_smoke": {
+      "status": "passed",
+      "executable": "work/target/x86_64-pc-windows-gnu/release/sdroxide.exe",
+      "bytes": 278833004,
+      "sha256": "28efea0caad3f3d383c8da10d10043c514147f3e17217d70cd502d6c37b87996",
+      "version_output": "sdroxide 1.6.9-zhCN.0.2.2-preview",
+      "checks": [
+        "--help exited successfully",
+        "--version exited successfully"
+      ],
+      "scope": "No radio opened; no TX/PTT action."
+    },
+    "native_startup_smoke": {
+      "status": "passed",
+      "report": "outputs/SDRoxide_原生窗口首次启动回退标签验收.json",
+      "report_sha256": "8b7a3a75cea71d5eacb9c031b790c70f1beab77ec2339a35579e1e061df16395",
+      "binary_sha256": "dba42c3aa314c71f3642c3e897a525a75414a0dd77174a774f0138efe519b3b8",
+      "catalog_sha256": "fde75b67db0d6e82da446532c7a9717ce2a61f4ae848e843be21f56d549d408a",
+      "matched_results": [
+        "Chinese first-run and English fallback windows responded and closed gracefully; Backend=None; no radio operations."
+      ],
+      "scope": "Both launches used isolated Backend=None configuration; no screenshot, hardware or TX/PTT operation.",
+      "log": "outputs/SDRoxide_原生窗口首次启动回退标签验收.json",
+      "sha256": "999a8c7c139be106ffb4cc2fdb4042be25cc2b94b78f103a76a23a5a18cef857"
+    }
+  },
+  "evidence_scope": "Current upstream 591d21d0 UI audit has zero human-language direct-display candidates remaining after preserving radio standards, units, live data, resource paths and hardware identities. The complete manual covers all 987,045 source characters in 244 current-source translation fragments; the prose screen found zero English-only paragraph candidates. Full UI 800, plugin fallback 43, manual 18, core/font 8, wasm check, web and embedded Windows release builds passed. Current native Chinese/English fallback smoke and CLI smoke passed with Backend=None. Web screenshots verified the widescreen translated menu chips, settings language state without the incomplete-pack warning, and translated manual contents. Native settings/help screenshots remain pending.",
+  "pending": [
+    "Complete screenshot-based visual review of the native Windows settings and localized help at normal and compact sizes; browser view passed, but native glyph fit and control wrapping still need review.",
+    "Open the final package and confirm its user-facing plugin settings remain enabled across a normal restart and restore action; installer self-tests use isolated temporary copies."
+  ],
+  "residual_candidate_audit": {
+    "unadapted_display_occurrences": 309,
+    "distinct_source_literals": 178,
+    "interpretation": "Historical unmodified-source candidate count; current catalog has 5,338 entries. Static candidate review is complete, while full runtime visual review remains pending.",
+    "implementation_catalog_entries": 5338
+  },
+  "helper_display_adapters": 48,
+  "manual_source_coverage": {
+    "source_characters": 986429,
+    "translated_fragments": 244,
+    "uncovered_source_characters": 0,
+    "structure_checks": "heading hierarchy, code fences and link targets preserved by assembler"
+  },
+  "constant_display_adapters": 126,
+  "latest_windows_executable": {
+    "sha256": "28efea0caad3f3d383c8da10d10043c514147f3e17217d70cd502d6c37b87996",
+    "scope": "Current 0.2.2-preview Windows embedded release with 5,345 catalog entries and complete translation metadata.",
+    "bytes": 278833004,
+    "path": "C:\\Users\\zql\\Documents\\Codex\\2026-10-02\\sdroxide-dividebysandwich-sdroxide-i18n-ui-windows\\work\\target\\x86_64-pc-windows-gnu\\release\\sdroxide.exe",
+    "version_output": "sdroxide 1.6.9-zhCN.0.2.2-preview",
+    "built_at": "2026-10-06T14:57:21.4276873+08:00"
+  },
+  "manual_prose_audit": {
+    "checked_at": "2026-10-05T10:50:40.992+08:00",
+    "markdown_lines": 6574,
+    "english_only_lines_matching_8_word_heuristic": 0,
+    "catalog_translations_with_3_or_more_english_words_and_no_cjk": 1,
+    "that_entry": "settings.ui.speech.rtty_psk_label; protocol and digital-mode names only",
+    "scope": "heuristic scan only; not a semantic translation review"
+  },
+  "manual_sha256": "675b536111a9859ac6f569367c5ba278789a5fb8674a52415499b0a9a9624071",
+  "manual_semantic_review": {
+    "section": "6.2.19 KiwiSDR / Web-888 (network receivers)",
+    "result": "逐段核对只接收属性、公共代理的 80 端口与默认 8073、用户密码和显示呼号、频带瀑布图开销（约 20 kB/s 对 I/Q 约 44 kB/s）、1–4 更新速度、1024 点跨度/分辨率示例、远端 AGC，以及只读 HTTP 测试连接不占频道。保留公共接收机数量和代理比例为原文历史估计，未通过网络查询验证；本轮未连接公共接收机。",
+    "reviewed_at": "2026-10-05T12:30:14+08:00",
+    "scope": "source-to-translation fidelity review; public counts remain source-era examples; no network receiver connection or RF operation"
+  },
+  "manual_semantic_reviews": [
+    {
+      "section": "2.22 QO-100 beacon plugin",
+      "result": "Compared source and Simplified Chinese draft paragraph by paragraph for scope, control semantics, frequencies, frame sizes, thresholds, fallback behavior and procedure order; no material omission or source-meaning mismatch found in this pass.",
+      "reviewed_at": "2026-10-05T11:01:36.476+08:00",
+      "scope": "source-to-translation fidelity review only; not independent RF protocol validation"
+    },
+    {
+      "section": "3.1 General considerations",
+      "result": "Compared the English source and Chinese draft for tuning rules, frequency values, band behavior, saved-channel precedence, TX-level control meaning, file names, and section links. No material omission or source-meaning mismatch found.",
+      "reviewed_at": "2026-10-05T11:04:23.8315574+08:00",
+      "scope": "source-to-translation fidelity review; not independent RF protocol validation"
+    },
+    {
+      "section": "3.2.1 One-time setup: your callsign and grid",
+      "result": "Compared every setup field, its effect, zero-disable semantics, mode-specific DXpedition availability, placeholder names, saved file and manual links with the English source. No material omission or source-meaning mismatch found.",
+      "reviewed_at": "2026-10-05T11:05:43.8592957+08:00",
+      "scope": "source-to-translation fidelity review; no on-air operation performed"
+    },
+    {
+      "section": "3.2.2 The operating panel and world map",
+      "result": "Compared slot timing, decode fields and sorting, filters, band-change clearing rules, SWL CSV/ADIF behavior, QSO states, supported message layouts, map data and NIGHT control against source. Frequencies, thresholds, conditions and links match; no material omission or source-meaning mismatch found.",
+      "reviewed_at": "2026-10-05T11:06:20.6496708+08:00",
+      "scope": "source-to-translation fidelity review; no transmit, PTT or on-air validation performed"
+    },
+    {
+      "section": "3.2.3 Working stations",
+      "result": "Compared answer/resume behavior, pile-up waiting, CQ selection, tone bounds, message controls, auto/hold TX frequency rules, offsets, queue order, directed-CQ matching, decoder priors, DT thresholds and watchdog defaults with the source. Numeric values and exceptions are preserved; no material omission or source-meaning mismatch found.",
+      "reviewed_at": "2026-10-05T11:08:00.5043945+08:00",
+      "scope": "source-to-translation fidelity review; no transmit, PTT or on-air validation performed"
+    },
+    {
+      "section": "3.2.4 DXpedition mode (Hound and Fox)",
+      "result": "Compared role behavior, 1000 Hz split, PILE-UP priority, RR73 logging and frequency rules with manual and code. Updated the stale FT8-only scope note after verifying the current QSO controller and frame UI enable Fox/Hound for FT8 and FT2, not FT4.",
+      "reviewed_at": "2026-10-05T11:08:44.771792+08:00",
+      "scope": "source translation plus current implementation cross-check; no radio operation performed"
+    },
+    {
+      "section": "3.2.5 Contest operation (EU VHF)",
+      "result": "Compared exchange layouts, six-character locator requirement, FT8/FT4/FT2 applicability, serial range and wrap, ADIF fields, conditional decode pass, and unsupported activities with source. Kept the FT8-specific decoder caveat and mode behavior intact.",
+      "reviewed_at": "2026-10-05T11:08:44.771792+08:00",
+      "scope": "source-to-translation fidelity review; no radio operation performed"
+    },
+    {
+      "section": "3.2.6 Reporting what you hear",
+      "result": "Compared upload switch and settings tab, pskreporter behavior, JS8 message reassembly, 12-frame aggregation, five-minute batches, strongest-per-station/band rule, required identity fields and test collector port with the source. No material omission or mismatch found.",
+      "reviewed_at": "2026-10-05T11:09:13.5013723+08:00",
+      "scope": "source-to-translation fidelity review; did not enable uploads or contact the network"
+    },
+    {
+      "section": "3.2.7 Logging and the logbook",
+      "result": "Compared automatic logging, manual-entry defaults and fields, editing preservation, ADIF deduplication and field-length handling, SWL filtering, code-page fallback, UTF-8 export, QSL status, award fields and file name. Numeric windows and field semantics are preserved; no material omission found.",
+      "reviewed_at": "2026-10-05T11:09:32.7925522+08:00",
+      "scope": "source-to-translation fidelity review; no log import/export or external upload performed"
+    },
+    {
+      "section": "3.3 PSK31 and RTTY",
+      "result": "Compared PSK/RTTY decoding behavior, tuning directions, 2125/2295 Hz tones, audio-versus-dial frequency, squelch, receive clearing, transmit controls, templates, settings, skimmer behavior and RTTY-FM channel semantics with source. Frequencies, baud/shift options, filter widths and channel values match; no material omission found.",
+      "reviewed_at": "2026-10-05T11:10:57.2517844+08:00",
+      "scope": "source-to-translation fidelity review; no transmit, PTT or on-air validation performed"
+    },
+    {
+      "section": "3.4 Olivia, THOR and FSQ",
+      "result": "Compared modulation descriptions, tone/rate choices, symbol-rate relationship, submode defaults, FSQ addressing and auto-reply, contacts persistence, CLEAR RX scope, image handling and interoperability limitation. Values, storage behavior and restrictions match the source.",
+      "reviewed_at": "2026-10-05T11:11:24.4459141+08:00",
+      "scope": "source-to-translation fidelity review; no on-air test performed"
+    },
+    {
+      "section": "3.5 Hellschreiber",
+      "result": "Compared operating principle, raster behavior, 2ROW/contrast/width controls, transmit and SEND ON RETURN behavior, all seven variants and their numeric values, USB operation, band-plan presets, regional caveats and fuzzy-mode guidance. Values and cautions match the source.",
+      "reviewed_at": "2026-10-05T11:12:03.424454+08:00",
+      "scope": "source-to-translation fidelity review; no transmit or on-air operation performed"
+    },
+    {
+      "section": "3.6 SSTV",
+      "result": "Compared supported mode list and image dimensions, VIS auto-detection, frequency presets and IARU variants, sideband/data-mode behavior, SSTV-FM channels, receive restart/deletion semantics, image/message/banner persistence, placeholder substitution, TX slant, FSK ID and TX lead values. No material omission or mismatch found.",
+      "reviewed_at": "2026-10-05T11:12:55.3330485+08:00",
+      "scope": "source-to-translation fidelity review; no image transmission or radio operation performed"
+    },
+    {
+      "section": "3.7 RIFP (Radio Image Framing Protocol)",
+      "result": "Compared modulation parameters and channel bandwidth, band segments and warning behavior, image encoding options, grayscale depth, repeat/chunk defaults, receive counters, integrity checks, persistence and Sender ID with the source. Values and fail-closed image verification are preserved.",
+      "reviewed_at": "2026-10-05T11:13:28.4137826+08:00",
+      "scope": "source-to-translation fidelity review; no transmission or RF validation performed"
+    },
+    {
+      "section": "3.8 Weather fax (WEFAX / radiofax)",
+      "result": "Compared receive-only scope, carrier-to-dial offset, station schedules, subcarrier values, start/stop automation, phase and slant controls, LPM/IOC dimensions, path display, view controls, storage paths, file naming and deletion/migration behavior. All units and conditions match source.",
+      "reviewed_at": "2026-10-05T11:14:13.8806985+08:00",
+      "scope": "source-to-translation fidelity review; receive-only review, no tuning or radio operation performed"
+    },
+    {
+      "section": "3.9 JS8",
+      "result": "Compared speed/slot/bandwidth values, multirate CPU and overload behavior, panel semantics, directed replies and command framing, message-length estimates, map lookup, auto-reply exceptions, heartbeat defaults/rates/jitter, beacon placement and repeater/store non-action behavior. Defaults and timing guards are preserved.",
+      "reviewed_at": "2026-10-05T11:15:11.6962891+08:00",
+      "scope": "source-to-translation fidelity review; no beacon, transmission or PTT operation performed"
+    },
+    {
+      "section": "3.10 RF Paint (spectrum painting)",
+      "result": "Compared transmit-only scope, USB audio passband, image/text rendering, preview controls, scan-speed range and default, transmission duration, abort behavior and the normal transmit safety path. Corrected the Chinese duration from several minutes to about two minutes to match the source.",
+      "reviewed_at": "2026-10-05T11:17:18.0830786+08:00",
+      "scope": "source-to-translation fidelity review; no transmission or PTT operation performed"
+    },
+    {
+      "section": "3.11 WSPR (Weak Signal Propagation Reporter)",
+      "result": "Compared 110.6 s slot, 6 Hz bandwidth, -10 dB sensitivity claim, frequency window, spot scales/capacity, map fade and band legend, transmit duty cycle/power levels, call/grid constraints, Type-3 handling, band hopping and WSPRnet upload/polling semantics. The receive-only state on mode selection and no-RF nature of uploads are preserved.",
+      "reviewed_at": "2026-10-05T11:19:41.0319003+08:00",
+      "scope": "source-to-translation fidelity review; no beaconing, upload or RF test performed"
+    },
+    {
+      "section": "3.12 APRS",
+      "result": "Compared region-specific channel selection, 12 kHz display behavior, station/map/message panes, acknowledgement and retry semantics, identity and position handling, SSID/path/symbol settings, default-off beacons, TX delay/audio deviation controls, receiver troubleshooting and decoded packet types. Numeric values, receive-versus-transmit boundaries and warnings match the source.",
+      "reviewed_at": "2026-10-05T11:21:22.6054808+08:00",
+      "scope": "source-to-translation fidelity review; no beaconing, PTT, upload or RF test performed"
+    },
+    {
+      "section": "3.13 ADS-B (aircraft on 1090 MHz)",
+      "result": "Compared receive-only operation, antenna and sampling thresholds, range behaviors, aircraft table units, radar symbols and stale-position removal, timeouts, trust rules for squitters/replies, deliberately unsupported encodings and test procedures with source. No transmit or actual reception tests were run.",
+      "reviewed_at": "2026-10-05T11:22:25.7278608+08:00",
+      "scope": "source-to-translation fidelity review; receive-side documentation only, no RF operation performed"
+    },
+    {
+      "section": "3.14 NAVTEX",
+      "result": "Compared receive-only justification, channel frequencies and USB offset, message fields and warning highlighting, body-derived time handling, four-hour repeat behavior, SYNC repair/lost counters and REV behavior with source. The manual explicitly avoids clock changes and transmit controls.",
+      "reviewed_at": "2026-10-05T11:23:16.8645116+08:00",
+      "scope": "source-to-translation fidelity review; no tuning or radio operation performed"
+    },
+    {
+      "section": "3.15 VDL2",
+      "result": "Compared receive-only channel coverage thresholds, fourteen channel allocations, message/address fields, pause/filter behavior, station table, channel counters, disabled Reed-Solomon recovery claim, setup defaults, decoded versus unsupported protocol layers and test/diagnostic guidance. Frequencies, sample-rate values, counter meanings and source limitations are preserved.",
+      "reviewed_at": "2026-10-05T11:24:01.4656775+08:00",
+      "scope": "source-to-translation fidelity review; no radio tuning, recording or RF operation performed"
+    },
+    {
+      "section": "3.16 AIS (ships on 162 MHz)",
+      "result": "Compared receive-only safety boundary, centered frequency and 150 kHz window, antenna/sampling thresholds, dual-channel behavior, MMSI/table units, chart stale-position rules, setup defaults, dBFS/ppm diagnostics and independent decoder validation caveat. No radio or reception tests were run.",
+      "reviewed_at": "2026-10-05T11:24:58.1034017+08:00",
+      "scope": "source-to-translation fidelity review; receive-side documentation only, no RF operation performed"
+    },
+    {
+      "section": "3.17 AtCHAT NET",
+      "result": "Compared master-election behavior, roster and carrier gating, join/rejoin state, loopback-versus-radio mode, direct/public chat tabs, on-air log, file selection limits, CRC-ARQ retries and storage naming with source. Chinese draft preserves which controls are available on loopback and the no-transmitter distinction.",
+      "reviewed_at": "2026-10-05T11:25:40.5194832+08:00",
+      "scope": "source-to-translation fidelity review; no AtCHAT session or radio transmission performed"
+    },
+    {
+      "section": "3.18 ACARS (airline datalink on airband)",
+      "result": "Compared modulation details, regional channel list, AM/CAT behavior, message fields and label meanings, bad-block handling, receive-only limitation and VDL2 cross-reference. Values, examples and transmit boundary match the source.",
+      "reviewed_at": "2026-10-05T11:26:46.4733655+08:00",
+      "scope": "source-to-translation fidelity review; no tuning or RF operation performed"
+    },
+    {
+      "section": "3.19 HFDL (aircraft on shortwave)",
+      "result": "Compared HFDL purpose and modulation, one-channel tuning, assigned-frequency versus subcarrier offset, IQ hardware requirements, listen default, propagation bands, status/log fields, squitter cadence, position limitations and exact tested/unverified scope. Frequencies and evidence caveats match the source.",
+      "reviewed_at": "2026-10-05T11:27:29.4524197+08:00",
+      "scope": "source-to-translation fidelity review; no tuner, radio or live aircraft reception test performed"
+    },
+    {
+      "section": "3.20 PI4 (Next Generation Beacon)",
+      "result": "Compared receive-only scope, one-minute beacon sequence, 146-symbol duration, tuning convention and tone values, variants, fit-based false-decode screening and no-map limitation.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no beacon reception or RF operation performed"
+    },
+    {
+      "section": "3.21 MSK144",
+      "result": "Compared meteor-scatter description, regional calling frequencies, 1500 Hz offset, ±200 Hz search, DT meaning, 15-second continuous period and receive-only scope.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no reception or transmission test performed"
+    },
+    {
+      "section": "3.22 JT65 and JT9",
+      "result": "Compared mode scope, frequency offsets, JT65A-only support, bandwidths, DT reference, decoder threading/slot handling and no-CRC confidence caveats.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no RF operation performed"
+    },
+    {
+      "section": "3.23 FST4",
+      "result": "Compared all five period values, 60-second default, two-end agreement, 77-bit messages, long-slot processing behavior and receive-only scope.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no RF operation performed"
+    },
+    {
+      "section": "3.24 Q65",
+      "result": "Compared period and tone-spacing controls, supported submodes, DT transmit offset, CRC claim, worker-thread delay and receive-only scope.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no RF operation performed"
+    },
+    {
+      "section": "3.25 FSK441",
+      "result": "Compared meteor-scatter period and tones, ±200 Hz search, long-carrier rejection rules, DT meaning, shorthand messages and repeated transmit behavior. No actual transmission was performed.",
+      "reviewed_at": "2026-10-05T11:28:30.3741673+08:00",
+      "scope": "source-to-translation fidelity review; no TX/PTT operation performed"
+    },
+    {
+      "section": "4. Skimmers",
+      "result": "Compared window-following behavior, mode list, squelch/defaults, waterfall labels, click actions, band-aware exclusions and idle gating, decoder limitations, and IQ-source availability with source. Frequency-plan and CAT-audio caveats are preserved.",
+      "reviewed_at": "2026-10-05T11:29:14.6529051+08:00",
+      "scope": "source-to-translation fidelity review; no receiver operation performed"
+    },
+    {
+      "section": "5. ISM band decoder and 5.1 Where it listens, and where to tune",
+      "result": "Compared receive-resource behavior and defaults, protocol-family coverage, channel assignments, channel window indicators, tuning/LO distinction, width allocation and RX-888 sample-rate caveats with source.",
+      "reviewed_at": "2026-10-05T11:30:05.7364444+08:00",
+      "scope": "source-to-translation fidelity review; no receiver operation performed"
+    },
+    {
+      "section": "5.2 Reading the device list",
+      "result": "Compared row semantics, measured signal frequency versus channel frequency, repeat counts, row tuning action, persistent waterfall labels and bursts/decoded diagnostics. No material omission found.",
+      "reviewed_at": "2026-10-05T11:30:05.7364444+08:00",
+      "scope": "source-to-translation fidelity review; no receiver operation performed"
+    },
+    {
+      "section": "5.3 What is decoded so far",
+      "result": "Compared supported LaCrosse/Fine Offset/Bresser/Z-Wave/Homematic families, measurement omissions and checksum caveats, unidentified-burst classification, OOK rate estimation, measured-rate search explanation and encrypted-meter limits. Model names, baud rates, code values and uncertainty disclosures are preserved; this is translation fidelity, not independent protocol validation.",
+      "reviewed_at": "2026-10-05T11:30:45.7252995+08:00",
+      "scope": "source-to-translation fidelity review; no RF sampling or device tests performed"
+    },
+    {
+      "section": "5.4 The rtl_433 decoders",
+      "result": "Compared band families, OOK/FSK scope, AUTO and manual bandwidth requirements, receiver-window math and examples, wireless M-Bus minimum rate, supported device categories and decoder handoff behavior. Numeric bandwidths and protocol ownership are preserved.",
+      "reviewed_at": "2026-10-05T11:31:23.575923+08:00",
+      "scope": "source-to-translation fidelity review; no receiver operation or protocol tests performed"
+    },
+    {
+      "section": "5.5 Adding your own decoders (flex specs)",
+      "result": "Compared configuration paths, non-rewrite guarantee, rtl_433 syntax compatibility, key names/units, survey tool, field naming, reload behavior and per-spec validation/failure isolation. Code examples, timing units and error-handling semantics are preserved.",
+      "reviewed_at": "2026-10-05T11:31:57.0204651+08:00",
+      "scope": "source-to-translation fidelity review; no custom decoder was loaded"
+    },
+    {
+      "section": "5.6 Nothing is being decoded",
+      "result": "Compared ordered troubleshooting steps, channel/window state meanings, burst threshold adjustment, survey command arguments and measurement units, cand interpretation and LoRa example. No diagnostic action was run.",
+      "reviewed_at": "2026-10-05T11:32:37.6467068+08:00",
+      "scope": "source-to-translation fidelity review; no receiver test performed"
+    },
+    {
+      "section": "5.7 Checking it without waiting for a sensor",
+      "result": "Compared synthetic IQ generator and replay commands, expected sensor count/known values, live-capture replay behavior, channel-plan versus full-window survey modes, and cand interpretation. Commands and frequencies match.",
+      "reviewed_at": "2026-10-05T11:32:37.6467068+08:00",
+      "scope": "source-to-translation fidelity review; examples not executed"
+    },
+    {
+      "section": "6.1 General: station, audio and remote access",
+      "result": "Compared identity sharing, regional allocations and band-plan ranges, 11 m transmit lockout, bandplan.json schema/reload/fallback, SWR guard behavior, local audio devices, per-radio sound-card move, remote credentials and open-server warnings. Frequencies, file names and configuration semantics match source.",
+      "reviewed_at": "2026-10-05T11:34:25.3112216+08:00",
+      "scope": "source-to-translation fidelity review; no credentials, PTT or radio operation performed"
+    },
+    {
+      "section": "6.2.1 SoapySDR devices",
+      "result": "逐段对照设备动态控件、RX/TX 增益与天线端口、按波段/VFO/存储信道保存端口、session.json 持久化与重连恢复、远程客户端配置来源、驱动设置拒绝处理、当前打开设备提示、SoapySDR 本振偏移算法及其带宽例外。采样率、增益范围、端口名称、命令行参数和限制语义均与英文原文一致；未发现实质遗漏或误译。",
+      "reviewed_at": "2026-10-05T11:45:00+08:00",
+      "scope": "source-to-translation fidelity review; no SDR hardware, receiver or transmit operation performed"
+    },
+    {
+      "section": "6.2.2 CAT radios: external PTT detection and CW keying",
+      "result": "对照外部按键/脚踏/VOX/电台键控器触发后的状态跟随、约 0.2 秒检测、驻波比读取、软件侧 PTT 拒绝及控制端口两秒超时恢复；逐项核对 Icom/Xiegu、Yaesu、Elecraft、Kenwood、rigctld、flrig、ELAD、QRP Labs 查询方式和“真实设备待验证”限制。复核 CW Rig keyer (CAT) 与 Sound card (MCW) 路径、无控制连接时回退但不改保存值、插入键控设置、WPM/Farnsworth差异、Yaesu 临时存储及驱动功率语义。未发现实质遗漏或误译，型号/命令/时间与源文一致。",
+      "reviewed_at": "2026-10-05T11:46:00+08:00",
+      "scope": "source-to-translation fidelity review; no PTT, keying, transmission or radio operation performed"
+    },
+    {
+      "section": "6.2.2 CAT radios: CW rig requirements and sound-card I/Q",
+      "result": "核对 Break-in 在 Yaesu/Kenwood/Icom 的命令及触发条件、全/半插入键控保留、Farnsworth 与电台键控器差异、WPM 限制、SEND ON RETURN 缓存、Yaesu 五个存储通道及 FT-710 命令反转、Drive 实际控制功率；另核对 I/Q 采样率对应的瀑布频宽、设备采样率回退、采集丢样统计排除发射期、解调音频固定 48 kHz、交换 I/Q 仅影响接收，以及解调双声道重复信号不能用 I/Q 校正修复。数值和适用范围与源文一致，未发现实质误译。",
+      "reviewed_at": "2026-10-05T11:48:00+08:00",
+      "scope": "source-to-translation fidelity review; no PTT, keying, transmission, receiver or radio operation performed"
+    },
+    {
+      "section": "6.2.2 CAT radios: profiles, filters, audio mode and serial controls",
+      "result": "对照核验八种原生 CAT 系列与 rigctld/flrig 通用接口、命令集混配风险示例、两种网络服务各自能力和套接字下 DTR/RTS 限制；逐项核对 Elecraft/Icom/Kenwood/QRP Labs/Yaesu 滤波器命令、索引/范围及“不支持时保持原设置”规则；并复核 IQ 与解调音频模式同步、端口打开时不覆盖当前频率/模式、I/Q 采样率频宽换算和声卡速率回退，以及波特率、PTT、Mode control、Digimode mode、CW keying 和轮询含义。表格、型号、数值、命令和保留状态语义均与源文一致，未发现实质误译。",
+      "reviewed_at": "2026-10-05T11:48:00+08:00",
+      "scope": "source-to-translation fidelity review; commands and safety scenarios reviewed as text only; no CAT, PTT or radio operation performed"
+    },
+    {
+      "section": "6.2.3 HPSDR network radios",
+      "result": "逐项对照 Protocol 1/2 发现、DDC 共享与首开连接配置、采样率、LNA 增益及 ADC 过载回退、PA 关闭时的 PTT/收发继电器行为、I/Q 反转默认值、七路开集电极预设和自定义表、RX/TX 波段码、Protocol 2 未验证声明、发射缓冲延迟、PureSignal 双工反馈与衰减、单位增益安全回退、状态/日志提示、硬件未验证限制、IO 板频率更新和输入选择。发现并修订一处 PA 关闭时遗漏的收发控制动作描述；重组 244 段手册后，插件内嵌手册资产及审阅包副本同步，资产哈希已更新。",
+      "reviewed_at": "2026-10-05T11:56:16.217+08:00",
+      "scope": "source-to-translation fidelity review; PureSignal and transmit descriptions reviewed as text only; no PTT, keying, transmission or radio operation performed"
+    },
+    {
+      "section": "6.2.4 TCI network: ExpertSDR3 and Thetis",
+      "result": "对照 TCI WebSocket 服务器/默认地址、采样率、双接收机共享连接及 RX1 发射归属、首个连接设置 IQ 速率、错误接收机数量提示、连接测试、接收/发射频率范围、地区业余波段门限，以及独立电台内运行 SDR 软件的要求和反向服务器链接。型号、地址、频率范围和客户端/服务器方向均准确，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T11:58:05.731+08:00",
+      "scope": "source-to-translation fidelity review; no TCI connection or radio operation performed"
+    },
+    {
+      "section": "6.2.5 RTL-SDR USB dongles",
+      "result": "对照复核内置 USB 驱动与构建依赖说明、R820T/R820T2/R828D 支持型号、仅接收边界、序列号选择/重扫、采样率间隔与最高稳定值、AGC/29 档增益、ppm 校正日志、V4 上变频与其他棒直接采样切换、奈奎斯特区镜像频率、IQ 校正收敛和 AM 中心载波例外、偏置三通直流安全提示及拔插自动重连。数字、频段、别名公式、命令和接收能力限制均与原文一致，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T11:58:25.946+08:00",
+      "scope": "source-to-translation fidelity review; no USB receiver or RF operation performed"
+    },
+    {
+      "section": "6.2.6 SmartSDR FlexRadio network radios",
+      "result": "核对 FLEX GUI/TCP 控制与 DAX IQ/UDP 数据路径、发现/多客户端占用、24–192 kHz 限制及频谱资源绑定、会话 UUID 冲突与临时身份回退、DAX 通道、网络 MTU、无频谱和采样率/镜像故障诊断、UDP 4991 固件回退、频率覆盖与 XVTR 2 m 发射说明，以及硬件未验证声明和协议模拟器步骤。数字、端口、身份冲突处理和局限均与原文相符，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T11:58:56.094+08:00",
+      "scope": "source-to-translation fidelity review; no SmartSDR connection, PTT or radio operation performed"
+    },
+    {
+      "section": "6.2.7 PlutoSDR ADALM-Pluto",
+      "result": "逐段核对 IIOD/USB 网络适配器、发现和地址形式、RX1/RX2 共用本振、采样率与 25 MHz ÷ 12 下限、AGC/每链增益、发射衰减、非持久 ppm 校正、FDD/TDD 与 GPO 逻辑、缓冲区和端口限制；复核 AD9363/AD9364 和 tezuka 固件范围、DATV 服务案例与 RAM 根文件系统脚本说明、双工带宽/频谱监测行为、GPO 电平/失联高电平/重连持久配置、接收卡死诊断及协议 trace。将两处把原文约 2.084 Msps 误写成 2.083334 Msps 的过度精确表述修正为约 2.084 Msps。重新组装了 244 段手册，代码块、标题层级和链接目标检查通过，插件内嵌手册哈希已更新。",
+      "reviewed_at": "2026-10-05T12:02:40.799+08:00",
+      "scope": "source-to-translation fidelity review; operational instructions and transmit behavior reviewed as text only; no PTT, transmission, hardware or configuration changes performed"
+    },
+    {
+      "section": "6.2.8 SDRplay RSP USB",
+      "result": "对照 RSP 型号、厂商 API 服务依赖、Linux RSP1 内核驱动冲突处理、ADC 位数与采样率、AGC 门限、IF/LNA 增益状态保留、扩展 IF 范围、陷波/天线/偏置供电、HDR 已知故障声明；并核对 RSPduo 双调谐器的共享时钟、分集抵消与合并、滤波器控制、2 Msps 双路上限、单路失效回退，以及双电台配置步骤和共用硬件状态。型号、范围、门限、流程和能力边界与源文一致，未发现实质误译。",
+      "reviewed_at": "2026-10-05T12:04:44.574+08:00",
+      "scope": "source-to-translation fidelity review; no SDRplay hardware, tuner, PTT or radio operation performed"
+    },
+    {
+      "section": "6.2.9 Airspy HF+ USB",
+      "result": "核对实物验证限制和诊断报告字段、原生 USB 驱动/依赖边界、Dual/Discovery/Ranger 覆盖差异、接收速率与固件表、AGC/衰减器联动、LNA、ppb 闪存校准只读约束、偏置供电警示，以及主机 IQ 平衡/直流抵消/精调振荡器在各采样率下的行为与拔插重连。型号、频段、采样率、频率下限和写闪存风险说明均准确，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T12:06:40.201+08:00",
+      "scope": "source-to-translation fidelity review; no Airspy device or RF operation performed"
+    },
+    {
+      "section": "6.2.10 Icom LAN network radios",
+      "result": "核对支持型号及 IC-7760 RF deck 网口、三路控制/音频/频谱扫描数据、需在电台端启用的网络与调制输入设置及会话结束恢复、连接意外中断边界、CI-V 模型识别规则、网络 UDP 调谐确认/乱序保护；并复核 AF/12 kHz IF 两种频谱能力、瀑布图扫描重启和诊断计数、Scope span、接收源与 IF 镜像默认、频率/模式同步、密码保存说明和其他控件。端口、型号、采样率、频谱点数/跨度、菜单设置和限制均与源文一致，未发现实质误译。",
+      "reviewed_at": "2026-10-05T12:07:17.736+08:00",
+      "scope": "source-to-translation fidelity review; no Icom network, CAT, PTT or radio operation performed"
+    },
+    {
+      "section": "6.2.11 RTL-SDR over rtl_tcp network dongles",
+      "result": "核对远端 rtl_tcp 命令及绑定地址、各服务端实现、网络带宽计算/采样流被断开后的恢复、USB 时钟校准不可移植到网络的理由、R828D/V4 自动采样判别限制、Bias tee 无回执语义、无回读和设备不可扫描限制；并审查 rsp_tcp 的 RTL0 握手、-E 扩展能力块、16 位格式陷阱、RSP 专用命令及无认证/加密的 SSH 隧道说明。命令、地址、速率、协议字段和安全限制均准确，未发现实质误译。",
+      "reviewed_at": "2026-10-05T12:07:45.032+08:00",
+      "scope": "source-to-translation fidelity review; no rtl_tcp server, receiver or RF operation performed"
+    },
+    {
+      "section": "6.2.12 HackRF One / Pro USB",
+      "result": "逐项核对设备型号/USB 驱动与采样率、半双工边界、Linux/Windows/macOS 访问权限、序列号后缀、Pro 固件模式与低速率、增益量化、单个 RF 放大器双向独立设置、基带滤波与 LO 避尖峰、超规格调谐范围、偏置供电能力、默认禁发与发射电平/半双工限制。修正一处遗漏：将 20 Msps 对应 40 MB/s 明确译为设备 High-Speed USB 2.0 链路额定吞吐量。全程仅审校文本，没有进行 PTT、发射或硬件操作。",
+      "reviewed_at": "2026-10-05T12:08:37.792+08:00",
+      "scope": "source-to-translation fidelity review; TX safety text reviewed only; no PTT, transmission, hardware or RF operation performed"
+    },
+    {
+      "section": "6.2.13 Airspy R2 / Mini USB",
+      "result": "核对与 HF+ 的驱动/权限区分、R2/Mini USB 身份和序列号后缀、实数 ADC 两倍采样/四分之一频率变换/半带抽取、增益曲线、AGC 互斥、DC spur 位置和诊断字段。并逐字节核实 12-bit packing：驱动每 3 字节打包 2 个 12 位样本，亦即 8 个样本占 12 字节，实际流量为 16 位未打包的 75%，减少 25%；据此修正文档源文“3 samples per word/one third less”的不一致说法。",
+      "reviewed_at": "2026-10-05T12:11:03.375+08:00",
+      "scope": "source-to-translation fidelity review; packing claim cross-checked against the Airspy driver implementation; no Airspy device or RF operation performed"
+    },
+    {
+      "section": "6.2.14 SpyServer network receivers",
+      "result": "核对两类宽带/VFO+FFT 接口差异、服务绑定和公开目录隐私配置、allow_control、测试连接只读、抽取级参数、自动带宽与实测流量、样本格式/增益索引/数字增益、全带 FFT 视图、其他客户端持有控制权时的跟随/范围限制、未实现编码处理及无认证/加密风险。速率、带宽、量化与控制行为均与原文相符，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T12:11:29.999+08:00",
+      "scope": "source-to-translation fidelity review; no SpyServer connection or RF operation performed"
+    },
+    {
+      "section": "6.2.15 Panadapter borrowing another radio receiver",
+      "result": "逐项核对本机接收机借用与标签栏/设置列表状态、借方关闭释放、天线/中频偏移公式与模式偏移、第三类偏移字段区别、镜像频谱、双向跟随、音频源对解码/录音/S表的归属、TX 时静音/暂停行为及 CAT 状态、CW VFO 侧音偏移和 MCW 例外。界面归属与读数语义均与原文一致，未发现实质遗漏。",
+      "reviewed_at": "2026-10-05T12:12:04.396+08:00",
+      "scope": "source-to-translation fidelity review; pairing and transmit descriptions reviewed as text only; no device pairing, PTT or transmission performed"
+    },
+    {
+      "section": "6.2.16 ELAD FDM-DUO / FDM-S (USB)",
+      "result": "逐段核对 USB 三设备枚举、权限与驱动切换、S 系列 FPGA 加载器、六种采样映像、DUO 采样率与吞吐量提示、天线/控制口/发射输入、CAT 波特率及回退、空串口 USB CAT 网关、A/B VFO、旋钮跟随、发射期间接收限制和 CW 侧音偏移。发现英文原文把“未配置 CAT 串口”误列为无 VFO 软件调谐情形，与前述 USB 网关说明及当前实现不符；译文已按实现行为解释，并明确指出原文矛盾。串口空缺时 DUO 仍可经 RX 接口网关调谐/换模式/键控并读取频率，但无完整应答功能。尚未进行设备或无线操作。",
+      "reviewed_at": "2026-10-05T12:14:00+08:00",
+      "scope": "source-to-translation fidelity review; implementation cross-checked in elad_source.rs; hardware, CAT, PTT and transmission not exercised"
+    },
+    {
+      "section": "6.2.17 LimeSDR — 主板接收控件（局部审校）",
+      "result": "对照英文原文核查主板型号范围、LimeSuite 动态库依赖、重新扫描对其他程序的影响、双接收链共享本振、1–40 Msps 采样率、整数增益、LNA 端口与 LimeRFE 自动选择、零中频偏移限制、低于 30 MHz 的 NCO 路径，以及自动校准触发和接收暂停。所审范围内数值、接口行为与警示和原文一致；该记录仅覆盖“设备主板”控件，不代表 LimeRFE、分集、PureSignal 和发射子章节已审完。",
+      "reviewed_at": "2026-10-05T12:16:00+08:00",
+      "scope": "partial source-to-translation fidelity review; one manual fragment only; no LimeSDR hardware, PTT or transmission used"
+    },
+    {
+      "section": "6.2.17 LimeSDR family + LimeRFE (LimeSuite)",
+      "result": "逐段核对主板、第二接收链抵消/分集、PureSignal 反馈线性化、发射端口与默认增益、LimeRFE 接线/控制延迟/继电器时序/插座映射，以及独立探测程序和硬件验证边界。抽查驱动实现确认自动接收端口选择、无接收链共用本振事实、衰减器每档 2 dB 等关键语义；译文保留英文中的全部操作条件、数值范围与尚未硬件验证声明。高风险内容只作手册文本核对，没有启动 LimeSDR、启用发射、键控或进行 PTT。",
+      "reviewed_at": "2026-10-05T12:18:00+08:00",
+      "scope": "source-to-translation fidelity review of all four 6.2.17 manual fragments; selected numerical claims cross-checked against current Lime/LimeRFE implementation; no hardware or TX operation"
+    },
+    {
+      "section": "6.2.18 HydraSDR RFOne (USB)",
+      "result": "逐段核对型号与共用 USB ID 区分、WinUSB/udev 权限、固件两张采样率表、实数 ADC 的四分之一采样率变频与半带抽取、偏置供电仅限 ANT、R828D 增益曲线、调谐器 AGC、偏置去除，以及诊断报告范围。重点检查 12 位打包：译文说明 8 个样本占 12 字节（3 个 32 位字），相对 16 位未打包流量减少 25%，36/48 MB/s 的比值相符；并标明这是对英文手册原说明矛盾的修正。硬件未连接或运行。",
+      "reviewed_at": "2026-10-05T12:20:00+08:00",
+      "scope": "source-to-translation fidelity review; 12-bit packing semantics cross-checked against shared Airspy/Hydra implementation; no receiver or RF operation"
+    },
+    {
+      "section": "6.2.19 KiwiSDR / Web-888 (network receivers)",
+      "result": "逐段核对只接收属性、公共代理的 80 端口与默认 8073、用户密码和显示呼号、频带瀑布图开销（约 20 kB/s 对 I/Q 约 44 kB/s）、1–4 更新速度、1024 点跨度/分辨率示例、远端 AGC，以及只读 HTTP 测试连接不占频道。保留公共接收机数量和代理比例为原文历史估计，未通过网络查询验证；本轮未连接公共接收机。",
+      "reviewed_at": "2026-10-05T12:30:14+08:00",
+      "scope": "source-to-translation fidelity review; public counts remain source-era examples; no network receiver connection or RF operation"
+    },
+    {
+      "section": "6.2.20 6.2.20 RigExpert Fobos SDR (USB)",
+      "result": "6.2.20: Confirmed dynamic library discovery at runtime, scan-without-open behavior, RF vs direct-sampling HF ports, shared ADC/clock and HF software downconversion, rate-dependent DC floor, reopen behavior, cancellation/diversity controls, external reference, contributor hardware-test attribution and 40/50 Msps streaming limitations. Translation explicitly narrows the source claim that all mediumwave is inaccessible at 2.5 Msps: implementation floor is 1.25 MHz; at the 625 kHz default the floor is 312.5 kHz.",
+      "reviewed_at": "2026-10-05T12:58:27.770871+08:00",
+      "scope": "source-to-translation fidelity review; selected implementation claims cross-checked; no hardware, TX or RF operation"
+    },
+    {
+      "section": "6.2.21 6.2.21 USB audio radio (sound card only)",
+      "result": "6.2.21: Confirmed receive/transmit audio-device directions, list ownership, default-device warning, reconnect semantics, frequency-as-label behavior, demodulated-audio spectrum, VOX path, accidental system-audio keying, amateur-band lockout, exception flag and missing telemetry. No action is implied as tested.",
+      "reviewed_at": "2026-10-05T12:58:27.770871+08:00",
+      "scope": "source-to-translation fidelity review; selected implementation claims cross-checked; no hardware, TX or RF operation"
+    },
+    {
+      "section": "6.3 UI, display preferences, voice announcements and audible alerts",
+      "result": "Compared source and all three Chinese draft fragments paragraph by paragraph. Confirmed layout variants and size thresholds, palette names and contrast note, frame rate list, waterfall interpolation, spot/band-plan colors, update-check privacy/native-only scope, 3D cloud modes, local Piper voice behavior, 0.5x–2x speed, announcement defaults/trigger timing, SWR thresholds, screen-reader behavior, alert event priority/cooldowns, voice/tone fallback, multi-radio behavior and browser alert limitation. Plugin-specific setup paragraph accurately describes plugin enablement and manual fallback; it is additional host guidance, not an upstream claim.",
+      "reviewed_at": "2026-10-05T13:06:46.68587+08:00",
+      "scope": "source-to-translation fidelity review; no runtime layout or radio operation"
+    },
+    {
+      "section": "6.4 Controls: keyboard, mouse and MIDI",
+      "result": "Compared section 6.4 against source and implementation. Confirmed continuous versus momentary actions, step/down/accel behavior, keyboard focus and rebinding, PTT release on key-up/focus loss/text input/timeout, ten empty voice-keyer slots, mouse wheel/grid rounding and drag inertia, reserved mouse buttons, F1 manual/search key ownership, native-only MIDI, port rescan/status, LEARN and relative encoder inference/reverse flag, LED/motor feedback being opt-in, unplug release/reconnect, and client-local input.json for remote-engine use. All PTT/MIDI details were reviewed as text and code; no PTT, MIDI device or radio was operated.",
+      "reviewed_at": "2026-10-05T13:13:52.613447+08:00",
+      "scope": "source-to-translation and implementation semantics; no keyboard PTT, MIDI or radio operation"
+    },
+    {
+      "section": "6.5 Spots: spot feeds",
+      "result": "Confirmed operator identity and shared callsign/grid, DX cluster login/commands/ports, default RBN receive-only behavior and separation from SPOTS, RBN locator limitation, POTA/SOTA/PSK polling, max age/APPLY, broadcast schedule actions, upload-location identity when using a public receiver, and the separate WSPRnet upload/download switches and defaults.",
+      "reviewed_at": "2026-10-05T13:16:22.950838+08:00",
+      "scope": "source-to-translation and settings-consumer review; no network, radio or TX operation"
+    },
+    {
+      "section": "6.6 FreeDV: FreeDV Reporter",
+      "result": "Confirmed RADE-only public presence, receive-only marker, callsign/grid requirement for publishing, plain WebSocket default with TLS unavailable, End-of-Over receive reports, FREEDV spot display, status line, and APPLY behavior.",
+      "reviewed_at": "2026-10-05T13:16:22.950838+08:00",
+      "scope": "source-to-translation and settings-consumer review; no network, radio or TX operation"
+    },
+    {
+      "section": "6.7 Uploads: callsign lookup and QSL services",
+      "result": "逐段核对服务选择与条件显示、QRZ XML 查询账号和日志簿 API key 的区别、HamQTH 查询/上传共享凭据、自动上传总开关及各服务独立开关、单条 QSO 手动 UP、WRL 默认日志簿限制、LoTW 仅下载自动化、APPLY 与同步确认，以及测试按钮应用已填写凭据但不写入 QSO。实现核对确认登录测试仅在本机引擎出现，自动上传受总开关和每服务开关共同约束。凭据测试仅按源码和手册说明审查，未调用服务、上传日志或连接电台。",
+      "reviewed_at": "2026-10-05T14:00:00+08:00",
+      "scope": "source-to-translation and settings-consumer review; no service login, upload, radio or TX operation"
+    },
+    {
+      "section": "6.8 Winlink: radio email account",
+      "result": "逐段核对账户呼号大小写、账户密码与网关密码的区别及密码大小写敏感、Locator 仅作问候显示、Internet 与 Radio 路径、PACKET/PACKET-HF 前置设置、网关呼号/SSID/中继路径/速率/频率、会话开始才应用调谐参数、自定义网关列表的保存/加载/删除、CMS 客户端名称限制、定时轮询范围与默认关闭、APPLY 提交暂存设置。实现核对确认 Radio 路径和自动连接可能发射，相关内容仅作文字审校；本轮没有连接 Winlink/CMS、设置电台、发射或操作 PTT。",
+      "reviewed_at": "2026-10-05T14:20:00+08:00",
+      "scope": "source-to-translation and settings-consumer review; radio/TX implications reviewed as text only; no network, radio, PTT or transmission"
+    },
+    {
+      "section": "6.9 Servers: letting other programs drive the radio",
+      "result": "对照核查三类服务用途及并行关系、无认证协议的回环默认地址、多电台端口隔离、rigctld 默认关闭/4532/最多客户端/发射许可、TCI 默认启用/50001/音频与 IQ/发射许可、WSJT-X UDP 只输出且默认关闭/2237，以及 N1MM contactinfo 独立端口 12060。逐项核对控制能力、客户端配置示例、数字模式 Hamlib 映射、解码清空条件、广播包含手动 QSO 但不含 ADIF 导入、竞赛字段留空等说明。源码子标题编号为 6.8.1–6.8.3，与父标题 6.9 不一致；中文稿统一为 6.9.1–6.9.3 以匹配父节。涉及 PTT/发射的段落仅作文字和实现审查，没有连接客户端、电台、操作 PTT 或发射。",
+      "reviewed_at": "2026-10-05T14:40:00+08:00",
+      "scope": "source-to-translation and protocol-config review; PTT/TX behavior reviewed as text only; no radio or client operation"
+    },
+    {
+      "section": "6.10 TLE: satellites and their frequencies",
+      "result": "核对订阅默认组、六小时更新和本地缓存/引擎归属、14 天历元传播限制、订阅字段及轨道显示模式、精选卫星名单、过滤编号、CelesTrak 快捷组、首次运行默认值不覆盖用户更改、仅 3D 视图定期刷新与 UPDATE NOW、粘贴两行/三行 TLE 的更新覆盖行为、年龄颜色、手动 TLE 强制显示和优先覆盖、频率链路单值/通带与用户表替换内置表语义。涉及下载的内容均按源码和手册文字核对，未触发更新或网络访问。上游子标题编号 6.9.1–6.9.3 与父节 6.10 不一致，中文稿按父节修正为 6.10.x。",
+      "reviewed_at": "2026-10-05T15:00:00+08:00",
+      "scope": "source-to-translation and settings-state review; no update request, network fetch or radio operation"
+    },
+    {
+      "section": "6.11 T/R switch: protecting the receiver on transmit",
+      "result": "按段审校支持硬件、Linux udev/组权限、触点编号与 GPIO BCM 编号、继电器用途/极性/提前与保持时序、TEST 只在所有电台未发射时动作、输入线检测、失电安全接线、超时默认拒绝发射、软件无法保证电台自身启动发射时的零延迟保护、射频检测硬件建议、故障排查及波段译码输出规则。重点确认限制章节没有把软件时序表述成硬件保证，翻译保留需要独立 RF 检测的安全结论。发射/继电器行为只作手册和源码审查；未连接任何硬件、测试触点、PTT 或发射。",
+      "reviewed_at": "2026-10-05T15:20:00+08:00",
+      "scope": "source-to-translation and safety-constraint review; no hardware, relay test, PTT or TX operation"
+    },
+    {
+      "section": "6.12 Profiles: saved station setups",
+      "result": "逐项对照配置方案覆盖范围、同名大小写无关替换、双 VFO/模式恢复顺序、音量增益与发射参数、按波段天线、数字模式身份/消息和三项保留值、波段堆栈整体替换、硬件接口/音频/变频器排除、发射期间拒绝应用、多电台台站共享呼号/消息/波段堆栈、profiles.json 的引擎端共享存储及远程客户端共用。实现核对确认 apply 会在任意来源的发射活动期间拒绝执行；本轮仅审查源码与文档，未应用台站配置或操作电台。",
+      "reviewed_at": "2026-10-05T16:00:00+08:00",
+      "scope": "source-to-translation and profile-command review; no live profile apply or radio/TX operation"
+    },
+    {
+      "section": "7 introduction and 7.1 Solar system 3D view/navigation",
+      "result": "逐段核对第 7 章概览中的场景组成、浏览器/原生行为、多人共享数据源及图形后端回退说明；7.1 核对鼠标旋转缩放与选中、AUTO 取消条件、目标选择器及地月中点、自动巡游、进行中 QSO 的取景和结束后恢复、QSO 图层关闭时的普通巡游。相机行为与现有 solar3d camera 状态逻辑一致；未启动 3D 窗口或运行任何电台功能。",
+      "reviewed_at": "2026-10-05T16:30:00+08:00",
+      "scope": "source-to-translation and camera-state review; no radio, network feed or 3D runtime operation"
+    },
+    {
+      "section": "7.2 The layers",
+      "result": "核对全部图层名称及默认启用集合、PROP 与 AWARDS 两种整球着色互斥、SUN OBS 合并太阳黑子区与耀斑源且与电台 SPOTS 术语区分、星空和日面坐标网格始终显示。翻译保留了需要用户主动开启的两个覆盖层及互斥原因；结合场景/UI实现仅做文字和源码核验，未启动数据源或 3D 视图。",
+      "reviewed_at": "2026-10-05T16:50:00+08:00",
+      "scope": "source-to-translation and layer-toggle review; no solar feed or 3D runtime operation"
+    },
+    {
+      "section": "7.3 The planets, moons and small bodies",
+      "result": "逐段核对行星/卫星数量与命名显示阈值、JPL/IAU/WGCCRE 数据来源及比较精度、小天体样本构成与近地接近筛选、信息卡字段、搜索规则、彗尾物理描述、日心距离和尾长模型缩放、Phaethon 特例、轨道外推有效范围与精度警告。将表格中的 “Orientations” 译为“自转姿态”，更准确对应自转极和自转速率。天文学数值按上游文档核对翻译，不作为独立星历精度验证。",
+      "reviewed_at": "2026-10-05T17:20:00+08:00",
+      "scope": "source-to-translation and scene/search review; astronomy values not independently recalculated"
+    },
+    {
+      "section": "7.4 Clouds",
+      "result": "逐段核对全球地球静止卫星拼接来源、红外与可见光通道用途、实测云场与模拟闪电的边界、纬度和时效限制、拟合云顶高度及其误差说明、局部晴空背景差的限制、垂直比例和天体缩放关系，以及分层/体积渲染的性能与阴影差异。对照 clouds 数据构造、时间戳、模拟闪电标注及 GPU 渲染分支；译文保留了闪电为模拟、云场为观测的关键区分。天气数值按上游说明核对，未独立验证卫星数据。",
+      "reviewed_at": "2026-10-05T17:45:00+08:00",
+      "scope": "source-to-translation and cloud-data/render review; no live data fetch or 3D runtime"
+    },
+    {
+      "section": "7.5 The aurora",
+      "result": "核对 OVATION 概率网格及时效、不同高度发光颜色、地表 10% 概率边界、南北半球纬度解释、Aurora panel 各行含义和阈值、过去测量/未来预报柱状图区分、网格有效时间与下载年龄，以及 viewline 为 SWPC 表格拟合且使用地磁纬度的限制。与 AuroraOval 阈值、HPI 和 viewline 计算实现对应；保持“椭圆来自 OVATION 网格、viewline 仅为粗略经验线”的优先级。外部空间天气值按上游文本核对，未联网取数。",
+      "reviewed_at": "2026-10-05T18:10:00+08:00",
+      "scope": "source-to-translation and aurora-panel calculation review; no live space-weather fetch"
+    },
+    {
+      "section": "7.6 Satellites",
+      "result": "核对 SGP4/TLE 来源、默认精选卫星名单与轨道颜色、ALL SATS 和轨道环设置、搜索高亮/回车行为、过境表字段与颜色、QO-100 静止轨道特殊处理、根数年龄与精度措辞、频率表链路/上下行/模式/使用备注、多普勒说明和 LOCK ON 引导至卫星模式，以及内置 AMSAT 频率表和自定义覆盖关系。与卫星绘制、标签搜索及过境表实现核验；LOCK ON 相关内容只作文本审校，未触发跟踪控制或电台操作。轨道精度示例依上游文档核对，未重新计算。",
+      "reviewed_at": "2026-10-05T18:40:00+08:00",
+      "scope": "source-to-translation and satellite UI review; no tracking or radio operation"
+    },
+    {
+      "section": "7.7 Your QSOs on the globe",
+      "result": "逐段核对最近两分钟解码点与一小时历史弧线、颜色/衰减/传播方向、进行中通联绿色路径与脉冲、未应答解码弧线、大圆弧抬升、通联卡片每半秒填充的字段及单位、JS8 目标联动、LIVE/REPLAY/时间游标/trail/speed 控件、离开实时模式隐藏新解码点及历史仅在运行时保留。与 solar3d scene/overlay 的弧线、卡片和回放控制实现核对；TX 脉冲方向只从源码和文本检查，未启动数字模式或发射。",
+      "reviewed_at": "2026-10-05T19:00:00+08:00",
+      "scope": "source-to-translation and solar QSO UI review; TX semantics reviewed as text only"
+    },
+    {
+      "section": "7.8 The propagation heat map",
+      "result": "核对传播热力源类型、每跳路径中点、多跳控制点、All Bands/One Band 模式、SNR 模式门限归一化与 WSPR 功率修正、QSO RST 不进入信号余量、45 分钟默认半衰期、RBN 两端缺少 locator 时按 DXCC 中心估计、HEARD ≥ 下界的 3000 km 归一化/两条路径门槛/短路径排除、BANDS OPEN 面积加权覆盖率而非 QSO 数量，以及来源筛选、夜侧地图和浏览器转发范围。与 propagation 数据结构及衰减/多跳控制点实现核对；RBN 网络与信标等内容仅对源码和说明做静态审查，没有连接数据源。",
+      "reviewed_at": "2026-10-05T19:30:00+08:00",
+      "scope": "source-to-translation and propagation-algorithm review; no live feed or radio operation"
+    },
+    {
+      "section": "7.9 The awards layer",
+      "result": "核对 AWARDS 图层的 DXCC 日志来源、实体标称中心、missing/worked/confirmed 三态及橙/琥珀/暗绿标记、按 AWARDS 窗口波段过滤、地球达到可读尺寸才绘制、默认关闭、浏览器端因不传送个人日志记录而不提供此层。与 coverage_counts、图层控件和浏览器数据通道边界核验。",
+      "reviewed_at": "2026-10-05T20:00:00+08:00",
+      "scope": "source-to-translation and awards-data privacy review"
+    },
+    {
+      "section": "7.10 The Sun",
+      "result": "核对 HMI 白光与黑子观测、AIA 各波长通道产品、MIX 合成通道、刷新/缓存年龄颜色、活动区黑子面积标记与 NOAA 24 小时耀斑概率、背面遮挡，以及 CME 速度前沿和估计方向的淡色区别。与 SDO 通道枚举、缓存状态和 CME 绘制实现核对；太阳数据说明按上游核验，未联网刷新。",
+      "reviewed_at": "2026-10-05T20:20:00+08:00",
+      "scope": "source-to-translation and imagery/CME implementation review; no live data refresh"
+    },
+    {
+      "section": "7.11 Scale and time",
+      "result": "核对 body/moon-orbit/sun 比例控件、地球月球大小默认 20×、比例上限、场景模拟时间按钮和 SIM 时钟标识、太阳/月食真实尺度阴影及时间示例。源码明确 moon_orbit_scale 会拉伸月球相对位置，而上游手册同时写“Positions are never exaggerated”，与 moon orbit 控件描述及当前 scene 实现存在内部冲突；中文稿将其限定为行星日心位置/CME 保持模型尺度、卫星相对母星显示位置可放大，符合实际控件效果。食影按未缩放几何计算，滑块不会改变地理覆盖位置。时间示例按固定日期翻译，不改写为随当前时间滚动的最近事件。",
+      "reviewed_at": "2026-10-05T20:45:00+08:00",
+      "scope": "source-to-translation and scale/eclipses implementation review; source wording conflict documented"
+    },
+    {
+      "section": "7.12 The propagation panel",
+      "result": "核对传播面板五类读数、MUF/HEARD ≥ 色阶、HEARD 下界与独立路径门槛、Kp/A 磁暴色彩、F10.7 的经验参考而非保证、GOES X-ray M 级吸收提示、BANDS OPEN 覆盖比例复用同一衰减场，以及测高仪距离/置信度/晨昏线跨侧插值风险和 no sounder 状态。对照 weather_panel 和 MUF/prop 面板实现；F10.7 的中文表述加入条件限定，避免把经验阈值写成必然开/关频段。",
+      "reviewed_at": "2026-10-05T21:00:00+08:00",
+      "scope": "source-to-translation and panel calculation review; no live data fetch"
+    },
+    {
+      "section": "7.13 Readouts and the CME arrival banner",
+      "result": "核对 Readouts 字段、CME 横幅示例、到达时间从 t21.5 太阳半径起算并按速度/地球位置估算。实现为恒速径向模型，没有太阳风阻力项；中文稿清楚说明不是正式预报精度，并将上游提及的 ±6 小时正式模型典型误差与当前 ETA 区分，避免误用为本软件精度保证。",
+      "reviewed_at": "2026-10-05T21:30:00+08:00",
+      "scope": "source-to-translation and CME ETA model review; no live data fetch"
+    },
+    {
+      "section": "7.14 Where the data comes from",
+      "result": "核对窗口开启才启动多数数据源、波段条件例外的生命周期、所有主机/数据类别/刷新周期、hamqsl.com 请求上限、solar/ 缓存先加载、OVATION 约 900 kB 且 30 分钟轮询、有效时间标记及来源致谢。与 Source 枚举周期和 SolarFeed 获取调度核对；中文稿把 NOAA 极光数据子项写出各自 30/15/60 分钟周期，与实现一致，且保留缓存/时效边界。",
+      "reviewed_at": "2026-10-05T21:30:00+08:00",
+      "scope": "source-to-translation and fetch-cadence review; no external request"
+    },
+    {
+      "section": "8.1 Start the server",
+      "result": "逐段核对无头服务器端口/绑定/未设置凭据风险、多电台路径地址与稳定 ID、缺失 ID 404、未连接设备仍保留连接重试、按电台单客户端限制、已登录客户端修改站点清单、站点级单发射互锁及各内置服务器端口冲突提示。对照服务器启动参数、路由和多电台管理实现；无服务器被启动或电台连接。",
+      "reviewed_at": "2026-10-05T22:00:00+08:00",
+      "scope": "source-to-translation and server-routing review; no server or radio started"
+    },
+    {
+      "section": "8.2 Connect a native remote client",
+      "result": "核对原生客户端手动/命令行连接、地址和端口保存、完整 ws/wss URL 处理、多电台自动开标签及单次认证凭据复用、关闭未用标签的带宽影响、按 /ws/id 选择电台、音频方向与采样率、远程发射音频说明。连接能力和 TX 音频只按手册及实现静态审查；未连接任何站点、发射或操作 PTT。",
+      "reviewed_at": "2026-10-05T22:00:00+08:00",
+      "scope": "source-to-translation and remote-client review; no station, radio or TX connection"
+    },
+    {
+      "section": "8.3 Sign-in: who may operate the station",
+      "result": "逐段核对远程访问用户名/密码配置、空用户名仅密码验证、双字段为空时开放访问、登录通过前不发送电台数据且不占用客户端名额、站点级各电台一次手动认证、程序内跨连接凭据复用、Remember me 的跨运行明文保存路径、同站点串行认证与 CHECKING/拒绝状态区分，以及 ws 明文传输风险。与 RemoteAccess、AuthPhase、服务端认证门控和 remote_login.json 存储实现核对；翻译准确区分认证与传输加密，未连接服务器。",
+      "reviewed_at": "2026-10-05T22:30:00+08:00",
+      "scope": "source-to-translation and authentication/storage review; no credentials or remote connection used"
+    },
+    {
+      "section": "8.4 What to know",
+      "result": "逐项核对远程客户端执行服务器端电台配置与设备查询、Apply/reconnect 重开设备、失败时旧电台继续运行、串行设备探测、按电台单客户端、多电台自动重连退避、Reconnect now、旧会话释放导致短暂 server busy、重连重新认证及 ws 明文传输/全接口绑定风险。对照远程命令路由和 UI 状态说明；设备控制、重连与认证仅静态核对，未建立远程连接或操作硬件。",
+      "reviewed_at": "2026-10-05T23:00:00+08:00",
+      "scope": "source-to-translation and remote-session review; no connection or hardware operation"
+    },
+    {
+      "section": "9 Web operation introduction",
+      "result": "核对浏览器使用同一站点服务器、公共 SDR 清单与接收连接均由站点端代办、浏览器添加的接收机进入全站共享电台列表。",
+      "reviewed_at": "2026-10-05T23:30:00+08:00",
+      "scope": "source-to-translation and remote SDR routing review; no server/network operation"
+    },
+    {
+      "section": "9.1 Serve the web client",
+      "result": "核对 embed-web 内嵌构建、默认服务器启动/4950 URL、页面同路径 ws 地址、根路径和反代前缀、radio 查询参数选电台、按电台单客户端限制、/radios ID 查询及无内嵌构建 web-root 参数。与服务器静态文件路由及 WebSocket 路径解析对应。未启动 Web 服务器或访问设备。",
+      "reviewed_at": "2026-10-05T23:30:00+08:00",
+      "scope": "source-to-translation and server web-routing review; no server/browser operation"
+    },
+    {
+      "section": "9.2 What works in the browser",
+      "result": "逐段核对浏览器客户端可用功能、麦克风音频条件、服务器端设备设置与重新扫描/发现/重连、远程电台清单增删、太阳系独立只读流仍需认证、浏览器文件导入/下载、CHIRP 导入写入站点与 ADIF 导入保存在浏览器日志的区别、localStorage 容量风险和设置文件仅原生支持。与 UI 的 localStorage 保存、服务端只读 solar-ws 及站点电台命令对应；浏览器交互和发射音频行为仅静态检查，未操作客户端。",
+      "reviewed_at": "2026-10-06T00:00:00+08:00",
+      "scope": "source-to-translation and web persistence review; no browser/server/radio operation"
+    },
+    {
+      "section": "9.3 Audio needs a secure context",
+      "result": "核对 AudioWorklet/getUserMedia 安全上下文限制、localhost/127.0.0.1 的 HTTP 例外、HTTPS 反向代理/带 TLS 隧道、LAN/WAN 普通 HTTP 下接收与麦克风音频均不可用但其他界面功能仍可用、浏览器横幅、SSH 本地转发以及原生客户端不受浏览器限制。与 audio_bridge.js 的 isSecureContext 门控核对；未访问浏览器或请求麦克风权限。",
+      "reviewed_at": "2026-10-06T00:20:00+08:00",
+      "scope": "source-to-translation and browser API review; no browser/microphone use"
+    },
+    {
+      "section": "9.4 Behind a reverse proxy on a subpath",
+      "result": "逐项核对子路径部署的两种代理策略（去前缀/保留前缀）、Caddy/nginx 斜杠差异、相对资源与 WebSocket 路径、代理 Upgrade/Connection 头要求和 HTTPS 音频安全上下文。与服务端子路径剥离和静态资产路由逻辑核对；未部署反向代理或启动服务器。",
+      "reviewed_at": "2026-10-06T00:20:00+08:00",
+      "scope": "source-to-translation and proxy-routing review; no proxy/server operation"
+    },
+    {
+      "section": "9.5",
+      "title": "Phones and tablets",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_files": {
+        "outputs/manual-draft/09-web-9.5-panels.zh-CN.md": "9b06297e11a3629797ff5f67e34d04685bf94a09d7f54519881213ee0e700590",
+        "outputs/manual-draft/09-web-9.5-home-screen.zh-CN.md": "8778bc65269cee7bab060f24a12581eeea89818ad8b808ae1a5e496ea77a7201",
+        "outputs/manual-draft/09-web-9.5-controls.zh-CN.md": "62bcdf5bad9296ef0bd044be016302c84afcb251aca0a148db5655a30656587e"
+      },
+      "review_summary": "逐段核对自动布局阈值、原生窗口规则、平板菜单分组、步进循环与首次对齐示例、手机 VFO 读数、触屏按住 PTT 与鼠标锁定差异、数字模式分页、紧凑布局省略地图、瀑布拖动/惯性/捏合/滤波边缘手势、触控目标尺寸、安全上下文与主屏幕安装、前台屏幕唤醒及后台释放。layout.rs 确认自动布局阈值为手机宽度 <600 点或高度 <440 点、平板宽度 <1400 点或高度 <620 点，平板高度 <740 点使用单行栏；上游手册先称约 1100 点切换菜单，后称 Auto 在 1400 点以下选择平板，存在内部不一致，译稿依当前实现和后一处规则采用 1400 点。PTT 行为和 Wake Lock 只对照源码静态核查，未进行发射、PTT、浏览器或设备操作。",
+      "reviewed_at": "2026-10-05T13:52:00+08:00",
+      "scope": "source-to-translation and layout/interaction implementation review; static inspection only; no radio, PTT, browser or device operation"
+    },
+    {
+      "section": "10 Spotting, awards, and QSL upload",
+      "title": "Spotting, awards, and QSL upload",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-introduction.zh-CN.md",
+      "translation_sha256": "f99aecda78fb0f0da589fb3f178b8cea230d1e8f84b5350d799c1ba60cc54077",
+      "review_summary": "核对本章涵盖的可点击电台信息、呼号自动查询、通联上传与奖项统计，设置页及 SPOTS/AWARDS 入口、常规页呼号和网格定位符来源，以及网络信息源等由电台服务器所在主机处理并将 net.json 凭据明文保存的说明。中文稿补充客户端日志/奖项使用各自日志数据的边界，与远程客户端架构一致。",
+      "reviewed_at": "2026-10-05T14:06:00+08:00",
+      "scope": "source-to-translation review with static architecture cross-check; no network service or radio operation"
+    },
+    {
+      "section": "10.1",
+      "title": "Spot feeds (DX cluster, POTA, SOTA, PSK Reporter)",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.1-feeds.zh-CN.md",
+      "translation_sha256": "5d8ad4b8e170e8085b17c9ccd011c533f4aaa9f331bac245f127201f01b3e734",
+      "review_summary": "逐项核对信息源启用及 APPLY、标签颜色和地图点、六类过滤器与持久化、IN VIEW 临时过滤、搜索字段和频率双格式示例、模糊匹配排序/计数、搜索仅影响列表，以及点击后的 VFO 调谐、模式切换、日志预填和自动查询。对照 spots.rs、spectrum_view.rs 与 worldmap.rs；把译稿中日志预填字段修正为当前代码实际复制的呼号、频率、模式、网格和备注，不再声称单独填入 reference。上游手册的 reference 表述与实现差异记录为已文档化的上游问题。",
+      "reviewed_at": "2026-10-05T15:37:05+08:00",
+      "scope": "source-to-translation and isolated implementation review; Chinese manual wording follows current prefill_from_spot fields; no feed connection, radio tuning, transmission or PTT operation"
+    },
+    {
+      "section": "10.2",
+      "title": "Callsign lookup",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.2-lookup.zh-CN.md",
+      "translation_sha256": "c31e8db3bc7b44b45fd9ef7e23686880e4ced54cd4d667bc610902bf487b7c58",
+      "review_summary": "核对 QRZ.com 需有效 XML 数据订阅、HamQTH 免费、Uploads 页的 Provider/凭据、自动查询触发点（点击 spot、开始 FT8 QSO、呼号输入框失焦）及表单 LOOKUP 按需查询。对照 netcfg LookupProvider、logbook.rs 失焦/按钮门控和 net.rs 队列条件与结果合并；结果仅填空字段，打开表单匹配时填姓名/QTH/网格等，未匹配时补充最近同呼号日志并填 DXCC/CQ/ITU 分区。译文无实质遗漏；查询逻辑仅静态审查，未执行网络查询。",
+      "reviewed_at": "2026-10-05T14:16:00+08:00",
+      "scope": "source-to-translation and lookup-flow implementation review; no network lookup or radio operation"
+    },
+    {
+      "section": "10.3",
+      "title": "Uploading QSOs (eQSL, QRZ, HamQTH, Club Log, LoTW)",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.3-upload.zh-CN.md",
+      "translation_sha256": "daf485a4246e962b7c2c5cdc69337fbd7283761258bc4f9b3a35a63023069b90",
+      "review_summary": "逐项核对 QRZ Logbook/eQSL/HamQTH/Club Log 凭据与 Test、逐条或新通联自动上传、UP 与上传状态箭头、失败状态位置、HamQTH 查询/上传共用账户及必填日期/时间/呼号/模式/波段/双向信号报告、缺字段发送前拒绝、单条上传限制和网站批量文件上传、LoTW 必须由 TQSL 签名故不自动上传、ADIF 导出，以及 LoTW/eQSL 确认下载和奖项所用确认状态。对照 NetworkConfig、net.rs 上传目标与 logbook 状态记录静态审查；未测试服务登录、上传、同步或网络请求。",
+      "reviewed_at": "2026-10-05T14:27:00+08:00",
+      "scope": "source-to-translation and upload-flow implementation review; no credentials, service tests, uploads or network requests"
+    },
+    {
+      "section": "10.4",
+      "title": "Award tracking",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.4-awards.zh-CN.md",
+      "translation_sha256": "e944f2ccb3f9791ed36a9bbbc55918a3348bf99adb403a42511829939093743b",
+      "review_summary": "核对 AWARDS 即时从日志统计 DXCC/WAZ/WAS/网格的已通联与已确认数、波段过滤、WAS/WAZ 灰/琥珀/绿状态和 DXCC 确认标记、cty.dat 呼号实体/分区解析与在线查询精度补充、LoTW/eQSL/纸卡确认、SPOTS NEW 关联、删除/导入日志对统计的影响、全时段无年度重置、3D 地球图层实体中心及颜色和波段同步，以及 GRID 四字符 Maidenhead 网格图、HEARD 解码层、重叠状态、平移缩放和悬停标识。对照 awards.rs 与 types::compute_awards 静态核查；无日志变更、网络或无线电操作。",
+      "reviewed_at": "2026-10-05T14:37:00+08:00",
+      "scope": "source-to-translation and awards implementation review; no log mutation, network or radio operation"
+    },
+    {
+      "section": "10.5",
+      "title": "FreeDV Reporter (qso.freedv.org)",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.5-freedv.zh-CN.md",
+      "translation_sha256": "24d1c44f05d24e430fb3852cc1d02b91d8803b3449a88db0dbb0c5f82982cf55",
+      "review_summary": "核对 FreeDV Reporter 双向站点/接收 spot、RADE 才可见而其它模式连接保持但隐藏、多电台站级单会话和列表中任一 RADE 电台负责上报、调谐频率与收发状态及软件版本、多电台呼号交换在每次发话结束帧且采用 FreeDV GUI 兼容格式，以及 --freedv-reporter-probe 20 使用只读 view 角色并不让本站上线。与 netcfg、settings/net 和 RADE UI 代码进行静态核对；涉及收发、呼号空中格式及探测命令未执行，未发射/PTT。",
+      "reviewed_at": "2026-10-05T14:48:00+08:00",
+      "scope": "source-to-translation and FreeDV settings/RADE implementation review; no reporter connection, radio operation, transmission or PTT"
+    },
+    {
+      "section": "10.6",
+      "title": "Broadcast stations on longwave and shortwave",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/10-spots-10.6-broadcast.zh-CN.md",
+      "translation_sha256": "64302aff8e9347c7913319dd73508b9c5c217c4c204b4748277619ffb36b0f07",
+      "review_summary": "核对当前时段广播标签、点击 AM 调谐且不建日志/查呼号、节目表条目与 UTC/星期/分钟刷新、无时间窗常驻、BC 分类开关、31 m 拥挤与五行上限、站点地图点及 3D 大圆路径的定位符/QSO 图层要求。继续核对首次下载/配置缓存、季节切换日期与每日检查、旧文件替换、编译内置离线回退、失败状态和后台线程、解析合理性门控、HTTP 下载历史证书说明及来源认证限制；自定义 JSON 条目字段/单位/跨午夜/星期/季节规则与 Reload 合并；EiBi README 元数据、生成脚本和手工维护长波/时号台。与 broadcast.rs 与 spots.rs 静态核对；译文将数量明确标注为原文历史示例，并未声称为当前外部核验数据。未发起下载、启动网络访问或操作电台。",
+      "reviewed_at": "2026-10-05T15:00:00+08:00",
+      "scope": "source-to-translation and schedule implementation review; no schedule download, network or radio operation"
+    },
+    {
+      "section": "11 Winlink radio email",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对 MAIL 入口、CMS 存储转发、互联网/无线电路线和原生 B2F/FBB、LZHUF、安全登录协议介绍；无实质翻译遗漏。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 Setting up and using Winlink",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对 CMS 首次开户与服务邮件密码、执照自动核验范围、Settings→Winlink字段、区分大小写与独立 APPLY、生产服务器客户端名注册状态及历史性备注；核对 INBOX/OUTBOX/SENT/ARCHIVE、CONNECT/COMPOSE/LOG、SMTP:地址、逗号分隔及服务器端邮箱按页传输。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 Over the air and choosing a gateway",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对互联网 CMS 与 AX.25 RMS Packet、ARDOP 尚未支持、VARA 不纳入的上游理由、PACKET/PACKET-HF、本站呼号和 SSID前置条件、网关路线/频率/速率、频率零保持拨盘、中止保留已收邮件、超时、API访问密钥缺失导致手动维护列表、Via格式、USE载入、速率不能仅由频率推断。中文将关于各地法律的一般断言表述为遵守当地识别要求，保留未填呼号软件不发射这一操作事实。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 Packet length, window and speeds",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对单帧长度、窗口定义与链路折衷、128/4起点和64/256参考、无线终端共享设置、300/1200/9600 baud对应波段/调制及9600数据口条件，并将 Direwolf 双向验证标注为上游报告而非本次测试。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 The packet panel and terminal",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对 MONITOR 字段与颜色、BUSY、坏帧计数、CLEAR RX不拆连接、呼号点击携路径填入终端、SETUP与呼号门控、终端 CONNECT/命令行、Via顺序差异、连接状态/未确认/重试含义、上下历史、回车与 Windows-1252、Extended mod-128兼容限制。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 Answering calls and one link at a time",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对 Answer calls、Connect text、无人看守提示、忙碌时DM拒绝、MAIL与终端共享单链路、冲突状态提示，以及切换模式可能使 DISC 音频无法发送并令远端等待。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "11 When a call is not answered and serving the modem to other software",
+      "title": "Winlink radio email",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/11-winlink.zh-CN.md",
+      "translation_sha256": "c6645d58f1dee48c3594045ee5ed2124288f0f8fc667c63c76445da4e58edfae",
+      "review_summary": "核对依速率/帧长/跳数计算的定时器、无应答排查顺序、KISS server 默认端口8001、Pat/APRS/Linux AX.25客户端用途、KISS与终端共享但无互锁、TXDELAY/persistence命令记录并忽略、仅分组模式开启。所有无线操作相关内容均对照文档/代码静态检查，未连接、启动服务、发送信标、PTT或发射。",
+      "reviewed_at": "2026-10-05T15:12:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no Winlink connection, server, radio, transmit or PTT operation"
+    },
+    {
+      "section": "12 Command-line reference",
+      "title": "Command-line reference",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/12-command-line.zh-CN.md",
+      "translation_sha256": "6c6ae1c22fbd9803f7a67d54a5a6faa17e75626c7e6142e709a98c18d07fde82",
+      "review_summary": "逐项核对 --device/--probe/--console/--siggen/--file/--freq/--rate/--gain/--mode/天线端口/服务器与远端客户端/Web根目录/FFT/终端绘图参数/FreeDV只读探测/IQ录制等参数名称、默认值、单位、路径、模式列表及引号示例。译稿包含实现支持而英文手册未列出的 PI4、MSK144、JT65、JT9、FST4、Q65、FSK441 等模式；与当前 Mode 枚举/CLI说明相符，不是误加翻译。核对无设备模拟、文件回放与录制用途边界；未运行任何参数或设备探测。",
+      "reviewed_at": "2026-10-05T16:04:00+08:00",
+      "scope": "source-to-translation and CLI implementation review; no process execution or device access"
+    },
+    {
+      "section": "12 Testing without a radio",
+      "title": "Command-line reference",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/12-command-line.zh-CN.md",
+      "translation_sha256": "6c6ae1c22fbd9803f7a67d54a5a6faa17e75626c7e6142e709a98c18d07fde82",
+      "review_summary": "核对 siggen、IQ文件回放、SoapySDR设备探测、文本控制台与 --record-iq 的用途，以及 2 Msps 时每秒约 16 MB 的数据量；说明区分纯合成/回放与需要真实接收机的探测、录制。仅静态查看 CLI 和捕获实现，未启动设备或录制。",
+      "reviewed_at": "2026-10-05T16:04:00+08:00",
+      "scope": "source-to-translation and source review; no radio or device operation"
+    },
+    {
+      "section": "12 Transmitting outside the amateur bands: --oob-tx",
+      "title": "Transmitting outside the amateur bands: --oob-tx",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/12-command-line.zh-CN.md",
+      "translation_sha256": "6c6ae1c22fbd9803f7a67d54a5a6faa17e75626c7e6142e709a98c18d07fde82",
+      "review_summary": "静态核对默认 tx_ham_only 锁定、参数只在本次启动期间放宽、启动警告、server 模式影响所有客户端及操作者与启动者可能不同。译稿补足代码实际门控：最终限制为配置值与 --oob-tx 合并决定，因此 config.toml 手动设 false 会在以后启动继续解除限制；这修正了英文说明“参数不可保存”容易被理解成限制状态绝不会持久变化的歧义。保留持照/授权边界，无任何发射、PTT 或开关验证。",
+      "reviewed_at": "2026-10-05T16:04:00+08:00",
+      "scope": "source-to-translation and TX-safety implementation review; static only, no transmission or PTT"
+    },
+    {
+      "section": "13 Configuration files",
+      "title": "Configuration files",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/13-configuration-files.zh-CN.md",
+      "translation_sha256": "b7131b180efffbaf068bf04ca83f19af1c594a9fa0f53011d115908dd4be2c1a",
+      "review_summary": "核对 Linux/macOS/Windows 用户配置目录、设置迁移入口，以及 `sdroxide-settings.json` 导出/导入的站点与多电台范围、原样保留未知字段、文件逐项替换/未提及文件保留/重启后生效、qso_log.json 与 remote_login.json 排除、远程/Web端不能访问引擎配置等语义。对照 ProjectDirs 配置根路径与 config::transfer 导出导入实现；未实际导入导出或读写用户配置。",
+      "reviewed_at": "2026-10-05T16:26:00+08:00",
+      "scope": "source-to-translation and config-transfer implementation review; no user configuration was modified"
+    },
+    {
+      "section": "13 Configuration file inventory",
+      "title": "Configuration files",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/13-configuration-files.zh-CN.md",
+      "translation_sha256": "b7131b180efffbaf068bf04ca83f19af1c594a9fa0f53011d115908dd4be2c1a",
+      "review_summary": "逐组核对配置文件清单及职责：TOML/JSON/text/目录类型、无线电与数字模式配置、波段与会话状态、日志和网络凭据明文、Winlink 邮箱、内置服务器、扫描器/解码器、渲染回退、远程登录本地存储、卫星/继电器/广播、媒体/语音缓存、多电台根目录与 radio-<N> 文件。与 config persistence 和 radio-scoped Store 行为静态比对；保留格式名/键名/路径/端口等机器标识。",
+      "reviewed_at": "2026-10-05T16:26:00+08:00",
+      "scope": "source-to-translation and persistence inventory review; no config files changed"
+    },
+    {
+      "section": "13.1 Choosing the radio interface without a GUI",
+      "title": "Choosing the radio interface without a GUI",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/13-configuration-13.1-headless.zh-CN.md",
+      "translation_sha256": "5166da2ca896948953d8d7159f06c0996df5945c1c38ad6077aa8b0706bd4728",
+      "review_summary": "核对远程客户端设备枚举来自电台主机、radio.json局部字段默认、jsonc示例、Backend清单及字段对象映射、Pluto示例/AGC选择、2R2T链编号、当前版本实际保存文件、systemd命令、--device/--rate适用接口、复制设备后超范围保存频率以及用户目录回退。backend表与 Backend::ALL/配置结构交叉核查，补充的 Auto/KiwiSDR/Fobos/UsbAudio 等项目与实现一致。将示例中的六条英文解释注释译为简体中文，保留 JSON 键/枚举/字段原文。没有执行示例、启动服务器或接触设备。",
+      "reviewed_at": "2026-10-05T16:26:00+08:00",
+      "scope": "source-to-translation and radio configuration schema review; static only, no device or server operation"
+    },
+    {
+      "section": "14 CAT audio capture and timed-mode underruns",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-audio-cat.zh-CN.md",
+      "translation_sha256": "540d6ac51c8a6c51bcda289811cd9e75167ef0157006ff49a13b84f629024d2b",
+      "review_summary": "核对 WirePlumber 独占声卡步骤、缓冲区丢采样日志含义、radio audio/radio IQ 与 mic 流区别、按流抑制重复日志、定时模式周期偏移、模式切换和设备启动所在不完整周期豁免、整周期无音频单独告警、虚拟音频线同采样率/Max Latency/CPU负载/真实设备排查。与 audio stream diagnostics 及数字模式周期逻辑静态比对；未打开声卡。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "14 Radio availability, frequency range and IQ capture",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-audio-cat.zh-CN.md",
+      "translation_sha256": "540d6ac51c8a6c51bcda289811cd9e75167ef0157006ff49a13b84f629024d2b",
+      "review_summary": "核对启动无电台时后台重试、网络电台重连和 Apply/reconnect 条件、频率越界回退及驱动重启、IQ需立体声及 Demod audio替代方案，并区分接收期丢样与发射期间接收缓冲区丢弃（含跨电台 panadapter 的 Blank on transmit）。没有设备连接/调谐/发射。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "14 T/R switching and SWR safety alerts",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-audio-cat.zh-CN.md",
+      "translation_sha256": "540d6ac51c8a6c51bcda289811cd9e75167ef0157006ff49a13b84f629024d2b",
+      "review_summary": "核对 Linux HID/CM108 udev与relay诊断、继电器故障时默认拒绝发射、Transmit anyway 设置及手册交叉链接、无线电面板内发射检测时延、SWR guard锁定/确认/天线检查/关闭保护的描述。所有内容仅静态审阅，未驱动继电器、发射或PTT。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "14 CAT mode, USB-D and Kenwood command traps",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-audio-cat.zh-CN.md",
+      "translation_sha256": "540d6ac51c8a6c51bcda289811cd9e75167ef0157006ff49a13b84f629024d2b",
+      "review_summary": "核对 CAT 模式控制与 Digimode mode、Icom CI-V USB/USB-D子命令随型号变化、Yaesu频率字段宽度、Kenwood 11位频率语法、TX0;在Kenwood上会键控而RX;才停止、TS-590 TX1;音频输入和TS-2000副波段含义。与cat协议实现/Radio设置标签对照；未发送CAT命令或操作发射。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "14 QMX, Elecraft, rigctld and CW keying troubleshooting",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-audio-cat.zh-CN.md",
+      "translation_sha256": "540d6ac51c8a6c51bcda289811cd9e75167ef0157006ff49a13b84f629024d2b",
+      "review_summary": "核对 QMX回车导致CAT转终端模式/多虚拟COM口/无CAT功率命令/Digi合成载波/SWR本机锁存/IQ中心-12000及CW偏移、Elecraft DATA/DATA A/DT0;、PA检测与12/110W滑块上限、rigctld拒绝连接与DTR/RTS限制、各厂商CW内部键控/MCW音频回退。型号命令和语义只查源文/驱动，不进行CAT/PTT/TX。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "14 Audio device selection and graphics-driver recovery",
+      "title": "Troubleshooting",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/14-troubleshooting-devices-renderer.zh-CN.md",
+      "translation_sha256": "c8b2054a7c0e4e5075b5cb36bdbb6340cceb128dbf0e19bd66205820caabcefa",
+      "review_summary": "核对重复声卡USB标识及两电台共享声卡选择、应用设置生效范围、Pi V3DV闪烁与OpenGL ES回退和性能数值的历史样本边界、WGPU_BACKEND覆盖、Intel igvk64 Vulkan启动访问冲突与Windows Direct3D 12默认、无麦克风导致语音低功率、renderer-fallback.txt判定/清理、OpenGL fence超时与DX12软件渲染回退。对照启动渲染器选择与崩溃标记静态核查；未改驱动/环境或发射。",
+      "reviewed_at": "2026-10-05T17:04:00+08:00",
+      "scope": "source-to-translation and implementation review by static inspection; no radio, CAT, relay, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.1 Xiegu G90",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对 Xiegu CAT family/CI-V地址/Demod audio、U-D需手动、其他模式麦克风输入风险、G90功率表尺度问题、MCW与CAT键控差异及CW音频偏移、不接控制线I/Q接收与1C 00 PTT查询说明。对照CAT协议族和配置说明，静态审查。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.2 Xiegu X6100",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对 19200 8N1、70h CI-V地址、Panadapter BW控制音频频谱宽度及地址错误影响。仅源文/设置代码对照。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.3 Icom over USB",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对Radio model地址及DATA命令、错误地址无回复、DIGI音频路径/麦克风风险、PTT CAT与DTR/RTS线路配置、CI-V Transceive降低轮询、Radio scope USB baud/Unlink菜单、轮询率与音频总线竞争、Icom半插入读写/不关闭QSK、双同名USB编解码器标识。与CI-V和设置面板静态比对。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.4 Icom over LAN",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对Network Control/用户凭据、MOD Input菜单自动写入与会话结束恢复、IP/50001端口、网络无宽带I/Q而AF/12kHz IF用途、48 kHz采样、MCW/CAT文本键控与半插入。仅阅读配置与驱动逻辑。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.5 Icom IC-R8600",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对接收机限定、无PTT/Drive/Tune/SWR控件，即便设备capability误报TX仍抑制，以及Output Select仍可使用12 kHz IF。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.6 Kenwood",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对Kenwood CAT family错误时重调失败和TX0;错误含义、按型号Send command映射、VFO A/退出存储、列出的仪表曲线型号与日志字段、VX仅CW模式/Radio controlled手动break-in及KY文本流不覆盖记忆。交叉核对kenwood.rs与radio settings文案。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.7 Yaesu",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对Enhanced USB串口与Standard RTS/DTR职责、PTT CAT、CW memory 1会覆盖且FT-710反向播放经ID;适配、FTDX3000/5000 SWR依赖面板表设置、Drive按100W缩放上限偏低。静态核对CAT驱动。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.8 Elecraft",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.1-15.8.zh-CN.md",
+      "translation_sha256": "956e04a4c327bbe57c6e7a12934e0e6a37ccfde194ddab023b6d194726d45116",
+      "review_summary": "核对Elecraft协议选择和DATA独立模式、38400波特率限制、RX SHFT 8.0与I/Q offset正负方向、DATA A/DT0;、OM;功放识别与110/12W、KY直接键控速度限制及BSET/VFO REV拒绝。与elecraft.rs及设置说明静态比对。",
+      "reviewed_at": "2026-10-05T17:19:00+08:00",
+      "scope": "source-to-translation and CAT/radio implementation review by static inspection; no device, CAT, relay, transmit or PTT operation"
+    },
+    {
+      "section": "15.9 ELAD FDM-DUO / FDM-S1 / FDM-S2",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.9-15.13.zh-CN.md",
+      "translation_sha256": "26379354619e3df32f8454dfd338a7f4b34a9df396c3769e82c8598525c19caf",
+      "review_summary": "核对 DUO三类USB设备/统一驱动接口与CAT单接方案、S1/S2 FPGA固件和采样率映像、DUO采样率不可命令/6.144MHz半采样位宽、CAT BAUD/TX IN菜单、CW手键/DTR/MCW选择及Linux udev/Windows Zadig驱动边界。保持驱动安装说明为原文，不执行硬件动作。",
+      "reviewed_at": "2026-10-05T17:32:00+08:00",
+      "scope": "source-to-translation and device implementation/documentation review by static inspection; no radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "15.10 QRP Labs QMX / QMX+ / QDX",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.9-15.13.zh-CN.md",
+      "translation_sha256": "26379354619e3df32f8454dfd338a7f4b34a9df396c3769e82c8598525c19caf",
+      "review_summary": "逐项核对QRP Labs与Kenwood的PC/MD8命令差异、USB虚拟串口与无波特率、避免终端发送CR、Q9 I/Q/−12kHz/48kHz/CW额外约700Hz偏移、SS0声音输入、Drive非功率、S表/SWR/正向瓦数、KY字符和速度下限、SR固件门槛及本机复位、模式滤波器宽度。上游声明仅在基于文档模拟器测试、未在真实电台验证，译文保留此范围。",
+      "reviewed_at": "2026-10-05T17:32:00+08:00",
+      "scope": "source-to-translation and device implementation/documentation review by static inspection; no radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "15.11 SunSDR / ExpertSDR3 / Thetis (TCI)",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.9-15.13.zh-CN.md",
+      "translation_sha256": "26379354619e3df32f8454dfd338a7f4b34a9df396c3769e82c8598525c19caf",
+      "review_summary": "核对ExpertSDR3默认127.0.0.1:50001、SunSDR2DX单连接双RX标签/发射机归RX1/IQ率由首连者决定、已有Drive值不覆盖、同机端口冲突建议50002。",
+      "reviewed_at": "2026-10-05T17:32:00+08:00",
+      "scope": "source-to-translation and device implementation/documentation review by static inspection; no radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "15.12 Hermes Lite 2 and other HPSDR",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.9-15.13.zh-CN.md",
+      "translation_sha256": "26379354619e3df32f8454dfd338a7f4b34a9df396c3769e82c8598525c19caf",
+      "review_summary": "核对HL2唯一LNA模拟增益与+20dB起点、PA关闭后仍key但ANT无RF、Invert spectrum默认、开集电极滤波板可能驱动危险外部负载/各输出编码/1.6.5 Protocol 2支持、WiFi/VPN发射缓冲100–200ms、P1/P2速率与DDC能力。输出脚/PTT相关只静态核查，不驱动硬件。",
+      "reviewed_at": "2026-10-05T17:32:00+08:00",
+      "scope": "source-to-translation and device implementation/documentation review by static inspection; no radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "15.13 FlexRadio",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对Flex GUI客户端注册/DAX IQ的192kHz上限、Station name身份、同默认站点名的双实例冲突与临时ID恢复限制、UDP频谱流及防火墙/VPN/MTU诊断。",
+      "reviewed_at": "2026-10-05T17:49:00+08:00",
+      "scope": "source-to-translation and radio interface review by static inspection; no receiver, CAT, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.14 RTL-SDR dongles",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对Blog V4硬件HF上变频与禁止重复Converter offset、其他型号Q branch direct sampling及24MHz Automatic切换、17/15m第二奈奎斯特区镜像、20秒ppm测量及rtl_tcp限制、序列号、偏置三通风险、S表dBFS/dBm校准解释。",
+      "reviewed_at": "2026-10-05T17:49:00+08:00",
+      "scope": "source-to-translation and radio interface review by static inspection; no receiver, CAT, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.15 SDRplay RSP",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对API v3.x后台服务/探测提示、IF gain reduction方向与Extended range、LNA状态/过载、天线端S表补偿及旧cal_offset_db重新校准、RSPduo双调谐器2Msps限制和未实机验证、HDR模式已知失效、6.048Msps以上位深权衡。",
+      "reviewed_at": "2026-10-05T17:49:00+08:00",
+      "scope": "source-to-translation and radio interface review by static inspection; no receiver, CAT, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.16 Airspy / HydraSDR",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对不同接收机的协议/USB ID/udev不兼容、HF+ ppb校准不写闪存/整kHz加VFO/零中频和Host DSP、R2/Mini真实ADC DC边缘与增益档及采样率、HydraSDR八字节调谐差异/三接口七速率与硬件ID。",
+      "reviewed_at": "2026-10-05T17:49:00+08:00",
+      "scope": "source-to-translation and radio interface review by static inspection; no receiver, CAT, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.17 HackRF One / Pro",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对半双工收发、谐波过滤与假负载安全说明、14dB双向RF amp及Soapy限制、Automatic baseband filter和本振直流偏移、Pro低频/额外低速率及未支持gateware模式。上游原文称其为“唯一可发射USB接口”，但当前Backend实现还包括可发射LimeSDR；中文已修正为“支持发射的USB接口之一”，避免传播过时事实，并将源文/当前实现差异加入待处理。射频功率相关只静态审阅，未操作。",
+      "reviewed_at": "2026-10-05T17:49:00+08:00",
+      "scope": "source-to-translation and radio interface review by static inspection; no receiver, CAT, network, transmit or PTT operation"
+    },
+    {
+      "section": "15.18 PlutoSDR",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对USB连接仍按网络设备访问、默认地址示例、板卡实际调谐范围、采样率下限与重试值、模拟滤波和AGC/增益语义、全双工网络带宽及RX2限制。保留首次发射假负载等源文安全说明，仅作静态文字审阅。",
+      "reviewed_at": "2026-10-05T18:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, CAT, network, transmit, relay or PTT operation"
+    },
+    {
+      "section": "15.19 LimeSDR + LimeRFE",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对模拟滤波与本振泄漏关系、发射滤波保护、增益默认值、J3/J4连接器、BAND1/BAND2频段路径、接收端口、继电器位置、HF J5、校准、PureSignal反馈、噪声抵消和Rescan副作用。涉及发射与继电器的内容仅静态审阅。",
+      "reviewed_at": "2026-10-05T18:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, CAT, network, transmit, relay or PTT operation"
+    },
+    {
+      "section": "15.20 RX-888 Mk1 / RX-888 Mk2",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.14-15.20.zh-CN.md",
+      "translation_sha256": "c9f7dfe7b8fea6127f0cb76fa1ee6ac3bccc88f88ba42ab10087ba4f344e627d",
+      "review_summary": "核对固件上传、Mk1/Mk2硬件能力差异、R828D与ISM频率示例、ADC时钟/USB带宽关系、采样率输入范围、频谱宽度与CPU负载、VHF中频滤波器边缘行为。未连接设备。",
+      "reviewed_at": "2026-10-05T18:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, CAT, network, transmit, relay or PTT operation"
+    },
+    {
+      "section": "15.21 Public SDRs on the internet (KiwiSDR / Web-888, SpyServer)",
+      "title": "Radio-specific notes",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/15-radio-notes-15.21-public.zh-CN.md",
+      "translation_sha256": "aedaac0476800761d8f528f20d1313060d60f404e7452e29349c432ce81a5c0f",
+      "review_summary": "逐段核对网络类型及接收属性、目录快照数字的历史限定、KiwiSDR/SpyServer协议能力与公共接收机不兼容原因、USE/+ TAB替换语义和标签页身份、访问限制/重连差异、约12 kHz I/Q与宽带瀑布数据边界、网络带宽、远端AGC/S表位置、SpyServer低带宽模式、远端网格报告、手动连接及80/8073端口说明。文中在线数量和增益实测均保留为源文时代示例，未重新联网测量或连接公共接收机。",
+      "reviewed_at": "2026-10-05T18:30:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, CAT, network, audio, transmit or PTT operation"
+    },
+    {
+      "section": "16 Appendix — Keyboard shortcuts",
+      "title": "Appendix",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/16-appendix.zh-CN.md",
+      "translation_sha256": "6e80be5716b738fcac40c7185a9c5639febc4d473da717fe520092ac633e4574",
+      "review_summary": "核对调谐步进、噪声抑制/静音/视图快捷键、数字小键盘语音槽、CW直键条件与可重绑定性、F1固定行为、手册打开时按键接管、搜索导航/匹配计数、语音播报动作及无默认绑定说明。快捷键和设置路径与原文一致。",
+      "reviewed_at": "2026-10-05T20:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no application or radio operation"
+    },
+    {
+      "section": "16 Appendix — Modes",
+      "title": "Appendix",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/16-appendix.zh-CN.md",
+      "translation_sha256": "6e80be5716b738fcac40c7185a9c5639febc4d473da717fe520092ac633e4574",
+      "review_summary": "逐项核对附录模式表中的模式名称、调制/解码用途、收发边界、码率/频率/时隙/消息长度和手册交叉引用；保留技术名与协议字段，未把仅接收模式描述为可发射。",
+      "reviewed_at": "2026-10-05T20:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no application or radio operation"
+    },
+    {
+      "section": "16 Appendix — Bands",
+      "title": "Appendix",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/16-appendix.zh-CN.md",
+      "translation_sha256": "6e80be5716b738fcac40c7185a9c5639febc4d473da717fe520092ac633e4574",
+      "review_summary": "核对波段枚举、区域限制、设备接收能力禁用规则及 6CM 在第一区以外显示为 5CM 的注释；单位/大小写和源文一致。",
+      "reviewed_at": "2026-10-05T20:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no application or radio operation"
+    },
+    {
+      "section": "16 Appendix — Waterfall colour schemes",
+      "title": "Appendix",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/16-appendix.zh-CN.md",
+      "translation_sha256": "6e80be5716b738fcac40c7185a9c5639febc4d473da717fe520092ac633e4574",
+      "review_summary": "核对全部配色名称与顺序、PowerSDR/Icom/SDR#/SDR++来源说明、Amber/Rainbow主题关联、Blue渐变特征以及设置入口和交叉链接；未翻译应保留的产品名与主题标签。",
+      "reviewed_at": "2026-10-05T20:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no application or radio operation"
+    },
+    {
+      "section": "2.1-2.4 Launching, main window, tuning, bands and modes",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.1-2.4.zh-CN.md",
+      "translation_sha256": "45d378f86d2d0a66dd8f482b149eb16a3b08373c5d2a2930e05d8f0f4b6f1dde",
+      "review_summary": "逐段核对启动方式及siggen示例、窗口模块与显示布局、频率位步进、VFO/副接收与Shift点击行为、平移/惯性调谐与测量标尺、键盘步进取整、波段规划区域差异与传播颜色、记忆标记召回语义，以及波段/模式/数字模式选择器和停靠阈值。数值、模式名、命令、交叉引用及接收机行为与上游语义一致。",
+      "reviewed_at": "2026-10-05T20:30:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no UI device, receiver, network, transmit or PTT operation"
+    },
+    {
+      "section": "2.5-2.6 VFOs, split, sub-receiver, RIT and XIT",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.5-2.6.zh-CN.md",
+      "translation_sha256": "e785d02628fe37d0021e5b4418ea650a8e165d91cc78dcd8248b587f6f721d16",
+      "review_summary": "逐段核对VFO A/B状态交换与复制、按电台保存的会话恢复、波段天线记忆优先级、连接按钮与电源区别、副接收独立调谐/音频模式/右声道/DDC范围，以及RIT/XIT频偏范围和步进、频谱标记、SDR与CAT频率实现差异。涉及异频发射频率切换只按文档静态审阅，未进行发射或PTT测试。",
+      "reviewed_at": "2026-10-05T20:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "2.7 Receiver controls — AGC through binaural audio",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.7-agc-bin.zh-CN.md",
+      "translation_sha256": "4438838480c1a76089bf3a198acfcca7b572f990e9c58aef3a2d20924dfa4c86",
+      "review_summary": "核对控件动态排布、AGC只作用于收听与解码前分支、手动增益切换、抽取频宽/噪声/CPU权衡及副接收重定位、模式滤波器数值与WFM下限、CAT硬件静噪与软件dBFS差别、NB/ANC/五种NR引擎和强度行为、双耳音频范围及副接收冲突。保留各引擎性能和延迟数据为文档说明，未作实机测量。",
+      "reviewed_at": "2026-10-05T21:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, audio, transmit or PTT operation"
+    },
+    {
+      "section": "2.7 Receiver controls — stereo, RDS/DRM/HD, tone squelch and profile controls",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.7-st-end.zh-CN.md",
+      "translation_sha256": "53546d1011c63df26ccdd292eafff631262286293aeb3dc913ac3e459ad1de3a",
+      "review_summary": "核对WFM立体声导频与弱信号单声道混合、RDS/RBDS国家码推断/诊断/过载、DRM和HD按钮仅在实际解出音频时点亮、CTCSS/DCS检测时延与亚音静噪、滤波器边缘联动规则，以及天线/接收天线/电源控件与LINK的区别、逐模式设置保存和重置语义。硬件控件与音频行为仅作静态文字核对。",
+      "reviewed_at": "2026-10-05T21:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, audio, transmit or PTT operation"
+    },
+    {
+      "section": "2.8 Display and FFT controls",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.8.zh-CN.md",
+      "translation_sha256": "9b14be23cecf76e07e2ecb7e373e568996e5af63ac6f7909dd6d8850fe9e9790",
+      "review_summary": "核对SPEC双图层开关与远程偏好、解码标签、WIDE全频段视图的设备限制及I/Q分辨率切换、FIT/CTR状态语义、FFT尺寸与采样率上限/局部抽取细节、FLIP及颜色入口；并对照全景频谱细节、3D曲面和瀑布滚动小节的列数/帧率/历史窗口说明。保留性能数字为上游给出的测量案例，未重新基准测试。",
+      "reviewed_at": "2026-10-05T21:40:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no live radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "2.9 The S-meter",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.9.zh-CN.md",
+      "translation_sha256": "2804cb1b41230a3270d5e1a2a93901155c69a66d54a7639fd2037994c83c6acb",
+      "review_summary": "核对S值与dBm标尺、OVL两类触发来源和隐藏无效电平、板温提醒阈值、三种表盘、TX时ALC/功率/SWR来源区别、无硬件传感器时不显示、SDR dBFS校准与RSP增益补偿，以及CAT音频经过AGC后回退读数的限制。发射表内容仅静态审阅，未发射或触发PTT。",
+      "reviewed_at": "2026-10-05T21:40:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no live radio, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "2.10 Transmit controls, TX audio and SWR guard",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.10-controls-guard.zh-CN.md",
+      "translation_sha256": "496b830c48be9fb71e73ff37bf8c2b13abcd07b139554437f39b335a6bf1d109",
+      "review_summary": "核对PTT/TUNE/Drive/Tune/Mic/TX audio的显隐和每模式保存、数字/恒包络模式音频电平及FM频偏区别、发射均衡器路径与削波提示、默认频段限制、SWR保护读数来源/启动屏蔽时长/锁存确认，以及TUNE采用双门限和约五秒延迟的特例。全部是源文安全说明静态审阅，没有按键或发射测试。",
+      "reviewed_at": "2026-10-05T22:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, transmit, audio routing or PTT operation"
+    },
+    {
+      "section": "2.10 Radio power control, drive, microphone gain and CESSB",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.10-power-cessb.zh-CN.md",
+      "translation_sha256": "6246571a226194e671bbf553cf275546f578bc73f2dddbe7f0bcc7fcad44cce1",
+      "review_summary": "核对CAT/TCI电台与IQ设备功率控制路径、模式命令先于功率设置和每次发射刷新、不同厂商功率表示与型号例子、Drive与硬件TX增益分工、SSB/FM/RADE话筒增益含义，以及CESSB算法描述、测量结果、可用设备和模式范围。保留论文/测量数字为上游来源描述，未独立验证。",
+      "reviewed_at": "2026-10-05T22:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, transmit, audio routing or PTT operation"
+    },
+    {
+      "section": "2.11 Voice keyer",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.11.zh-CN.md",
+      "translation_sha256": "8c2e7ea3ac03f61da36359c0c50e77ddc10944097eeaca5b143606d480014e82",
+      "review_summary": "核对十个消息槽、录制/试听/发射/停止行为、48 kHz单声道WAV路径和文件命名、数字键绑定及空槽行为、Hamlib命令、RADE适用性和其他数字模式禁用规则。发射动作仅按文档静态核对，未触发TX/PTT。",
+      "reviewed_at": "2026-10-05T22:00:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, CAT, transmit, audio routing or PTT operation"
+    },
+    {
+      "section": "2.12 Memory channels and CHIRP import/export",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.12.zh-CN.md",
+      "translation_sha256": "3875c263cfc877793cdeb05e6add1dd5fa3af017ac8bb6c73d3405351b777910",
+      "review_summary": "核对存储/调用/编辑行为、模式变化时滤波器规则、多天线选择的“不改变”语义、中继设置在旧版数据上的默认值及每次调用覆盖、CHIRP CSV字段匹配和重复跳过、导入容错、导出丢失字段、界面排序与底层扫描顺序、文件夹拖动/删除以及频谱记忆标记。",
+      "reviewed_at": "2026-10-05T22:30:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, scan, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "2.13 Scanning",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.13.zh-CN.md",
+      "translation_sha256": "17d7b3e29c853690c39ab16ef2fb9578d5be1d89bc9c6955fe5ed8a70e84a47b",
+      "review_summary": "核对MEM/RANGE两类扫描、跨频段FFT快速扫描和CAT回退、扫描停留时DUPLEX/TONE与天线差异、文件夹选择/ALL语义、FAST门限及窗口边缘和零中频强制实听、SQL按模式复用、驻留和恢复策略、NEXT/SKIP行为、范围跳过列表绑定参数，以及scanner.json持久化。扫描中的PTT影响只按文档静态核对。",
+      "reviewed_at": "2026-10-05T22:30:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, scan, CAT, transmit or PTT operation"
+    },
+    {
+      "section": "2.14 CW receive cursor, QRG and decode indicators",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.14-receive.zh-CN.md",
+      "translation_sha256": "41a8709cd5f590cc3cae0e62941a300e2bab8366bf81eb2cb57aa849be9c5cc6",
+      "review_summary": "核对CW光标/通带/拨盘频率关系、点击与SKIM调谐、QRG读数仅改显示、取整顺序和Hamlib频率语义、不同电台自身CW键控造成的频率差异，以及解码状态灯、WPM/SNR/偏差和CLEAR RX边界。",
+      "reviewed_at": "2026-10-06T00:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no CW transmission, keying, CAT, radio or PTT operation"
+    },
+    {
+      "section": "2.14 CW keyboard sending and message buttons",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.14-keyboard.zh-CN.md",
+      "translation_sha256": "e5630673401b22a0aefebe0286e66025c7e609de48828838037a49d3b51b7c54",
+      "review_summary": "核对实时发送与RETURN整行提交、IDLE挂起差异、CALL CQ/清除、消息模板和按键焦点保护、MYCALL/MYGRID替换、按台站保存和同步、CW与其他键盘模式消息表隔离，以及收发信机break-in delay说明。",
+      "reviewed_at": "2026-10-06T00:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no CW transmission, keying, CAT, radio or PTT operation"
+    },
+    {
+      "section": "2.14 CW straight key and Morse trainer",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.14-key-trainer.zh-CN.md",
+      "translation_sha256": "3daf7d1bea9d9199e836ca891489bba0383ebcd915a0208910e79d28d65970cf",
+      "review_summary": "核对KEY直键的按住/松开、WPM/Farnsworth不适用、队列清空、30秒看门狗、窗口/标签/远程断开时松键、发射拒绝和模式切换边界、CAT与IQ路径差异，以及TRAINER仅本地播放不键控电台和Koch练习进度。",
+      "reviewed_at": "2026-10-06T00:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no CW transmission, keying, CAT, radio or PTT operation"
+    },
+    {
+      "section": "2.15 Band conditions",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.15.zh-CN.md",
+      "translation_sha256": "b45097a78c981da14269c2330b1759467a226e2f01d01ae3aebafeabb687f9bb",
+      "review_summary": "核对N0NBH全球预测与实测传播热图的区别、CONDX/PATHS/REACH/BEST定义及其互补解释、缺少预测的波段不外推、空路径不等同关闭、日夜按台站网格判定、每小时缓存更新、IBP固定轮播与频率/时序、流星雨ZHR/辐射点和定位要求。表中预测及上游数据来源按原文描述，未联网刷新。",
+      "reviewed_at": "2026-10-06T00:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no network fetch or radio operation"
+    },
+    {
+      "section": "2.16 Satellite operation (SAT)",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.16-lock.zh-CN.md",
+      "translation_sha256": "d96d30cc50d5001c69ce169c8ea603c5750a25928441cd7f56837c925e11abdd",
+      "review_summary": "核对卫星选择源、搜索/过境信息、TUNE与LOCK ON区别、SGP4刷新失效处理、接收和发射多普勒路径、反相转发器/SSB边带映射、XIT与异频/VFO B处理、AOS/LOS旋转器行为、公开频率/变频器偏移、CAT不自动改拨盘以及rigctld双重校正警告。上行和发射控制只作文本核对，无发射。",
+      "reviewed_at": "2026-10-06T01:10:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no satellite lock, radio, transmit, PTT or rotator operation"
+    },
+    {
+      "section": "2.16.1 Rotator control",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.16-rotator.zh-CN.md",
+      "translation_sha256": "a78cfe9631783b0ecc60bc70908b0ceb619bdc5001f9114b96a132de0a2626bf",
+      "review_summary": "核对Hamlib rotctld客户端角色、守护进程运行位置、GS-232B/EasyComm II/dummy示例命令、配置项（最小仰角、方位偏移、最小步进、停泊位置）及使用最小移动量减少电机磨损的说明。未连接或控制旋转器。",
+      "reviewed_at": "2026-10-06T01:10:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no satellite lock, radio, transmit, PTT or rotator operation"
+    },
+    {
+      "section": "2.17.1 Adding radios, local/remote placement, tab ordering and remote stations",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-config-receivers.zh-CN.md",
+      "translation_sha256": "5f2a9db06e6d24603d3fa04a4e7a62b68a6eaece83e7fbd0186a737e5825bd94",
+      "review_summary": "核对新电台默认无接口、添加位置选择与浏览器端远程创建确认、列表排序和第一台电台身份、远程台站连接如何呈现为独立选项卡、关闭选项卡与移除服务器台站电台的区别。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.17.2 Closing radios on a station",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-close-tabs.zh-CN.md",
+      "translation_sha256": "7b9421f41bce9dc5991ba666002816bafd21338c258df23eb4c2815732926417",
+      "review_summary": "核对断开连接与从台站清单移除的区别、远程移除后其他客户端可见的效果、保留配置但停止引擎并释放设备、第一台电台不可移除、旧版/非服务器端能力回退以及日志诊断命令。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.17.3 LINK connection control",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-link.zh-CN.md",
+      "translation_sha256": "7b5f912174a169a8d94d01c65802677594a0fd1b0f763bb54c5a8b18bbc2ecd1",
+      "review_summary": "核对LINK只关闭软件连接而不控制电台电源、释放USB/CAT/LAN资源、连接关闭时发射不可用、三处UI开关同步与重启状态、远程站点以服务端实际状态回报、关闭连接的显示状态和借用接收机例外。无设备操作。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.17.4 Shared and per-radio settings",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-shared.zh-CN.md",
+      "translation_sha256": "7e7f55c9c16ec7017128914f9b651cd31d81c9988918d04525944e977f500803",
+      "review_summary": "核对台站共享的存储信道/文件夹/频段堆栈/操作员身份/配置方案/日志/通报/奖状，与逐电台拨盘/模式/滤波/会话/扫描/服务端配置的边界；确认附加电台TCI服务器默认禁用以避免端口冲突。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.17.5 Radio roster, splits, station role and shared TX interlock",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-roster.zh-CN.md",
+      "translation_sha256": "7380474b29e154c3b1cba5d98830a908d6e7e625c38c5e0b17e9ddac0a93cd2d",
+      "review_summary": "核对后台电台继续运行而瀑布暂停、第一台电台承载站级服务、发射互锁的触发来源和拒绝状态、共享/独立配置、同设备多接收机TCI/HPSDR/Pluto的能力差异与共享本振，以及借用另一电台接收机作为全景频谱的状态。全站发射互锁仅静态检查。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.17.6 Per-radio server addresses",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.17-server.zh-CN.md",
+      "translation_sha256": "2cd91a9ef566e5963fc71b267ff54eae610c75f6321b79e669dc9f048550b271",
+      "review_summary": "核对服务器为清单中的每台电台提供独立地址、--server与图形界面台站一致、原生客户端自动连接每台电台并显示为标签，以及浏览器用radio查询参数选择单台电台。",
+      "reviewed_at": "2026-10-06T01:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, remote station, network control, transmit or PTT operation"
+    },
+    {
+      "section": "2.18 DUPLEX repeater shift",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.18-shift.zh-CN.md",
+      "translation_sha256": "b9f4180046c8429d1061614dfd5108251dc885bc9d05886b4e31a5d92df88a50",
+      "review_summary": "核对单工/负/正频差状态和偏移保留、AUTO只在中继输出子频段应用、接收/发射显示、区域频段规划覆盖范围与未核验说明，以及CAT电台由软件移动拨盘并清除电台自身双工以防叠加。已修正一处中文标点。",
+      "reviewed_at": "2026-10-06T02:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, repeater, transmit or PTT operation"
+    },
+    {
+      "section": "2.18 CTCSS, DCS and 1750 Hz tone operation",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.18-cat-tone.zh-CN.md",
+      "translation_sha256": "ab2648c66c0da82f6f8aca86e74ed2884fca5ff93aa104595f742e3ec7dc4787",
+      "review_summary": "核对CTCSS/DCS码表与极性、1750 Hz单次/每次发射行为和时长、接收音调静噪联动、NFM频偏预算及音频高通、CAT/TCI自调制路径的输入滤波限制，以及DCS位序仍待实机验证的来源边界。未操作中继。",
+      "reviewed_at": "2026-10-06T02:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no radio, repeater, transmit or PTT operation"
+    },
+    {
+      "section": "2.19 DRM overview, tuning and decoder synchronization",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.19-sync.zh-CN.md",
+      "translation_sha256": "640b7f8fbd073a63f096d72ece3d9b3500922803a919706cacec77880b1a4bc3",
+      "review_summary": "核对DRM广播属性与第3章通联模式的区别、中心频率调谐、标准滤波带宽不决定解码器宽度、帧交织导致的捕获延迟、IO/TIME/FRAME/FAC/SDC/AUDIO阶段含义及弱信号/失真/间歇故障诊断。",
+      "reviewed_at": "2026-10-06T02:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, network fetch, decode, transmit or PTT operation"
+    },
+    {
+      "section": "2.19 DRM service quality and constellation",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.19-service-quality.zh-CN.md",
+      "translation_sha256": "1602902dede5823d253cb78bfe0e549850a7b250245416f58a82072849f89ed7",
+      "review_summary": "核对SNR与MER差异、模式A-D/交织/保护/时钟偏差/多普勒时延、服务信息与多节目选择、分钟级质量轨迹中断语义、FAC/SDC/MSC星座阶数与点簇质量判断，以及每帧均匀抽取512个星座单元和窗口关闭时停止取数。",
+      "reviewed_at": "2026-10-06T02:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, network fetch, decode, transmit or PTT operation"
+    },
+    {
+      "section": "2.19 DRM audio codecs and unsupported services",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.19-codecs.zh-CN.md",
+      "translation_sha256": "b55f4cffc2c9d1cd7949b4c5c3def0f208ff483d4ded3d88ae6000a920e7ddba",
+      "review_summary": "核对解码音频绕过AGC和立体声输出、AAC内置及xHE-AAC依赖libfdk-aac的条件、Opus实验扩展依赖、Windows DLL文件名和各平台安装步骤、不可解码状态提示，以及发射/Journaline/MOT/EPG和撤销编解码器不支持范围。未下载依赖或进行广播解码测试。",
+      "reviewed_at": "2026-10-06T02:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no receiver, network fetch, decode, transmit or PTT operation"
+    },
+    {
+      "section": "2.20 HD Radio tuning and decoder dependencies",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.20-tuning.zh-CN.md",
+      "translation_sha256": "9bfb41a663e1286228fa1fb63fe1e3c659cd618034a2d25611730e1b6191b713",
+      "review_summary": "核对HD Radio混合FM广播原理与广播模式边界、libnrsc5/FAAD2依赖查找位置和环境变量、Windows DLL部署/重启要求、远程依赖位置、复数采样率最低限制、模拟载波中心调谐、±200 kHz带宽及锁定延迟。未安装库或接收广播。",
+      "reviewed_at": "2026-10-06T03:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no network fetch, receiver, audio decode, transmit or PTT operation"
+    },
+    {
+      "section": "2.20 HD Radio status and service information",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.20-panel.zh-CN.md",
+      "translation_sha256": "c07029296e2164ba50c4f65da85a65375f950b055ec520fd71fef2e7af66608f",
+      "review_summary": "核对SYNC/AUDIO两阶段和顶部状态灯仅随实际音频点亮、MER两侧边带、CBER阈值、OFFSET/PSMI字段、多节目HD-n选择及换台复位、独立线程丢样重捕获行为，以及AM波段/专辑图/节目服务数据和模拟回退的未实现范围。",
+      "reviewed_at": "2026-10-06T03:15:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no network fetch, receiver, audio decode, transmit or PTT operation"
+    },
+    {
+      "section": "2.21 MP3 recording source and stereo layout",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.21-audio.zh-CN.md",
+      "translation_sha256": "61bd27bbedc6195e74fa07526da8aaf336bf1dc9d8bac9a8ba5b7889489187b3",
+      "review_summary": "核对REC双录制入口和窄屏菜单、接收处理链录音点相对于音量/MUTE/静噪的位置、发射音频组成及调谐音替代、发射期间排除接收、CAT内部CW键控无音频、立体声两通道分配和录音开始后固定通道数。",
+      "reviewed_at": "2026-10-06T03:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no audio recording, receiver, file capture, transmit or PTT operation"
+    },
+    {
+      "section": "2.21 MP3 file locations, remote recording and quick clips",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.21-files.zh-CN.md",
+      "translation_sha256": "a6fb09afb88f6d58f5cfee125161dfa74e4d015758591cb2e7663e0df2e13065",
+      "review_summary": "核对按音乐目录/回退路径保存、UTC时间/频率/模式命名、跨电台编号、48 kHz/192 kbps独立编码线程、远程文件写在台站端、音频输出变化和正常退出处理，以及30秒/1分钟片段、15–90分钟定时停止互斥与会话范围。",
+      "reviewed_at": "2026-10-06T03:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no audio recording, receiver, file capture, transmit or PTT operation"
+    },
+    {
+      "section": "2.21 I/Q WAV spectrum recording",
+      "title": "Basic operation",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/02-basic-operation-2.21-iq.zh-CN.md",
+      "translation_sha256": "54bc45d1125428857aa01904d44eac7c761a6fe303425ddf59ac8adc91678328",
+      "review_summary": "核对全接收跨度而非解调音频、32位浮点双声道I/Q与采样率、auxi及文件名中心频率、sdroxide --file读取头部参数与显式命令行优先、2.4 Msps数据量及WAV转RF64、CAT音频无I/Q，以及远程文件写在接收机所在主机。",
+      "reviewed_at": "2026-10-06T03:45:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; no audio recording, receiver, file capture, transmit or PTT operation"
+    },
+    {
+      "section": "Introduction and table of contents",
+      "title": "Manual introduction",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/00-introduction-contents.zh-CN.md",
+      "translation_sha256": "1f8ceb0acf4433cc46ff17a15f41cc68eba6a350845f952d89170b4a511904b1",
+      "review_summary": "核对产品定位和功能概述、桌面/浏览器/远程形态、16章目录顺序、目录锚点与各章节名称。技术缩写和电台型号按原文保留。",
+      "reviewed_at": "2026-10-06T04:10:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; feature claims are not runtime verification"
+    },
+    {
+      "section": "1 Feature overview",
+      "title": "Manual introduction",
+      "source_file": "work/sdroxide/docs/USER_MANUAL.md",
+      "source_sha256": "b78b57f03af0685f11d711b3f46235fff86e7fa66f6cbf1de23bec16bdc4dfc9",
+      "translation_file": "outputs/manual-draft/01-feature-overview.zh-CN.md",
+      "translation_sha256": "3c0d2f4afc889f5fe068bc1c76ba70e74efdc8ddac3b62df52376acddb176d14",
+      "review_summary": "对照功能清单核查接收/发射能力边界、模式和协议覆盖、信号通报/日志/上传、远程操作、后端设备范围、多电台互锁、3D视图和语音无障碍等条目。第10.1信息源点击后日志预填的源码/实现差异已在validation.pending单独保留，未把文档描述当作代码行为确认。",
+      "reviewed_at": "2026-10-06T04:10:00+08:00",
+      "scope": "source-to-translation fidelity review by static inspection; feature claims are not runtime verification"
+    }
+  ],
+  "catalog_entry_audit": {
+    "entries": 5329,
+    "entries_with_source_refs": 3815,
+    "entries_without_source_refs": 1514,
+    "status_counts": {
+      "adapter-generated": 3595,
+      "reviewed-display-resource": 29,
+      "display-helper-adapted": 234,
+      "shared-ui-label-resource": 1463,
+      "translated-not-integrated": 8
+    },
+    "unreferenced_entries_review": "Source-less entries are shared UI labels, helper-resolved resources and eight legacy translated-not-integrated catalog leftovers; absence of a source_ref does not itself mean a visible label is unintegrated.",
+    "checked_at": "2026-10-05"
+  },
+  "dynamic_candidate_audit": {
+    "reviewed_dynamic_templates": 65,
+    "reviewed_direct_templates": 9,
+    "remaining_dynamic_fields": 0,
+    "review_record": "outputs\\SDRoxide_UI动态参数复核.json",
+    "review_sha256": "f4d3c86c8213c6bf73ca7b458b370d39a08ba03809cc0f68ce6cece761792f9b",
+    "candidate_coverage_record": "outputs\\SDRoxide_UI候选覆盖统计.json",
+    "candidate_coverage_sha256": "a6eb368019eec5807f1fc2b98f4765d49c2732e0b8bba4b2f0286005e4abbb2d",
+    "lexical_candidates": 9619,
+    "candidate_decisions": {
+      "retained-technical": 549,
+      "translated-resource-consumer-reviewed": 299,
+      "translated-adapter-generated": 3879,
+      "retained-test-fixture": 2069,
+      "retained-presentation-literal": 209,
+      "retained-build-or-schema-token": 361,
+      "retained-resource-identity": 490,
+      "retained-internal-state": 93,
+      "retained-identity": 297,
+      "retained-reviewed-abbreviation": 112,
+      "retained-reviewed-template": 341,
+      "retained-reviewed-symbol": 125,
+      "retained-reviewed-display-input": 12,
+      "retained-resource-path": 494,
+      "retained-reviewed-identity": 161,
+      "retained-protocol-or-user-data": 71,
+      "retained-user-template": 7,
+      "retained-export-schema": 50
+    },
+    "display_translation_pending": 0,
+    "needs_context_review": 0,
+    "scope": "Static argument provenance and candidate classification only; no real-window or full custom-helper acceptance",
+    "checked_at": "2026-10-05",
+    "candidate_coverage_stats_sha256": "0fec3b512901e566e1a0926f762992987a3eed21416bbb595e60efdc69c895fe",
+    "review_record_batch72": "outputs/SDRoxide_UI候选复核第72批.json",
+    "review_record_batch73": "outputs/SDRoxide_UI候选复核第73批.json",
+    "review_record_batch74": "outputs/SDRoxide_UI候选复核第74批.json",
+    "review_record_batch75": "outputs/SDRoxide_UI候选复核第75批.json",
+    "review_record_batch76": "outputs/SDRoxide_UI候选复核第76批.json",
+    "review_record_batch77": "outputs/SDRoxide_UI候选复核第77批.json",
+    "review_record_batch78": "outputs/SDRoxide_UI候选复核第78批.json",
+    "review_record_batch79": "outputs/SDRoxide_UI候选复核第79批.json",
+    "review_record_batch80": "outputs/SDRoxide_UI候选复核第80批.json",
+    "review_record_batch81": "outputs/SDRoxide_UI候选复核第81批.json",
+    "review_record_batch82": "outputs/SDRoxide_UI候选复核第82批.json",
+    "review_record_batch83": "outputs/SDRoxide_UI候选复核第83批.json",
+    "review_record_batch84": "outputs/SDRoxide_UI候选复核第84批.json",
+    "review_record_latest": "outputs/SDRoxide_UI候选复核第87批.json",
+    "review_record_batch85": "outputs/SDRoxide_UI候选复核第85批.json",
+    "review_record_batch86": "outputs/SDRoxide_UI候选复核第86批.json"
+  },
+  "web_artifact": {
+    "built_at": "2026-10-06T14:57:21.4276873+08:00",
+    "verification": "Current web release built after 0.2.2-preview catalog and complete-pack metadata changes; browser visual review remains pending.",
+    "wasm_file": "work/sdroxide-plugin/crates/sdroxide-web/dist/sdroxide-web-97579a99d1b6ff4a_bg.wasm",
+    "bytes": 54300431,
+    "sha256": "60b59a05df342115a4e61f72b7e439a547b978b8a5231fc704e1b3044be7287c"
+  },
+  "last_ui_audit": {
+    "item": "Localized application-generated null-radio notices observed in browser; first-run browser enables bundled Chinese pack.",
+    "source": "crates/sdroxide-ui/src/language_plugin/connection27.rs and language_plugin.rs",
+    "status": "implemented-in-isolated-copy",
+    "focused_test_result": "GNU UI suite 796 passed after terminology correction and native-first-run change.",
+    "radio_boundary": "Backend=None; no radio, PTT or transmission operation."
+  },
+  "manual_semantic_review_latest_batch": "outputs/SDRoxide_手册语义审校第108批.json",
+  "manual_verbatim_fallback_scan": "outputs/SDRoxide_手册英语残留候选.json",
+  "manual_verbatim_fallback_scan_sha256": "1917acfe740304ef724006c90cbb05f1bd334ac212a8e2eced6d1eae4b6213bc",
+  "ui_candidate_review_latest_batch": "outputs/SDRoxide_UI候选复核第71批.json",
+  "documented_source_discrepancies": [
+    "10.1: upstream USER_MANUAL.md says spot references are prefilled into the log entry; current prefill_from_spot copies callsign, frequency, mode, grid and comment but does not copy reference separately. The Simplified Chinese manual now documents actual application behavior; the upstream source was not modified.",
+    "15.17: upstream USER_MANUAL.md calls HackRF the only transmit-capable USB interface, while current Backend code also includes LimeSDR. The Simplified Chinese manual accurately says HackRF is one of the USB interfaces that supports transmission; upstream source remains unchanged."
+  ],
+  "ui_candidate_audit": {
+    "file": "outputs/SDRoxide_UI候选复核第88批.json",
+    "lexical_candidates": 9620,
+    "catalog_entries": 5338,
+    "unresolved_context_candidates": 0,
+    "latest_change": "Localized fixed null-radio notices and corrected Panadapter receiver to the v6 term 频谱接收机; browser first run now enables Chinese when no saved preference exists."
+  },
+  "native_gui_acceptance": "partial: current complete-pack build launched with Backend=None; Chinese first-run and saved English fallback titles verified and windows responded/closed. Full settings/help screenshot layout review remains pending.",
+  "latest_incremental_validation": {
+    "checked_at": "2026-10-06T14:57:21.4276873+08:00",
+    "change": "Added exact translations for Switched off, Panadapter receiver and Signal generator; No radio remains covered.",
+    "catalog_entries": 5345,
+    "focused_test": "language_plugin::tests::fixed_radio_placeholders_localize_and_real_capability_labels_are_preserved",
+    "focused_test_result": "passed",
+    "full_ui_unit_tests": "800 passed; 0 failed",
+    "language_pack_tests": "5 passed; bundled pack/font tests 3 passed; 0 failed",
+    "receive_safety": "Backend=None; no real receiver, transmission or PTT action.",
+    "web_localhost_smoke": "Browser sample verified first-run Chinese, no-radio notice, settings checkbox, manual TOC/scroll and saved English fallback. Full review remains pending.",
+    "focused_plugin_fallback_tests": "43 passed; 0 failed",
+    "manual_tests": "18 passed; 0 failed",
+    "manual_translation": "244/244 current-source fragments; 987,045/987,045 source characters covered; zero English-only prose candidates in 2,481 paragraphs"
+  },
+  "windows_release_refresh": {
+    "built_at": "2026-10-06T14:57:21.4276873+08:00",
+    "scope": "Windows embedded web build with complete Chinese UI catalog and complete translated manual; no connected hardware, no transmit/PTT.",
+    "binary_sha256": "28efea0caad3f3d383c8da10d10043c514147f3e17217d70cd502d6c37b87996",
+    "source_archive_and_installer": "Regenerate from this verified 0.2.2-preview executable and plugin.",
+    "status": "built_and_smoke_tested"
+  },
+  "browser_visual_sample": {
+    "status": "passed_with_scope_limit",
+    "report": "outputs/SDRoxide_浏览器界面汉化抽样验收_20261005.json",
+    "report_sha256": "51e7c2b11e87af91dc8d07e8e2f4ea9b234bbd5e153fa625ac155c6019bc5e55",
+    "scope": "Local Backend=None web settings, first-run Chinese, warning, manual TOC/scroll, and saved English fallback; full settings/manual visual acceptance pending."
+  },
+  "manual_review_coverage": {
+    "report": "outputs/SDRoxide_手册逐片段审校覆盖.json",
+    "drafts": 244,
+    "current_hash_matched_reviews": 244,
+    "mention_only": 0,
+    "without_review_record": 0,
+    "latest_batch": 108,
+    "scope": "Current-hash review-record inventory, not proof of complete semantic accuracy."
+  },
+  "current_source_ui_audit": {
+    "report": "outputs/SDRoxide_当前UI直接显示未命中审计.json",
+    "new_translated_labels": [
+      "1090 MHz Mode S -> 1090 MHz S 模式",
+      "FreeDV Reporter -> FreeDV 通联上报",
+      "compact menu chips RX/DISP/SYS -> 接收/显示/系统"
+    ],
+    "catalog_source_matches": 3935,
+    "catalog_entries": 5345,
+    "human_translation_review_required": 0,
+    "direct_display_occurrences": 4459,
+    "retained_product_and_hardware_names": 6,
+    "upstream_commit": "591d21d0b1bcddfcc7aaab8146141c953727e616",
+    "retained_dynamic_or_measurement_templates": 106,
+    "retained_protocol_identifiers_and_units": 185,
+    "rust_ui_files": 130,
+    "current_retained_candidate_occurrences": 297
+  },
+  "manual_translation": {
+    "report": "outputs/SDRoxide_中文手册全量翻译审计.json",
+    "source_sha256": "64d5c581b2ea16c2fa5d28cdeecca4d9c2889db33a345a272bc8b3a2631d9b92",
+    "source_characters": 987045,
+    "structural_and_anchor_tests": "passed: 18 help tests; translated manual retained all source anchors and images",
+    "translated_source_characters": 987045,
+    "status": "passed",
+    "translated_fragments": 244,
+    "scope": "Source coverage and heuristic prose screening prove translation completeness; runtime visual layout review remains separate.",
+    "english_prose_candidates": 0,
+    "upstream_commit": "591d21d0b1bcddfcc7aaab8146141c953727e616",
+    "prose_paragraphs_checked": 2481,
+    "missing_source_ranges": 0
+  }
+}

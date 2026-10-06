@@ -450,7 +450,7 @@ fn pass_diagram(ui: &mut egui::Ui, curve: &PassCurve, now: i64, height: f32) {
     let apex_p = pos2(xs[apex_i], ey(apex_el));
     p.circle_filled(apex_p, 2.0, ghost(green, 200));
     let apex_label =
-        format!("{apex_el:.0}° {}", sdroxide_solar::satellites::compass(apex_az as f64));
+        format!("{apex_el:.0}° {}", crate::language_plugin::compass(apex_az as f64));
     let (align, dy) = if apex_p.y - sky_top < 12.0 {
         (Align2::CENTER_TOP, 4.0)
     } else {
@@ -462,8 +462,8 @@ fn pass_diagram(ui: &mut egui::Ui, curve: &PassCurve, now: i64, height: f32) {
     let compass = |unix: i64| {
         curve
             .sample(unix as f64)
-            .map(|(_, az)| sdroxide_solar::satellites::compass(az as f64))
-            .unwrap_or("")
+            .map(|(_, az)| crate::language_plugin::compass(az as f64))
+            .unwrap_or_default()
     };
     for t in [curve.rise_unix, curve.set_unix] {
         let x = ex(t as f64);
@@ -472,8 +472,8 @@ fn pass_diagram(ui: &mut egui::Ui, curve: &PassCurve, now: i64, height: f32) {
             Stroke::new(1.2, theme::CYAN()),
         );
     }
-    let aos = format!("AOS {} {}", hhmm(curve.rise_unix), compass(curve.rise_unix));
-    let los = format!("LOS {} {}", hhmm(curve.set_unix), compass(curve.set_unix));
+    let aos = crate::language_plugin::format("window.satellite.aos", "AOS {} {}", &[hhmm(curve.rise_unix), compass(curve.rise_unix)]);
+    let los = crate::language_plugin::format("window.satellite.los", "LOS {} {}", &[hhmm(curve.set_unix), compass(curve.set_unix)]);
     let baseline = plot.bottom() - 1.0;
     let aos_r =
         p.text(pos2(plot.left() + 5.0, baseline), Align2::LEFT_BOTTOM, &aos, font.clone(), dim);
@@ -508,17 +508,14 @@ fn pass_diagram(ui: &mut egui::Ui, curve: &PassCurve, now: i64, height: f32) {
     p.text(
         pos2(rect.left() + 7.0, rect.top() + 2.0),
         Align2::LEFT_TOP,
-        "PASS PROFILE",
+        crate::language_plugin::text("window.satellite.custom.text_511_efb77a", "PASS PROFILE"),
         font.clone(),
         dim,
     );
     p.text(
         pos2(rect.right() - 13.0, rect.top() + 2.0),
         Align2::RIGHT_TOP,
-        format!(
-            "{} above the horizon",
-            sdroxide_solar::timefmt::age(curve.set_unix - curve.rise_unix)
-        ),
+        { let __lp_arg_0 = &(crate::language_plugin::solar_age(curve.set_unix - curve.rise_unix)); crate::language_plugin::format("window.satellite.custom.text_519_a01bd7", "{} above the horizon", &[format!("{}", __lp_arg_0)]) },
         font,
         dim,
     );
@@ -565,11 +562,11 @@ fn fmt_mhz(hz: f64) -> String {
 fn in_words(s: i64) -> String {
     let s = s.max(0);
     if s < 60 {
-        format!("in {s} s")
+        crate::language_plugin::format("window.satellite.custom.text_568_7884ae", "in {s} s", &[format!("{s}")])
     } else if s < 3600 {
-        format!("in {} min", s / 60)
+        { let __lp_arg_0 = &(s / 60); crate::language_plugin::format("window.satellite.custom.text_570_1fd99d", "in {} min", &[format!("{}", __lp_arg_0)]) }
     } else {
-        format!("in {} h {:02} min", s / 3600, (s % 3600) / 60)
+        { let __lp_arg_0 = &(s / 3600); let __lp_arg_1 = &((s % 3600) / 60); crate::language_plugin::format("window.satellite.custom.text_572_9f467a", "in {} h {:02} min", &[format!("{}", __lp_arg_0), format!("{:02}", __lp_arg_1)]) }
     }
 }
 
@@ -585,7 +582,7 @@ impl SdroxideApp {
         // and the state lives on `self`.
         let mut qo100 = std::mem::take(&mut self.qo100_win);
         let mut open = self.show_sat;
-        let resp = egui::Window::new("SATELLITE")
+        let resp = egui::Window::new(crate::language_plugin::text("window.satellite.text_588_4c6d1a", "SATELLITE")).id(egui::Id::new("SATELLITE"))
             .id(crate::layout::salted_id(ctx, "SATELLITE"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -622,7 +619,7 @@ impl SdroxideApp {
         let hunting = self.state.qo100.enabled;
         crate::chrome::tab_bar(ui, |ui, bar| {
             for (tab, label) in [
-                (SatTab::Satellites, live(locked, "SATELLITES")),
+                (SatTab::Satellites, crate::language_plugin::satellite_tab_label(locked)),
                 (SatTab::Qo100, live(hunting, "QO-100")),
             ] {
                 if bar.tab(ui, self.sat_tab == tab, label).clicked() {
@@ -675,19 +672,19 @@ impl SdroxideApp {
         cmds: &mut Vec<Command>,
         t: &sdroxide_types::SatTrackStatus,
     ) {
-        use sdroxide_solar::satellites::compass;
+        use crate::language_plugin::compass;
         let dim = |s: &str| RichText::new(s).size(9.5).color(theme::CYAN_DIM());
 
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new(format!("● LOCKED — {}", t.name))
+                RichText::new({ let __lp_arg_0 = &(t.name); crate::language_plugin::format("window.satellite.text_683_920111", "● LOCKED — {}", &[format!("{}", __lp_arg_0)]) })
                     .size(13.0)
                     .strong()
                     .color(if t.visible { theme::GREEN() } else { theme::YELLOW() }),
             );
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if crate::chrome::chip(ui, false, "UNLOCK")
-                    .on_hover_text("Release the lock; the dial stays where it is")
+                if crate::chrome::chip(ui, false, crate::language_plugin::text("window.satellite.text_689_09911d", "UNLOCK"))
+                    .on_hover_text(crate::language_plugin::text("window.satellite.text_690_04aab6", "Release the lock; the dial stays where it is"))
                     .clicked()
                 {
                     cmds.push(Command::SetSatLock(None));
@@ -698,13 +695,13 @@ impl SdroxideApp {
         ui.add_space(4.0);
 
         egui::Grid::new("sat-lock-grid").num_columns(4).spacing([16.0, 3.0]).show(ui, |ui| {
-            ui.label(dim("AZIMUTH"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_701_4037d7", "AZIMUTH")));
             ui.label(
                 RichText::new(format!("{:.1}°  {}", t.az_deg, compass(t.az_deg)))
                     .size(12.5)
                     .strong(),
             );
-            ui.label(dim("ELEVATION"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_707_1f4186", "ELEVATION")));
             ui.label(
                 RichText::new(format!("{:+.1}°", t.el_deg))
                     .size(12.5)
@@ -713,35 +710,35 @@ impl SdroxideApp {
             );
             ui.end_row();
 
-            ui.label(dim("RANGE"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_716_69da96", "RANGE")));
             ui.label(RichText::new(format!("{:.0} km", t.range_km)).size(11.5));
-            ui.label(dim("RATE"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_718_fced8f", "RATE")));
             let dir = if t.range_rate_km_s < -0.01 {
-                "approaching"
+                crate::language_plugin::text("window.sat.motion.text_720_1a28e6", "approaching")
             } else if t.range_rate_km_s > 0.01 {
-                "receding"
+                crate::language_plugin::text("window.sat.motion.text_722_50bf81", "receding")
             } else {
-                "abeam"
+                crate::language_plugin::text("window.sat.motion.text_724_e060ee", "abeam")
             };
             ui.label(RichText::new(format!("{:+.2} km/s {dir}", t.range_rate_km_s)).size(11.5));
             ui.end_row();
 
-            ui.label(dim("DOWNLINK"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_729_022120", "DOWNLINK")));
             ui.label(
                 RichText::new(format!("{} MHz", fmt_mhz(t.downlink_hz)))
                     .size(11.5)
                     .color(theme::GREEN()),
             );
-            ui.label(dim("DOPPLER RX"));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_735_c7db17", "DOPPLER RX")));
             ui.label(RichText::new(fmt_hz_signed(t.doppler_rx_hz)).size(11.5));
             ui.end_row();
 
             if let Some(up) = t.uplink_hz {
-                ui.label(dim("UPLINK"));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_740_9a569e", "UPLINK")));
                 ui.label(
                     RichText::new(format!("{} MHz", fmt_mhz(up))).size(11.5).color(theme::YELLOW()),
                 );
-                ui.label(dim("DOPPLER TX"));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_744_b76e68", "DOPPLER TX")));
                 ui.label(RichText::new(fmt_hz_signed(t.doppler_tx_hz)).size(11.5));
                 ui.end_row();
             }
@@ -755,29 +752,18 @@ impl SdroxideApp {
             (_, true) => {
                 if let Some(p) = &t.next_pass {
                     if (p.rise_unix..=p.set_unix).contains(&now) {
-                        ui.label(dim(&format!(
-                            "Pass until {} UTC · max {:.0}°",
-                            sdroxide_solar::timefmt::ymd_hm(p.set_unix)
+                        ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_solar::timefmt::ymd_hm(p.set_unix)
                                 .split(' ')
                                 .nth(1)
-                                .unwrap_or(""),
-                            p.max_el
-                        )));
+                                .unwrap_or("").to_owned()); let __lp_arg_1 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_759_c0e934", "Pass until {} UTC · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) }));
                     }
                 }
             }
             (Some(p), false) => {
-                ui.label(dim(&format!(
-                    "Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°",
-                    sdroxide_solar::timefmt::ymd_hm(p.rise_unix),
-                    in_words(p.rise_unix - now),
-                    p.rise_az,
-                    compass(p.rise_az),
-                    p.max_el
-                )));
+                ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_solar::timefmt::ymd_hm(p.rise_unix)); let __lp_arg_1 = &(in_words(p.rise_unix - now)); let __lp_arg_2 = &(p.rise_az); let __lp_arg_3 = &(compass(p.rise_az)); let __lp_arg_4 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_771_672b13", "Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{:.0}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{:.0}", __lp_arg_4)]) }));
             }
             (None, false) => {
-                ui.label(dim("No pass inside the next 48 hours from your QTH."));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_780_6dd841", "No pass inside the next 48 hours from your QTH.")));
             }
         }
 
@@ -807,13 +793,13 @@ impl SdroxideApp {
         // The warnings, in the order an operator has to act on them.
         if t.stale_elements {
             ui.label(
-                RichText::new("⚠ Elements stale — corrections suspended until a TLE refresh")
+                RichText::new(crate::language_plugin::text("window.satellite.text_810_4a4d42", "⚠ Elements stale — corrections suspended until a TLE refresh"))
                     .size(10.5)
                     .color(theme::YELLOW()),
             );
         } else if !t.corrections_active && win.sent.as_ref().is_none_or(|c| c.doppler) {
             ui.label(
-                RichText::new("Doppler correction needs an IQ front end — a CAT rig tracks only")
+                RichText::new(crate::language_plugin::text("window.satellite.text_816_a800fb", "Doppler correction needs an IQ front end — a CAT rig tracks only"))
                     .size(10.5)
                     .color(theme::CYAN_DIM()),
             );
@@ -821,12 +807,8 @@ impl SdroxideApp {
         if let Some(s) = &self.rigctld_status {
             if s.running && s.clients > 0 {
                 ui.label(
-                    RichText::new(format!(
-                        "⚠ {} rigctld client{} connected — satellite software steering the dial \
-                         there would correct Doppler twice",
-                        s.clients,
-                        if s.clients == 1 { "" } else { "s" }
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(s.clients); let __lp_arg_1 = &(crate::language_plugin::plural_suffix("window.sat.text_825_0e36d9", "⚠ {} rigctld client{} connected — satellite software steering the dial there would correct Doppler twice", s.clients == 1)); crate::language_plugin::format("window.sat.text_825_0e36d9", "⚠ {} rigctld client{} connected — satellite software steering the dial \
+                         there would correct Doppler twice", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                     .size(10.5)
                     .color(theme::YELLOW()),
                 );
@@ -835,12 +817,12 @@ impl SdroxideApp {
         if let Some((connected, az, el, err)) = &self.rotator_status {
             if win.sent.as_ref().is_some_and(|c| c.rotator) {
                 let line = if *connected {
-                    RichText::new(format!("Rotator: antenna at {az:.0}° az {el:.0}° el"))
+                    RichText::new(crate::language_plugin::format("window.satellite.text_838_64db79", "Rotator: antenna at {az:.0}° az {el:.0}° el", &[format!("{az:.0}"), format!("{el:.0}")]))
                         .color(theme::CYAN_DIM())
                 } else {
                     match err {
-                        Some(e) => RichText::new(format!("Rotator: {e}")).color(theme::YELLOW()),
-                        None => RichText::new("Rotator: not connected").color(theme::CYAN_DIM()),
+                        Some(e) => RichText::new(crate::language_plugin::format("window.satellite.text_842_466379", "Rotator: {e}", &[format!("{e}")])).color(theme::YELLOW()),
+                        None => RichText::new(crate::language_plugin::text("window.satellite.text_843_d1cd81", "Rotator: not connected")).color(theme::CYAN_DIM()),
                     }
                 };
                 ui.label(line.size(10.5));
@@ -852,16 +834,16 @@ impl SdroxideApp {
         if let Some(sent) = win.sent.as_mut() {
             ui.add_space(4.0);
             ui.horizontal(|ui| {
-                if crate::chrome::chip(ui, sent.doppler, "DOPPLER")
-                    .on_hover_text("Apply the computed correction to RX and TX")
+                if crate::chrome::chip(ui, sent.doppler, crate::language_plugin::text("window.satellite.text_855_791bca", "DOPPLER"))
+                    .on_hover_text(crate::language_plugin::text("window.satellite.text_856_0ecdcd", "Apply the computed correction to RX and TX"))
                     .clicked()
                 {
                     sent.doppler = !sent.doppler;
                     cmds.push(Command::SetSatLock(Some(Box::new(sent.clone()))));
                 }
-                if crate::chrome::chip(ui, sent.rotator, "ROTATOR")
+                if crate::chrome::chip(ui, sent.rotator, crate::language_plugin::text("window.satellite.text_862_354c60", "ROTATOR"))
                     .on_hover_text(
-                        "Steer the antenna through the rotctld client (Settings ▸ Servers)",
+                        crate::language_plugin::text("window.satellite.text_864_3c85db", "Steer the antenna through the rotctld client (Settings ▸ Servers)"),
                     )
                     .clicked()
                 {
@@ -887,14 +869,14 @@ impl SdroxideApp {
                 ui,
                 egui::TextEdit::singleline(&mut win.search)
                     .desired_width(160.0)
-                    .hint_text("name or NORAD"),
+                    .hint_text(crate::language_plugin::text("window.satellite.text_890_aa0d40", "name or NORAD")),
             );
             if !win.search.is_empty() && ui.small_button("×").clicked() {
                 win.search.clear();
             }
             if qth.is_none() {
                 ui.label(
-                    RichText::new("set your grid for passes (Settings ▸ General)")
+                    RichText::new(crate::language_plugin::text("window.satellite.text_897_970cd9", "set your grid for passes (Settings ▸ General)"))
                         .size(9.5)
                         .color(theme::YELLOW()),
                 );
@@ -978,9 +960,9 @@ impl SdroxideApp {
                 .spacing([14.0, 2.0])
                 .striped(true)
                 .show(ui, |ui| {
-                    ui.label(dim("SATELLITE"));
+                    ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_981_4c6d1a", "SATELLITE")));
                     ui.label(dim("NORAD"));
-                    ui.label(dim("PASS"));
+                    ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_983_2f9acb", "PASS")));
                     ui.end_row();
                     for (i, el, _) in &rows {
                         let e = &list.entries[*i];
@@ -1003,18 +985,18 @@ impl SdroxideApp {
                         ui.label(RichText::new(e.norad_id.to_string()).size(10.0));
                         let pass = match (el, &e.pass, &e.sat) {
                             (Some(el), _, _) if *el > 0.0 => {
-                                RichText::new(format!("● up now, {el:.0}°")).color(theme::GREEN())
+                                RichText::new(crate::language_plugin::format("window.satellite.text_1006_0573f9", "● up now, {el:.0}°", &[format!("{el:.0}")])).color(theme::GREEN())
                             }
                             (_, Some((_, PassMemo::Pass(p))), _) => {
                                 RichText::new(in_words(p.rise_unix - now))
                             }
                             (_, Some((_, PassMemo::Always)), _) => {
-                                RichText::new("always visible").color(theme::GREEN())
+                                RichText::new(crate::language_plugin::text("window.satellite.text_1012_60b6d5", "always visible")).color(theme::GREEN())
                             }
                             (_, Some((_, PassMemo::Never)), _) => {
-                                RichText::new("not from here").color(theme::CYAN_DIM())
+                                RichText::new(crate::language_plugin::text("window.satellite.text_1015_11f4fb", "not from here")).color(theme::CYAN_DIM())
                             }
-                            (_, None, None) => RichText::new("no elements").color(theme::YELLOW()),
+                            (_, None, None) => RichText::new(crate::language_plugin::text("window.satellite.text_1017_6b51c7", "no elements")).color(theme::YELLOW()),
                             (_, None, Some(_)) => RichText::new("…"),
                         };
                         ui.label(pass.size(10.0));
@@ -1025,7 +1007,7 @@ impl SdroxideApp {
 
         let Some(id) = win.selected else {
             ui.add_space(4.0);
-            ui.label(dim("Pick a satellite to see its links and lock on."));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_1028_093f87", "Pick a satellite to see its links and lock on.")));
             return;
         };
         let Some(entry_idx) = list.entries.iter().position(|e| e.norad_id == id) else {
@@ -1035,6 +1017,7 @@ impl SdroxideApp {
 
         // The operator's own frequency table wins over the built-in one, the
         // same rule the 3D view's pass window applies.
+        let custom_freqs = self.sat_cfg.freqs_for(id).is_some();
         let freqs = match self.sat_cfg.freqs_for(id) {
             Some(f) => Some(f.clone()),
             None => sdroxide_solar::satfreq::builtin_for(id).cloned(),
@@ -1063,7 +1046,7 @@ impl SdroxideApp {
         let links: Vec<sdroxide_types::SatLink> =
             freqs.as_ref().map(|f| f.usable_links().cloned().collect()).unwrap_or_default();
         if links.is_empty() {
-            ui.label(dim("No frequencies on file for this one — add them in Settings ▸ TLE."));
+            ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_1066_fbb098", "No frequencies on file for this one — add them in Settings ▸ TLE.")));
             return;
         }
         win.link_idx = win.link_idx.min(links.len() - 1);
@@ -1075,23 +1058,23 @@ impl SdroxideApp {
             .min_col_width(link_col_w)
             .spacing([14.0, 2.0])
             .show(ui, |ui| {
-                ui.label(dim("LINK"));
-                ui.label(dim("DOWNLINK (MHz)"));
-                ui.label(dim("UPLINK (MHz)"));
-                ui.label(dim("MODE"));
+                ui.label(dim(&crate::language_plugin::text("common.link", "LINK")));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_1079_d5abb6", "DOWNLINK (MHz)")));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_1080_6026f4", "UPLINK (MHz)")));
+                ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_1081_ac6c84", "MODE")));
                 ui.end_row();
                 for (i, l) in links.iter().enumerate() {
                     let sel = i == win.link_idx;
                     // The selected row sits on the cyan selection fill and
                     // keeps the label's own color, so that color has to be
                     // the dark on-cyan ink or it vanishes into the fill.
-                    let mut label = RichText::new(&l.label).size(10.5);
+                    let mut label = RichText::new(crate::language_plugin::satellite_link_label(l, custom_freqs)).size(10.5);
                     if sel {
                         label = label.color(theme::INK_ON_CYAN()).strong();
                     }
                     let resp = ui.selectable_label(sel, label);
                     if !l.note.is_empty() {
-                        resp.clone().on_hover_text(&l.note);
+                        resp.clone().on_hover_text(crate::language_plugin::satellite_link_note(l, custom_freqs));
                     }
                     if resp.clicked() {
                         win.link_idx = i;
@@ -1107,20 +1090,20 @@ impl SdroxideApp {
                             .color(theme::YELLOW()),
                     );
                     let mode =
-                        if l.inverting { format!("{} · inv", l.mode) } else { l.mode.clone() };
+                        crate::language_plugin::satellite_link_mode_with_inversion(l, custom_freqs);
                     ui.label(RichText::new(mode).size(10.5));
                     ui.end_row();
                 }
             });
         let link = &links[win.link_idx];
         if !link.note.is_empty() {
-            ui.label(dim(&format!("{} — {}", link.label, link.note)));
+            ui.label(dim(&format!("{} — {}", crate::language_plugin::satellite_link_label(link, custom_freqs), crate::language_plugin::satellite_link_note(link, custom_freqs))));
         }
         ui.add_space(6.0);
 
         ui.horizontal(|ui| {
-            if crate::chrome::chip(ui, false, "TUNE")
-                .on_hover_text("Set the dial and mode to this link — no lock, no correction")
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.satellite.text_1122_eaca96", "TUNE"))
+                .on_hover_text(crate::language_plugin::text("window.satellite.text_1123_4fbeb2", "Set the dial and mode to this link — no lock, no correction"))
                 .clicked()
             {
                 if link.downlink.is_some() {
@@ -1137,13 +1120,13 @@ impl SdroxideApp {
             if crate::chrome::chip_accent(
                 ui,
                 locked_here,
-                RichText::new(if locked_here { " LOCKED " } else { " LOCK ON " }).strong(),
+                RichText::new(if locked_here { crate::language_plugin::text("window.satellite.text_1140_d78a51", " LOCKED ") } else { crate::language_plugin::text("window.satellite.text_1140_82a522", " LOCK ON ") }).strong(),
                 theme::GREEN(),
                 theme::INK_ON_CYAN(),
             )
             .on_hover_text(
-                "Track this satellite: Doppler correction on RX and TX, transponder-mapped \
-                 uplink, and the 3D view follows it",
+                crate::language_plugin::text("window.satellite.text_1145_ef7da1", "Track this satellite: Doppler correction on RX and TX, transponder-mapped \
+                 uplink, and the 3D view follows it"),
             )
             .clicked()
                 && !locked_here
@@ -1204,7 +1187,7 @@ impl SdroxideApp {
         let name = entry
             .map(|e| e.name.clone())
             .or_else(|| freqs.as_ref().map(|f| f.name.clone()).filter(|n| !n.is_empty()))
-            .unwrap_or_else(|| format!("NORAD {norad_id}"));
+            .unwrap_or_else(|| crate::language_plugin::format("window.satellite.norad_fallback", "NORAD {norad_id}", &[norad_id.to_string()]));
         let tle = entry.and_then(|e| e.tle.clone());
         let cfg = SatLockConfig {
             norad_id,
@@ -1219,5 +1202,48 @@ impl SdroxideApp {
         cmds.push(Command::SetMode { rx: sdroxide_types::RxId::Main, mode: mode_for_link(link) });
         cmds.push(Command::SetSatLock(Some(Box::new(cfg.clone()))));
         self.sat_win.sent = Some(cfg);
+    }
+}
+
+#[cfg(test)]
+mod language_countdown_tests {
+    use super::*;
+    #[test]
+    fn countdown_boundaries_round_as_before_and_switch_back_to_exact_english() {
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (seconds,english,chinese) in [
+                (-1,"in 0 s","0 秒后"),(0,"in 0 s","0 秒后"),(59,"in 59 s","59 秒后"),
+                (60,"in 1 min","1 分钟后"),(3599,"in 59 min","59 分钟后"),
+                (3600,"in 1 h 00 min","1 小时 00 分钟后"),(3900,"in 1 h 05 min","1 小时 05 分钟后"),
+                (86400,"in 24 h 00 min","24 小时 00 分钟后")
+            ] {assert_eq!(in_words(seconds),if enabled {chinese} else {english});}
+        }
+    }
+    #[test]
+    fn pass_caption_uses_localized_duration_and_unchanged_clock_values() {
+        for enabled in [true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let seconds=3900;
+            assert_eq!(crate::language_plugin::solar_age(seconds),if enabled {"65 分钟"} else {"65 min"});
+            let (key,entry)=serde_json::from_str::<serde_json::Value>(include_str!("../../../../plugins/zh-CN/translations.zh-CN.json")).unwrap()["entries"]
+                .as_object().unwrap().iter().find(|(_,entry)|entry["source"]=="Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°").map(|(k,e)|(k.clone(),e.clone())).unwrap();
+            let text=crate::language_plugin::format(&key,entry["source"].as_str().unwrap(),&["2026-10-04 12:34".into(),in_words(seconds),"123".into(),"SE".into(),"67".into()]);
+            for raw in ["2026-10-04 12:34","123°","SE","67°"] {assert!(text.contains(raw));}
+            assert_eq!(text.contains("下次过境"),enabled);
+        }
+    }
+
+    #[test]
+    fn horizon_crossing_labels_and_norad_fallback_switch_and_preserve_values() {
+        for enabled in [true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(crate::language_plugin::format("window.satellite.aos", "AOS {} {}", &["12:34".into(), "SE".into()]),
+                if enabled { "升起 12:34 SE" } else { "AOS 12:34 SE" });
+            assert_eq!(crate::language_plugin::format("window.satellite.los", "LOS {} {}", &["23:45".into(), "NW".into()]),
+                if enabled { "落下 23:45 NW" } else { "LOS 23:45 NW" });
+            assert_eq!(crate::language_plugin::format("window.satellite.norad_fallback", "NORAD {norad_id}", &["12345".into()]),
+                if enabled { "NORAD 编号 12345" } else { "NORAD 12345" });
+        }
     }
 }

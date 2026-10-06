@@ -1,0 +1,13 @@
+[package]
+name = "sdroxide-language-pack"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2 = "0.11"
+
+[dev-dependencies]
+ab_glyph = "0.2"

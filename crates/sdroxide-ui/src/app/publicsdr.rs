@@ -176,23 +176,23 @@ fn entry_row(
                         Some(why) => {
                             ui.add(
                                 egui::Label::new(
-                                    RichText::new(why).size(10.0).color(crate::theme::ALERT()),
+                                    RichText::new(crate::language_plugin::public_sdr_blocked_status(why)).size(10.0).color(crate::theme::ALERT()),
                                 )
                                 .truncate(),
                             );
                         }
                         None => {
-                            if crate::chrome::chip(ui, false, "+ TAB")
-                                .on_hover_text("Open this receiver as a new radio, in its own tab")
+                            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.publicsdr.text_185_b14326", "+ TAB"))
+                                .on_hover_text(crate::language_plugin::text("window.publicsdr.text_186_75c159", "Open this receiver as a new radio, in its own tab"))
                                 .clicked()
                             {
                                 action = Some(PickAction::NewRadio);
                             }
-                            if crate::chrome::chip(ui, false, "USE")
+                            if crate::chrome::chip(ui, false, crate::language_plugin::text("common.use", "USE"))
                                 .on_hover_text(
-                                    "Point *this* radio at the receiver, replacing whatever \
+                                    crate::language_plugin::text("window.publicsdr.text_193_e2bc8e", "Point *this* radio at the receiver, replacing whatever \
                                      interface it is on now — asked again first, because that \
-                                     is a whole radio's worth of setting up",
+                                     is a whole radio's worth of setting up"),
                                 )
                                 .clicked()
                             {
@@ -206,16 +206,10 @@ fn entry_row(
         .response
         // Everything that did not earn a column of its own: the address to
         // connect to, the antenna, and what the receiver says it is.
-        .on_hover_text(format!(
-            "{}\n{}\nantenna: {}\n{}",
-            e.address,
-            e.device,
-            if e.antenna.is_empty() { "not stated" } else { &e.antenna },
-            match e.snr_db {
-                Some(snr) => format!("noise-floor score {snr}"),
-                None => format!("up to {:.0} kHz of I/Q", e.max_iq_rate / 1e3),
-            },
-        ));
+        .on_hover_text({ let __lp_arg_0 = &(e.address); let __lp_arg_1 = &(e.device); let __lp_arg_2 = &(if e.antenna.is_empty() { crate::language_plugin::text("window.publicsdr.text_213_109df2", "not stated") } else { e.antenna.clone() }); let __lp_arg_3 = &(match e.snr_db {
+                Some(snr) => crate::language_plugin::format("window.publicsdr.text_215_f99aa8", "noise-floor score {snr}", &[format!("{snr}")]),
+                None => { let __lp_arg_0 = &(e.max_iq_rate / 1e3); crate::language_plugin::format("window.publicsdr.text_216_c238e3", "up to {:.0} kHz of I/Q", &[format!("{:.0}", __lp_arg_0)]) },
+            }); crate::language_plugin::format("window.publicsdr.text_210_45c8c3", "{}\n{}\nantenna: {}\n{}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3)]) });
     ui.add_space(1.0);
     action
 }
@@ -251,19 +245,19 @@ fn confirm_panel(ui: &mut egui::Ui, blurb: &str) -> Option<Confirm> {
         ui.label(RichText::new(blurb).color(crate::theme::TEXT_STRONG()).size(12.0));
         ui.add_space(4.0);
         ui.horizontal(|ui| {
-            if crate::chrome::chip(ui, false, "REPLACE")
-                .on_hover_text("Point the radio you are on at this receiver")
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.publicsdr.text_254_9b66c9", "REPLACE"))
+                .on_hover_text(crate::language_plugin::text("window.publicsdr.text_255_0cc499", "Point the radio you are on at this receiver"))
                 .clicked()
             {
                 answer = Some(Confirm::Replace);
             }
-            if crate::chrome::chip(ui, false, "+ TAB INSTEAD")
-                .on_hover_text("Open the receiver as another radio and leave this one alone")
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.publicsdr.text_260_7a3a57", "+ TAB INSTEAD"))
+                .on_hover_text(crate::language_plugin::text("window.publicsdr.text_261_ae32cc", "Open the receiver as another radio and leave this one alone"))
                 .clicked()
             {
                 answer = Some(Confirm::NewTab);
             }
-            if crate::chrome::chip(ui, false, "CANCEL").clicked() {
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.publicsdr.text_266_ad8d69", "CANCEL")).clicked() {
                 answer = Some(Confirm::Cancel);
             }
         });
@@ -361,7 +355,7 @@ impl SdroxideApp {
         let blurb = self.public_sdr_confirm.as_deref().map(|e| self.replace_blurb(e));
         let mut answer: Option<Confirm> = None;
 
-        let resp = egui::Window::new("PUBLIC SDRS")
+        let resp = egui::Window::new(crate::language_plugin::text("window.publicsdr.text_364_58c39f", "PUBLIC SDRS")).id(egui::Id::new("PUBLIC SDRS"))
             .id(crate::layout::salted_id(ctx, "PUBLIC SDRS"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -382,35 +376,35 @@ impl SdroxideApp {
                             self.public_sdr_nets_shown[i] = !self.public_sdr_nets_shown[i];
                         }
                     }
-                    if crate::chrome::chip(ui, self.public_sdr_free_only, "AVAILABLE")
+                    if crate::chrome::chip(ui, self.public_sdr_free_only, crate::language_plugin::text("window.publicsdr.text_385_adfe61", "AVAILABLE"))
                         .on_hover_text(
-                            "Hide receivers that are full, and the ones whose operator has \
-                             not opened any channels to apps other than a browser",
+                            crate::language_plugin::text("window.publicsdr.text_387_1904cb", "Hide receivers that are full, and the ones whose operator has \
+                             not opened any channels to apps other than a browser"),
                         )
                         .clicked()
                     {
                         self.public_sdr_free_only = !self.public_sdr_free_only;
                     }
-                    if crate::chrome::chip(ui, self.public_sdr_in_band, "IN BAND")
-                        .on_hover_text("Only receivers that cover the current dial frequency")
+                    if crate::chrome::chip(ui, self.public_sdr_in_band, crate::language_plugin::text("window.publicsdr.text_394_ad5535", "IN BAND"))
+                        .on_hover_text(crate::language_plugin::text("window.publicsdr.text_395_022e21", "Only receivers that cover the current dial frequency"))
                         .clicked()
                     {
                         self.public_sdr_in_band = !self.public_sdr_in_band;
                     }
-                    if crate::chrome::chip(ui, self.public_sdr_low_bw, "LOW BW")
+                    if crate::chrome::chip(ui, self.public_sdr_low_bw, crate::language_plugin::text("window.publicsdr.text_400_e248a1", "LOW BW"))
                         .on_hover_text(
-                            "Take a SpyServer in its low-bandwidth shape: a narrow I/Q window \
+                            crate::language_plugin::text("window.publicsdr.text_402_ce83d3", "Take a SpyServer in its low-bandwidth shape: a narrow I/Q window \
                              that follows the dial plus the server's own band view, instead of \
                              megabits of wideband I/Q. No effect on a KiwiSDR, which has only \
-                             the one shape.",
+                             the one shape."),
                         )
                         .clicked()
                     {
                         self.public_sdr_low_bw = !self.public_sdr_low_bw;
                     }
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        if crate::chrome::chip(ui, false, "⟳ REFRESH")
-                            .on_hover_text("Fetch both directories again")
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.publicsdr.text_412_000bb3", "⟳ REFRESH"))
+                            .on_hover_text(crate::language_plugin::text("window.publicsdr.text_413_35cb06", "Fetch both directories again"))
                             .clicked()
                         {
                             refresh = true;
@@ -424,11 +418,11 @@ impl SdroxideApp {
                         ui,
                         egui::TextEdit::singleline(&mut self.public_sdr_search)
                             .desired_width(240.0)
-                            .hint_text("name, place, antenna, band")
+                            .hint_text(crate::language_plugin::text("window.publicsdr.text_427_d0060d", "name, place, antenna, band"))
                             .text_color(crate::theme::TEXT_STRONG()),
                     );
                     if !self.public_sdr_search.trim().is_empty()
-                        && ui.button("✕").on_hover_text("Clear the search").clicked()
+                        && ui.button("✕").on_hover_text(crate::language_plugin::text("window.publicsdr.text_431_155b1a", "Clear the search")).clicked()
                     {
                         self.public_sdr_search.clear();
                     }
@@ -439,10 +433,10 @@ impl SdroxideApp {
                     ui.add_space(8.0);
                     ui.label(
                         RichText::new(if self.probes_answered {
-                            "Fetching the receiver lists…"
+                            crate::language_plugin::text("window.publicsdr.text_442_ba9046", "Fetching the receiver lists…")
                         } else {
-                            "The machine this radio is attached to does not answer \
-                             device questions, so it cannot fetch the lists either."
+                            crate::language_plugin::text("window.publicsdr.text_444_904bb6", "The machine this radio is attached to does not answer \
+                             device questions, so it cannot fetch the lists either.")
                         })
                         .color(crate::theme::gray(140)),
                     );
@@ -463,10 +457,7 @@ impl SdroxideApp {
                         .collect::<Vec<_>>()
                         .join(" · ");
                     ui.label(
-                        RichText::new(format!(
-                            "{} receivers · {per_net} · fetched {age} ago",
-                            dir.entries.len(),
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(dir.entries.len()); crate::language_plugin::format("window.publicsdr.text_467_988d9b", "{} receivers · {per_net} · fetched {age} ago", &[format!("{}", __lp_arg_0), format!("{per_net}"), format!("{age}")]) })
                         .size(11.0)
                         .color(crate::theme::gray(150)),
                     );
@@ -480,12 +471,12 @@ impl SdroxideApp {
                 if !self.public_sdr_search.trim().is_empty() || rows.len() > MAX_ROWS {
                     let shown = rows.len().min(MAX_ROWS);
                     let (text, colour) = match rows.len() {
-                        0 => ("no match".to_string(), crate::theme::ALERT()),
+                        0 => (crate::language_plugin::text("publicsdr.dynamic.text_483_9bc94a", "no match").to_string(), crate::theme::ALERT()),
                         n if n > MAX_ROWS => (
-                            format!("showing {shown} of {n} — search to narrow it"),
+                            crate::language_plugin::format("publicsdr.dynamic.text_485_a71256", "showing {shown} of {n} — search to narrow it", &[format!("{shown}"), format!("{n}")]),
                             crate::theme::YELLOW(),
                         ),
-                        n => (format!("{n} match"), crate::theme::YELLOW()),
+                        n => (crate::language_plugin::format("publicsdr.dynamic.text_488_59f56a", "{n} match", &[format!("{n}")]), crate::theme::YELLOW()),
                     };
                     ui.label(RichText::new(text).color(colour).size(10.0));
                 }
@@ -506,7 +497,7 @@ impl SdroxideApp {
                     if rows.is_empty() {
                         ui.add_space(8.0);
                         ui.label(
-                            RichText::new("nothing matches — try turning a filter chip back on")
+                            RichText::new(crate::language_plugin::text("window.publicsdr.text_509_73d043", "nothing matches — try turning a filter chip back on"))
                                 .color(crate::theme::gray(120)),
                         );
                     }
@@ -580,24 +571,18 @@ impl SdroxideApp {
         let this = match chip {
             Some(c) if !c.name.is_empty() => c.name.clone(),
             Some(c) => c.default_name.clone(),
-            None => "this radio".to_string(),
+            None => crate::language_plugin::text("publicsdr.dynamic.text_583_e183d5", "this radio").to_string(),
         };
         let iface = self
             .radio_cfg
             .as_ref()
-            .map_or_else(|| "its interface".to_string(), |c| c.backend.label().to_string());
-        format!(
-            "Replace {this} with {}?\n\n\
+            .map_or_else(|| crate::language_plugin::text("publicsdr.dynamic.text_588_5065b8", "its interface").to_string(), |c| c.backend.label().to_string());
+        { let __lp_arg_0 = &(entry.name); let __lp_arg_1 = &(entry.address); let __lp_arg_2 = &(entry.name); let __lp_arg_3 = &(entry.range_label()); crate::language_plugin::format("publicsdr.dynamic.text_590_1e0c26", "Replace {this} with {}?\n\n\
              {this} is on {iface}. Taking this receiver points the same tab at {} instead, \
              renames it “{}”, and holds the dial to the {} the receiver \
              publishes — nothing here transmits.\n\n\
              The {iface} settings stay where they are, and so do the ranges stated for them: \
-             switching the interface back in Settings → Radio brings the radio back as it was.",
-            entry.name,
-            entry.address,
-            entry.name,
-            entry.range_label(),
-        )
+             switching the interface back in Settings → Radio brings the radio back as it was.", &[format!("{this}"), format!("{}", __lp_arg_0), format!("{this}"), format!("{iface}"), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{iface}")]) }
     }
 
     /// Act on a picked receiver.
@@ -621,10 +606,9 @@ impl SdroxideApp {
                 }
                 let Some(base) = self.radio_cfg.clone() else {
                     self.show_notice(
-                        "This radio's configuration has not arrived from the machine it is on \
+                        crate::language_plugin::text("publicsdr.dynamic.text_624_776540", "This radio's configuration has not arrived from the machine it is on \
                          yet, so there is nothing to point at the receiver — take it with + TAB \
-                         instead."
-                            .into(),
+                         instead."),
                     );
                     return;
                 };
@@ -657,11 +641,11 @@ impl SdroxideApp {
                 // changed under the operator, and silently getting it wrong is
                 // what issue #284 was.
                 let site = match entry.locator().as_str() {
-                    "" => " Its position is not published, so nothing it hears will be reported."
+                    "" => crate::language_plugin::text("publicsdr.dynamic.text_660_2bda39", " Its position is not published, so nothing it hears will be reported.")
                         .to_string(),
-                    g => format!(" Receptions will be reported from {g}."),
+                    g => crate::language_plugin::format("publicsdr.dynamic.text_662_73eb4f", " Receptions will be reported from {g}.", &[format!("{g}")]),
                 };
-                self.show_notice(format!("Pointing this radio at {}…{site}", entry.name));
+                self.show_notice({ let __lp_arg_0 = &(entry.name); crate::language_plugin::format("publicsdr.dynamic.text_664_8d4c1b", "Pointing this radio at {}…{site}", &[format!("{}", __lp_arg_0), format!("{site}")]) });
                 self.show_public_sdrs = false;
             }
             PickAction::NewRadio => {
@@ -673,7 +657,7 @@ impl SdroxideApp {
                     station: self.station_key(),
                     preset: Some(Box::new(fresh)),
                 });
-                self.show_notice(format!("Opening {} as another radio…", entry.name));
+                self.show_notice({ let __lp_arg_0 = &(entry.name); crate::language_plugin::format("publicsdr.dynamic.text_676_cc2f22", "Opening {} as another radio…", &[format!("{}", __lp_arg_0)]) });
             }
         }
     }

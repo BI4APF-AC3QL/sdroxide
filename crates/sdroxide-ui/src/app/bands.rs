@@ -61,7 +61,7 @@ impl SdroxideApp {
     /// The BANDS window: one row per band, forecast beside evidence.
     pub(in crate::app) fn bands_window(&mut self, ctx: &egui::Context) {
         let mut open = self.show_bands;
-        let resp = egui::Window::new("BANDS")
+        let resp = egui::Window::new(crate::language_plugin::text("window.bands.text_64_c41902", "BANDS")).id(egui::Id::new("BANDS"))
             .id(crate::layout::salted_id(ctx, "BANDS"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -89,16 +89,16 @@ impl SdroxideApp {
 
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new(if self.daylight { "☀ DAYLIGHT" } else { "☾ NIGHT" })
+                RichText::new(if self.daylight { crate::language_plugin::text("window.bands.text_92_12d2da", "☀ DAYLIGHT") } else { crate::language_plugin::text("window.bands.text_92_cebbad", "☾ NIGHT") })
                     .size(10.0)
                     .color(crate::theme::CYAN_DIM()),
             );
             match conditions_age(self) {
                 Some(a) => {
-                    ui.label(dim(&format!("· forecast from HAMQSL.com, {a} old")));
+                    ui.label(dim(&crate::language_plugin::format("window.bands.text_98_ad3a41", "· forecast from HAMQSL.com, {a} old", &[format!("{a}")])));
                 }
                 None => {
-                    ui.label(dim("· no forecast yet — fetching from HAMQSL.com"));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_101_8195b4", "· no forecast yet — fetching from HAMQSL.com")));
                 }
             }
         });
@@ -108,11 +108,11 @@ impl SdroxideApp {
             egui::Grid::new("bands_grid").num_columns(5).spacing([14.0, 3.0]).striped(true).show(
                 ui,
                 |ui| {
-                    ui.label(dim("BAND"));
-                    ui.label(dim("CONDX"));
-                    ui.label(dim("PATHS"));
-                    ui.label(dim("REACH"));
-                    ui.label(dim("BEST"));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_111_52f1b5", "BAND")));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_112_588595", "CONDX")));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_113_0c34a0", "PATHS")));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_114_48cef9", "REACH")));
+                    ui.label(dim(&crate::language_plugin::text("window.bands.text_115_16b794", "BEST")));
                     ui.end_row();
 
                     for b in Band::ALL {
@@ -177,9 +177,9 @@ impl SdroxideApp {
 
         ui.add_space(6.0);
         ui.label(
-            dim("CONDX is a global forecast; the rest is what has actually been heard. \
+            dim(&crate::language_plugin::text("window.bands.text_180_baf17e", "CONDX is a global forecast; the rest is what has actually been heard. \
                  An empty row means nothing was decoded — which may mean the band was \
-                 shut, or only that nobody was on it.")
+                 shut, or only that nobody was on it."))
             .italics(),
         );
     }
@@ -196,12 +196,9 @@ impl SdroxideApp {
         let active = sdroxide_types::ibp_active_at(now, home);
         let dim = |s: &str| RichText::new(s.to_string()).size(9.5).color(dim_ink());
         ui.add_space(12.0);
-        ui.label(RichText::new("IBP BEACONS").size(10.0).strong().color(crate::theme::CYAN_DIM()));
+        ui.label(RichText::new(crate::language_plugin::text("window.bands.text_199_e3d250", "IBP BEACONS")).size(10.0).strong().color(crate::theme::CYAN_DIM()));
         ui.add_space(2.0);
-        ui.label(dim(&format!(
-            "NCDXF/IARU · next beacon in {} s",
-            sdroxide_types::ibp_seconds_left(now)
-        )));
+        ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_types::ibp_seconds_left(now)); crate::language_plugin::format("window.bands.text_202_6329c0", "NCDXF/IARU · next beacon in {} s", &[format!("{}", __lp_arg_0)]) }));
         ui.add_space(3.0);
         for a in &active {
             ui.horizontal(|ui| {
@@ -212,17 +209,14 @@ impl SdroxideApp {
                 if let (Some(b), Some(d)) = (a.bearing_deg, a.distance_km) {
                     ui.label(dim(&format!(
                         "{} · {:.0} km",
-                        sdroxide_solar::satellites::compass(b),
+                        crate::language_plugin::compass(b),
                         d
                     )));
                 }
             })
             .response
-            .on_hover_text(format!(
-                "{} at {} — hearing it means the {} path is open. Each beacon steps up a \
-                 band every 10 s, so this row changes every slot.",
-                a.beacon.callsign, a.beacon.location, a.band.label
-            ));
+            .on_hover_text({ let __lp_arg_0 = &(a.beacon.callsign); let __lp_arg_1 = &(a.beacon.location); let __lp_arg_2 = &(a.band.label); crate::language_plugin::format("window.bands.text_222_45f514", "{} at {} — hearing it means the {} path is open. Each beacon steps up a \
+                 band every 10 s, so this row changes every slot.", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) });
         }
     }
 
@@ -245,50 +239,38 @@ impl SdroxideApp {
         let dim = |s: &str| RichText::new(s.to_string()).size(9.5).color(dim_ink());
         ui.add_space(12.0);
         ui.label(
-            RichText::new("METEOR SHOWERS").size(10.0).strong().color(crate::theme::CYAN_DIM()),
+            RichText::new(crate::language_plugin::text("window.bands.text_248_3facc2", "METEOR SHOWERS")).size(10.0).strong().color(crate::theme::CYAN_DIM()),
         );
         ui.add_space(2.0);
-        ui.label(dim(&format!("radiants placed for {lat:.0}°, {lon:.0}°")));
+        ui.label(dim(&crate::language_plugin::format("window.bands.text_251_f8d02e", "radiants placed for {lat:.0}°, {lon:.0}°", &[format!("{lat:.0}"), format!("{lon:.0}")])));
         ui.add_space(3.0);
         for a in &active {
             let s = a.shower;
             ui.horizontal(|ui| {
                 ui.label(RichText::new(s.name).size(11.0).strong());
                 ui.label(dim(s.code));
-                ui.label(RichText::new(format!("ZHR {}", s.zhr)).size(10.5));
+                ui.label(RichText::new({ let __lp_arg_0 = &(s.zhr); crate::language_plugin::format("window.bands.text_258_9f216b", "ZHR {}", &[format!("{}", __lp_arg_0)]) }).size(10.5));
                 if a.at_peak() {
-                    ui.label(RichText::new("PEAK").size(9.5).strong().color(crate::theme::GREEN()));
+                    ui.label(RichText::new(crate::language_plugin::text("window.bands.text_260_c797f4", "PEAK")).size(9.5).strong().color(crate::theme::GREEN()));
                 }
                 if a.radiant_up() {
                     ui.label(
-                        RichText::new(format!(
-                            "radiant {:.0}° {}",
-                            a.alt_deg,
-                            sdroxide_solar::satellites::compass(a.az_deg)
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(a.alt_deg); let __lp_arg_1 = &(crate::language_plugin::compass(a.az_deg)); crate::language_plugin::format("window.bands.text_265_4db28a", "radiant {:.0}° {}", &[format!("{:.0}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                         .size(10.5),
                     );
                 } else {
                     ui.label(
-                        RichText::new(format!("radiant down ({:.0}°)", a.alt_deg))
+                        RichText::new({ let __lp_arg_0 = &(a.alt_deg); crate::language_plugin::format("window.bands.text_273_392da8", "radiant down ({:.0}°)", &[format!("{:.0}", __lp_arg_0)]) })
                             .size(10.5)
                             .color(dim_ink()),
                     );
                 }
             })
             .response
-            .on_hover_text(format!(
-                "{} ({}) — {} km/s, parent {}. Peak rate ZHR {} around {}.\n\nA radiant \
+            .on_hover_text({ let __lp_arg_0 = &(s.name); let __lp_arg_1 = &(s.code); let __lp_arg_2 = &(s.velocity_kms); let __lp_arg_3 = &(s.parent); let __lp_arg_4 = &(s.zhr); let __lp_arg_5 = &(peak_label(s.peak)); crate::language_plugin::format("window.bands.text_281_63c8cc", "{} ({}) — {} km/s, parent {}. Peak rate ZHR {} around {}.\n\nA radiant \
                  above the horizon means the trails can reach you; a fast shower leaves \
                  longer-lived ionised trails for meteor scatter on 6 m and 2 m, and the \
-                 brief 10 m openings.",
-                s.name,
-                s.code,
-                s.velocity_kms,
-                s.parent,
-                s.zhr,
-                peak_label(s.peak),
-            ));
+                 brief 10 m openings.", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{}", __lp_arg_4), format!("{}", __lp_arg_5)]) });
         }
     }
 }
@@ -298,5 +280,5 @@ fn peak_label(peak: (u32, u32)) -> String {
     const MONTHS: [&str; 12] =
         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let name = MONTHS.get(peak.0.saturating_sub(1) as usize).copied().unwrap_or("?");
-    format!("{} {name}", peak.1)
+    crate::language_plugin::month_day(peak.0, peak.1, format!("{} {name}", peak.1))
 }

@@ -200,7 +200,7 @@ impl SdroxideApp {
 
     /// Record an upload result and mark the QSO's sent flag on success.
     pub(in crate::app) fn on_upload_result(&mut self, r: UploadResult) {
-        let status = if r.ok { "OK" } else { "FAIL" };
+        let status = qso_upload_outcome_label(r.ok);
         self.push_net_log(format!("{} → {}: {}", r.target.label(), status, r.message));
         if r.ok {
             if let Some(rec) = self.qso_log.iter_mut().find(|q| q.id == r.qso_id) {
@@ -244,7 +244,7 @@ impl SdroxideApp {
         let loaded = match loaded {
             Ok(loaded) => loaded,
             Err(e) => {
-                self.push_net_log(format!("ADIF import failed: {e}"));
+                self.push_net_log(crate::language_plugin::format("app.net.text_247_df387f", "ADIF import failed: {e}", &[e.display()]));
                 return;
             }
         };
@@ -252,7 +252,7 @@ impl SdroxideApp {
         let parsed =
             catch_unwind(AssertUnwindSafe(|| sdroxide_types::adif_to_qso_log_counting_swl(&text)));
         let Ok((records, swl)) = parsed else {
-            self.push_net_log("ADIF import failed: the file could not be parsed".to_string());
+            self.push_net_log(crate::language_plugin::text("app.net.text_255_79e803", "ADIF import failed: the file could not be parsed").to_string());
             return;
         };
         // One pass to index the existing log by call and band, so the duplicate
@@ -292,18 +292,16 @@ impl SdroxideApp {
         // name that came out as nonsense is then a code page to report, not a
         // decoder to doubt.
         let assumed = match loaded.assumed {
-            Some(enc) => format!(" (not Unicode; read as {enc})"),
+            Some(enc) => crate::language_plugin::format("app.net.text_295_8c962a", " (not Unicode; read as {enc})", &[format!("{enc}")]),
             None => String::new(),
         };
         // A file of received reports — the decode list's own ADIF export —
         // adds nothing, and saying why beats reporting an empty import.
         let reports = match swl {
             0 => String::new(),
-            n => format!(", {n} received reports (SWL) left out"),
+            n => crate::language_plugin::format("app.net.text_302_78706d", ", {n} received reports (SWL) left out", &[format!("{n}")]),
         };
-        self.push_net_log(format!(
-            "ADIF import: {added} added, {skipped} duplicates skipped{reports}{assumed}"
-        ));
+        self.push_net_log(crate::language_plugin::format("app.net.text_305_8b1b64", "ADIF import: {added} added, {skipped} duplicates skipped{reports}{assumed}", &[format!("{added}"), format!("{skipped}"), format!("{reports}"), format!("{assumed}")]));
     }
 
     /// Drain a pending channel-list import: parse the CHIRP CSV and hand the
@@ -322,7 +320,7 @@ impl SdroxideApp {
         let loaded = match loaded {
             Ok(loaded) => loaded,
             Err(e) => {
-                self.push_net_log(format!("Channel import failed: {e}"));
+                self.push_net_log(crate::language_plugin::format("app.net.text_325_9ff79c", "Channel import failed: {e}", &[e.display()]));
                 return;
             }
         };
@@ -330,14 +328,14 @@ impl SdroxideApp {
         let parsed =
             catch_unwind(AssertUnwindSafe(|| sdroxide_types::chirp_csv_to_memories(&text)));
         let Ok((channels, skipped)) = parsed else {
-            self.push_net_log("Channel import failed: the file could not be read".to_string());
+            self.push_net_log(crate::language_plugin::text("app.net.text_333_fe59fb", "Channel import failed: the file could not be read").to_string());
             return;
         };
         if channels.is_empty() {
             // The commonest way to get here is a file that is not a CHIRP
             // export at all, so say what was expected rather than "0 imported".
             self.push_net_log(
-                "Channel import: nothing to read — a CHIRP CSV file starts with a header                  row naming its columns, one of which must be Frequency"
+                crate::language_plugin::text("app.net.text_340_e8dfcc", "Channel import: nothing to read — a CHIRP CSV file starts with a header                  row naming its columns, one of which must be Frequency")
                     .to_string(),
             );
             return;
@@ -346,14 +344,39 @@ impl SdroxideApp {
         cmds.push(Command::ImportMemories(channels));
         let skipped = match skipped {
             0 => String::new(),
-            n => format!(", {n} line(s) skipped"),
+            n => crate::language_plugin::format("app.net.text_349_a186dd", ", {n} line(s) skipped", &[format!("{n}")]),
         };
         let assumed = match loaded.assumed {
-            Some(enc) => format!(" (not Unicode; read as {enc})"),
+            Some(enc) => crate::language_plugin::format("app.net.text_352_8c962a", " (not Unicode; read as {enc})", &[format!("{enc}")]),
             None => String::new(),
         };
         // "read", not "added": the engine drops the channels already stored,
         // and the memory list itself is what shows the result.
-        self.push_net_log(format!("Channel import: {n} channel(s) read{skipped}{assumed}"));
+        self.push_net_log(crate::language_plugin::format("app.net.text_357_baa7bd", "Channel import: {n} channel(s) read{skipped}{assumed}", &[format!("{n}"), format!("{skipped}"), format!("{assumed}")]));
+    }
+}
+
+
+fn qso_upload_outcome_label(ok: bool) -> String {
+    if ok { crate::language_plugin::text("app.net.qso_upload.ok", "OK") }
+    else { crate::language_plugin::text("app.net.qso_upload.fail", "FAIL") }
+}
+
+#[cfg(test)]
+mod upload_outcome_language_tests {
+    use eframe::egui;
+    use super::*;
+    #[test]
+    fn upload_outcomes_render_and_restore_english() {
+        let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);
+        let ctx=egui::Context::default();ctx.set_fonts(fonts);
+        for enabled in [true,false,true,false] { crate::language_plugin::test_pack_enabled(enabled);
+            for (ok,zh,en) in [(true,"成功","OK"),(false,"失败","FAIL")] {
+                let label=qso_upload_outcome_label(ok);assert_eq!(label,if enabled {zh}else{en});
+                let output=ctx.run_ui(egui::RawInput::default(),|ui|{ui.label(&label);});
+                let drawn:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();
+                output.drop_without_applying_deltas();assert!(drawn.iter().any(|x|x==&label),"{drawn:?}");
+            }
+        }
     }
 }

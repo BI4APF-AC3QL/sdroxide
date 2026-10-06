@@ -1,0 +1,776 @@
+[
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 31,
+    "source": "Display",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 39,
+    "source": "Panadapter detail, the spectrum's reaction and the waterfall's scroll speed are set from the SPEC button on the display strip — the DISP menu on a narrow window.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 46,
+    "source": "ui-grid",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 47,
+    "source": "Layout",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 48,
+    "source": "ui-layout",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 51,
+    "source": "Theme",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 52,
+    "source": "ui-theme",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 55,
+    "source": "Button style",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 58,
+    "source": "ui-btn-style",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 65,
+    "source": "Window style",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 68,
+    "source": "ui-win-style",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 75,
+    "source": "Screen update rate",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 76,
+    "source": "ui-fps",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 77,
+    "source": "{} fps",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 80,
+    "source": "{f} fps",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 85,
+    "source": "Waterfall palette",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 86,
+    "source": "ui-palette",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 95,
+    "source": "Tuning buttons",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 97,
+    "source": "Show on phone and tablet",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 99,
+    "source": "A row of step-down / step / step-up buttons under the control strip on a touched screen. There is no wheel to scroll a digit with and no dial, so without them the only way to move a known step is to type the whole frequency in. Never drawn on a desktop.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 104,
+    "source": "Step: {}",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 110,
+    "source": "",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 114,
+    "source": "First press snaps to the step",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 117,
+    "source": "A dial left between two multiples of the step goes to the next one in the direction pressed — 7 074 300 goes up to 7 075 000 at a 1 kHz step, down to 7 074 000. After that the buttons move by the step as usual. Off, every press moves by exactly the step.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 125,
+    "source": "Waterfall smoothing",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 126,
+    "source": "Interpolate",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 127,
+    "source": "Blend each screen pixel with the bins and rows around it, so a signal looks continuous where the display is wider than the transform. Turn it off for a rectangular waterfall — one block per bin, one per row — which is what reading a signal's shape off the picture needs: an interpolated signal cannot be told apart from a genuinely wider one. A bigger FFT (the FFT chip) is the other half of that.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 136,
+    "source": "Spectrum background",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 138,
+    "source": "Gradient",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 140,
+    "source": "top",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 142,
+    "source": "bottom",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 148,
+    "source": "Spot label colours",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 149,
+    "source": "The tint each spot source wears: the boxes along the bottom of the waterfall, the badges in the SPOTS list and the dots on the world map.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 155,
+    "source": "Colour for {} spots",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 169,
+    "source": "Reset",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 170,
+    "source": "Put every spot colour back to its default",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 181,
+    "source": "Band plan colours",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 182,
+    "source": "The shade each class of allocation is painted in on the band-plan strip along the bottom of the waterfall. The blocks are drawn semi-transparent over the waterfall, so they land darker there than in the swatch here.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 190,
+    "source": "Colour for {} allocations",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 201,
+    "source": "Reset",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 202,
+    "source": "Put every band-plan colour back to its default",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 213,
+    "source": "Skimmer font size",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 214,
+    "source": "ui-skim-font",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 217,
+    "source": "Waterfall / spectrum font size",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 218,
+    "source": "ui-wf-font",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 221,
+    "source": "Interface font size",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 222,
+    "source": "Scales the whole interface — menus, dialogs, windows, the radio tabs, the top bar and its buttons. The two sizes above are relative to it.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 226,
+    "source": "ui-menu-font",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 229,
+    "source": "Cities on maps",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 230,
+    "source": "Draw the world's cities — a dot per place, with its name beside it where there is room — on the flat maps: FT8/WSPR, APRS, ADS-B and AIS.\n\nThey are most of what says *where* a dot is on a map of the whole world, and they are also the busiest thing on it. Turn them off if the names are getting in the way of the stations you are reading. The 3D globe is unaffected — its cities are night-side lights rather than markers, and nothing there is written across a contact.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 240,
+    "source": "show cities and their names",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 247,
+    "source": "wasm32",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 250,
+    "source": "Check for updates at startup",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 252,
+    "source": "Asks sdroxide.com once per start whether a newer release has been published, and says so in a dismissable banner above the waterfall. Nothing is sent beyond the request itself.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 260,
+    "source": "3D view",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 262,
+    "source": "ui-grid-3d",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 263,
+    "source": "Cloud rendering",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 264,
+    "source": "ui-cloud-march",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 265,
+    "source": "Volumetric",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 265,
+    "source": "Layered",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 267,
+    "source": "Layered",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 268,
+    "source": "Volumetric",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 275,
+    "source": "How the CLOUDS layer in the 3D view draws the weather. Layered stacks slices through the troposphere and is the cheap option. Volumetric walks a ray through it instead, so the Sun casts the cloud tops onto the deck below and lightning glows out through the storm making it rather than only brightening its outside — at several times the cost per pixel.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 300,
+    "source": "Voice announcements",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 302,
+    "source": "Speak changes to the radio",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 303,
+    "source": "Reads out what changed, so the radio can be operated without seeing it",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 306,
+    "source": "speech-grid",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 307,
+    "source": "Voice",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 309,
+    "source": "Shipped voice",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 310,
+    "source": "speech-voice",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 313,
+    "source": "Shipped voice",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 325,
+    "source": "Speed",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 330,
+    "source": "×",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 333,
+    "source": "The voice stretches or compresses its own phrasing, so the pitch does not change. Past about 2× it stops getting shorter.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 338,
+    "source": "Volume",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 342,
+    "source": "Output",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 346,
+    "source": "speech-out",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 349,
+    "source": "Detail",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 352,
+    "source": "speech-verbosity",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 359,
+    "source": "Duck receiver",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 361,
+    "source": "While speaking",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 374,
+    "source": "Test",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 388,
+    "source": "What to announce",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 389,
+    "source": "speech-cats",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 391,
+    "source": "Frequency",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 392,
+    "source": "Mode and band",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 394,
+    "source": "VFO and split",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 395,
+    "source": "AGC and gain",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 397,
+    "source": "Drive, tune and mic",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 398,
+    "source": "Transmit and receive",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 400,
+    "source": "RIT and XIT",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 401,
+    "source": "Memories and scanning",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 403,
+    "source": "Leaving an amateur band",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 404,
+    "source": "Warnings and messages",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 406,
+    "source": "Filters, squelch and noise reduction",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 407,
+    "source": "Off by default: these move constantly while chasing a signal",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 412,
+    "source": "Decoded messages",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 413,
+    "source": "speech-decodes",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 415,
+    "source": "FT8 calls to me",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 416,
+    "source": "FT8 CQs I could answer",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 418,
+    "source": "A busy evening on twenty metres is a hundred of these a minute",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 421,
+    "source": "JS8 messages to me",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 422,
+    "source": "JS8 @ALLCALL too",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 424,
+    "source": "FSQ messages to me",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 425,
+    "source": "Include the report",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 427,
+    "source": "Only where the message carries none of its own — a decode that already reports a number does not also get ours",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 431,
+    "source": "My own FT8 exchange",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 432,
+    "source": "What the sequencer is about to send, and the contact ending",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 437,
+    "source": "Reading decoded text aloud",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 439,
+    "source": "CW",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 440,
+    "source": "RTTY, PSK, Olivia, THOR, FSQ",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 445,
+    "source": "CW only while the decoder is locked",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 447,
+    "source": "Reading an unlocked decoder's output is worse than silence",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 450,
+    "source": "Both are off by default. A decoder produces text faster than speech reads it, so anything that falls too far behind the live audio is dropped rather than queued.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 458,
+    "source": "Tuning up",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 462,
+    "source": "Read the SWR out while TUNE is held",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 466,
+    "source": "Every",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 471,
+    "source": " s",
+    "decision": "preserved-code-unit-or-empty"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 478,
+    "source": "Report the best match on release",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 483,
+    "source": "Warn about high SWR during any transmission",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 487,
+    "source": "How things are read",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 488,
+    "source": "speech-style",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 489,
+    "source": "Frequencies",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 492,
+    "source": "speech-freq-style",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 498,
+    "source": "Callsigns",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 501,
+    "source": "speech-call-style",
+    "decision": "stable-id"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 510,
+    "source": "Stay quiet while transmitting",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 512,
+    "source": "Speech goes to your speakers, and therefore into your microphone. High-SWR warnings still get through.",
+    "decision": "translated"
+  },
+  {
+    "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+    "line": 521,
+    "source": "Announcements play on their own sound device, so they are never recorded and never sent to anyone listening remotely. Keys for speaking the status, repeating the last announcement and stopping mid-sentence are on the Controls tab.",
+    "decision": "translated"
+  }
+]

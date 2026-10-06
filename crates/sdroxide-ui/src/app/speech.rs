@@ -22,7 +22,7 @@ pub enum SpeechStatus {
     /// Reading the voice model and the dictionary.
     Loading,
     Ready(String),
-    Failed(String),
+    Failed(crate::language_plugin::UiNotice),
 }
 
 impl SpeechStatus {
@@ -141,14 +141,14 @@ impl SpeechRuntime {
             None => SpeechStatus::Idle,
             Some(S::Loading) => SpeechStatus::Loading,
             Some(S::Ready(v)) => SpeechStatus::Ready(v),
-            Some(S::Failed(e)) => SpeechStatus::Failed(e),
+            Some(S::Failed(e)) => SpeechStatus::Failed(e.into()),
         }
     }
 
     #[cfg(target_arch = "wasm32")]
     pub fn status(&self) -> SpeechStatus {
         if self.announcer.settings().enabled {
-            SpeechStatus::Failed("the browser client cannot speak yet".into())
+            SpeechStatus::Failed(crate::language_plugin::UiNotice::literal("the browser client cannot speak yet"))
         } else {
             SpeechStatus::Idle
         }

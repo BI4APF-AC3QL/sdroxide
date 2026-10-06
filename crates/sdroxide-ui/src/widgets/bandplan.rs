@@ -317,6 +317,7 @@ fn draw_seg(
     // Left divider between adjacent segments.
     p.vline(x0, rect.y_range(), Stroke::new(1.0, Color32::from_rgba_unmultiplied(0, 0, 0, 120)));
 
+    let label = crate::language_plugin::bandplan_label(label);
     let white = p.layout_no_wrap(label.to_string(), FontId::proportional(font), Color32::WHITE);
     if white.size().x + 6.0 <= x1 - x0 && white.size().y <= h {
         let tp = pos2((x0 + x1) * 0.5 - white.size().x * 0.5, top + (h - white.size().y) * 0.5);
@@ -457,4 +458,41 @@ pub fn overlay(p: &Painter, view: &ViewState, wf: &Rect, panel_below: bool) -> f
         Stroke::new(1.0, theme::scope().line),
     );
     total_h
+}
+
+#[cfg(test)]
+mod language_allocation_tests {
+    use super::*;
+    use eframe::egui;
+    #[test]
+    fn all_regions_preserve_allocation_edges_and_labels_under_language_switch() {
+        let baseline:Vec<_>=[Region::R1,Region::R2,Region::R3].into_iter().flat_map(|r|coarse(r).into_iter().chain(fine(r))).map(|s|(s.lo,s.hi,s.label,s.kind)).collect();
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let current:Vec<_>=[Region::R1,Region::R2,Region::R3].into_iter().flat_map(|r|coarse(r).into_iter().chain(fine(r))).map(|s|(s.lo,s.hi,s.label,s.kind)).collect();
+            assert_eq!(current,baseline);
+            for &(_,_,label,_) in &current {assert_eq!(crate::language_plugin::bandplan_label(label)==label,!enabled||matches!(label,"CW"|"SSB"));}
+            assert_eq!(ham_label(Band::Cm6,Region::R1),"6cm HAM");assert_eq!(ham_label(Band::Cm6,Region::R2),"5cm HAM");
+        }
+    }
+    #[test]
+    fn allocation_painter_draws_translated_labels_using_existing_fit_rule() {
+        for enabled in [true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for width in [360.0,600.0,1000.0] {
+                let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let view=ViewState{view_lo_hz:0.0,view_hi_hz:100.0,..Default::default()};let before=view.clone();
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,240.0))),..Default::default()},|ui| {
+                    let wf=Rect::from_min_size(pos2(0.0,0.0),egui::vec2(width,200.0));
+                    for (i,label) in ["160m HAM","LW AM","60m BC","Digi","Bcn"].into_iter().enumerate() {
+                        draw_seg(ui.painter(),&view,&wf,0.0,100.0,Color32::WHITE,label,i as f32*30.0,25.0,10.5);
+                    }
+                });
+                let rendered:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();output.drop_without_applying_deltas();
+                for label in ["160m HAM","LW AM","60m BC","Digi","Bcn"] {assert!(rendered.contains(&crate::language_plugin::bandplan_label(label)),"{rendered:?}");}
+                assert_eq!(view,before);
+            }
+        }
+    }
 }

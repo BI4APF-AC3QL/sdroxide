@@ -197,12 +197,12 @@ impl SdroxideApp {
     /// `extra` stretches the chip past its label, like the rest of the
     /// condensed Display box's row; every other caller passes 0.
     pub(in crate::app) fn solar_button(&mut self, ui: &mut egui::Ui, extra: f32) {
-        let label = super::top_bar::DISPLAY_VIEW_CHIPS[0];
+        let label = &crate::language_plugin::scope_text("topbar.chips.", super::top_bar::DISPLAY_VIEW_CHIPS[0]);
         #[cfg(not(target_arch = "wasm32"))]
         {
             if super::top_bar::chip_stretched(ui, self.solar.open, label, extra)
                 .on_hover_text(
-                    "Solar system 3D view — Sun, Earth, Moon, sunspots and CMEs (separate window)",
+                    crate::language_plugin::text("window.solar.text_205_76dc44", "Solar system 3D view — Sun, Earth, Moon, sunspots and CMEs (separate window)"),
                 )
                 .clicked()
             {
@@ -213,7 +213,7 @@ impl SdroxideApp {
         {
             if super::top_bar::chip_stretched(ui, false, label, extra)
                 .on_hover_text(
-                    "Solar system 3D view — Sun, Earth, Moon, sunspots and CMEs (new browser tab)",
+                    crate::language_plugin::text("window.solar.text_216_b65c68", "Solar system 3D view — Sun, Earth, Moon, sunspots and CMEs (new browser tab)"),
                 )
                 .clicked()
             {

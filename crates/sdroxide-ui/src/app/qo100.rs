@@ -121,7 +121,8 @@ fn fmt_hz_signed(hz: f64) -> String {
 
 /// A small round status light plus its label — lit green when `on`, a dim
 /// grey dot otherwise. Used for the AO-40 decoder's stage readout.
-fn led(ui: &mut egui::Ui, label: &str, on: bool) {
+fn led(ui: &mut egui::Ui, label: impl AsRef<str>, on: bool) {
+    let label = label.as_ref();
     let (dot, text) =
         if on { (theme::GREEN(), theme::TEXT()) } else { (theme::gray(70), theme::CYAN_DIM()) };
     let (rect, _) = ui.allocate_exact_size(Vec2::splat(10.0), Sense::hover());
@@ -329,7 +330,7 @@ fn paint_strip(
         painter.text(
             Pos2::new((mx + 3.0).min(rect.right() - 2.0), rect.top() + 12.0),
             egui::Align2::LEFT_TOP,
-            "tracker",
+            crate::language_plugin::text("window.qo100.custom.text_332_7ae449", "tracker"),
             egui::FontId::monospace(8.0),
             theme::YELLOW(),
         );
@@ -346,7 +347,7 @@ fn paint_strip(
         painter.text(
             Pos2::new((mx + 3.0).min(rect.right() - 2.0), rect.bottom() - 11.0),
             egui::Align2::LEFT_BOTTOM,
-            "clicked",
+            crate::language_plugin::text("window.qo100.custom.text_349_d66440", "clicked"),
             egui::FontId::monospace(8.0),
             theme::PINK(),
         );
@@ -416,7 +417,7 @@ impl SdroxideApp {
                 ui,
                 reachable,
                 cfg.enabled,
-                if cfg.enabled { "ON" } else { "OFF" },
+                if cfg.enabled { crate::language_plugin::text("window.qo100.text_419_e8a011", "ON") } else { crate::language_plugin::text("window.qo100.text_419_38cca6", "OFF") },
             );
             if run.clicked() {
                 cfg.enabled = !cfg.enabled;
@@ -429,43 +430,43 @@ impl SdroxideApp {
             }
             if !reachable {
                 run.on_hover_text(
-                    "This receiver cannot reach 10489.750 MHz on its own — set up an \
-                     LNB/converter offset first (Settings ▸ Radio)",
+                    crate::language_plugin::text("window.qo100.text_432_426b75", "This receiver cannot reach 10489.750 MHz on its own — set up an \
+                     LNB/converter offset first (Settings ▸ Radio)"),
                 );
             } else {
                 run.on_hover_text(
-                    "Run the fast spectral tracker: every second, look in the parking window for \
-                     the beacon's two symmetric lobes and report where the carrier sits",
+                    crate::language_plugin::text("window.qo100.text_437_201d73", "Run the fast spectral tracker: every second, look in the parking window for \
+                     the beacon's two symmetric lobes and report where the carrier sits"),
                 );
             }
 
             ui.add_space(8.0);
-            let tel = crate::chrome::chip_enabled(ui, reachable, cfg.decode_telemetry, "TELEMETRY");
+            let tel = crate::chrome::chip_enabled(ui, reachable, cfg.decode_telemetry, crate::language_plugin::text("window.qo100.text_443_deb116", "TELEMETRY"));
             if tel.clicked() {
                 cfg.decode_telemetry = !cfg.decode_telemetry;
             }
             tel.on_hover_text(
-                "Also run the AO-40 uncoded frame decoder — sync word, CRC and the telemetry \
+                crate::language_plugin::text("window.qo100.text_448_81b16e", "Also run the AO-40 uncoded frame decoder — sync word, CRC and the telemetry \
                  text — with a step-by-step readout (carrier → sync → CRC) of how far each pass \
-                 gets",
+                 gets"),
             );
 
             ui.add_space(4.0);
             let auto =
-                crate::chrome::chip_enabled(ui, reachable && cfg.enabled, cfg.auto_apply, "AUTO");
+                crate::chrome::chip_enabled(ui, reachable && cfg.enabled, cfg.auto_apply, crate::language_plugin::text("window.qo100.text_455_6ea56f", "AUTO"));
             if auto.clicked() {
                 cfg.auto_apply = !cfg.auto_apply;
             }
             auto.on_hover_text(
-                "Auto-correct: let the tracker adjust the converter/LNB offset by itself — a slow \
+                crate::language_plugin::text("window.qo100.text_460_918c8e", "Auto-correct: let the tracker adjust the converter/LNB offset by itself — a slow \
                  closed loop that, on a clean and steady estimate, nudges the beacon back onto \
                  10489.750 MHz and holds it there as the LNB drifts. Reopens the front end each \
-                 time it acts.",
+                 time it acts."),
             );
 
             ui.add_space(8.0);
-            ui.label(RichText::new("width").size(10.0).color(theme::CYAN_DIM()));
-            if ui.small_button("−").on_hover_text("Narrower — search a smaller slice").clicked()
+            ui.label(RichText::new(crate::language_plugin::text("window.qo100.text_467_dec0f0", "width")).size(10.0).color(theme::CYAN_DIM()));
+            if ui.small_button("−").on_hover_text(crate::language_plugin::text("window.qo100.text_468_265eb7", "Narrower — search a smaller slice")).clicked()
             {
                 cfg.search_half_width_hz =
                     (cfg.search_half_width_hz - WIDTH_STEP_HZ).max(MIN_HALF_WIDTH_HZ);
@@ -477,7 +478,7 @@ impl SdroxideApp {
             );
             if ui
                 .small_button("+")
-                .on_hover_text("Wider — for when the beacon isn't found at the current width")
+                .on_hover_text(crate::language_plugin::text("window.qo100.text_480_9cb761", "Wider — for when the beacon isn't found at the current width"))
                 .clicked()
             {
                 cfg.search_half_width_hz =
@@ -487,9 +488,9 @@ impl SdroxideApp {
             if win.manual_hz.is_some() {
                 ui.add_space(8.0);
                 if ui
-                    .small_button("clear mark")
+                    .small_button(crate::language_plugin::text("window.qo100.custom.text_490_1eb7c1", "clear mark"))
                     .on_hover_text(
-                        "Drop the hand-placed beacon mark and go back to the decoder's own reading",
+                        crate::language_plugin::text("window.qo100.text_492_05656f", "Drop the hand-placed beacon mark and go back to the decoder's own reading"),
                     )
                     .clicked()
                 {
@@ -502,11 +503,11 @@ impl SdroxideApp {
         // 1 kHz clicks; the low edge cannot cross within PARK_MIN_SPAN of the
         // high one, or the tracker loses the room it needs for both lobes.
         ui.horizontal(|ui| {
-            ui.label(RichText::new("park").size(10.0).color(theme::CYAN_DIM()));
-            if ui.small_button("lo −").clicked() {
+            ui.label(RichText::new(crate::language_plugin::text("window.qo100.text_505_4d3971", "park")).size(10.0).color(theme::CYAN_DIM()));
+            if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_506_e6b267", "lo −")).clicked() {
                 cfg.park_lo_hz = (cfg.park_lo_hz - PARK_STEP_HZ).max(PARK_MIN_HZ);
             }
-            if ui.small_button("lo +").clicked() {
+            if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_509_ce5628", "lo +")).clicked() {
                 cfg.park_lo_hz =
                     (cfg.park_lo_hz + PARK_STEP_HZ).min(cfg.park_hi_hz - PARK_MIN_SPAN_HZ);
             }
@@ -519,22 +520,18 @@ impl SdroxideApp {
                 .size(11.0)
                 .monospace(),
             );
-            if ui.small_button("hi −").clicked() {
+            if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_522_747e07", "hi −")).clicked() {
                 cfg.park_hi_hz =
                     (cfg.park_hi_hz - PARK_STEP_HZ).max(cfg.park_lo_hz + PARK_MIN_SPAN_HZ);
             }
-            if ui.small_button("hi +").clicked() {
+            if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_526_5d753c", "hi +")).clicked() {
                 cfg.park_hi_hz = (cfg.park_hi_hz + PARK_STEP_HZ).min(PARK_MAX_HZ);
             }
         });
         if !cfg.enabled {
             ui.label(
-                RichText::new(format!(
-                    "Before switching ON: tune so the beacon's two lobes sit between +{:.0} and \
-                     +{:.0} kHz in the strip (the shaded lane).",
-                    cfg.park_lo_hz / 1000.0,
-                    cfg.park_hi_hz / 1000.0
-                ))
+                RichText::new({ let __lp_arg_0 = &(cfg.park_lo_hz / 1000.0); let __lp_arg_1 = &(cfg.park_hi_hz / 1000.0); crate::language_plugin::format("window.qo100.text_533_47562d", "Before switching ON: tune so the beacon's two lobes sit between +{:.0} and \
+                     +{:.0} kHz in the strip (the shaded lane).", &[format!("{:.0}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) })
                 .size(9.0)
                 .color(theme::CYAN_DIM()),
             );
@@ -549,14 +546,14 @@ impl SdroxideApp {
             ui.horizontal_wrapped(|ui| {
                 ui.label(
                     RichText::new(
-                        "This radio's own tuning range doesn't reach 10489.750 MHz — it needs an \
+                        crate::language_plugin::text("window.qo100.text_552_544c9d", "This radio's own tuning range doesn't reach 10489.750 MHz — it needs an \
                          LNB/converter offset (Settings ▸ Radio ▸ Converter) before this window can \
-                         do anything.",
+                         do anything."),
                     )
                     .size(10.5)
                     .color(theme::YELLOW()),
                 );
-                if ui.small_button("Open Settings ▸ Radio").clicked() {
+                if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_559_7218a5", "Open Settings ▸ Radio")).clicked() {
                     self.open_radio_settings();
                 }
             });
@@ -570,16 +567,13 @@ impl SdroxideApp {
             ui.add_space(4.0);
             ui.horizontal_wrapped(|ui| {
                 ui.label(
-                    RichText::new(format!(
-                        "The receiver is currently listening around {:.6} MHz — nowhere near the \
+                    RichText::new({ let __lp_arg_0 = &(dial_hz / 1e6); crate::language_plugin::format("window.qo100.text_574_e24cc3", "The receiver is currently listening around {:.6} MHz — nowhere near the \
                          10489.750 MHz beacon, so there is nothing here to draw. The decoder keeps \
-                         searching regardless.",
-                        dial_hz / 1e6
-                    ))
+                         searching regardless.", &[format!("{:.6}", __lp_arg_0)]) })
                     .size(10.5)
                     .color(theme::YELLOW()),
                 );
-                if ui.small_button("Tune to 10489.750 MHz").clicked() {
+                if ui.small_button(crate::language_plugin::text("window.qo100.custom.text_582_b0268d", "Tune to 10489.750 MHz")).clicked() {
                     cmds.push(Command::SetVfo { vfo: Vfo::A, hz: QO100_BEACON_HZ });
                 }
             });
@@ -589,10 +583,7 @@ impl SdroxideApp {
             let capped = f.span_hz / 2.0 < cfg.search_half_width_hz;
             if capped && f.span_hz > 0.0 {
                 ui.label(
-                    RichText::new(format!(
-                        "receiver currently covers only ±{:.0} kHz here — the rest of the strip stays blank",
-                        f.span_hz / 2e3
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(f.span_hz / 2e3); crate::language_plugin::format("window.qo100.text_593_e09774", "receiver currently covers only ±{:.0} kHz here — the rest of the strip stays blank", &[format!("{:.0}", __lp_arg_0)]) })
                     .size(9.5)
                     .color(theme::YELLOW()),
                 );
@@ -634,8 +625,8 @@ impl SdroxideApp {
         if cfg.enabled && !confirmed && win.manual_hz.is_none() {
             ui.label(
                 RichText::new(
-                    "tip: if you can see the beacon in the strip but it won't lock, double-click \
-                     it — that marks it as 10489.750 MHz and lets APPLY correct to it",
+                    crate::language_plugin::text("window.qo100.text_637_e983a7", "tip: if you can see the beacon in the strip but it won't lock, double-click \
+                     it — that marks it as 10489.750 MHz and lets APPLY correct to it"),
                 )
                 .size(9.0)
                 .color(theme::CYAN_DIM()),
@@ -648,7 +639,7 @@ impl SdroxideApp {
             ui.add_space(4.0);
             egui::Grid::new("qo100-tracker").num_columns(2).spacing([16.0, 2.0]).show(ui, |ui| {
                 let dim = |t: &str| RichText::new(t).size(9.5).color(theme::CYAN_DIM());
-                ui.label(dim("TRACKER"));
+                ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_651_0902e9", "TRACKER")));
                 match s.est_offset_hz {
                     Some(o) => {
                         let good = s.est_null_depth_db >= 5.0 && s.est_symmetry >= 0.7;
@@ -669,7 +660,7 @@ impl SdroxideApp {
                     }
                     None => {
                         ui.label(
-                            RichText::new("no twin-lobe shape in the parking window")
+                            RichText::new(crate::language_plugin::text("window.qo100.text_672_8b50a5", "no twin-lobe shape in the parking window"))
                                 .size(10.0)
                                 .color(theme::YELLOW()),
                         );
@@ -677,30 +668,24 @@ impl SdroxideApp {
                 }
                 ui.end_row();
 
-                ui.label(dim("SHAPE"));
+                ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_680_cfb25f", "SHAPE")));
                 ui.label(
-                    RichText::new(format!(
-                        "null {:.1} dB   sym {:.2}   snr {:.1} dB",
-                        s.est_null_depth_db, s.est_symmetry, s.est_snr_db
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(s.est_null_depth_db); let __lp_arg_1 = &(s.est_symmetry); let __lp_arg_2 = &(s.est_snr_db); crate::language_plugin::format("window.qo100.text_683_37012a", "null {:.1} dB   sym {:.2}   snr {:.1} dB", &[format!("{:.1}", __lp_arg_0), format!("{:.2}", __lp_arg_1), format!("{:.1}", __lp_arg_2)]) })
                     .size(10.0)
                     .monospace(),
                 );
                 ui.end_row();
 
-                ui.label(dim("DRIFT"));
+                ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_691_3470ef", "DRIFT")));
                 ui.label(
                     RichText::new(if s.est_drift_hz_s.abs() >= 0.05 {
                         if s.est_drift_accel_hz_s2.abs() >= 0.05 {
-                            format!(
-                                "{:+.1} Hz/s   {:+.2} Hz/s²  (de-rotated before decode)",
-                                s.est_drift_hz_s, s.est_drift_accel_hz_s2
-                            )
+                            { let __lp_arg_0 = &(s.est_drift_hz_s); let __lp_arg_1 = &(s.est_drift_accel_hz_s2); crate::language_plugin::format("window.qo100.text_696_05c6b9", "{:+.1} Hz/s   {:+.2} Hz/s²  (de-rotated before decode)", &[format!("{:+.1}", __lp_arg_0), format!("{:+.2}", __lp_arg_1)]) }
                         } else {
-                            format!("{:+.1} Hz/s  (de-rotated before decode)", s.est_drift_hz_s)
+                            { let __lp_arg_0 = &(s.est_drift_hz_s); crate::language_plugin::format("window.qo100.text_700_ed8312", "{:+.1} Hz/s  (de-rotated before decode)", &[format!("{:+.1}", __lp_arg_0)]) }
                         }
                     } else {
-                        "— (need a longer run of estimates)".to_string()
+                        crate::language_plugin::text("window.qo100.text_703_e53d3e", "— (need a longer run of estimates)").to_string()
                     })
                     .size(10.0)
                     .monospace()
@@ -714,32 +699,23 @@ impl SdroxideApp {
                 );
                 ui.end_row();
 
-                ui.label(dim("CYCLES"));
+                ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_717_59bdfe", "CYCLES")));
                 ui.label(
-                    RichText::new(format!("{} found, {} empty", s.est_updates, s.est_misses))
+                    RichText::new({ let __lp_arg_0 = &(s.est_updates); let __lp_arg_1 = &(s.est_misses); crate::language_plugin::format("window.qo100.text_719_13db31", "{} found, {} empty", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                         .size(10.0)
                         .monospace(),
                 );
                 ui.end_row();
 
                 if s.auto_applying {
-                    ui.label(dim("AUTO"));
+                    ui.label(dim(&crate::language_plugin::text("topbar.auto", "AUTO")));
                     let last = if s.auto_last_unix > 0 {
-                        format!(
-                            "   last {} ({}s ago)",
-                            fmt_hz_signed(s.auto_last_hz),
-                            (crate::time::now_unix() - s.auto_last_unix).max(0)
-                        )
+                        { let __lp_arg_0 = &(fmt_hz_signed(s.auto_last_hz)); let __lp_arg_1 = &((crate::time::now_unix() - s.auto_last_unix).max(0)); crate::language_plugin::format("boundaries.app.qo100.text_729_f39e16", "   last {} ({}s ago)", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
                     } else {
                         String::new()
                     };
                     ui.label(
-                        RichText::new(format!(
-                            "{} over {} correction{}{last}",
-                            fmt_hz_signed(s.auto_total_hz),
-                            s.auto_applies,
-                            if s.auto_applies == 1 { "" } else { "s" },
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(fmt_hz_signed(s.auto_total_hz)); let __lp_arg_1 = &(s.auto_applies); let __lp_arg_2 = &(crate::language_plugin::plural_suffix("window.qo100.text_738_b98014", "{} over {} correction{}{last}", s.auto_applies == 1)); crate::language_plugin::format("window.qo100.text_738_b98014", "{} over {} correction{}{last}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{last}")]) })
                         .size(10.0)
                         .monospace()
                         .color(theme::GREEN()),
@@ -762,7 +738,7 @@ impl SdroxideApp {
             // What the receiver is actually listening to right now — the
             // direct answer to "why is the strip empty", always on screen
             // rather than only when it explains a problem.
-            ui.label(dim("RECEIVER"));
+            ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_765_f16563", "RECEIVER")));
             ui.label(
                 RichText::new(format!("{:.6} MHz", dial_hz / 1e6))
                     .size(11.0)
@@ -771,19 +747,19 @@ impl SdroxideApp {
             );
             ui.end_row();
 
-            ui.label(dim("TARGET"));
+            ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_774_3dc0db", "TARGET")));
             ui.label(
                 RichText::new(format!("{:.6} MHz", QO100_BEACON_HZ / 1e6)).size(12.0).monospace(),
             );
             ui.end_row();
 
-            ui.label(dim("MEASURED"));
+            ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_780_0f4b42", "MEASURED")));
             match effective {
                 Some((hz, src)) => {
                     let (tag, colour) = match src {
-                        MeasSource::Lock => ("", None),
-                        MeasSource::Manual => ("  (clicked)", Some(theme::PINK())),
-                        MeasSource::Tracker => ("  (tracker)", Some(theme::YELLOW())),
+                        MeasSource::Lock => (String::new(), None),
+                        MeasSource::Manual => (crate::language_plugin::text("window.qo100.measurement.text_785_0465eb", "  (clicked)"), Some(theme::PINK())),
+                        MeasSource::Tracker => (crate::language_plugin::text("window.qo100.measurement.text_786_3b725d", "  (tracker)"), Some(theme::YELLOW())),
                     };
                     let mut t =
                         RichText::new(format!("{:.6} MHz{tag}", hz / 1e6)).size(12.0).monospace();
@@ -794,14 +770,14 @@ impl SdroxideApp {
                     ui.label(t)
                 }
                 None => ui.label(
-                    RichText::new(if cfg.enabled { "not locked yet" } else { "—" })
+                    RichText::new(if cfg.enabled { crate::language_plugin::text("window.qo100.text_797_041123", "not locked yet") } else { "—".to_owned() })
                         .size(11.0)
                         .color(theme::CYAN_DIM()),
                 ),
             };
             ui.end_row();
 
-            ui.label(dim("DRIFT"));
+            ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_804_3470ef", "DRIFT")));
             match effective {
                 Some((hz, _)) => {
                     let err = hz - QO100_BEACON_HZ;
@@ -818,7 +794,7 @@ impl SdroxideApp {
             };
             ui.end_row();
 
-            ui.label(dim("CONVERTER OFFSET"));
+            ui.label(dim(&crate::language_plugin::text("window.qo100.custom.text_821_1cb77c", "CONVERTER OFFSET")));
             ui.label(RichText::new(format!("{old_offset:.0} Hz")).size(11.0).monospace());
             ui.end_row();
         });
@@ -828,9 +804,9 @@ impl SdroxideApp {
         if let Some(s) = status.as_ref().filter(|s| s.decoding) {
             ui.add_space(4.0);
             ui.horizontal(|ui| {
-                ui.label(RichText::new("DECODE").size(9.5).color(theme::CYAN_DIM()));
-                led(ui, "carrier", s.carrier_seen);
-                led(ui, "sync", s.sync_seen);
+                ui.label(RichText::new(crate::language_plugin::text("window.qo100.text_831_4248dc", "DECODE")).size(9.5).color(theme::CYAN_DIM()));
+                led(ui, crate::language_plugin::text("panel23.app_qo100.text_832_580358", "carrier"), s.carrier_seen);
+                led(ui, crate::language_plugin::text("panel23.app_qo100.text_833_75c75e", "sync"), s.sync_seen);
                 led(ui, "CRC", s.crc_ok);
                 if s.sync_bit_errors != u8::MAX {
                     // Always shown: sync passing (≤3) but CRC never lighting
@@ -841,10 +817,7 @@ impl SdroxideApp {
                     // hit shows ×1 near 3 errors.
                     let real = s.sync_bit_errors <= 1 && s.sync_matches >= 1;
                     ui.label(
-                        RichText::new(format!(
-                            "sync {} / 32 err  ×{}",
-                            s.sync_bit_errors, s.sync_matches
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(s.sync_bit_errors); let __lp_arg_1 = &(s.sync_matches); crate::language_plugin::format("window.qo100.text_845_e58284", "sync {} / 32 err  ×{}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                         .size(9.0)
                         .color(if real {
                             theme::GREEN()
@@ -857,13 +830,10 @@ impl SdroxideApp {
                 }
             });
             ui.add(egui::ProgressBar::new(s.frame_fill).desired_height(6.0).text(
-                RichText::new(format!("frame buffer {:.0}%", s.frame_fill * 100.0)).size(8.0),
+                RichText::new({ let __lp_arg_0 = &(s.frame_fill * 100.0); crate::language_plugin::format("window.qo100.text_860_d8b1e9", "frame buffer {:.0}%", &[format!("{:.0}", __lp_arg_0)]) }).size(8.0),
             ));
             ui.label(
-                RichText::new(format!(
-                    "{} blocks tried, {} decoded",
-                    s.blocks_tried, s.blocks_locked
-                ))
+                RichText::new({ let __lp_arg_0 = &(s.blocks_tried); let __lp_arg_1 = &(s.blocks_locked); crate::language_plugin::format("window.qo100.text_864_293924", "{} blocks tried, {} decoded", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                 .size(9.0)
                 .color(theme::CYAN_DIM()),
             );
@@ -871,7 +841,7 @@ impl SdroxideApp {
             // Toggled on but no status back yet — the first ~24 s window.
             ui.add_space(4.0);
             ui.label(
-                RichText::new("DECODE — filling the first frame buffer…")
+                RichText::new(crate::language_plugin::text("window.qo100.text_874_2ee451", "DECODE — filling the first frame buffer…"))
                     .size(9.5)
                     .color(theme::CYAN_DIM()),
             );
@@ -879,8 +849,8 @@ impl SdroxideApp {
             ui.add_space(4.0);
             ui.label(
                 RichText::new(
-                    "DECODE — off. Turn on the TELEMETRY chip (top row) for the \
-                              carrier → sync → CRC readout.",
+                    crate::language_plugin::text("window.qo100.text_882_d25ceb", "DECODE — off. Turn on the TELEMETRY chip (top row) for the \
+                              carrier → sync → CRC readout."),
                 )
                 .size(9.0)
                 .color(theme::CYAN_DIM()),
@@ -893,7 +863,7 @@ impl SdroxideApp {
         // number above could catch.
         if let Some(s) = status.as_ref().filter(|s| !s.text.is_empty()) {
             ui.add_space(4.0);
-            ui.label(RichText::new("TELEMETRY").size(9.5).color(theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.qo100.text_896_deb116", "TELEMETRY")).size(9.5).color(theme::CYAN_DIM()));
             egui::Frame::new().fill(theme::INPUT_BG()).inner_margin(6.0).show(ui, |ui| {
                 ui.add(
                     egui::Label::new(
@@ -917,26 +887,26 @@ impl SdroxideApp {
                 };
             let apply = ui.add_enabled(
                 can_apply,
-                egui::Button::new(RichText::new(" APPLY CORRECTION ").strong()),
+                egui::Button::new(RichText::new(crate::language_plugin::text("window.qo100.text_920_d6a286", " APPLY CORRECTION ")).strong()),
             );
             let apply = apply.on_hover_text(match effective {
                 Some((_, MeasSource::Manual)) => {
-                    "Write the converter/LNB offset that puts the beacon where you clicked onto \
+                    crate::language_plugin::text("window.qo100.text_924_8d4e92", "Write the converter/LNB offset that puts the beacon where you clicked onto \
                      10489.750 MHz, and reopen the receiver — the same brief interruption \
-                     Settings ▸ Radio ▸ Apply makes"
+                     Settings ▸ Radio ▸ Apply makes")
                 }
                 Some((_, MeasSource::Tracker)) => {
-                    "Write the converter/LNB offset that puts the tracker's estimate onto \
+                    crate::language_plugin::text("window.qo100.text_929_12c1a0", "Write the converter/LNB offset that puts the tracker's estimate onto \
                      10489.750 MHz, and reopen the receiver — the same brief interruption \
-                     Settings ▸ Radio ▸ Apply makes"
+                     Settings ▸ Radio ▸ Apply makes")
                 }
                 Some((_, MeasSource::Lock)) if !confirmed => {
-                    "Waiting for a second CRC-valid frame before offering to write this — one lock \
-                     alone could be a chance match"
+                    crate::language_plugin::text("window.qo100.text_934_640246", "Waiting for a second CRC-valid frame before offering to write this — one lock \
+                     alone could be a chance match")
                 }
                 _ => {
-                    "Write the corrected converter/LNB offset and reopen the receiver — a brief \
-                     interruption, the same one Settings ▸ Radio ▸ Apply makes"
+                    crate::language_plugin::text("window.qo100.text_938_761d53", "Write the corrected converter/LNB offset and reopen the receiver — a brief \
+                     interruption, the same one Settings ▸ Radio ▸ Apply makes")
                 }
             });
             if apply.clicked()
@@ -956,10 +926,7 @@ impl SdroxideApp {
             if let Some((old, new, at)) = win.applied {
                 let ago = crate::time::now_unix() - at;
                 ui.label(
-                    RichText::new(format!(
-                        "last applied {ago}s ago: {old:.0} → {new:.0} Hz ({:+.0} Hz)",
-                        new - old
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(new - old); crate::language_plugin::format("window.qo100.text_960_18d302", "last applied {ago}s ago: {old:.0} → {new:.0} Hz ({:+.0} Hz)", &[format!("{ago}"), format!("{old:.0}"), format!("{new:.0}"), format!("{:+.0}", __lp_arg_0)]) })
                     .size(9.5)
                     .color(theme::CYAN_DIM()),
                 );
@@ -1040,27 +1007,18 @@ fn status_line(enabled: bool, status: Option<&Qo100Status>, remote: bool) -> Str
         return String::new();
     }
     if remote {
-        return "decoder runs on the receiving station — its readout is not sent to remote clients"
+        return crate::language_plugin::text("boundaries.app.qo100.text_1043_3d4d41", "decoder runs on the receiving station — its readout is not sent to remote clients")
             .to_string();
     }
     match status {
-        None => "starting…".to_string(),
+        None => crate::language_plugin::text("panel23.app_qo100.text_1047_407944", "starting…").to_string(),
         Some(s) if s.locked => {
-            format!(
-                "locked — {} block{} tried, {} locked",
-                s.blocks_tried,
-                if s.blocks_tried == 1 { "" } else { "s" },
-                s.blocks_locked
-            )
+            { let __lp_arg_0 = &(s.blocks_tried); let __lp_arg_1 = &(crate::language_plugin::ui_count_plural(s.blocks_tried, "boundaries.app.qo100.text_1050_01c5cc", "locked — {} block{} tried, {} locked")); let __lp_arg_2 = &(s.blocks_locked); crate::language_plugin::format("boundaries.app.qo100.text_1050_01c5cc", "locked — {} block{} tried, {} locked", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) }
         }
         Some(s) if s.blocks_tried == 0 => {
-            "searching — the first window fills after about 24 s, then repeats".to_string()
+            crate::language_plugin::text("boundaries.app.qo100.text_1057_89118a", "searching — the first window fills after about 24 s, then repeats").to_string()
         }
-        Some(s) => format!(
-            "searching — {} block{} tried, none locked yet",
-            s.blocks_tried,
-            if s.blocks_tried == 1 { "" } else { "s" }
-        ),
+        Some(s) => { let __lp_arg_0 = &(s.blocks_tried); let __lp_arg_1 = &(crate::language_plugin::ui_count_plural(s.blocks_tried, "boundaries.app.qo100.text_1060_b7d341", "searching — {} block{} tried, none locked yet")); crate::language_plugin::format("boundaries.app.qo100.text_1060_b7d341", "searching — {} block{} tried, none locked yet", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
     }
 }
 
@@ -1233,4 +1191,49 @@ mod tests {
         s.text = "QO-100 XX".into();
         assert!(apply_is_confirmed(Some(&s)), "two locks and real text: safe to offer");
     }
+}
+
+#[cfg(test)]
+mod language_beacon_status_tests {
+    use super::*;
+    #[test]
+    fn beacon_status_uses_chinese_counters_and_restores_exact_english() {
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(status_line(false,None,false),"");
+            assert_eq!(status_line(true,None,true),if enabled {"解码器在接收台站上运行 — 解码状态不会发送给远程客户端"} else {"decoder runs on the receiving station — its readout is not sent to remote clients"});
+            for n in [0,1,2,1000] {for locked in [true,false] {
+                let s=Qo100Status{blocks_tried:n,blocks_locked:1,locked,..Default::default()};let before=s.clone();
+                let actual=status_line(true,Some(&s),false);
+                let suffix=if n==1 {""} else {"s"};
+                let expected=if locked {
+                    if enabled {format!("已锁定 — 已尝试 {n} 个数据块，其中 1 个锁定")} else {format!("locked — {n} block{suffix} tried, 1 locked")}
+                } else if n==0 {
+                    if enabled {"正在搜索 — 首个分析窗口约需 24 秒填满，之后循环分析".into()} else {"searching — the first window fills after about 24 s, then repeats".into()}
+                } else if enabled {format!("正在搜索 — 已尝试 {n} 个数据块，尚未锁定")} else {format!("searching — {n} block{suffix} tried, none locked yet")};
+                assert_eq!(actual,expected);assert_eq!(s,before);
+            }}
+        }
+    }
+}
+
+#[cfg(test)]
+mod language_beacon_led23_tests {
+ use super::*;
+ #[test]
+ fn beacon_lights_and_startup_status_translate_without_starting_decoder_or_audio() {
+  for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+   assert_eq!(status_line(true,None,false),if enabled {"正在启动…"}else{"starting…"});
+   assert_eq!(status_line(false,None,false),"");
+   for width in [360.0,600.0,1000.0] {
+    let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+    let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,200.0))),..Default::default()},|ui|{
+     for source in ["carrier","sync"] {let face=crate::language_plugin::scope_text("panel23.app_qo100.",source);led(ui,face,true);}
+     led(ui,"CRC",false);
+    });
+    let texts:Vec<_>=output.shapes.iter().filter_map(|s|if let egui::epaint::Shape::Text(t)=&s.shape{Some(t.galley.job.text.clone())}else{None}).collect();
+    assert!(texts.contains(&if enabled {"载波"}else{"carrier"}.to_owned()));assert!(texts.contains(&if enabled {"同步"}else{"sync"}.to_owned()));assert!(texts.contains(&"CRC".to_owned()));output.drop_without_applying_deltas();
+   }
+  }
+ }
 }

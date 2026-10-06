@@ -475,11 +475,11 @@ pub fn show(
         if !v.name.is_empty() {
             tip.push_str(&format!("  {}", v.mmsi));
         }
-        tip.push_str(&format!("\n{}", v.kind.label()));
-        if let Some(t) = v.type_label() {
+        tip.push_str(&format!("\n{}", crate::language_plugin::ais_label(v.kind.label())));
+        if let Some(t) = v.type_label().map(crate::language_plugin::ais_label) {
             tip.push_str(&format!(" — {t}"));
         }
-        if let Some(s) = v.nav_status.map(sdroxide_types::nav_status_label) {
+        if let Some(s) = v.nav_status.map(sdroxide_types::nav_status_label).map(crate::language_plugin::ais_label) {
             tip.push_str(&format!("\n{s}"));
         }
         tip.push_str(&format!("\n{} kt   {}°", v.fmt_speed(), v.fmt_course()));
@@ -512,11 +512,11 @@ pub fn show(
     if live.is_empty() && !vessels.is_empty() {
         let heard = vessels.len();
         let note = if vessels.iter().any(|v| v.lat.is_some() && v.lon.is_some()) {
-            format!("{heard} heard — no position newer than {}s", cfg.drop_map_s)
+            { let __lp_arg_0 = &(cfg.drop_map_s); crate::language_plugin::format("map.ais.text_515_c83344", "{heard} heard — no position newer than {}s", &[format!("{heard}"), format!("{}", __lp_arg_0)]) }
         } else if heard == 1 {
-            "1 station heard — waiting for it to report a position".to_string()
+            crate::language_plugin::text("map.ais.text_517_50e2bf", "1 station heard — waiting for it to report a position").to_string()
         } else {
-            format!("{heard} stations heard — waiting for a position report")
+            crate::language_plugin::format("map.ais.text_519_6302e3", "{heard} stations heard — waiting for a position report", &[format!("{heard}")])
         };
         p.text(
             rect.center(),
@@ -531,7 +531,7 @@ pub fn show(
         p.text(
             rect.right_bottom() + vec2(-6.0, -4.0),
             Align2::RIGHT_BOTTOM,
-            "double-click to reframe",
+            crate::language_plugin::text("map.ais.painter.text_534_a7c70e", "double-click to reframe"),
             FontId::proportional(9.0),
             alpha(Color32::WHITE, 110.0),
         );
@@ -567,7 +567,7 @@ pub fn show(
         .show(&mut ctrl_ui, |ui| {
             ui.horizontal(|ui| {
                 if crate::chrome::chip(ui, false, RichText::new("\u{2212}").size(12.0))
-                    .on_hover_text("Zoom out — the wheel or a pinch do this too")
+                    .on_hover_text(crate::language_plugin::text("map.ais.text_570_60d94a", "Zoom out — the wheel or a pinch do this too"))
                     .clicked()
                 {
                     view.zoom_about(1.0 / ZOOM_STEP, 0.5, 0.5, aspect);
@@ -575,15 +575,15 @@ pub fn show(
                     crate::repaint::animate(ui.ctx());
                 }
                 if crate::chrome::chip(ui, false, RichText::new("+").size(12.0))
-                    .on_hover_text("Zoom in about the middle of the chart")
+                    .on_hover_text(crate::language_plugin::text("map.ais.text_578_2a4824", "Zoom in about the middle of the chart"))
                     .clicked()
                 {
                     view.zoom_about(ZOOM_STEP, 0.5, 0.5, aspect);
                     view.manual = true;
                     crate::repaint::animate(ui.ctx());
                 }
-                if crate::chrome::chip(ui, false, RichText::new("FIT").size(10.0))
-                    .on_hover_text("Frame everything being tracked again — a double-click does too")
+                if crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("map.ais.text_585_0d1ed1", "FIT")).size(10.0))
+                    .on_hover_text(crate::language_plugin::text("map.ais.text_586_fb4ef9", "Frame everything being tracked again — a double-click does too"))
                     .clicked()
                 {
                     view.manual = false;
@@ -598,7 +598,7 @@ pub fn show(
     p.text(
         rect.left_bottom() + vec2(6.0, -4.0),
         Align2::LEFT_BOTTOM,
-        format!("{lon_span:.2}° · ~{km:.0} km across"),
+        crate::language_plugin::format("map.ais.text_601_1d2c03", "{lon_span:.2}° · ~{km:.0} km across", &[format!("{lon_span:.2}"), format!("{km:.0}")]),
         FontId::proportional(9.0),
         alpha(Color32::WHITE, 110.0),
     );

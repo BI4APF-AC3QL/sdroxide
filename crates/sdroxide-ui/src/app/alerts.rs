@@ -33,9 +33,9 @@ pub enum AlertStatus {
     /// Alerts switched off, or no settings applied yet.
     Idle,
     /// Driving the named device.
-    Running(String),
+    Running(crate::language_plugin::UiNotice),
     /// Could not open the device; alarms are silently skipped.
-    Failed(String),
+    Failed(crate::language_plugin::UiNotice),
 }
 
 impl AlertStatus {
@@ -497,7 +497,7 @@ impl AlertSink {
         };
         if thread.is_none() {
             *status.lock().unwrap() =
-                AlertStatus::Failed("could not start the alert thread".into());
+                AlertStatus::Failed(crate::language_plugin::UiNotice::literal("could not start the alert thread"));
         }
         AlertSink { tx: Some(tx), stop, thread }
     }
@@ -530,7 +530,7 @@ fn worker(
     let (out, mut ring) = match sdroxide_audio::start_output(device.as_deref(), 48_000) {
         Ok(ok) => ok,
         Err(e) => {
-            *status.lock().unwrap() = AlertStatus::Failed(e.to_string());
+            *status.lock().unwrap() = AlertStatus::Failed(e.to_string().into());
             // Nothing can be played. Honour a quit, and otherwise wait for the
             // sender to go — which it does before the join in `Drop`, so this
             // cannot hold the app open.
@@ -542,7 +542,7 @@ fn worker(
             return;
         }
     };
-    let label = device.clone().unwrap_or_else(|| "default".into());
+    let label = crate::language_plugin::alert_output_notice(device.as_deref());
     *status.lock().unwrap() = AlertStatus::Running(label);
     let capacity = out.sample_rate as usize * 2;
     let lead = (out.sample_rate * LEAD_S) as usize;

@@ -30,7 +30,7 @@ impl SdroxideApp {
         let st: Option<Box<AtChatStatus>> =
             self.digi_status.as_ref().and_then(|s| s.atchat.clone());
         let Some(st) = st else {
-            ui.label(RichText::new("starting the AtCHAT NET station…").weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_33_9f36f6", "starting the AtCHAT NET station…")).weak());
             return;
         };
         // On the virtual TCP channel nothing keys a transmitter, so sending a
@@ -74,7 +74,7 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.label(RichText::new("ATCHAT").size(11.0).strong().color(theme::CYAN()));
             ui.label(
-                RichText::new("NET — multi-station keyboard & file")
+                RichText::new(crate::language_plugin::text("panels.atchat.text_77_6cb28d", "NET — multi-station keyboard & file"))
                     .size(10.5)
                     .color(theme::CYAN_DIM()),
             );
@@ -83,9 +83,9 @@ impl SdroxideApp {
             // while joined, plain "REJOIN" once off. Clicking it drops the link
             // (state is kept) or rejoins — sometimes you just need to cycle.
             let (face, hover) = if st.connected {
-                (" ON NET ", "On the net — click to leave (state is kept; click again to rejoin)")
+                (crate::language_plugin::text("panel.atchat.text_86_a46d4a", " ON NET "), crate::language_plugin::text("panel.atchat.text_86_c642da", "On the net — click to leave (state is kept; click again to rejoin)"))
             } else {
-                (" REJOIN ", "Off the net — click to rejoin")
+                (crate::language_plugin::text("panel.atchat.text_88_ba0301", " REJOIN "), crate::language_plugin::text("panel.atchat.text_88_a8d873", "Off the net — click to rejoin"))
             };
             let resp = crate::chrome::chip_accent(
                 ui,
@@ -103,7 +103,7 @@ impl SdroxideApp {
             }
             resp.on_hover_text(hover);
             if !st.connected {
-                ui.label(RichText::new("off net").size(10.0).color(theme::YELLOW()));
+                ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_106_227fdd", "off net")).size(10.0).color(theme::YELLOW()));
             }
 
             if let Some(role) = &st.role {
@@ -112,26 +112,26 @@ impl SdroxideApp {
                     "BACKUP" => theme::YELLOW(),
                     _ => theme::gray(140),
                 };
-                ui.label(RichText::new(role).size(10.5).strong().color(colour));
+                ui.label(RichText::new(atchat_role_label(role)).size(10.5).strong().color(colour));
             }
             if let Some(m) = &st.master {
-                ui.label(RichText::new(format!("master {m}")).size(10.5).color(theme::gray(150)));
+                ui.label(RichText::new(crate::language_plugin::format("panels.atchat.text_118_0ee04d", "master {m}", &[format!("{m}")])).size(10.5).color(theme::gray(150)));
             }
             if st.carrier {
-                ui.label(RichText::new("● CARRIER").size(10.5).color(theme::YELLOW()))
-                    .on_hover_text("Another station is transmitting — the channel is busy.");
+                ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_121_7d9fed", "● CARRIER")).size(10.5).color(theme::YELLOW()))
+                    .on_hover_text(crate::language_plugin::text("panels.atchat.text_122_f1bc02", "Another station is transmitting — the channel is busy."));
             }
             if st.keyed {
-                ui.label(RichText::new("● TX").size(10.5).strong().color(theme::ALERT()));
+                ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_125_548c99", "● TX")).size(10.5).strong().color(theme::ALERT()));
             }
 
             crate::chrome::row_tail(ui, |ui| {
                 if crate::chrome::chip(
                     ui,
                     self.show_digi_settings,
-                    RichText::new("⚙ SETUP").size(9.5),
+                    RichText::new(crate::language_plugin::text("panels.atchat.text_132_3b3b5d", "⚙ SETUP")).size(9.5),
                 )
-                .on_hover_text("Station callsign and the virtual-channel address")
+                .on_hover_text(crate::language_plugin::text("panels.atchat.text_134_ebcf24", "Station callsign and the virtual-channel address"))
                 .clicked()
                 {
                     self.show_digi_settings = !self.show_digi_settings;
@@ -143,15 +143,15 @@ impl SdroxideApp {
         // in for the RF path, for developing and testing without a radio.
         ui.horizontal_wrapped(|ui| {
             let on = self.digi_cfg_edit.atchat_virtual;
-            let resp = crate::chrome::chip(ui, on, RichText::new("VIRTUAL CHANNEL").size(10.0));
+            let resp = crate::chrome::chip(ui, on, RichText::new(crate::language_plugin::text("panels.atchat.text_146_d134b4", "VIRTUAL CHANNEL")).size(10.0));
             if resp.clicked() && self.digi_cfg_seeded {
                 self.digi_cfg_edit.atchat_virtual = !on;
                 cmds.push(Command::SetDigiConfig(self.digi_cfg_edit.clone()));
             }
             resp.on_hover_text(
-                "Work the net over a TCP endpoint instead of the radio — a \
+                crate::language_plugin::text("panels.atchat.text_152_333d85", "Work the net over a TCP endpoint instead of the radio — a \
                  channel_server-compatible loopback for radio-less development. \
-                 Off puts the station on the air.",
+                 Off puts the station on the air."),
             );
             ui.add_enabled_ui(on, |ui| {
                 let r = crate::chrome::field(
@@ -214,19 +214,16 @@ impl SdroxideApp {
 
         // Roster strip — a click opens/focuses that station's DM tab.
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("ROSTER").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_217_98a1a3", "ROSTER")).strong().size(10.5).color(theme::CYAN()));
             if st.roster.is_empty() {
-                ui.label(RichText::new("nobody heard yet").weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_219_87e920", "nobody heard yet")).weak());
             }
             for r in &st.roster {
                 let colour = if r.status == "active" { theme::GREEN() } else { theme::gray(110) };
                 let face = RichText::new(&r.call).monospace().size(10.5).color(colour);
                 if ui
                     .add(egui::Label::new(face).sense(egui::Sense::click()))
-                    .on_hover_text(format!(
-                        "{} — last heard {:.0}s ago · click to open a direct-message tab",
-                        r.status, r.age_s
-                    ))
+                    .on_hover_text({ let __lp_arg_0 = &(crate::language_plugin::atchat_roster_status(&r.status)); let __lp_arg_1 = &(r.age_s); crate::language_plugin::format("panels.atchat.text_227_8b4f4a", "{} — last heard {:.0}s ago · click to open a direct-message tab", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) })
                     .clicked()
                 {
                     if !self.atchat_dm_tabs.iter().any(|p| p == &r.call) {
@@ -255,8 +252,8 @@ impl SdroxideApp {
                 ui.set_max_width(strip_w);
                 ui.horizontal_wrapped(|ui| {
                     let chat_active = !self.atchat_show_log && self.atchat_chat_tab.is_none();
-                    if crate::chrome::chip(ui, chat_active, RichText::new(" CHAT ").size(10.5))
-                        .on_hover_text("The common channel — lines here go to everyone (ALL)")
+                    if crate::chrome::chip(ui, chat_active, RichText::new(crate::language_plugin::text("panels.atchat.text_258_4219c8", " CHAT ")).size(10.5))
+                        .on_hover_text(crate::language_plugin::text("panels.atchat.text_259_329cf8", "The common channel — lines here go to everyone (ALL)"))
                         .clicked()
                     {
                         self.atchat_chat_tab = None;
@@ -290,7 +287,7 @@ impl SdroxideApp {
                                 )
                                 .sense(egui::Sense::click()),
                             )
-                            .on_hover_text(format!("close the {peer} tab"))
+                            .on_hover_text(crate::language_plugin::format("panels.atchat.text_293_224279", "close the {peer} tab", &[format!("{peer}")]))
                             .clicked()
                         {
                             to_close = Some(peer.clone());
@@ -300,11 +297,11 @@ impl SdroxideApp {
                     if crate::chrome::chip(
                         ui,
                         self.atchat_show_log,
-                        RichText::new(" LOG ").size(10.5),
+                        RichText::new(crate::language_plugin::text("panels.atchat.text_303_bcce70", " LOG ")).size(10.5),
                     )
                     .on_hover_text(
-                        "The station's own on-air activity — master election, \
-                             roster ageing, ARQ retries",
+                        crate::language_plugin::text("panels.atchat.text_306_f11513", "The station's own on-air activity — master election, \
+                             roster ageing, ARQ retries"),
                     )
                     .clicked()
                     {
@@ -338,7 +335,7 @@ impl SdroxideApp {
             .show(ui, |ui| {
                 if show_log {
                     if st.log.is_empty() {
-                        ui.label(RichText::new("No activity logged yet.").weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_341_7c1d8e", "No activity logged yet.")).weak());
                     }
                     for line in &st.log {
                         ui.label(
@@ -360,7 +357,7 @@ impl SdroxideApp {
                     }
                     shown += 1;
                     let when = hms(c.when);
-                    let who = if c.own { "me".to_string() } else { c.from.clone() };
+                    let who = if c.own { atchat_self_label() } else { c.from.clone() };
                     let tag = format!("<{who}>");
                     let colour = if c.own { theme::GREEN() } else { theme::TEXT() };
                     ui.horizontal_wrapped(|ui| {
@@ -370,7 +367,7 @@ impl SdroxideApp {
                     });
                 }
                 if shown == 0 {
-                    ui.label(RichText::new("No messages yet.").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_373_f0d596", "No messages yet.")).weak());
                 }
             });
 
@@ -394,8 +391,8 @@ impl SdroxideApp {
         // The line to type on — its destination is the active tab.
         let mut send = false;
         let hint = match &active {
-            None => "message to everyone (ALL)".to_string(),
-            Some(p) => format!("direct message to {p}"),
+            None => crate::language_plugin::text("panel.atchat.text_397_3f224c", "message to everyone (ALL)").to_string(),
+            Some(p) => crate::language_plugin::format("panel.atchat.text_398_e4e975", "direct message to {p}", &[format!("{p}")]),
         };
         ui.horizontal(|ui| {
             let room = (ui.available_width() - 52.0).max(80.0);
@@ -409,7 +406,7 @@ impl SdroxideApp {
                 crate::chrome::chip_accent(
                     ui,
                     false,
-                    RichText::new(" SEND ").size(10.0).strong(),
+                    RichText::new(crate::language_plugin::text("panels.atchat.text_412_3f326b", " SEND ")).size(10.0).strong(),
                     theme::GREEN(),
                     theme::INK_ON_CYAN(),
                 )
@@ -440,22 +437,22 @@ impl SdroxideApp {
     ) {
         let target = self.atchat_target();
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("TRANSFERS").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_443_07f15f", "TRANSFERS")).strong().size(10.5).color(theme::CYAN()));
             ui.label(
                 RichText::new(if target.is_empty() {
-                    "→ ALL".to_string()
+                    crate::language_plugin::text("panels.atchat.text_446_2b9d66", "→ ALL").to_string()
                 } else {
                     format!("→ {target}")
                 })
                 .size(9.5)
                 .color(theme::gray(130)),
             )
-            .on_hover_text("A sent file follows the active chat tab");
+            .on_hover_text(crate::language_plugin::text("panels.atchat.text_453_eb3e02", "A sent file follows the active chat tab"));
             crate::chrome::row_tail(ui, |ui| {
                 let clicked = tx_gated(ui, can_send, |ui| {
-                    crate::chrome::chip(ui, false, RichText::new(" SEND FILE ").size(10.0))
+                    crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.atchat.text_456_6ef3c4", " SEND FILE ")).size(10.0))
                 })
-                .on_hover_text("Send a file or image over the air, block-CRC-ARQ")
+                .on_hover_text(crate::language_plugin::text("panels.atchat.text_458_63531c", "Send a file or image over the air, block-CRC-ARQ"))
                 .clicked();
                 // Native file picker only — the browser client has no
                 // filesystem dialog here, same as the log-import button.
@@ -477,7 +474,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show(ui, |ui| {
                 if st.transfers.is_empty() {
-                    ui.label(RichText::new("nothing in flight").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_480_5b39c6", "nothing in flight")).weak());
                 }
                 for t in &st.transfers {
                     let dir = if t.incoming { "◀" } else { "▶" };
@@ -500,13 +497,13 @@ impl SdroxideApp {
             });
 
         ui.add_space(6.0);
-        ui.label(RichText::new("IMAGES").strong().size(10.5).color(theme::CYAN()));
+        ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_503_fd8cc9", "IMAGES")).strong().size(10.5).color(theme::CYAN()));
 
         // Only the images, oldest first — the viewer walks this subset.
         let images: Vec<&sdroxide_types::AtChatFile> =
             st.files.iter().filter(|f| f.is_image).collect();
         if images.is_empty() {
-            ui.label(RichText::new("No images received.").weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.atchat.text_509_7a279d", "No images received.")).weak());
             return;
         }
         if self.atchat_img_at >= images.len() {
@@ -550,7 +547,7 @@ impl SdroxideApp {
             }
             None => {
                 ui.label(
-                    RichText::new(format!("cannot display {}", f.path))
+                    RichText::new({ let __lp_arg_0 = &(f.path); crate::language_plugin::format("panels.atchat.text_553_5c4f39", "cannot display {}", &[format!("{}", __lp_arg_0)]) })
                         .size(10.0)
                         .color(theme::YELLOW()),
                 );
@@ -588,4 +585,42 @@ impl SdroxideApp {
 fn hms(unix: u64) -> String {
     let (_, _, _, h, mi, s) = sdroxide_types::utc_ymd_hms(unix as i64);
     format!("{h:02}:{mi:02}:{s:02}")
+}
+
+
+fn atchat_role_label(role: &str) -> String {
+    crate::language_plugin::scope_text("display.atchat.role.", role)
+}
+
+fn atchat_self_label() -> String {
+    crate::language_plugin::text("panels.atchat.you", "me")
+}
+
+#[cfg(test)]
+mod role_language_tests {
+    use super::*;
+
+    #[test]
+    fn network_role_badges_and_self_tag_render_and_restore_english() {
+        let mut fonts=egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        let ctx=egui::Context::default();ctx.set_fonts(fonts);
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (label,chinese,english) in [
+                (atchat_role_label("MASTER"),"主节点","MASTER"),
+                (atchat_role_label("BACKUP"),"备用节点","BACKUP"),
+                (atchat_self_label(),"我","me"),
+            ] {
+                assert_eq!(label,if enabled { chinese } else { english });
+                let output=ctx.run_ui(egui::RawInput::default(),|ui|{ui.label(&label);});
+                let rendered:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {
+                    egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None,
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(rendered.iter().any(|text|text==&label),"{rendered:?}");
+            }
+        }
+        assert_eq!(atchat_role_label("FUTURE_ROLE"),"FUTURE_ROLE");
+    }
 }

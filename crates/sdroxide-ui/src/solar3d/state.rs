@@ -504,12 +504,12 @@ impl SolarUi {
     /// [`SolarUi::sat_hit`], over the body's name and full designation — see
     /// [`sdroxide_solar::SmallBody::matches`].
     pub fn small_hit(&self, b: &sdroxide_solar::SmallBody) -> bool {
-        b.matches(&self.search)
+        crate::language_plugin::solar_body_matches(b, &self.search)
     }
 
     /// Every small body the find box currently picks out.
-    pub fn small_hits(&self) -> impl Iterator<Item = (usize, &'static sdroxide_solar::SmallBody)> {
-        sdroxide_solar::smallbody::search(&self.search)
+    pub fn small_hits(&self) -> impl Iterator<Item = (usize, &'static sdroxide_solar::SmallBody)> + '_ {
+        sdroxide_solar::smallbody::BODIES.iter().enumerate().filter(move |(_, b)| self.small_hit(b))
     }
 
     pub fn layer(&self, bit: u32) -> bool {

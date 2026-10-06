@@ -65,7 +65,7 @@ impl SdroxideApp {
         let st: AdsbStatus = match self.adsb_status.as_ref() {
             Some(s) => (**s).clone(),
             None => {
-                ui.label(RichText::new("starting the ADS-B decoder…").weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_68_fa303b", "starting the ADS-B decoder…")).weak());
                 return;
             }
         };
@@ -122,14 +122,18 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(22.0);
             ui.label(RichText::new("ADS-B").size(11.0).strong().color(theme::CYAN()));
-            ui.label(RichText::new("1090 MHz Mode S").weak().size(10.5));
+            ui.label(
+                RichText::new(crate::language_plugin::text("panels.adsb.mode_s", "1090 MHz Mode S"))
+                    .weak()
+                    .size(10.5),
+            );
 
             // The one preset there is. A chip rather than a note, because the
             // fix for "nothing is decoding" is nearly always this.
             if crate::chrome::chip(ui, on_channel, "1090.000")
                 .on_hover_text(
-                    "Tune the receiver to 1090.000 MHz, the worldwide ADS-B \
-                     downlink. There is only one channel.",
+                    crate::language_plugin::text("panels.adsb.text_131_dc0482", "Tune the receiver to 1090.000 MHz, the worldwide ADS-B \
+                     downlink. There is only one channel."),
                 )
                 .clicked()
             {
@@ -140,14 +144,14 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            slot(ui, 76.0, &format!("{} aircraft", st.aircraft.len()), theme::CYAN());
-            slot(ui, 74.0, &format!("{} frames", count(st.frames)), theme::gray(150));
+            slot(ui, 76.0, &{ let __lp_arg_0 = &(st.aircraft.len()); crate::language_plugin::format("panel.adsb.text_143_4b990b", "{} aircraft", &[format!("{}", __lp_arg_0)]) }, theme::CYAN());
+            slot(ui, 74.0, &{ let __lp_arg_0 = &(count(st.frames)); crate::language_plugin::format("panel.adsb.text_144_c260a6", "{} frames", &[format!("{}", __lp_arg_0)]) }, theme::gray(150));
             // A high preamble count with no frames is the honest picture of a
             // band that is busy with something the decoder cannot read, or of a
             // receiver picking up its own noise. Worth showing rather than
             // leaving the panel looking broken.
-            slot(ui, 88.0, &format!("{} preambles", count(st.preambles)), theme::gray(120));
-            slot(ui, 78.0, &format!("{} bad CRC", count(st.bad_crc)), theme::gray(120));
+            slot(ui, 88.0, &{ let __lp_arg_0 = &(count(st.preambles)); crate::language_plugin::format("panel.adsb.text_149_28f628", "{} preambles", &[format!("{}", __lp_arg_0)]) }, theme::gray(120));
+            slot(ui, 78.0, &{ let __lp_arg_0 = &(count(st.bad_crc)); crate::language_plugin::format("panel.adsb.text_150_413b69", "{} bad CRC", &[format!("{}", __lp_arg_0)]) }, theme::gray(120));
 
             if st.window_rate_hz > 0.0 {
                 slot(
@@ -163,8 +167,8 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            if crate::chrome::chip(ui, self.show_adsb_setup, "SETUP")
-                .on_hover_text("Timeouts, trail length and how far ahead the speed vectors reach")
+            if crate::chrome::chip(ui, self.show_adsb_setup, crate::language_plugin::text("panels.adsb.text_166_7175b0", "SETUP"))
+                .on_hover_text(crate::language_plugin::text("panels.adsb.text_167_c69b88", "Timeouts, trail length and how far ahead the speed vectors reach"))
                 .clicked()
             {
                 self.show_adsb_setup = !self.show_adsb_setup;
@@ -173,10 +177,10 @@ impl SdroxideApp {
 
         if let Some(why) = &st.unavailable {
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new(why).size(10.5).color(theme::HAZARD()));
+                ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::HAZARD()));
                 if let Some(hz) = st.suggest_center_hz
                     && (dial - hz).abs() > 1.0
-                    && crate::chrome::chip(ui, false, format!("TUNE {:.3}", hz / 1e6)).clicked()
+                    && crate::chrome::chip(ui, false, { let __lp_arg_0 = &(hz / 1e6); crate::language_plugin::format("panels.adsb.text_179_d27f87", "TUNE {:.3}", &[format!("{:.3}", __lp_arg_0)]) }).clicked()
                 {
                     cmds.push(Command::SetVfo { vfo: self.state.active_vfo, hz });
                 }
@@ -187,7 +191,7 @@ impl SdroxideApp {
         // quiet sky looks like, and the fix is one setting away on most
         // receivers.
         if let Some(why) = &st.degraded {
-            ui.label(RichText::new(why).size(10.5).color(theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::YELLOW()));
         }
     }
 
@@ -200,10 +204,10 @@ impl SdroxideApp {
         let home = self.adsb_home();
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(20.0);
-            ui.label(RichText::new("AIRCRAFT").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_203_a32019", "AIRCRAFT")).strong().size(10.5).color(theme::CYAN()));
             ui.add(
                 egui::TextEdit::singleline(&mut self.adsb_filter)
-                    .hint_text("filter")
+                    .hint_text(crate::language_plugin::text("panels.adsb.text_206_dfc337", "filter"))
                     .desired_width(70.0),
             );
         });
@@ -247,7 +251,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if rows.is_empty() {
-                    ui.label(RichText::new("nothing heard yet").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_250_63ee8f", "nothing heard yet")).weak());
                 }
                 for (i, a) in rows.iter().enumerate() {
                     if adsb_row(ui, a, now, selected, home, drop_map_s, i) {
@@ -292,14 +296,14 @@ impl SdroxideApp {
                     ));
                     ui.label(RichText::new(a.hex()).monospace().size(10.5).weak());
                     if let Some(c) = &a.category {
-                        ui.label(RichText::new(c).size(10.5).color(theme::CYAN_DIM()));
+                        ui.label(RichText::new(crate::language_plugin::adsb_label(c)).size(10.5).color(theme::CYAN_DIM()));
                     }
                     if a.on_ground {
-                        ui.label(RichText::new("on ground").size(10.5).color(theme::GREEN()));
+                        ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_298_0e121b", "on ground")).size(10.5).color(theme::GREEN()));
                     }
                     if a.lat.is_some() && a.pos_stale(now, self.state.adsb.drop_map_s) {
                         ui.label(
-                            RichText::new("position stale")
+                            RichText::new(crate::language_plugin::text("panels.adsb.text_302_159a69", "position stale"))
                                 .size(10.5)
                                 .color(theme::HAZARD())
                                 .italics(),
@@ -307,42 +311,42 @@ impl SdroxideApp {
                     }
                 });
                 if let Some(e) = &a.emergency {
-                    ui.label(RichText::new(e).strong().color(theme::HAZARD()));
+                    ui.label(RichText::new(crate::language_plugin::adsb_label(e)).strong().color(theme::HAZARD()));
                 }
 
-                let mut rows: Vec<(&str, String)> = Vec::new();
+                let mut rows: Vec<(String, String)> = Vec::new();
                 if let Some(ft) = a.altitude_ft {
-                    rows.push(("altitude", format!("{ft} ft barometric")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_315_d0a708", "altitude"), crate::language_plugin::format("panel.adsb.text_315_9fcb36", "{ft} ft barometric", &[format!("{ft}")])));
                 }
                 if let Some(ft) = a.gnss_altitude_ft {
-                    rows.push(("GNSS altitude", format!("{ft} ft")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_318_2d9135", "GNSS altitude"), format!("{ft} ft")));
                 }
                 if let Some(kt) = a.ground_speed_kt {
-                    rows.push(("ground speed", format!("{kt:.0} kt")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_321_3696d7", "ground speed"), format!("{kt:.0} kt")));
                 }
                 if let Some(t) = a.track_deg {
-                    rows.push(("track", format!("{t:.0}°")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_324_2bb8bf", "track"), format!("{t:.0}°")));
                 }
                 if a.turn_rate_deg_s.abs() > 0.2 {
-                    rows.push(("turning", format!("{:.1}°/s", a.turn_rate_deg_s)));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_327_2ab62c", "turning"), format!("{:.1}°/s", a.turn_rate_deg_s)));
                 }
                 if let Some(v) = a.vertical_rate_fpm {
-                    rows.push(("vertical rate", format!("{v:+} ft/min")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_330_fbce7a", "vertical rate"), format!("{v:+} ft/min")));
                 }
                 if a.squawk.is_some() {
-                    rows.push(("squawk", a.fmt_squawk()));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_333_46d43b", "squawk"), a.fmt_squawk()));
                 }
                 if let (Some((hlat, hlon)), Some((lat, lon))) = (home, a.lat.zip(a.lon)) {
                     let km = sdroxide_types::distance_km((hlat, hlon), (lat, lon));
                     let bear = sdroxide_types::bearing_deg((hlat, hlon), (lat, lon));
-                    rows.push(("range", format!("{km:.0} km at {bear:.0}°")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_338_2269c0", "range"), crate::language_plugin::format("panel.adsb.text_338_fa4949", "{km:.0} km at {bear:.0}°", &[format!("{km:.0}"), format!("{bear:.0}")])));
                 }
                 if let Some((lat, lon)) = a.lat.zip(a.lon) {
-                    rows.push(("position", format!("{lat:.4}, {lon:.4}")));
+                    rows.push((crate::language_plugin::text("panel.adsb.text_341_5a4524", "position"), format!("{lat:.4}, {lon:.4}")));
                 }
-                rows.push(("signal", format!("{:.0} dBFS", a.rssi_dbfs)));
-                rows.push(("frames", format!("{} ({})", a.frames, a.source.label())));
-                rows.push(("first heard", fmt_age(now - a.first_at)));
+                rows.push((crate::language_plugin::text("panel.adsb.text_343_d04192", "signal"), format!("{:.0} dBFS", a.rssi_dbfs)));
+                rows.push((crate::language_plugin::text("panel.adsb.text_344_594cfd", "frames"), format!("{} ({})", a.frames, a.source.label())));
+                rows.push((crate::language_plugin::text("panel.adsb.text_345_43b7ad", "first heard"), fmt_age(now - a.first_at)));
 
                 egui::Grid::new("adsb-card-grid").num_columns(2).spacing([10.0, 1.0]).show(
                     ui,
@@ -357,8 +361,8 @@ impl SdroxideApp {
 
                 ui.horizontal_wrapped(|ui| {
                     if a.has_position()
-                        && crate::chrome::chip(ui, false, RichText::new("CENTER").size(10.0))
-                            .on_hover_text("Put this aircraft in the middle of the map")
+                        && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.adsb.text_360_2215b7", "CENTER")).size(10.0))
+                            .on_hover_text(crate::language_plugin::text("panels.adsb.text_361_c01781", "Put this aircraft in the middle of the map"))
                             .clicked()
                         && let Some((lat, lon)) = a.lat.zip(a.lon)
                     {
@@ -373,7 +377,7 @@ impl SdroxideApp {
                             .color(theme::gray(110))
                             .weak(),
                     )
-                    .on_hover_text("The last frame accepted from this aircraft");
+                    .on_hover_text(crate::language_plugin::text("panels.adsb.text_376_d778bd", "The last frame accepted from this aircraft"));
                 }
             });
     }
@@ -417,7 +421,7 @@ impl SdroxideApp {
         // the engine persists whatever arrives and echoes it back in the state,
         // so there is no apply step and no way for the two copies to drift.
         let mut cfg = self.state.adsb;
-        let resp = egui::Window::new("ADS-B Setup")
+        let resp = egui::Window::new(crate::language_plugin::text("panels.adsb.text_420_ae3b5b", "ADS-B Setup")).id(egui::Id::new("ADS-B Setup"))
             .id(crate::layout::salted_id(ctx, "AdsbSetup"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -426,89 +430,89 @@ impl SdroxideApp {
             .show(ctx, |ui| {
                 crate::chrome::window_body_bg(ui);
                 egui::Grid::new("adsb-cfg").num_columns(2).spacing([10.0, 6.0]).show(ui, |ui| {
-                    ui.label("Drop from map after");
+                    ui.label(crate::language_plugin::text("panels.adsb.text_429_6186df", "Drop from map after"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.drop_map_s).range(2..=600).suffix(" s"),
                         );
-                        ui.label(RichText::new("without a position report").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_434_a2c18e", "without a position report")).size(9.5).weak());
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "Past this the aircraft comes off the map and its row greys. It \
+                            crate::language_plugin::text("panels.adsb.text_440_4a374e", "Past this the aircraft comes off the map and its row greys. It \
                              is not faded: a dim square at a stale position is still a claim \
-                             about where an aeroplane is, in the same ink as the true ones.",
+                             about where an aeroplane is, in the same ink as the true ones."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Drop from list after");
+                    ui.label(crate::language_plugin::text("panels.adsb.text_449_a1c72d", "Drop from list after"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.drop_list_s)
                                 .range(i64::from(cfg.drop_map_s)..=3600)
                                 .suffix(" s"),
                         );
-                        ui.label(RichText::new("with nothing heard at all").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_456_2a2956", "with nothing heard at all")).size(9.5).weak());
                     });
                     ui.end_row();
 
-                    ui.label("Trail length");
+                    ui.label(crate::language_plugin::text("panels.adsb.text_460_7d3344", "Trail length"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.history_points)
                                 .range(0..=sdroxide_types::ADSB_TRACK_MAX as u16)
-                                .suffix(" points"),
+                                .suffix(crate::language_plugin::text("panels.adsb.text_465_bbbc02", " points")),
                         );
-                        ui.label(RichText::new("history dots behind each target").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.adsb.text_467_07dd1f", "history dots behind each target")).size(9.5).weak());
                     });
                     ui.end_row();
 
-                    ui.label("Speed vector");
+                    ui.label(crate::language_plugin::text("panels.adsb.text_471_1fbc0c", "Speed vector"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.vector_minutes)
                                 .speed(0.1)
                                 .range(0.0..=10.0)
-                                .suffix(" min"),
+                                .suffix(crate::language_plugin::text("panels.adsb.text_477_2e7573", " min")),
                         );
                         ui.label(
-                            RichText::new("how far ahead the leader line reaches").size(9.5).weak(),
+                            RichText::new(crate::language_plugin::text("panels.adsb.text_480_8437da", "how far ahead the leader line reaches")).size(9.5).weak(),
                         );
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "One minute is the usual radar convention: the line is exactly \
+                            crate::language_plugin::text("panels.adsb.text_487_8004b5", "One minute is the usual radar convention: the line is exactly \
                              as long as the distance the aircraft covers in that time, so \
                              two equal leaders are two equal speeds at any zoom. Zero \
-                             switches them off.",
+                             switches them off."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Track at most");
+                    ui.label(crate::language_plugin::text("panels.adsb.text_497_94d6c7", "Track at most"));
                     ui.add(
                         egui::DragValue::new(&mut cfg.max_aircraft)
                             .range(10..=2000)
-                            .suffix(" aircraft"),
+                            .suffix(crate::language_plugin::text("panels.adsb.text_501_303641", " aircraft")),
                     );
                     ui.end_row();
                 });
                 ui.separator();
                 ui.label(
                     RichText::new(
-                        "Aircraft on the ground are placed against the station's own \
+                        crate::language_plugin::text("panels.adsb.text_508_cf055c", "Aircraft on the ground are placed against the station's own \
                          position — a surface squitter has no unambiguous decode of its \
                          own — so fill in My grid in the digimode setup if the airport \
-                         nearby shows nothing.",
+                         nearby shows nothing."),
                     )
                     .size(10.0)
                     .weak(),
@@ -533,18 +537,18 @@ fn adsb_head_row(ui: &mut egui::Ui, have_home: bool, sort: &mut AdsbSort, desc: 
     crate::app::panels::widgets::sort_head_row(
         ui,
         &[
-            (cols.call, L, "CALL", Some(AdsbSort::Callsign)),
+            (cols.call, L, &crate::language_plugin::text("panels.adsb.sort_headers.text_536_86c444", "CALL"), Some(AdsbSort::Callsign)),
             // The address is the callsign column's fallback, not an order
             // anybody wants a sky in.
             (cols.icao, L, "ICAO", None),
-            (cols.alt, R, "ALT", Some(AdsbSort::Altitude)),
-            (cols.spd, R, "GS", Some(AdsbSort::Speed)),
-            (cols.sig, R, "SIG", Some(AdsbSort::Signal)),
-            (cols.trk, R, "TRK", None),
-            (cols.vs, R, "V/S", None),
-            (cols.sqk, R, "SQK", None),
+            (cols.alt, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_540_c8b33f", "ALT"), Some(AdsbSort::Altitude)),
+            (cols.spd, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_541_3ed0f4", "GS"), Some(AdsbSort::Speed)),
+            (cols.sig, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_542_cc7109", "SIG"), Some(AdsbSort::Signal)),
+            (cols.trk, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_543_6f5d1d", "TRK"), None),
+            (cols.vs, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_544_185f37", "V/S"), None),
+            (cols.sqk, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_545_7c440b", "SQK"), None),
             (cols.range, R, "KM", Some(AdsbSort::Range)),
-            (cols.age, R, "AGE", Some(AdsbSort::Heard)),
+            (cols.age, R, &crate::language_plugin::text("panels.adsb.sort_headers.text_547_ab864b", "AGE"), Some(AdsbSort::Heard)),
         ],
         sort,
         desc,
@@ -684,7 +688,7 @@ fn adsb_row(
     // it — which is what makes the callsign as clickable as the empty space.
     let hit = ui.interact(rect, ui.id().with(("adsb-row", i)), egui::Sense::click());
     hit.on_hover_text(match &a.category {
-        Some(c) => format!("{} — {c}", a.hex()),
+        Some(c) => format!("{} — {}", a.hex(), crate::language_plugin::adsb_label(c)),
         None => a.hex(),
     })
     .clicked()
@@ -842,6 +846,31 @@ mod tests {
                 }
             }
             w += 7.0;
+        }
+    }
+}
+
+#[cfg(test)]
+mod language_header_render_tests {
+    use super::*;
+    #[test]
+    fn localized_column_headers_render_without_changing_sort_state() {
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for width in [400.0,600.0,1000.0] {
+                let ctx=egui::Context::default();
+                let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let mut sort=AdsbSort::Callsign;let before=sort;let mut desc=false;
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,100.0))),..Default::default()},|ui| {adsb_head_row(ui, true, &mut sort, &mut desc);});
+                let texts:Vec<String>=output.shapes.iter().filter_map(|shape|match &shape.shape {
+                    egui::epaint::Shape::Text(text)=>Some(text.galley.job.text.clone()),_=>None
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"呼号"} else {"CALL"})),"{texts:?}");
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"时龄"} else {"AGE"})),"{texts:?}");
+                assert_eq!(sort,before);assert!(!desc);
+            }
         }
     }
 }

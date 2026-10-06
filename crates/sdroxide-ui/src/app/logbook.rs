@@ -303,6 +303,19 @@ impl LogView {
     }
 }
 
+fn qsl_status_label(source: &str) -> String {
+    match source {
+        "LoTW ✓" => crate::language_plugin::text("window.logbook.qsl.lotw_received", "LoTW ✓"),
+        "eQSL ✓" => crate::language_plugin::text("window.logbook.qsl.eqsl_received", "eQSL ✓"),
+        "LoTW ↑" => crate::language_plugin::text("window.logbook.qsl.lotw_sent", "LoTW ↑"),
+        "eQSL ↑" => crate::language_plugin::text("window.logbook.qsl.eqsl_sent", "eQSL ↑"),
+        "QRZ ↑" => crate::language_plugin::text("window.logbook.qsl.qrz_sent", "QRZ ↑"),
+        "HamQTH ↑" => crate::language_plugin::text("window.logbook.qsl.hamqth_sent", "HamQTH ↑"),
+        "Club Log ↑" => crate::language_plugin::text("window.logbook.qsl.clublog_sent", "Club Log ↑"),
+        _ => source.to_owned(),
+    }
+}
+
 impl SdroxideApp {
     /// The operator's grid square. Prefers the engine's copy but falls back to
     /// the UI's edit buffer: `digi_status` only arrives once the engine sends
@@ -350,10 +363,7 @@ impl SdroxideApp {
             persist_qso_log(&self.qso_log);
             self.log_content_changed();
         }
-        self.push_net_log(format!(
-            "Confirmations: {} downloaded, {matched} newly confirmed",
-            recs.len()
-        ));
+        self.push_net_log({ let __lp_arg_0 = &(recs.len()); crate::language_plugin::format("window.logbook.text_354_6db90c", "Confirmations: {} downloaded, {matched} newly confirmed", &[format!("{}", __lp_arg_0), format!("{matched}")]) });
     }
 
     /// Drop everything derived from the logbook.
@@ -401,7 +411,7 @@ impl SdroxideApp {
     /// manual), with add / edit / delete and ADIF/TXT export.
     pub(in crate::app) fn logbook_window(&mut self, ctx: &egui::Context, cmds: &mut Vec<Command>) {
         let mut open = self.show_logbook;
-        let resp = egui::Window::new("LOGBOOK")
+        let resp = egui::Window::new(crate::language_plugin::text("window.logbook.text_404_0beb7f", "LOGBOOK")).id(egui::Id::new("LOGBOOK"))
             .id(crate::layout::salted_id(ctx, "LOGBOOK"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -412,7 +422,7 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.horizontal(|ui| {
                     let adding = self.log_edit.as_ref().is_some_and(|f| f.id == 0);
-                    if crate::chrome::chip(ui, adding, "+ NEW ENTRY").clicked() {
+                    if crate::chrome::chip(ui, adding, crate::language_plugin::text("window.logbook.text_415_49cb9d", "+ NEW ENTRY")).clicked() {
                         // The frequency of the contact, not the dial. In CW
                         // the dial sits a sidetone-pitch below the signal and
                         // in RTTY a tone pair below it, so logging the readout
@@ -433,8 +443,8 @@ impl SdroxideApp {
                                 crate::download::save("sdroxide-log.adi", adif.as_bytes());
                             }
                         });
-                        if crate::chrome::chip(ui, false, "IMPORT")
-                            .on_hover_text("Import QSOs from an ADIF (.adi or .adif) file")
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.logbook.text_436_40bc49", "IMPORT"))
+                            .on_hover_text(crate::language_plugin::text("window.logbook.text_437_887f09", "Import QSOs from an ADIF (.adi or .adif) file"))
                             .clicked()
                         {
                             crate::download::load_text(
@@ -444,7 +454,7 @@ impl SdroxideApp {
                             );
                         }
                         ui.label(
-                            RichText::new(format!("{} QSO", self.qso_log.len()))
+                            RichText::new({ let __lp_arg_0 = &(self.qso_log.len()); crate::language_plugin::format("window.logbook.text_447_6c3dd2", "{} QSO", &[format!("{}", __lp_arg_0)]) })
                                 .size(11.0)
                                 .color(crate::theme::gray(150)),
                         );
@@ -514,14 +524,14 @@ impl SdroxideApp {
                     ui.set_width(ui.available_width());
                     ui.horizontal(|ui| {
                         ui.label(
-                            RichText::new(if f.id == 0 { "NEW QSO" } else { "EDIT QSO" })
+                            RichText::new(if f.id == 0 { crate::language_plugin::text("window.logbook.text_517_68e71e", "NEW QSO") } else { crate::language_plugin::text("window.logbook.text_517_8f1121", "EDIT QSO") })
                                 .size(11.0)
                                 .strong()
                                 .color(crate::theme::CYAN()),
                         );
                         if dupe {
                             ui.label(
-                                RichText::new(format!("⚠ WORKED BEFORE ({dupe_band})"))
+                                RichText::new(crate::language_plugin::format("window.logbook.text_524_c81c89", "⚠ WORKED BEFORE ({dupe_band})", &[format!("{dupe_band}")]))
                                     .size(11.0)
                                     .strong()
                                     .color(crate::theme::PINK()),
@@ -546,20 +556,20 @@ impl SdroxideApp {
                         crate::chrome::field(ui, egui::TextEdit::singleline(s).desired_width(w));
                     };
                     ui.horizontal(|ui| {
-                        lbl(ui, "Call");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_549_d6e645", "Call"));
                         let cr = crate::chrome::field(
                             ui,
                             egui::TextEdit::singleline(&mut f.call).desired_width(150.0),
                         );
                         if has_provider
-                            && crate::chrome::chip(ui, false, "LOOKUP")
-                                .on_hover_text("Look up name / QTH / grid")
+                            && crate::chrome::chip(ui, false, crate::language_plugin::text("window.logbook.text_555_f3e98e", "LOOKUP"))
+                                .on_hover_text(crate::language_plugin::text("window.logbook.text_556_a46a24", "Look up name / QTH / grid"))
                                 .clicked()
                             && !f.call.trim().is_empty()
                         {
                             lookup_call = Some(f.call.trim().to_string());
                         }
-                        lbl(ui, "Grid");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_562_0d7d12", "Grid"));
                         field(ui, 110.0, &mut f.grid);
                         // Auto-lookup when the call field loses focus.
                         if cr.lost_focus()
@@ -572,56 +582,56 @@ impl SdroxideApp {
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "Freq MHz");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_575_2c526c", "Freq MHz"));
                         field(ui, 150.0, &mut f.freq_mhz);
-                        lbl(ui, "Mode");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_577_5e23ec", "Mode"));
                         field(ui, 120.0, &mut f.mode);
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "RST sent");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_582_33e365", "RST sent"));
                         field(ui, 150.0, &mut f.rst_sent);
-                        lbl(ui, "RST rcvd");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_584_0786ad", "RST rcvd"));
                         field(ui, 120.0, &mut f.rst_rcvd);
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "Name");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_589_dcd1d5", "Name"));
                         field(ui, 150.0, &mut f.name);
-                        lbl(ui, "QTH");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_591_9eedd0", "QTH"));
                         field(ui, 120.0, &mut f.qth);
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "State");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_596_a3b50c", "State"));
                         field(ui, 150.0, &mut f.state);
-                        lbl(ui, "Country");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_598_701d02", "Country"));
                         field(ui, 120.0, &mut f.country);
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "Date UTC");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_603_a1d819", "Date UTC"));
                         field(ui, 150.0, &mut f.date);
-                        lbl(ui, "Time");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_605_33b934", "Time"));
                         field(ui, 90.0, &mut f.time);
-                        if crate::chrome::chip(ui, false, "NOW").clicked() {
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.logbook.text_607_97bfc0", "NOW")).clicked() {
                             set_now = true;
                         }
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "Pwr W");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_613_fc8dc4", "Pwr W"));
                         field(ui, 60.0, &mut f.tx_pwr);
-                        lbl(ui, "Contest");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_615_7da8d6", "Contest"));
                         field(ui, 96.0, &mut f.contest_id);
-                        lbl(ui, "S# sent");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_617_c52f75", "S# sent"));
                         field(ui, 56.0, &mut f.stx);
-                        lbl(ui, "S# rcvd");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_619_7fed45", "S# rcvd"));
                         field(ui, 56.0, &mut f.srx);
                     });
                     ui.add_space(6.0);
                     ui.horizontal(|ui| {
-                        lbl(ui, "Comment");
+                        lbl(ui, &crate::language_plugin::text("window.logbook.text_624_44f5e3", "Comment"));
                         field(ui, 500.0, &mut f.comment);
                     });
                     ui.add_space(4.0);
@@ -629,7 +639,7 @@ impl SdroxideApp {
                         if crate::chrome::chip_accent(
                             ui,
                             false,
-                            RichText::new(" SAVE ").strong(),
+                            RichText::new(crate::language_plugin::text("window.logbook.text_632_f4b6c4", " SAVE ")).strong(),
                             crate::theme::GREEN(),
                             crate::theme::INK_ON_CYAN(),
                         )
@@ -637,7 +647,7 @@ impl SdroxideApp {
                         {
                             action = 1;
                         }
-                        if crate::chrome::chip(ui, false, "CANCEL").clicked() {
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.logbook.text_640_ad8d69", "CANCEL")).clicked() {
                             action = 2;
                         }
                     });
@@ -706,12 +716,7 @@ impl SdroxideApp {
     fn log_day_header(ui: &mut egui::Ui, g: &LogGroup, count: usize) {
         ui.label(RichText::new(&g.day).size(12.0).strong().color(crate::theme::CYAN()));
         ui.label(
-            RichText::new(format!(
-                "{}–{} UTC · {} QSO",
-                time_str(g.oldest),
-                time_str(g.newest),
-                count
-            ))
+            RichText::new({ let __lp_arg_0 = &(time_str(g.oldest)); let __lp_arg_1 = &(time_str(g.newest)); let __lp_arg_2 = &(count); crate::language_plugin::format("window.logbook.text_710_6c0671", "{}–{} UTC · {} QSO", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) })
             .size(10.5)
             .color(crate::theme::gray(130)),
         );
@@ -811,20 +816,20 @@ impl SdroxideApp {
                     };
                     let mut qsl_tip = String::new();
                     for (on, name) in [
-                        (r.lotw_rcvd, "LoTW ✓"),
-                        (r.eqsl_rcvd, "eQSL ✓"),
-                        (r.qsl_rcvd, "card ✓"),
-                        (r.lotw_sent, "LoTW ↑"),
-                        (r.eqsl_sent, "eQSL ↑"),
-                        (r.qrz_sent, "QRZ ↑"),
-                        (r.hamqth_sent, "HamQTH ↑"),
-                        (r.clublog_sent, "Club Log ↑"),
+                        (r.lotw_rcvd, qsl_status_label("LoTW ✓")),
+                        (r.eqsl_rcvd, qsl_status_label("eQSL ✓")),
+                        (r.qsl_rcvd, crate::language_plugin::text("window.logbook.text_816_522847", "card ✓")),
+                        (r.lotw_sent, qsl_status_label("LoTW ↑")),
+                        (r.eqsl_sent, qsl_status_label("eQSL ↑")),
+                        (r.qrz_sent, qsl_status_label("QRZ ↑")),
+                        (r.hamqth_sent, qsl_status_label("HamQTH ↑")),
+                        (r.clublog_sent, qsl_status_label("Club Log ↑")),
                     ] {
                         if on {
                             if !qsl_tip.is_empty() {
                                 qsl_tip.push_str(", ");
                             }
-                            qsl_tip.push_str(name);
+                            qsl_tip.push_str(&name);
                         }
                     }
                     {
@@ -846,23 +851,23 @@ impl SdroxideApp {
                         if crate::chrome::chip_accent(
                             ui,
                             false,
-                            RichText::new("DEL").size(11.0),
+                            RichText::new(crate::language_plugin::text("window.logbook.text_849_9b8949", "DEL")).size(11.0),
                             crate::theme::PINK(),
                             Color32::WHITE,
                         )
-                        .on_hover_text("Delete this entry")
+                        .on_hover_text(crate::language_plugin::text("window.logbook.text_853_da9e8e", "Delete this entry"))
                         .clicked()
                         {
                             to_delete = Some(r.id);
                         }
-                        if crate::chrome::chip(ui, false, RichText::new("EDIT").size(11.0))
+                        if crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("window.logbook.text_858_18a0c0", "EDIT")).size(11.0))
                             .clicked()
                         {
                             to_edit = Some(r.id);
                         }
                         if !up_targets.is_empty()
-                            && crate::chrome::chip(ui, false, RichText::new("UP").size(11.0))
-                                .on_hover_text("Upload this QSO to configured logs")
+                            && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("window.logbook.text_864_42cb4e", "UP")).size(11.0))
+                                .on_hover_text(crate::language_plugin::text("window.logbook.text_865_298e61", "Upload this QSO to configured logs"))
                                 .clicked()
                         {
                             to_upload = Some(r.id);
@@ -908,7 +913,7 @@ impl SdroxideApp {
         if view.items.is_empty() {
             ui.add_space(8.0);
             ui.label(
-                RichText::new("no QSOs yet — run FT8/FT4 or add a manual entry")
+                RichText::new(crate::language_plugin::text("window.logbook.text_911_a01cbf", "no QSOs yet — run FT8/FT4 or add a manual entry"))
                     .color(crate::theme::gray(120)),
             );
             return;
@@ -1158,5 +1163,38 @@ mod tests {
         v.refresh(&[]);
         assert!(v.order.is_empty());
         assert!(v.groups.is_empty());
+    }
+}
+
+
+#[cfg(test)]
+mod qsl_status_language_tests {
+    use super::*;
+
+    #[test]
+    fn confirmation_and_upload_statuses_render_and_restore_english() {
+        let cases = [
+            ("LoTW ✓", "LoTW 已确认"), ("eQSL ✓", "eQSL 已确认"),
+            ("LoTW ↑", "LoTW 已上传"), ("eQSL ↑", "eQSL 已上传"),
+            ("QRZ ↑", "QRZ 已上传"), ("HamQTH ↑", "HamQTH 已上传"),
+            ("Club Log ↑", "Club Log 已上传"),
+        ];
+        let mut fonts = egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        let ctx = egui::Context::default();
+        ctx.set_fonts(fonts);
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (english, chinese) in cases {
+                let label = qsl_status_label(english);
+                assert_eq!(label, if enabled { chinese } else { english });
+                let output = ctx.run_ui(egui::RawInput::default(), |ui| { ui.label(&label); });
+                let rendered: Vec<_> = output.shapes.iter().filter_map(|s| match &s.shape {
+                    egui::epaint::Shape::Text(t) => Some(t.galley.job.text.clone()), _ => None,
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(rendered.iter().any(|text| text == &label), "{rendered:?}");
+            }
+        }
     }
 }

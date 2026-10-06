@@ -39,11 +39,11 @@ enum Tab {
 }
 
 impl Tab {
-    fn label(self) -> &'static str {
+    fn label(self) -> String {
         match self {
-            Tab::Translate => "TRANSLATE",
-            Tab::Practice => "PRACTICE",
-            Tab::Learn => "LEARN",
+            Tab::Translate => crate::language_plugin::text("window.morse.tab.translate", "TRANSLATE"),
+            Tab::Practice => crate::language_plugin::text("window.morse.tab.practice", "PRACTICE"),
+            Tab::Learn => crate::language_plugin::text("window.morse.tab.learn", "LEARN"),
         }
     }
 }
@@ -77,7 +77,7 @@ pub(in crate::app) struct MorseState {
     audio: Option<MorseSink>,
     /// A failed device open, said in the pane rather than swallowed.
     #[cfg(not(target_arch = "wasm32"))]
-    audio_error: Option<String>,
+    audio_error: Option<crate::language_plugin::UiNotice>,
 }
 
 impl MorseState {
@@ -198,7 +198,7 @@ struct MorseSink {
     tx: Option<SyncSender<Job>>,
     stop: Arc<AtomicBool>,
     thread: Option<JoinHandle<()>>,
-    error: Arc<std::sync::Mutex<Option<String>>>,
+    error: Arc<std::sync::Mutex<Option<crate::language_plugin::UiNotice>>>,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -209,7 +209,7 @@ const LEAD_S: f64 = 0.08;
 
 #[cfg(not(target_arch = "wasm32"))]
 impl MorseSink {
-    fn start(device: Option<String>) -> Result<Self, String> {
+    fn start(device: Option<String>) -> Result<Self, crate::language_plugin::UiNotice> {
         let (tx, rx) = sync_channel::<Job>(8);
         let stop = Arc::new(AtomicBool::new(false));
         let error = Arc::new(std::sync::Mutex::new(None));
@@ -217,7 +217,7 @@ impl MorseSink {
         let thread = std::thread::Builder::new()
             .name("morse-trainer".into())
             .spawn(move || worker(rx, device, &stop2, &error2))
-            .map_err(|e| format!("could not start the Morse audio thread: {e}"))?;
+            .map_err(|e| crate::language_plugin::UiNotice::new(format!("could not start the Morse audio thread: {e}"), "could not start the Morse audio thread: {e}", vec![e.to_string()]))?;
         Ok(MorseSink { tx: Some(tx), stop, thread: Some(thread), error })
     }
 
@@ -248,12 +248,12 @@ fn worker(
     rx: Receiver<Job>,
     device: Option<String>,
     stop: &AtomicBool,
-    error: &std::sync::Mutex<Option<String>>,
+    error: &std::sync::Mutex<Option<crate::language_plugin::UiNotice>>,
 ) {
     let (out, mut ring) = match start_output(device.as_deref(), 48_000) {
         Ok(v) => v,
         Err(e) => {
-            *error.lock().unwrap() = Some(format!("no audio output: {e}"));
+            *error.lock().unwrap() = Some(crate::language_plugin::UiNotice::new(format!("no audio output: {e}"), "no audio output: {e}", vec![e.to_string()]));
             // Drain so a send does not block forever.
             while let Ok(job) = rx.recv() {
                 if matches!(job, Job::Quit) {
@@ -376,7 +376,7 @@ impl super::SdroxideApp {
             self.morse.progress = p;
         }
         let mut open = self.morse.show;
-        let resp = egui::Window::new("MORSE")
+        let resp = egui::Window::new(crate::language_plugin::text("window.morse.text_379_dee251", "MORSE")).id(egui::Id::new("MORSE"))
             .id(crate::layout::salted_id(ctx, "Morse"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -407,7 +407,7 @@ impl super::SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 4.0;
             for tab in [Tab::Translate, Tab::Practice, Tab::Learn] {
-                if crate::chrome::chip(ui, self.morse.tab == tab, tab.label()).clicked() {
+                if crate::chrome::chip(ui, self.morse.tab == tab, &tab.label()).clicked() {
                     self.morse.tab = tab;
                 }
             }
@@ -422,13 +422,13 @@ impl super::SdroxideApp {
 
     #[cfg(not(target_arch = "wasm32"))]
     fn morse_translate(&mut self, ui: &mut egui::Ui) {
-        ui.label(RichText::new("Text → Morse").size(11.0).color(crate::theme::gray(170)));
+        ui.label(RichText::new(crate::language_plugin::text("window.morse.text_425_de4dd7", "Text → Morse")).size(11.0).color(crate::theme::gray(170)));
         crate::chrome::field(ui, egui::TextEdit::multiline(&mut self.morse.text).desired_rows(3));
         let morse = to_morse(&self.morse.text);
         ui.add_space(2.0);
         ui.label(RichText::new(morse).monospace().size(14.0).color(crate::theme::CYAN()));
         ui.add_space(10.0);
-        ui.label(RichText::new("Morse → Text").size(11.0).color(crate::theme::gray(170)));
+        ui.label(RichText::new(crate::language_plugin::text("window.morse.text_431_b82972", "Morse → Text")).size(11.0).color(crate::theme::gray(170)));
         crate::chrome::field(
             ui,
             egui::TextEdit::multiline(&mut self.morse.code)
@@ -439,8 +439,8 @@ impl super::SdroxideApp {
         ui.add_space(6.0);
         ui.label(
             RichText::new(
-                "`.` and `-` per character, a space between characters, ` / ` between words. \
-                 The ITU alphabet, digits, punctuation and the common prosigns.",
+                crate::language_plugin::text("window.morse.text_442_102b3b", "`.` and `-` per character, a space between characters, ` / ` between words. \
+                 The ITU alphabet, digits, punctuation and the common prosigns."),
             )
             .size(9.5)
             .weak(),
@@ -450,7 +450,7 @@ impl super::SdroxideApp {
     #[cfg(target_arch = "wasm32")]
     fn morse_translate(&mut self, ui: &mut egui::Ui) {
         ui.label(
-            RichText::new("The reference translator is available in the desktop build.")
+            RichText::new(crate::language_plugin::text("window.morse.text_453_39fc01", "The reference translator is available in the desktop build."))
                 .size(11.0)
                 .weak(),
         );
@@ -458,7 +458,7 @@ impl super::SdroxideApp {
 
     fn morse_practice(&mut self, ui: &mut egui::Ui) {
         ui.label(
-            RichText::new("Play what you type, to your own speakers")
+            RichText::new(crate::language_plugin::text("window.morse.text_461_6eceff", "Play what you type, to your own speakers"))
                 .size(11.0)
                 .color(crate::theme::gray(170)),
         );
@@ -469,23 +469,20 @@ impl super::SdroxideApp {
         self.morse_tone_controls(ui);
         ui.add_space(4.0);
         ui.horizontal_wrapped(|ui| {
-            if crate::chrome::chip(ui, true, "PLAY").clicked() {
+            if crate::chrome::chip(ui, true, crate::language_plugin::text("window.morse.text_472_f53a7a", "PLAY")).clicked() {
                 let text = self.morse.play_text.clone();
                 self.morse.play(&text, self.alerts.settings().device);
             }
-            if crate::chrome::chip(ui, false, "STOP").clicked() {
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.morse.text_476_04dedf", "STOP")).clicked() {
                 self.morse.stop();
             }
             #[cfg(not(target_arch = "wasm32"))]
             ui.label(
-                RichText::new(format!(
-                    "about {:.0} s",
-                    text_duration_s(
+                RichText::new({ let __lp_arg_0 = &(text_duration_s(
                         &self.morse.play_text,
                         self.morse.wpm,
                         self.morse.farnsworth_wpm
-                    )
-                ))
+                    )); crate::language_plugin::format("window.morse.text_482_d28b1b", "about {:.0} s", &[format!("{:.0}", __lp_arg_0)]) })
                 .size(10.0)
                 .weak(),
             );
@@ -500,19 +497,15 @@ impl super::SdroxideApp {
             let p = &self.morse.progress;
             (p.correct, p.total, p.streak, p.complete())
         };
-        ui.label(RichText::new(format!("Characters in play: {set}")).size(11.0));
+        ui.label(RichText::new(crate::language_plugin::format("window.morse.text_503_c66e48", "Characters in play: {set}", &[format!("{set}")])).size(11.0));
         ui.label(
-            RichText::new(format!(
-                "Score: {correct} / {total}. Run: {} of {}.",
-                streak.min(sdroxide_types::ADVANCE_RUN),
-                sdroxide_types::ADVANCE_RUN
-            ))
+            RichText::new({ let __lp_arg_0 = &(streak.min(sdroxide_types::ADVANCE_RUN)); let __lp_arg_1 = &(sdroxide_types::ADVANCE_RUN); crate::language_plugin::format("window.morse.text_506_327ba6", "Score: {correct} / {total}. Run: {} of {}.", &[format!("{correct}"), format!("{total}"), format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
             .size(11.0)
             .color(crate::theme::CYAN_DIM()),
         );
         if complete {
             ui.label(
-                RichText::new("Every character learned — well done.").color(crate::theme::GREEN()),
+                RichText::new(crate::language_plugin::text("window.morse.text_515_ded7a4", "Every character learned — well done.")).color(crate::theme::GREEN()),
             );
         }
         ui.add_space(4.0);
@@ -523,21 +516,21 @@ impl super::SdroxideApp {
             // speaker: a NEW there would score guesses.
             if cfg!(target_arch = "wasm32") {
                 ui.label(
-                    RichText::new("The drill needs sound, which the desktop build has.")
+                    RichText::new(crate::language_plugin::text("window.morse.text_526_b7ca9f", "The drill needs sound, which the desktop build has."))
                         .size(10.5)
                         .weak(),
                 );
-            } else if crate::chrome::chip(ui, false, "NEW").clicked() {
+            } else if crate::chrome::chip(ui, false, crate::language_plugin::text("window.morse.text_530_a253ff", "NEW")).clicked() {
                 let c = self.morse.next_target();
                 self.morse.target = Some(c);
                 self.morse.answer.clear();
                 self.morse.feedback = None;
                 self.morse.play_letter(c, self.alerts.settings().device);
             }
-            if crate::chrome::chip(ui, self.morse.reveal, "REVEAL").clicked() {
+            if crate::chrome::chip(ui, self.morse.reveal, crate::language_plugin::text("window.morse.text_537_15e1f7", "REVEAL")).clicked() {
                 self.morse.reveal = !self.morse.reveal;
             }
-            if crate::chrome::chip(ui, false, "RESET").clicked() {
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.morse.text_540_7ef2fa", "RESET")).clicked() {
                 self.morse.progress.reset();
                 self.morse.target = None;
                 self.morse.answer.clear();
@@ -548,7 +541,7 @@ impl super::SdroxideApp {
                 if self.morse.reveal {
                     ui.label(RichText::new(c.to_string()).size(16.0).strong());
                 }
-                if crate::chrome::chip(ui, false, "REPLAY").clicked() {
+                if crate::chrome::chip(ui, false, crate::language_plugin::text("window.morse.text_551_92d23f", "REPLAY")).clicked() {
                     self.morse.play_letter(c, self.alerts.settings().device);
                 }
             }
@@ -557,7 +550,7 @@ impl super::SdroxideApp {
         let target = self.morse.target;
         if let Some(want) = target {
             ui.horizontal(|ui| {
-                ui.label("What did you hear?");
+                ui.label(crate::language_plugin::text("window.morse.text_560_53e245", "What did you hear?"));
                 let resp = crate::chrome::field(
                     ui,
                     egui::TextEdit::singleline(&mut self.morse.answer)
@@ -565,7 +558,7 @@ impl super::SdroxideApp {
                         .hint_text("?"),
                 );
                 let submitted = resp.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
-                if crate::chrome::chip(ui, false, "CHECK").clicked() || submitted {
+                if crate::chrome::chip(ui, false, crate::language_plugin::text("window.morse.text_568_2c1282", "CHECK")).clicked() || submitted {
                     let got = self.morse.answer.clone();
                     let before = self.morse.progress.unlocked;
                     let verdict = self.morse.progress.answer(want, &got);
@@ -580,28 +573,28 @@ impl super::SdroxideApp {
             });
             if let Some((ok, c)) = self.morse.feedback {
                 let (ink, text) = if ok {
-                    (crate::theme::GREEN(), format!("correct — {c}"))
+                    (crate::theme::GREEN(), crate::language_plugin::format("boundaries.app.morse.text_583_86fe61", "correct — {c}", &[format!("{c}")]))
                 } else {
-                    (crate::theme::ALERT(), format!("that was {c}"))
+                    (crate::theme::ALERT(), crate::language_plugin::format("boundaries.app.morse.text_585_e39877", "that was {c}", &[format!("{c}")]))
                 };
                 ui.label(RichText::new(text).color(ink));
             }
         } else {
-            ui.label(RichText::new("Press NEW to hear a character.").weak());
+            ui.label(RichText::new(crate::language_plugin::text("window.morse.text_590_1a23ff", "Press NEW to hear a character.")).weak());
         }
         self.morse_audio_note(ui);
     }
 
     fn morse_tone_controls(&mut self, ui: &mut egui::Ui) {
         ui.horizontal_wrapped(|ui| {
-            ui.label("Tone");
+            ui.label(crate::language_plugin::text("window.morse.text_597_c2c8b7", "Tone"));
             ui.add(
                 egui::DragValue::new(&mut self.morse.pitch_hz)
                     .speed(5.0)
                     .range(300.0..=1200.0)
                     .suffix(" Hz"),
             );
-            ui.label("Speed");
+            ui.label(crate::language_plugin::text("settings.ui.speech.speed", "Speed"));
             ui.add(
                 egui::DragValue::new(&mut self.morse.wpm)
                     .speed(0.5)
@@ -612,7 +605,7 @@ impl super::SdroxideApp {
             // Never above the character speed, which is what "no Farnsworth"
             // means to the keyer.
             self.morse.farnsworth_wpm = self.morse.farnsworth_wpm.min(self.morse.wpm);
-            ui.label("Spacing");
+            ui.label(crate::language_plugin::text("window.morse.text_615_62a822", "Spacing"));
             ui.add(
                 egui::DragValue::new(&mut self.morse.farnsworth_wpm)
                     .speed(0.5)
@@ -620,8 +613,8 @@ impl super::SdroxideApp {
                     .suffix(" wpm"),
             )
             .on_hover_text(
-                "Characters go out at the speed above; this is the speed the *gaps* are sent at, \
-                 so a beginner hears the letter as a whole before they can send it that fast.",
+                crate::language_plugin::text("window.morse.text_623_47a692", "Characters go out at the speed above; this is the speed the *gaps* are sent at, \
+                 so a beginner hears the letter as a whole before they can send it that fast."),
             );
         });
     }
@@ -629,10 +622,10 @@ impl super::SdroxideApp {
     fn morse_audio_note(&self, ui: &mut egui::Ui) {
         #[cfg(not(target_arch = "wasm32"))]
         if let Some(e) = &self.morse.audio_error {
-            ui.label(RichText::new(e).size(10.0).color(crate::theme::ALERT()));
+            ui.label(RichText::new(e.display()).size(10.0).color(crate::theme::ALERT()));
         }
         #[cfg(target_arch = "wasm32")]
-        ui.label(RichText::new("Playback is available in the desktop build.").size(10.0).weak());
+        ui.label(RichText::new(crate::language_plugin::text("window.morse.text_635_106d1b", "Playback is available in the desktop build.")).size(10.0).weak());
     }
 }
 
@@ -658,5 +651,37 @@ mod tests {
     fn word_breaks_survive_the_round_trip() {
         assert_eq!(to_morse("E T"), ". / -");
         assert_eq!(from_morse(". / -"), "E T");
+    }
+}
+
+
+#[cfg(test)]
+mod morse_tab_language_tests {
+    use super::*;
+
+    #[test]
+    fn trainer_tab_labels_render_in_chinese_and_restore_english() {
+        let expected = [
+            (Tab::Translate, "文本转摩斯码", "TRANSLATE"),
+            (Tab::Practice, "收听练习", "PRACTICE"),
+            (Tab::Learn, "循序学习", "LEARN"),
+        ];
+        let mut fonts = egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        let ctx = egui::Context::default();
+        ctx.set_fonts(fonts);
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (tab, chinese, english) in expected {
+                let label = tab.label();
+                assert_eq!(label, if enabled { chinese } else { english });
+                let output = ctx.run_ui(egui::RawInput::default(), |ui| { ui.label(&label); });
+                let rendered: Vec<_> = output.shapes.iter().filter_map(|s| match &s.shape {
+                    egui::epaint::Shape::Text(t) => Some(t.galley.job.text.clone()), _ => None,
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(rendered.iter().any(|text| text == &label), "{rendered:?}");
+            }
+        }
     }
 }

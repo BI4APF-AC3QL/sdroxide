@@ -420,7 +420,7 @@ impl MultiApp {
         // `REMOTE_TAB_ID_BASE` so it cannot collide with the roster — and would
         // read as "Radio 2147483649".
         let n = if t.remote { t.app.station_radio_id() } else { t.id };
-        format!("Radio {}", n + 1)
+        crate::language_plugin::radio_fallback(n)
     }
 
     /// The name a tab chip shows: the operator's, else the derived default.
@@ -675,7 +675,7 @@ impl MultiApp {
                     ui.label(label);
                     // On the air: the one thing worth seeing from any tab.
                     if tab.app.tab_tx_on() {
-                        ui.label(RichText::new("● TX").size(11.0).color(crate::theme::ALERT()));
+                        ui.label(RichText::new(crate::language_plugin::text("window.multi.text_678_548c99", "● TX")).size(11.0).color(crate::theme::ALERT()));
                     } else if tab.app.tab_error() && tab.enabled {
                         ui.label(RichText::new("⚠").size(11.0).color(crate::theme::ALERT()));
                     }
@@ -692,11 +692,11 @@ impl MultiApp {
                     // throw the set's own switch.
                     if Self::switchable(tab) && tab.attached_to.is_none() {
                         let power =
-                            crate::chrome::chip(ui, tab.enabled, RichText::new("LINK").size(11.0));
+                            crate::chrome::chip(ui, tab.enabled, RichText::new(crate::language_plugin::text("common.link", "LINK")).size(11.0));
                         let tip = if tab.enabled {
-                            crate::chrome::LINK_CLOSE_TIP
+                            crate::language_plugin::scope_text("display.shell.link.", crate::chrome::LINK_CLOSE_TIP)
                         } else {
-                            crate::chrome::LINK_OPEN_TIP
+                            crate::language_plugin::scope_text("display.shell.link.", crate::chrome::LINK_OPEN_TIP)
                         };
                         if power.on_hover_text(tip).clicked() {
                             actions.push(StripAction::Power { id, on: !tab.enabled });
@@ -714,15 +714,15 @@ impl MultiApp {
                             muted,
                             RichText::new(if muted { "🔇" } else { "🔊" }).size(11.0),
                         );
-                        if mute.on_hover_text("Mute this radio's audio").clicked() {
+                        if mute.on_hover_text(crate::language_plugin::text("common.mute_this_radio_s_audio", "Mute this radio's audio")).clicked() {
                             actions.push(StripAction::Mute { id, muted: !muted });
                         }
                     }
                     let split = crate::chrome::chip(ui, split_on, RichText::new("⊞").size(11.0));
                     let tip = if split_on {
-                        "Close this radio's split view"
+                        crate::language_plugin::text("shell.multi.text_723_29b3ec", "Close this radio's split view")
                     } else {
-                        "Open this radio in a split view of its own"
+                        crate::language_plugin::text("shell.multi.text_725_19cdf9", "Open this radio in a split view of its own")
                     };
                     if split.on_hover_text(tip).clicked() {
                         actions.push(StripAction::ToggleSplit(id));
@@ -731,11 +731,11 @@ impl MultiApp {
                 // The tab itself switches the pane — anywhere on it that is not
                 // one of its own buttons, which keep their clicks.
                 let body = if elsewhere {
-                    body.response.on_hover_text("Already open in another split view")
+                    body.response.on_hover_text(crate::language_plugin::text("window.multi.text_734_46212a", "Already open in another split view"))
                 } else if here {
                     body.response
                 } else {
-                    body.response.on_hover_text("Show this radio here")
+                    body.response.on_hover_text(crate::language_plugin::text("window.multi.text_738_0bff2d", "Show this radio here"))
                 };
                 if body.clicked() && !here && !elsewhere {
                     actions.push(StripAction::Show { pane, id });
@@ -751,9 +751,9 @@ impl MultiApp {
                 // as there is a second roster to confuse it with.
                 let tip = match self.tabs.iter().any(|t| t.remote) {
                     true => {
-                        "Add a radio on this computer (Settings → Radio to add one at a                              station)"
+                        crate::language_plugin::text("shell.multi.text_754_24a6d7", "Add a radio on this computer (Settings → Radio to add one at a                              station)")
                     }
-                    false => "Add a radio",
+                    false => crate::language_plugin::text("shell.multi.text_756_fbf993", "Add a radio"),
                 };
                 if crate::chrome::chip(ui, false, RichText::new("+").size(13.0))
                     .on_hover_text(tip)
@@ -828,7 +828,7 @@ impl MultiApp {
         // Nothing else happens here. The station answers with its roster, and
         // `open_peer_radios` opens what is new in it — including, for a radio
         // this screen asked for, putting it in front of the operator.
-        self.tabs[self.focused].app.show_notice("Asked the station for another radio…".to_string());
+        self.tabs[self.focused].app.show_notice(crate::language_plugin::UiNotice::literal("Asked the station for another radio…"));
     }
 
     /// Take a tab's radio out of the roster of the station it belongs to.
@@ -866,7 +866,7 @@ impl MultiApp {
             // Into the focused tab's dismissable banner — the main window's
             // strip may not be on screen to carry a message.
             Err(e) => {
-                self.tabs[self.focused].app.show_notice(format!("Could not add a radio: {e}"))
+                self.tabs[self.focused].app.show_notice(crate::language_plugin::UiNotice::new(format!("Could not add a radio: {e}"), "Could not add a radio: {e}", vec![e.to_string()]))
             }
         }
     }
@@ -922,7 +922,7 @@ impl MultiApp {
             let name = Self::display_name(&self.tabs[i]);
             self.close_tab(i, ctx);
             let focused = self.focused;
-            self.tabs[focused].app.show_notice(format!("{name} was closed at the station."));
+            self.tabs[focused].app.show_notice(crate::language_plugin::UiNotice::new(format!("{name} was closed at the station."), "{name} was closed at the station.", vec![name.clone()]));
         }
         if self.remote.is_none() {
             return;
@@ -991,7 +991,7 @@ impl MultiApp {
                 }
                 Err(e) => self.tabs[self.focused]
                     .app
-                    .show_notice(format!("Could not open {}: {e}", peer.name)),
+                    .show_notice(crate::language_plugin::UiNotice::new(format!("Could not open {}: {e}", peer.name), "Could not open {}: {e}", vec![peer.name.clone(), e.to_string()])),
             }
         }
     }
@@ -1009,7 +1009,7 @@ impl MultiApp {
         if self.remote.is_none() {
             self.tabs[origin]
                 .app
-                .set_remote_status(Err("This client cannot open a connection.".into()));
+                .set_remote_status(Err(crate::language_plugin::UiNotice::literal("This client cannot open a connection.")));
             return;
         }
         // The id is worked out before the factory is borrowed: both read
@@ -1029,9 +1029,9 @@ impl MultiApp {
                 // has — with the sign-in screen, if it asks for one.
                 self.tabs[origin]
                     .app
-                    .set_remote_status(Ok(format!("{label} has a tab of its own now.")));
+                    .set_remote_status(Ok(crate::language_plugin::UiNotice::new(format!("{label} has a tab of its own now."), "{label} has a tab of its own now.", vec![label.clone()])));
             }
-            Err(e) => self.tabs[origin].app.set_remote_status(Err(format!("{url}: {e}"))),
+            Err(e) => self.tabs[origin].app.set_remote_status(Err(format!("{url}: {e}").into())),
         }
     }
 

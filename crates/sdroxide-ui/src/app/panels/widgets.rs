@@ -35,11 +35,11 @@ pub(in crate::app) fn station_card(
             ui.label(RichText::new(call).size(16.0).strong().color(crate::theme::TEXT_STRONG()));
         }
         None if d.free_text => {
-            ui.label(RichText::new("free text").size(13.0).italics().color(dim));
+            ui.label(RichText::new(crate::language_plugin::text("panels.widgets.text_38_a327bf", "free text")).size(13.0).italics().color(dim));
         }
         // A hashed callsign nobody on this receiver has heard in full yet.
         None => {
-            ui.label(RichText::new("hashed callsign, not yet heard in full").size(13.0).color(dim));
+            ui.label(RichText::new(crate::language_plugin::text("panels.widgets.text_42_2737e5", "hashed callsign, not yet heard in full")).size(13.0).color(dim));
         }
     }
 
@@ -51,23 +51,20 @@ pub(in crate::app) fn station_card(
             ui.horizontal(|ui| {
                 flags.show(ui, e.flag, 13.0);
                 ui.label(
-                    RichText::new(e.name)
+                    RichText::new(crate::language_plugin::entity_name(e.name))
                         .size(13.0)
                         .strong()
                         .color(crate::theme::continent_color(e.continent)),
                 );
             });
             ui.label(
-                RichText::new(format!(
-                    "{} · CQ zone {} · ITU zone {}",
-                    e.continent, e.cq_zone, e.itu_zone
-                ))
+                RichText::new({ let __lp_arg_0 = &(e.continent); let __lp_arg_1 = &(e.cq_zone); let __lp_arg_2 = &(e.itu_zone); crate::language_plugin::format("panels.widgets.text_62_3035d2", "{} · CQ zone {} · ITU zone {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) })
                 .size(11.5)
                 .color(dim),
             );
         }
         None if d.from.is_some() => {
-            ui.label(RichText::new("entity unknown").size(11.5).color(dim));
+            ui.label(RichText::new(crate::language_plugin::text("panels.widgets.text_70_acc0a0", "entity unknown")).size(11.5).color(dim));
         }
         None => {}
     }
@@ -89,35 +86,35 @@ pub(in crate::app) fn station_card(
     ui.separator();
     // Worked before? The one thing that decides whether this decode is worth
     // acting on, spelled out rather than compressed into a four-letter badge.
-    let band_label = if band.is_empty() { "this band".to_string() } else { band.to_string() };
+    let band_label = if band.is_empty() { crate::language_plugin::text("panels.widgets.dynamic.text_92_9bdf24", "this band").to_string() } else { band.to_string() };
     let (worked, col) = if novelty.new_dxcc {
-        ("New entity — never worked, on any band".to_string(), crate::theme::PINK())
+        (crate::language_plugin::text("panels.widgets.dynamic.text_94_4f9a1f", "New entity — never worked, on any band").to_string(), crate::theme::PINK())
     } else if novelty.new_dxcc_band {
-        (format!("New entity on {band_label}"), crate::theme::YELLOW())
+        (crate::language_plugin::format("panels.widgets.dynamic.text_96_a46745", "New entity on {band_label}", &[format!("{band_label}")]), crate::theme::YELLOW())
     } else if novelty.new_grid {
-        ("New grid square".to_string(), crate::theme::CYAN())
+        (crate::language_plugin::text("panels.widgets.dynamic.text_98_e60e3c", "New grid square").to_string(), crate::theme::CYAN())
     } else if novelty.new_call {
-        ("Not worked before".to_string(), crate::theme::CYAN_DIM())
+        (crate::language_plugin::text("panels.widgets.dynamic.text_100_466ed6", "Not worked before").to_string(), crate::theme::CYAN_DIM())
     } else if novelty.dupe {
-        (format!("Worked before on {band_label}"), crate::theme::gray(130))
+        (crate::language_plugin::format("panels.widgets.dynamic.text_102_31a289", "Worked before on {band_label}", &[format!("{band_label}")]), crate::theme::gray(130))
     } else {
-        ("Worked before, but not on this band".to_string(), crate::theme::gray(150))
+        (crate::language_plugin::text("panels.widgets.dynamic.text_104_ca553f", "Worked before, but not on this band").to_string(), crate::theme::gray(150))
     };
     ui.label(RichText::new(worked).size(12.0).color(col));
 
     if let Some(target) = d.cq_to.as_deref() {
         ui.label(
             RichText::new(if cq_for_us {
-                format!("Calling CQ {target} — that includes you")
+                crate::language_plugin::format("panels.widgets.text_111_ef73bb", "Calling CQ {target} — that includes you", &[format!("{target}")])
             } else {
-                format!("Calling CQ {target} — not aimed at you")
+                crate::language_plugin::format("panels.widgets.text_113_c9e7b8", "Calling CQ {target} — not aimed at you", &[format!("{target}")])
             })
             .size(11.5)
             .color(if cq_for_us { crate::theme::GREEN() } else { dim }),
         );
     }
     if queued {
-        ui.label(RichText::new("In the call queue").size(11.5).color(crate::theme::GREEN()));
+        ui.label(RichText::new(crate::language_plugin::text("panels.widgets.text_120_d4a8d8", "In the call queue")).size(11.5).color(crate::theme::GREEN()));
     }
     ui.label(
         RichText::new(format!("{:+} dB · {:.0} Hz · DT {:+.1} s", d.snr_db, d.audio_hz, d.dt))
@@ -400,11 +397,12 @@ pub(in crate::app) fn snr_color(snr_db: i16) -> Color32 {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub(in crate::app) fn pick_image(inbox: Arc<Mutex<Option<Vec<u8>>>>) {
+    let image_filter = crate::language_plugin::image_picker_filter();
     std::thread::Builder::new()
         .name("sdroxide-pick".into())
         .spawn(move || {
             if let Some(path) =
-                rfd::FileDialog::new().add_filter("Image", &["png", "jpg", "jpeg"]).pick_file()
+                rfd::FileDialog::new().add_filter(&image_filter, &["png", "jpg", "jpeg"]).pick_file()
             {
                 if let Ok(bytes) = std::fs::read(&path) {
                     if let Ok(mut g) = inbox.lock() {
@@ -418,9 +416,10 @@ pub(in crate::app) fn pick_image(inbox: Arc<Mutex<Option<Vec<u8>>>>) {
 
 #[cfg(target_arch = "wasm32")]
 pub(in crate::app) fn pick_image(inbox: Arc<Mutex<Option<Vec<u8>>>>) {
+    let image_filter = crate::language_plugin::image_picker_filter();
     wasm_bindgen_futures::spawn_local(async move {
         if let Some(file) = rfd::AsyncFileDialog::new()
-            .add_filter("Image", &["png", "jpg", "jpeg"])
+            .add_filter(&image_filter, &["png", "jpg", "jpeg"])
             .pick_file()
             .await
         {
@@ -436,10 +435,11 @@ pub(in crate::app) fn pick_image(inbox: Arc<Mutex<Option<Vec<u8>>>>) {
 /// RECEIVED / TRANSMIT areas.
 pub(in crate::app) fn sstv_section<R>(
     ui: &mut egui::Ui,
-    title: &str,
+    title: impl AsRef<str>,
     size: egui::Vec2,
     add: impl FnOnce(&mut egui::Ui) -> R,
 ) -> R {
+    let title = title.as_ref();
     // Force a top-down layout: `allocate_ui` would otherwise inherit the parent's
     // horizontal layout (we're inside a `horizontal_top`), laying the section's
     // contents out side by side instead of stacked.

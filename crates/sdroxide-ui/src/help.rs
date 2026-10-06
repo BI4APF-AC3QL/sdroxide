@@ -14,6 +14,8 @@
 //! scrolling happens.
 
 use std::collections::HashMap;
+use std::sync::Arc;
+use sdroxide_language_pack::HelpManual;
 
 use eframe::egui::{
     self, Align, Color32, CursorIcon, FontFamily, FontId, Layout, Rect, Response, RichText, Sense,
@@ -23,7 +25,11 @@ use eframe::egui::{
 use crate::theme::{self, ThemedScroll};
 
 /// The manual source, embedded from the repository `docs/` directory.
-const MANUAL_MD: &str = include_str!("../../../docs/USER_MANUAL.md");
+pub(crate) const MANUAL_MD: &str = include_str!("../../../docs/USER_MANUAL.md");
+
+pub(crate) fn validate_manual(markdown: &str) -> Result<(), String> {
+    Doc::translated(markdown).map(|_| ())
+}
 
 /// Points one arrow-key press scrolls the manual — a few lines, close to a
 /// wheel notch so the two gestures feel the same.
@@ -186,7 +192,35 @@ struct Doc {
 
 impl Doc {
     fn parse(md: &str) -> Self {
-        let blocks = parse_blocks(md);
+        Self::from_blocks(parse_blocks(md))
+    }
+
+    /// Keep source anchors even though visible headings are translated.
+    fn translated(md: &str) -> Result<Self, String> {
+        let source = parse_blocks(MANUAL_MD);
+        let mut anchors = source.iter().filter_map(|b| match b {
+            Block::Heading { level, slug, .. } => Some((*level, slug)),
+            _ => None,
+        });
+        let mut blocks = parse_blocks(md);
+        for block in &mut blocks {
+            if let Block::Heading { level, slug, .. } = block {
+                let Some((source_level, source_slug)) = anchors.next() else {
+                    return Err("translated manual has extra headings".into());
+                };
+                if *level != source_level {
+                    return Err("translated manual heading levels changed".into());
+                }
+                *slug = source_slug.clone();
+            }
+        }
+        if anchors.next().is_some() {
+            return Err("translated manual is missing headings".into());
+        }
+        Ok(Self::from_blocks(blocks))
+    }
+
+    fn from_blocks(blocks: Vec<Block>) -> Self {
         let mut nav: Vec<NavEntry> = Vec::new();
         let mut owner = Vec::with_capacity(blocks.len());
         let (mut chapter, mut section) = (None, None);
@@ -253,6 +287,7 @@ fn block_text(b: &Block) -> String {
 pub struct Help {
     pub open: bool,
     doc: Doc,
+    manual: Option<Arc<HelpManual>>,
     /// Decoded screenshot textures, keyed by manual image path (None = decode
     /// failed / missing), lazily filled the first time each image is shown.
     textures: HashMap<String, Option<egui::TextureHandle>>,
@@ -304,6 +339,7 @@ impl Default for Help {
         Help {
             open: false,
             doc,
+            manual: None,
             textures: HashMap::new(),
             scroll_to: None,
             scroll_frames: 0,
@@ -367,6 +403,24 @@ impl Find<'_> {
 }
 
 impl Help {
+    fn sync_language(&mut self) {
+        let manual = crate::language_plugin::manual();
+        let unchanged = match (&self.manual, &manual) {
+            (None, None) => true,
+            (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+            _ => false,
+        };
+        if unchanged { return; }
+        self.doc = manual.as_ref().and_then(|m| Doc::translated(&m.markdown).ok())
+            .unwrap_or_else(|| Doc::parse(MANUAL_MD));
+        self.manual = manual;
+        self.clear_search();
+        self.nav_hits.clear();
+        self.nav_needle.clear();
+        self.key_scroll = 0.0;
+        self.go_to(self.active.clone());
+    }
+
     /// Jump the outline (and content) to a heading slug over the next few frames.
     fn go_to(&mut self, slug: String) {
         self.active = slug.clone();
@@ -540,7 +594,7 @@ impl Help {
             ui.spacing_mut().item_spacing.x = 6.0;
             // Spelled out rather than drawn: the bundled fonts have no
             // magnifier glyph (nor ⌕), and a tofu box is worse than a word.
-            ui.label(RichText::new("FIND").color(theme::CYAN_DIM()).size(10.0).strong());
+            ui.label(RichText::new(crate::language_plugin::text("help.ui.text_543_7786e6", "FIND")).color(theme::CYAN_DIM()).size(10.0).strong());
 
             // The buttons and the tally are budgeted first so the field takes
             // what is left: on a phone that is a stub, but it is still a field.
@@ -551,7 +605,7 @@ impl Help {
                 ui,
                 egui::TextEdit::singleline(&mut self.search)
                     .desired_width(w)
-                    .hint_text("find in manual")
+                    .hint_text(crate::language_plugin::text("help.ui.text_554_1731da", "find in manual"))
                     .text_color(theme::TEXT_STRONG()),
             );
             if std::mem::take(&mut self.focus_find) {
@@ -579,13 +633,13 @@ impl Help {
 
             let any = self.hits > 0;
             if crate::chrome::chip_enabled(ui, any, false, "◀")
-                .on_hover_text("Previous match  (Shift+Enter, Shift+F3)")
+                .on_hover_text(crate::language_plugin::text("help.ui.text_582_105416", "Previous match  (Shift+Enter, Shift+F3)"))
                 .clicked()
             {
                 self.step_hit(-1);
             }
             if crate::chrome::chip_enabled(ui, any, false, "▶")
-                .on_hover_text("Next match  (Enter, F3)")
+                .on_hover_text(crate::language_plugin::text("help.ui.text_588_6560e6", "Next match  (Enter, F3)"))
                 .clicked()
             {
                 self.step_hit(1);
@@ -593,7 +647,7 @@ impl Help {
             let (tally, color) = if self.needle().is_empty() {
                 (String::new(), theme::CYAN_DIM())
             } else if self.hits == 0 {
-                ("no matches".to_string(), theme::ALERT())
+                (crate::language_plugin::text("shell.help.text_596_0ed6af", "no matches").to_string(), theme::ALERT())
             } else {
                 (format!("{} / {}", self.hit + 1, self.hits), theme::CYAN())
             };
@@ -604,7 +658,7 @@ impl Help {
             // heavier ✕ is one of the glyphs the bundled fonts lack.)
             if !self.search.is_empty()
                 && crate::chrome::chip(ui, false, "×")
-                    .on_hover_text("Clear the search  (Esc)")
+                    .on_hover_text(crate::language_plugin::text("help.ui.text_607_3a5a58", "Clear the search  (Esc)"))
                     .clicked()
             {
                 self.clear_search();
@@ -628,6 +682,7 @@ impl Help {
             self.shown = false;
             return;
         }
+        self.sync_language();
         // Esc closes, matching the other overlays — but a search in progress
         // is dismissed first, the way every find bar behaves.
         if ctx.input(|i| i.key_pressed(egui::Key::Escape)) {
@@ -654,7 +709,7 @@ impl Help {
         let mut counted: Option<usize> = None;
 
         let mut open = self.open;
-        let win = egui::Window::new("SDROXIDE MANUAL")
+        let win = egui::Window::new(crate::language_plugin::text("help.ui.text_657_5ab6e5", "SDROXIDE MANUAL")).id(egui::Id::new("SDROXIDE MANUAL"))
             .id(crate::layout::salted_id(ctx, "SDROXIDE MANUAL"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -734,7 +789,7 @@ impl Help {
                                     ui.set_min_height(full_h - 16.0);
                                     ui.set_width(NAV_W - 16.0);
                                     ui.label(
-                                        RichText::new("CONTENTS")
+                                        RichText::new(crate::language_plugin::text("help.ui.text_737_eabe6a", "CONTENTS"))
                                             .color(theme::CYAN_DIM())
                                             .size(10.0)
                                             .strong(),
@@ -1079,7 +1134,7 @@ fn draw_block(
                         });
                 }
                 None => {
-                    ui.colored_label(theme::ALERT(), format!("[missing image: {path}]"));
+                    ui.colored_label(theme::ALERT(), crate::language_plugin::format("help.ui.text_1082_7aead0", "[missing image: {path}]", &[format!("{path}")]));
                 }
             }
             if !alt.is_empty() {
@@ -1890,6 +1945,51 @@ fn parse_link(chars: &[char], start: usize) -> Option<(String, String, usize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn translated_manual_retains_every_source_heading_anchor_and_images() {
+        let raw = include_str!("../../../plugins/zh-CN/manual.zh-CN.json");
+        let manual = HelpManual::parse(raw, MANUAL_MD).unwrap();
+        let source = Doc::parse(MANUAL_MD);
+        let translated = Doc::translated(&manual.markdown).unwrap();
+        let anchors = |doc: &Doc| doc.blocks.iter().filter_map(|b| match b {
+            Block::Heading { level, slug, .. } => Some((*level, slug.clone())),
+            _ => None,
+        }).collect::<Vec<_>>();
+        assert_eq!(anchors(&source), anchors(&translated));
+        let images = |doc: &Doc| doc.blocks.iter().filter_map(|b| match b {
+            Block::Image { path, .. } => Some(path.clone()),
+            _ => None,
+        }).collect::<Vec<_>>();
+        assert_eq!(images(&source), images(&translated));
+        assert!(translated.text.iter().any(|t| t.contains("功能概览")));
+        assert!(translated.text.iter().any(|t| t.contains("IO 板接收输入")));
+        assert!(translated.text.iter().any(|t| t.contains("AD9363 与 AD9364")));
+        assert!(translated.text.iter().any(|t| t.contains("第二调谐器 LNA 状态")));
+        let partial = MANUAL_MD.replacen("## Table of contents", "## 目录", 1);
+        let fallback = Doc::translated(&partial).unwrap();
+        assert!(fallback.text.iter().any(|t| t.contains("AD9363 or AD9364")));
+        assert!(Doc::translated("## Missing most headings").is_err());
+    }
+
+    #[test]
+    fn help_switches_language_back_and_forth_preserving_location() {
+        crate::language_plugin::test_manual_enabled(false);
+        let mut help = Help::default();
+        let location = "625-rtl-sdr-usb-dongles";
+        help.active = location.into();
+        help.search = "old query".into();
+        crate::language_plugin::test_manual_enabled(true);
+        help.sync_language();
+        assert!(help.doc.text.iter().any(|t| t.contains("短波接收")));
+        assert!(help.search.is_empty());
+        assert_eq!(help.scroll_to.as_deref(), Some(location));
+        crate::language_plugin::test_manual_enabled(false);
+        help.sync_language();
+        assert!(help.doc.text.iter().any(|t| t.contains("HF reception")));
+        assert!(!help.doc.text.iter().any(|t| t.contains("短波接收")));
+        assert_eq!(help.scroll_to.as_deref(), Some(location));
+    }
 
     /// Markdown that no block branch claims must still be consumed.
     ///

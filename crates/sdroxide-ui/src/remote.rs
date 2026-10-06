@@ -140,6 +140,80 @@ fn moves_the_dial(msg: &ClientMsg) -> bool {
     )
 }
 
+/// Provenance stays beside the event, so external strings cannot inherit a preceding error's tag.
+/// This queue performs no I/O or language lookup and returns the original RadioEvent unchanged.
+#[derive(Default)]
+struct PendingUiEvents {
+    queued: VecDeque<(RadioEvent, Option<sdroxide_types::RadioEventTextOrigin>)>,
+    last_origin: Option<sdroxide_types::RadioEventTextOrigin>,
+}
+impl PendingUiEvents {
+    fn new() -> Self { Self::default() }
+    fn push_back(&mut self, event: RadioEvent) { self.queued.push_back((event, None)); }
+    fn push_connection_error(&mut self, original: String, origin: sdroxide_types::RadioEventTextOrigin) {
+        self.queued.push_back((RadioEvent::ConnectionLost(original), Some(origin)));
+    }
+    fn push_ui_notice(&mut self, original: String, origin: sdroxide_types::RadioEventTextOrigin) {
+        self.queued.push_back((RadioEvent::Notice(Some(original)), Some(origin)));
+    }
+    fn pop_front(&mut self) -> Option<RadioEvent> {
+        self.last_origin = None;
+        let (event, origin) = self.queued.pop_front()?;
+        self.last_origin = origin;
+        Some(event)
+    }
+    fn is_empty(&self) -> bool { self.queued.is_empty() }
+    fn clear(&mut self) { self.queued.clear(); self.last_origin = None; }
+}
+
+#[cfg(test)]
+mod connection_queue27_tests {
+    use super::*;
+    use sdroxide_types::RadioEventTextOrigin as O;
+    #[test]
+    fn queue_keeps_event_bytes_order_and_exact_origin_without_network() {
+        let mut q = PendingUiEvents::new();
+        let raw = "connection closed";
+        q.push_connection_error(raw.into(), O::SocketClosed);
+        q.push_back(RadioEvent::ConnectionLost(raw.into()));
+        q.push_back(RadioEvent::Profiles(vec![raw.into()]));
+        q.push_connection_error("protocol error: {raw}\n服务器错误".into(), O::ProtocolDecode);
+        q.push_ui_notice("local note".into(), O::SilentMic);
+        q.push_back(RadioEvent::Notice(Some("local note".into())));
+        assert_eq!(q.pop_front(), Some(RadioEvent::ConnectionLost(raw.into())));
+        assert_eq!(q.last_origin, Some(O::SocketClosed));
+        assert_eq!(q.pop_front(), Some(RadioEvent::ConnectionLost(raw.into())));
+        assert_eq!(q.last_origin, None);
+        assert_eq!(q.pop_front(), Some(RadioEvent::Profiles(vec![raw.into()])));
+        assert_eq!(q.last_origin, None);
+        assert_eq!(q.pop_front(), Some(RadioEvent::ConnectionLost("protocol error: {raw}\n服务器错误".into())));
+        assert_eq!(q.last_origin, Some(O::ProtocolDecode));
+        assert_eq!(q.pop_front(), Some(RadioEvent::Notice(Some("local note".into()))));
+        assert_eq!(q.last_origin, Some(O::SilentMic));
+        assert_eq!(q.pop_front(), Some(RadioEvent::Notice(Some("local note".into()))));
+        assert_eq!(q.last_origin, None);
+        assert!(q.pop_front().is_none());
+        assert_eq!(q.last_origin, None);
+        assert!(q.is_empty());
+    }
+    #[test]
+    fn clearing_a_session_discards_events_and_origin_together() {
+        let mut q = PendingUiEvents::new();
+        q.push_connection_error("connection closed".into(), O::SocketClosed);
+        q.push_connection_error("server busy — another client is connected".into(), O::ServerBusy);
+        q.pop_front();
+        assert_eq!(q.last_origin, Some(O::SocketClosed));
+        q.clear();
+        assert!(q.is_empty());
+        assert_eq!(q.last_origin, None);
+        assert!(q.pop_front().is_none());
+        q.push_back(RadioEvent::ConnectionLost("connection closed".into()));
+        assert_eq!(q.pop_front(), Some(RadioEvent::ConnectionLost("connection closed".into())));
+        assert_eq!(q.last_origin, None);
+    }
+}
+
+
 pub struct RemoteController {
     sender: WsSender,
     receiver: WsReceiver,
@@ -153,7 +227,7 @@ pub struct RemoteController {
     /// the UI to put a dialog up against.
     auth: AuthPhase,
     audio: Option<Box<dyn AudioBridge>>,
-    pending: VecDeque<RadioEvent>,
+    pending: PendingUiEvents,
     tx_codec: Option<AudioCodec>,
     /// When the current over started, and how many microphone samples have
     /// been pulled since — the two halves of the check in [`Self::pump_mic`]
@@ -278,7 +352,7 @@ impl RemoteController {
             outbox: Outbox::default(),
             auth: AuthPhase::Open,
             audio,
-            pending: VecDeque::new(),
+            pending: PendingUiEvents::new(),
             tx_codec: None,
             mic_over_started: None,
             mic_over_samples: 0,
@@ -383,9 +457,10 @@ impl RemoteController {
                 }
             }
             ServerMsg::Pong(_) => {}
-            ServerMsg::Busy => self.pending.push_back(RadioEvent::ConnectionLost(
+            ServerMsg::Busy => self.pending.push_connection_error(
                 "server busy — another client is connected".into(),
-            )),
+                sdroxide_types::RadioEventTextOrigin::ServerBusy,
+            ),
             ServerMsg::Error(e) => self.pending.push_back(RadioEvent::ConnectionLost(e)),
             ServerMsg::Notice(n) => self.pending.push_back(RadioEvent::Notice(n)),
             ServerMsg::Ft8Decodes(d) => self.pending.push_back(RadioEvent::Ft8Decodes(d)),
@@ -613,12 +688,13 @@ impl RemoteController {
             return;
         }
         self.mic_over_reported = true;
-        self.pending.push_back(RadioEvent::Notice(Some(
+        self.pending.push_ui_notice(
             "Transmitting, but this client's microphone is producing no audio at all — \
              nothing is being modulated. In a browser, check that the page was allowed \
              the microphone and that no other application holds it."
                 .into(),
-        )));
+            sdroxide_types::RadioEventTextOrigin::SilentMic,
+        );
     }
 }
 
@@ -654,14 +730,14 @@ impl RadioController for RemoteController {
                     Ok(msg) => self.on_server_msg(msg),
                     Err(e) => self
                         .pending
-                        .push_back(RadioEvent::ConnectionLost(format!("protocol error: {e}"))),
+                        .push_connection_error(format!("protocol error: {e}"), sdroxide_types::RadioEventTextOrigin::ProtocolDecode),
                 },
                 WsEvent::Message(_) => {}
                 WsEvent::Error(e) => {
                     self.pending.push_back(RadioEvent::ConnectionLost(e));
                 }
                 WsEvent::Closed => {
-                    self.pending.push_back(RadioEvent::ConnectionLost("connection closed".into()));
+                    self.pending.push_connection_error("connection closed".into(), sdroxide_types::RadioEventTextOrigin::SocketClosed);
                 }
             }
         }
@@ -669,6 +745,10 @@ impl RadioController for RemoteController {
         self.flush_radio_config(false);
         self.flush_center();
         self.pending.pop_front()
+    }
+
+    fn event_text_origin(&self) -> Option<sdroxide_types::RadioEventTextOrigin> {
+        self.pending.last_origin
     }
 
     fn wants_repaint_soon(&self) -> bool {

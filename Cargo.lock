@@ -5162,6 +5162,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sdroxide-language-pack"
+version = "1.6.9"
+dependencies = [
+ "ab_glyph",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "sdroxide-lime"
 version = "1.6.9"
 dependencies = [
@@ -5546,6 +5556,7 @@ dependencies = [
  "sdroxide-audio",
  "sdroxide-config",
  "sdroxide-dsp",
+ "sdroxide-language-pack",
  "sdroxide-midi",
  "sdroxide-proto",
  "sdroxide-solar",
@@ -5553,6 +5564,7 @@ dependencies = [
  "sdroxide-types",
  "sdroxide-version",
  "serde",
+ "serde_json",
  "tracing",
  "wasm-bindgen",
  "wasm-bindgen-futures",

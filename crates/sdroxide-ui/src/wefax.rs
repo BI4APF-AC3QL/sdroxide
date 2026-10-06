@@ -76,7 +76,7 @@ impl Chart {
     /// Date, time and station, or the bare file name when the name is not one
     /// this program wrote.
     pub fn title(&self) -> String {
-        self.meta.map_or_else(|| self.name.clone(), |m| m.label())
+        crate::language_plugin::wefax_chart_title(self.meta, &self.name)
     }
 }
 

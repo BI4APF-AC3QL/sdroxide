@@ -91,7 +91,7 @@ pub fn show(
                     .sense(Sense::click()),
                 )
                 .on_hover_cursor(egui::CursorIcon::ResizeVertical)
-                .on_hover_text("Double-click to type a frequency");
+                .on_hover_text(crate::language_plugin::text("widget.frequency.text_94_d246cc", "Double-click to type a frequency"));
 
             if resp.hovered() {
                 ui.painter().hline(resp.rect.x_range(), resp.rect.bottom() - 1.0, (2.0, lit));
@@ -225,7 +225,7 @@ fn show_dial(
     let resp = ui
         .interact(row.rect, id.with("dial"), Sense::click())
         .on_hover_cursor(egui::CursorIcon::Text)
-        .on_hover_text("Tap to type a frequency");
+        .on_hover_text(crate::language_plugin::text("widget.frequency.text_228_3327e4", "Tap to type a frequency"));
     if resp.hovered() {
         ui.painter().hline(row.rect.x_range(), row.rect.bottom() - 1.0, (2.0, lit));
     }

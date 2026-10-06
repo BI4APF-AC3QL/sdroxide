@@ -70,7 +70,7 @@ impl SdroxideApp {
         let st: AisStatus = match self.ais_status.as_ref() {
             Some(s) => (**s).clone(),
             None => {
-                ui.label(RichText::new("starting the AIS decoder…").weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_73_dc7a10", "starting the AIS decoder…")).weak());
                 return;
             }
         };
@@ -133,9 +133,9 @@ impl SdroxideApp {
             // fix for "nothing is decoding" is nearly always this.
             if crate::chrome::chip(ui, on_channel, "162.000")
                 .on_hover_text(
-                    "Tune between the two AIS channels — 161.975 (AIS 1, marine 87B) and \
+                    crate::language_plugin::text("panels.ais.text_136_fb98ab", "Tune between the two AIS channels — 161.975 (AIS 1, marine 87B) and \
                      162.025 (AIS 2, 88B). The dial goes in the middle because nothing \
-                     transmits there, so a zero-IF receiver's DC spike lands on neither.",
+                     transmits there, so a zero-IF receiver's DC spike lands on neither."),
                 )
                 .clicked()
             {
@@ -146,28 +146,29 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            slot(ui, 74.0, &format!("{} vessels", st.vessels.len()), theme::CYAN());
-            slot(ui, 84.0, &format!("{} messages", count(st.messages)), theme::gray(150));
+            slot(ui, 74.0, &{ let __lp_arg_0 = &(st.vessels.len()); crate::language_plugin::format("panel.ais.text_149_5e21c6", "{} vessels", &[format!("{}", __lp_arg_0)]) }, theme::CYAN());
+            slot(ui, 84.0, &{ let __lp_arg_0 = &(count(st.messages)); crate::language_plugin::format("panel.ais.text_150_a07e79", "{} messages", &[format!("{}", __lp_arg_0)]) }, theme::gray(150));
             // A high slot count with no messages is the honest picture of a
             // band busy with something the decoder cannot read. Worth showing
             // rather than leaving the panel looking broken.
-            slot(ui, 68.0, &format!("{} slots", count(st.bursts)), theme::gray(120));
-            slot(ui, 78.0, &format!("{} bad FCS", count(st.bad_fcs)), theme::gray(120));
+            slot(ui, 68.0, &{ let __lp_arg_0 = &(count(st.bursts)); crate::language_plugin::format("panel.ais.text_154_f5ec96", "{} slots", &[format!("{}", __lp_arg_0)]) }, theme::gray(120));
+            slot(ui, 78.0, &{ let __lp_arg_0 = &(count(st.bad_fcs)); crate::language_plugin::format("panel.ais.text_155_73cfb7", "{} bad FCS", &[format!("{}", __lp_arg_0)]) }, theme::gray(120));
 
             // Which channels are alive, as two chips: a ship alternates between
             // them, so one dark channel halves every vessel's reporting rate
             // and looks exactly like a quiet sea.
             for c in &st.channels {
                 let tip = match &c.reason {
-                    Some(r) => format!("AIS {} ({:.3} MHz) — {r}", c.label, c.freq_hz / 1e6),
-                    None => format!(
-                        "AIS {} ({:.3} MHz) — {} slots, {} messages, floor {:.0} dBFS",
-                        c.label,
-                        c.freq_hz / 1e6,
-                        c.bursts,
-                        c.messages,
-                        c.floor_dbfs
+                    Some(r) => crate::language_plugin::format(
+                        "panels.ais.channel_reason",
+                        "AIS {} ({:.3} MHz) — {}",
+                        &[
+                            c.label.clone(),
+                            format!("{:.3}", c.freq_hz / 1e6),
+                            channel_reason_label(r),
+                        ],
                     ),
+                    None => { let __lp_arg_0 = &(c.label); let __lp_arg_1 = &(c.freq_hz / 1e6); let __lp_arg_2 = &(c.bursts); let __lp_arg_3 = &(c.messages); let __lp_arg_4 = &(c.floor_dbfs); crate::language_plugin::format("panel.ais.text_164_3837e1", "AIS {} ({:.3} MHz) — {} slots, {} messages, floor {:.0} dBFS", &[format!("{}", __lp_arg_0), format!("{:.3}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{:.0}", __lp_arg_4)]) },
                 };
                 crate::chrome::chip(ui, c.live, format!("AIS {}", c.label)).on_hover_text(tip);
             }
@@ -186,9 +187,9 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            if crate::chrome::chip(ui, self.show_ais_setup, "SETUP")
+            if crate::chrome::chip(ui, self.show_ais_setup, crate::language_plugin::text("panels.ais.text_189_7175b0", "SETUP"))
                 .on_hover_text(
-                    "Channels, timeouts, trail length and how far ahead the vectors reach",
+                    crate::language_plugin::text("panels.ais.text_191_fa1261", "Channels, timeouts, trail length and how far ahead the vectors reach"),
                 )
                 .clicked()
             {
@@ -198,10 +199,10 @@ impl SdroxideApp {
 
         if let Some(why) = &st.unavailable {
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new(why).size(10.5).color(theme::HAZARD()));
+                ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::HAZARD()));
                 if let Some(hz) = st.suggest_center_hz
                     && (dial - hz).abs() > 1.0
-                    && crate::chrome::chip(ui, false, format!("TUNE {:.3}", hz / 1e6)).clicked()
+                    && crate::chrome::chip(ui, false, { let __lp_arg_0 = &(hz / 1e6); crate::language_plugin::format("panels.ais.text_204_d27f87", "TUNE {:.3}", &[format!("{:.3}", __lp_arg_0)]) }).clicked()
                 {
                     cmds.push(Command::SetVfo { vfo: self.state.active_vfo, hz });
                 }
@@ -211,20 +212,16 @@ impl SdroxideApp {
         // because the symptom — vessels reporting at half the rate — is exactly
         // what a quiet sea looks like.
         if let Some(why) = &st.degraded {
-            ui.label(RichText::new(why).size(10.5).color(theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::YELLOW()));
         }
         // The one diagnosis nothing else in the program can make. A frequency
         // discriminator measures the carrier offset for free, and every ship
         // being three kilohertz off in the same direction is this receiver.
         if let Some(off) = st.offset_hz.filter(|o| o.abs() >= OFFSET_WARN_HZ) {
             ui.label(
-                RichText::new(format!(
-                    "the ships heard are {:+.1} kHz off frequency ({:+.0} ppm at 162 MHz) — \
+                RichText::new({ let __lp_arg_0 = &(off / 1e3); let __lp_arg_1 = &(f64::from(off) / sdroxide_types::AIS_PLAN_CENTER_HZ * 1e6); crate::language_plugin::format("panels.ais.text_222_81c732", "the ships heard are {:+.1} kHz off frequency ({:+.0} ppm at 162 MHz) — \
                      set the front end's frequency correction, or transmissions past about \
-                     5 kHz will stop decoding",
-                    off / 1e3,
-                    f64::from(off) / sdroxide_types::AIS_PLAN_CENTER_HZ * 1e6
-                ))
+                     5 kHz will stop decoding", &[format!("{:+.1}", __lp_arg_0), format!("{:+.0}", __lp_arg_1)]) })
                 .size(10.5)
                 .color(theme::YELLOW()),
             );
@@ -241,10 +238,10 @@ impl SdroxideApp {
         let home = self.ais_home();
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(20.0);
-            ui.label(RichText::new("VESSELS").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_244_b40590", "VESSELS")).strong().size(10.5).color(theme::CYAN()));
             ui.add(
                 egui::TextEdit::singleline(&mut self.ais_filter)
-                    .hint_text("filter")
+                    .hint_text(crate::language_plugin::text("panels.ais.text_247_dfc337", "filter"))
                     .desired_width(70.0),
             );
         });
@@ -287,7 +284,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if rows.is_empty() {
-                    ui.label(RichText::new("nothing heard yet").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_290_63ee8f", "nothing heard yet")).weak());
                 }
                 for (i, v) in rows.iter().enumerate() {
                     if ais_row(ui, v, now, selected, home, drop_map_s, i) {
@@ -333,17 +330,17 @@ impl SdroxideApp {
                             .color(if v.is_alarm() { theme::HAZARD() } else { theme::YELLOW() }),
                     );
                     ui.label(RichText::new(v.mmsi.to_string()).monospace().size(10.5).weak());
-                    ui.label(RichText::new(v.kind.label()).size(10.5).color(theme::CYAN_DIM()));
+                    ui.label(RichText::new(crate::language_plugin::ais_label(v.kind.label())).size(10.5).color(theme::CYAN_DIM()));
                     if v.virtual_aid {
                         ui.label(
-                            RichText::new("virtual — nothing is there")
+                            RichText::new(crate::language_plugin::text("panels.ais.text_339_4b5a5d", "virtual — nothing is there"))
                                 .size(10.5)
                                 .color(theme::HAZARD()),
                         );
                     }
                     if v.lat.is_some() && v.pos_stale(now, self.state.ais.drop_map_s) {
                         ui.label(
-                            RichText::new("position stale")
+                            RichText::new(crate::language_plugin::text("panels.ais.text_346_159a69", "position stale"))
                                 .size(10.5)
                                 .color(theme::HAZARD())
                                 .italics(),
@@ -353,81 +350,81 @@ impl SdroxideApp {
                 if v.kind == AisKind::Sart {
                     ui.label(
                         RichText::new(
-                            "a search-and-rescue transmitter, man-overboard beacon or AIS EPIRB",
+                            crate::language_plugin::text("panels.ais.text_356_a9a3d2", "a search-and-rescue transmitter, man-overboard beacon or AIS EPIRB"),
                         )
                         .strong()
                         .color(theme::HAZARD()),
                     );
                 }
 
-                let mut rows: Vec<(&str, String)> = Vec::new();
-                if let Some(t) = v.type_label() {
-                    let hazard = v.ship_type.and_then(sdroxide_types::ship_type_hazard);
+                let mut rows: Vec<(String, String)> = Vec::new();
+                if let Some(t) = v.type_label().map(crate::language_plugin::ais_label) {
+                    let hazard = v.ship_type.and_then(sdroxide_types::ship_type_hazard).map(crate::language_plugin::ais_label);
                     rows.push((
-                        "type",
+                        crate::language_plugin::text("panel.ais.text_367_1303c0", "type"),
                         match hazard {
                             Some(h) => format!("{t} — {h}"),
                             None => t.to_string(),
                         },
                     ));
                 }
-                if let Some(s) = v.nav_status.map(sdroxide_types::nav_status_label) {
-                    rows.push(("status", s.to_string()));
+                if let Some(s) = v.nav_status.map(sdroxide_types::nav_status_label).map(crate::language_plugin::ais_label) {
+                    rows.push((crate::language_plugin::text("panel.ais.text_375_073c16", "status"), s.to_string()));
                 }
                 if !v.call_sign.is_empty() {
-                    rows.push(("call sign", v.call_sign.clone()));
+                    rows.push((crate::language_plugin::text("panel.ais.text_378_577f8b", "call sign"), v.call_sign.clone()));
                 }
                 if let Some(imo) = v.imo {
-                    rows.push(("IMO", imo.to_string()));
+                    rows.push(("IMO".to_owned(), imo.to_string()));
                 }
                 if let Some(kt) = v.sog_kt {
-                    rows.push(("speed", format!("{kt:.1} kt")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_384_bbccb9", "speed"), format!("{kt:.1} kt")));
                 }
                 if let Some(c) = v.cog_deg {
-                    rows.push(("course", format!("{c:.0}° over ground")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_387_a90804", "course"), crate::language_plugin::format("panel.ais.text_387_1ee67f", "{c:.0}° over ground", &[format!("{c:.0}")])));
                 }
                 if let Some(hd) = v.heading_deg {
-                    rows.push(("heading", format!("{hd:.0}°")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_390_5e60ff", "heading"), format!("{hd:.0}°")));
                 }
                 if let Some(r) = v.turn_rate_deg_min.filter(|r| r.abs() > 0.5) {
-                    rows.push(("turning", format!("{r:+.0}°/min")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_393_2ab62c", "turning"), format!("{r:+.0}°/min")));
                 }
                 if let Some(a) = v.altitude_m {
-                    rows.push(("altitude", format!("{a} m")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_396_d0a708", "altitude"), format!("{a} m")));
                 }
                 let size = v.fmt_size();
                 if !size.is_empty() {
-                    rows.push(("size", size));
+                    rows.push((crate::language_plugin::text("panel.ais.text_400_ccdcbe", "size"), size));
                 }
                 if let Some(d) = v.draught_m {
-                    rows.push(("draught", format!("{d:.1} m")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_403_ae019a", "draught"), format!("{d:.1} m")));
                 }
                 if !v.destination.is_empty() {
-                    rows.push(("destination", v.destination.clone()));
+                    rows.push((crate::language_plugin::text("panel.ais.text_406_b5c755", "destination"), v.destination.clone()));
                 }
                 if !v.eta.is_empty() {
-                    rows.push(("ETA", format!("{} UTC", v.eta)));
+                    rows.push((crate::language_plugin::text("panel.ais.text_409_4703fd", "ETA"), format!("{} UTC", v.eta)));
                 }
                 if !v.utc.is_empty() {
-                    rows.push(("station time", format!("{} UTC", v.utc)));
+                    rows.push((crate::language_plugin::text("panel.ais.text_412_508d18", "station time"), format!("{} UTC", v.utc)));
                 }
                 if let (Some((hlat, hlon)), Some((lat, lon))) = (home, v.lat.zip(v.lon)) {
                     let km = sdroxide_types::distance_km((hlat, hlon), (lat, lon));
                     let bear = sdroxide_types::bearing_deg((hlat, hlon), (lat, lon));
-                    rows.push(("range", format!("{km:.1} km at {bear:.0}°")));
+                    rows.push((crate::language_plugin::text("panel.ais.text_417_2269c0", "range"), crate::language_plugin::format("panel.ais.text_417_cce39f", "{km:.1} km at {bear:.0}°", &[format!("{km:.1}"), format!("{bear:.0}")])));
                 }
                 if let Some((lat, lon)) = v.lat.zip(v.lon) {
                     rows.push((
-                        "position",
+                        crate::language_plugin::text("panel.ais.text_421_5a4524", "position"),
                         format!("{lat:.5}, {lon:.5}{}", if v.accuracy { " (DGNSS)" } else { "" }),
                     ));
                 }
-                rows.push(("signal", format!("{:.0} dBFS, {:.0} dB SNR", v.rssi_dbfs, v.snr_db)));
+                rows.push((crate::language_plugin::text("panel.ais.text_425_d04192", "signal"), format!("{:.0} dBFS, {:.0} dB SNR", v.rssi_dbfs, v.snr_db)));
                 rows.push((
-                    "messages",
-                    format!("{} (last type {}, AIS {})", v.messages, v.last_type, v.channel),
+                    crate::language_plugin::text("panel.ais.text_427_f5cccf", "messages"),
+                    { let __lp_arg_0 = &(v.messages); let __lp_arg_1 = &(v.last_type); let __lp_arg_2 = &(v.channel); crate::language_plugin::format("panel.ais.text_428_486c98", "{} (last type {}, AIS {})", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) },
                 ));
-                rows.push(("first heard", fmt_age(now - v.first_at)));
+                rows.push((crate::language_plugin::text("panel.ais.text_430_43b7ad", "first heard"), fmt_age(now - v.first_at)));
 
                 egui::Grid::new("ais-card-grid").num_columns(2).spacing([10.0, 1.0]).show(
                     ui,
@@ -442,8 +439,8 @@ impl SdroxideApp {
 
                 ui.horizontal_wrapped(|ui| {
                     if v.has_position()
-                        && crate::chrome::chip(ui, false, RichText::new("CENTER").size(10.0))
-                            .on_hover_text("Put this vessel in the middle of the chart")
+                        && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.ais.text_445_2215b7", "CENTER")).size(10.0))
+                            .on_hover_text(crate::language_plugin::text("panels.ais.text_446_0ac834", "Put this vessel in the middle of the chart"))
                             .clicked()
                         && let Some((lat, lon)) = v.lat.zip(v.lon)
                     {
@@ -459,9 +456,9 @@ impl SdroxideApp {
                         RichText::new(&v.nmea).monospace().size(9.0).color(theme::gray(110)).weak(),
                     )
                     .on_hover_text(
-                        "The last message from this station, as the NMEA sentences a \
+                        crate::language_plugin::text("panels.ais.text_462_d543a6", "The last message from this station, as the NMEA sentences a \
                          receiver would put on the wire. Paste it into any other AIS \
-                         decoder to check what sdroxide made of it.",
+                         decoder to check what sdroxide made of it."),
                     );
                 }
             });
@@ -481,6 +478,16 @@ impl SdroxideApp {
     fn ais_home(&self) -> Option<(f64, f64)> {
         let grid = self.digi_cfg_edit.my_grid.trim();
         (!grid.is_empty()).then(|| sdroxide_types::grid_to_latlon(grid)).flatten()
+    }
+}
+
+/// Project the decoder's stable, app-owned channel states into localized UI
+/// text. Unknown future/backend reasons keep their original wording.
+fn channel_reason_label(reason: &str) -> String {
+    match reason {
+        "switched off" => crate::language_plugin::text("panels.ais.reason_switched_off", reason).to_owned(),
+        "outside the receiver's window" => crate::language_plugin::text("panels.ais.reason_outside_receiver_window", reason).to_owned(),
+        _ => reason.to_owned(),
     }
 }
 
@@ -506,7 +513,7 @@ impl SdroxideApp {
         // state, so there is no apply step and no way for the two copies to
         // drift.
         let mut cfg = self.state.ais;
-        let resp = egui::Window::new("AIS Setup")
+        let resp = egui::Window::new(crate::language_plugin::text("panels.ais.text_509_989b14", "AIS Setup")).id(egui::Id::new("AIS Setup"))
             .id(crate::layout::salted_id(ctx, "AisSetup"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -515,17 +522,13 @@ impl SdroxideApp {
             .show(ctx, |ui| {
                 crate::chrome::window_body_bg(ui);
                 ui.horizontal_wrapped(|ui| {
-                    ui.label("Channels");
+                    ui.label(crate::language_plugin::text("panels.ais.text_518_4c8906", "Channels"));
                     for (i, ch) in sdroxide_ais_channels().iter().enumerate() {
                         let on = cfg.channel_enabled(i);
                         if crate::chrome::chip(ui, on, format!("AIS {}", ch.0))
-                            .on_hover_text(format!(
-                                "{:.3} MHz — marine channel {}. A ship alternates between the \
+                            .on_hover_text({ let __lp_arg_0 = &(ch.1 / 1e6); let __lp_arg_1 = &(ch.2); crate::language_plugin::format("panels.ais.text_523_3422f3", "{:.3} MHz — marine channel {}. A ship alternates between the \
                                  two, so switching one off halves how often every vessel is \
-                                 heard.",
-                                ch.1 / 1e6,
-                                ch.2
-                            ))
+                                 heard.", &[format!("{:.3}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                             .clicked()
                         {
                             cfg.channels ^= 1 << i;
@@ -534,125 +537,125 @@ impl SdroxideApp {
                 });
                 ui.add_space(4.0);
                 egui::Grid::new("ais-cfg").num_columns(2).spacing([10.0, 6.0]).show(ui, |ui| {
-                    ui.label("Drop from chart after");
+                    ui.label(crate::language_plugin::text("panels.ais.text_537_5b5ab2", "Drop from chart after"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.drop_map_s).range(10..=3600).suffix(" s"),
                         );
-                        ui.label(RichText::new("without a position report").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_542_a2c18e", "without a position report")).size(9.5).weak());
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "Five minutes by default, not ADS-B's ten seconds: a vessel at \
+                            crate::language_plugin::text("panels.ais.text_548_9c06af", "Five minutes by default, not ADS-B's ten seconds: a vessel at \
                              anchor reports once every three minutes, and a shorter window \
                              would blank most of a harbour between two perfectly good \
                              reports. Past it the ship comes off the chart and its row \
                              greys — it is not faded, because a dim symbol at a stale \
                              position is still a claim about where a ship is, in the same \
-                             ink as the true ones.",
+                             ink as the true ones."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Drop from list after");
+                    ui.label(crate::language_plugin::text("panels.ais.text_561_a1c72d", "Drop from list after"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.drop_list_s)
                                 .range(i64::from(cfg.drop_map_s)..=21_600)
                                 .suffix(" s"),
                         );
-                        ui.label(RichText::new("with nothing heard at all").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_568_2a2956", "with nothing heard at all")).size(9.5).weak());
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "The message carrying a ship's name comes round every six \
+                            crate::language_plugin::text("panels.ais.text_574_f8d9a9", "The message carrying a ship's name comes round every six \
                              minutes, so a short list window keeps throwing vessels away \
-                             just before they say what they are called.",
+                             just before they say what they are called."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Trail length");
+                    ui.label(crate::language_plugin::text("panels.ais.text_583_7d3344", "Trail length"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.trail_minutes)
                                 .range(0..=360)
-                                .suffix(" min"),
+                                .suffix(crate::language_plugin::text("panels.ais.text_588_2e7573", " min")),
                         );
-                        ui.label(RichText::new("of history behind each target").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.ais.text_590_1101ac", "of history behind each target")).size(9.5).weak());
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "In minutes rather than in points, because AIS reporting rates \
+                            crate::language_plugin::text("panels.ais.text_596_5f4e0e", "In minutes rather than in points, because AIS reporting rates \
                              span two orders of magnitude: a fixed count would be eighty \
                              seconds of a ferry and two hours of an anchored tanker, drawn \
-                             identically. Zero switches trails off.",
+                             identically. Zero switches trails off."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Speed vector");
+                    ui.label(crate::language_plugin::text("panels.ais.text_606_1fbc0c", "Speed vector"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.vector_minutes)
                                 .speed(0.5)
                                 .range(0.0..=60.0)
-                                .suffix(" min"),
+                                .suffix(crate::language_plugin::text("panels.ais.text_612_2e7573", " min")),
                         );
                         ui.label(
-                            RichText::new("how far ahead the vector reaches").size(9.5).weak(),
+                            RichText::new(crate::language_plugin::text("panels.ais.text_615_30730f", "how far ahead the vector reaches")).size(9.5).weak(),
                         );
                     });
                     ui.end_row();
 
-                    ui.label("Slot threshold");
+                    ui.label(crate::language_plugin::text("panels.ais.text_620_0460da", "Slot threshold"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.threshold_db).range(3..=30).suffix(" dB"),
                         );
                         ui.label(
-                            RichText::new("above the channel's learned noise floor")
+                            RichText::new(crate::language_plugin::text("panels.ais.text_626_c42985", "above the channel's learned noise floor"))
                                 .size(9.5)
                                 .weak(),
                         );
                     });
                     ui.end_row();
 
-                    ui.label("Track at most");
+                    ui.label(crate::language_plugin::text("panels.ais.text_633_94d6c7", "Track at most"));
                     ui.add(
                         egui::DragValue::new(&mut cfg.max_vessels)
                             .range(10..=5000)
-                            .suffix(" vessels"),
+                            .suffix(crate::language_plugin::text("panels.ais.text_637_fa0d93", " vessels")),
                     );
                     ui.end_row();
                 });
                 ui.separator();
                 ui.label(
                     RichText::new(
-                        "AIS is receive-only here and always will be: it is a \
+                        crate::language_plugin::text("panels.ais.text_644_f499a7", "AIS is receive-only here and always will be: it is a \
                          safety-of-life service, and putting false vessel traffic on it is \
-                         not something a licence covers.",
+                         not something a licence covers."),
                     )
                     .size(10.0)
                     .weak(),
                 );
                 ui.label(
                     RichText::new(
-                        "Fill in My grid in the digimode setup for ranges and bearings, and \
+                        crate::language_plugin::text("panels.ais.text_653_159169", "Fill in My grid in the digimode setup for ranges and bearings, and \
                          so the chart frames itself around where you are rather than around \
-                         whatever is furthest away.",
+                         whatever is furthest away."),
                     )
                     .size(10.0)
                     .weak(),
@@ -686,16 +689,16 @@ fn ais_head_row(ui: &mut egui::Ui, have_home: bool, sort: &mut AisSort, desc: &m
     crate::app::panels::widgets::sort_head_row(
         ui,
         &[
-            (cols.name, L, "NAME", Some(AisSort::Name)),
+            (cols.name, L, &crate::language_plugin::text("panels.ais.sort_headers.text_689_eaa589", "NAME"), Some(AisSort::Name)),
             // The MMSI is the name column's fallback, not an order anybody
             // wants a harbour in.
             (cols.mmsi, L, "MMSI", None),
-            (cols.kind, L, "TYPE", None),
+            (cols.kind, L, &crate::language_plugin::text("panels.ais.sort_headers.text_693_a90bab", "TYPE"), None),
             (cols.spd, R, "KT", Some(AisSort::Speed)),
-            (cols.cog, R, "COG", None),
-            (cols.sig, R, "SIG", Some(AisSort::Signal)),
+            (cols.cog, R, &crate::language_plugin::text("panels.ais.sort_headers.text_695_7354ab", "COG"), None),
+            (cols.sig, R, &crate::language_plugin::text("panels.ais.sort_headers.text_696_cc7109", "SIG"), Some(AisSort::Signal)),
             (cols.range, R, "KM", Some(AisSort::Range)),
-            (cols.age, R, "AGE", Some(AisSort::Heard)),
+            (cols.age, R, &crate::language_plugin::text("panels.ais.sort_headers.text_698_ab864b", "AGE"), Some(AisSort::Heard)),
         ],
         sort,
         desc,
@@ -822,9 +825,9 @@ fn ais_row(
     // One click target, the whole row wide, registered after everything above
     // it — which is what makes the name as clickable as the empty space.
     let hit = ui.interact(rect, ui.id().with(("ais-row", i)), egui::Sense::click());
-    hit.on_hover_text(match v.type_label() {
-        Some(t) => format!("{} — {} — {t}", v.mmsi, v.kind.label()),
-        None => format!("{} — {}", v.mmsi, v.kind.label()),
+    hit.on_hover_text(match v.type_label().map(crate::language_plugin::ais_label) {
+        Some(t) => format!("{} — {} — {t}", v.mmsi, crate::language_plugin::ais_label(v.kind.label())),
+        None => format!("{} — {}", v.mmsi, crate::language_plugin::ais_label(v.kind.label())),
     })
     .clicked()
 }
@@ -993,5 +996,40 @@ mod tests {
         assert_eq!(chans[1].1, sdroxide_types::AIS_CHANNEL_B_HZ);
         let cfg = sdroxide_types::AisSettings { channels: 0b01, ..Default::default() };
         assert!(cfg.channel_enabled(0) && !cfg.channel_enabled(1));
+    }
+}
+
+#[cfg(test)]
+mod language_header_render_tests {
+    use super::*;
+    #[test]
+    fn localized_column_headers_render_without_changing_sort_state() {
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for width in [400.0,600.0,1000.0] {
+                let ctx=egui::Context::default();
+                let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let mut sort=AisSort::Name;let before=sort;let mut desc=false;
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,100.0))),..Default::default()},|ui| {ais_head_row(ui, true, &mut sort, &mut desc);});
+                let texts:Vec<String>=output.shapes.iter().filter_map(|shape|match &shape.shape {
+                    egui::epaint::Shape::Text(text)=>Some(text.galley.job.text.clone()),_=>None
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"名称"} else {"NAME"})),"{texts:?}");
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"时龄"} else {"AGE"})),"{texts:?}");
+                assert_eq!(sort,before);assert!(!desc);
+            }
+        }
+    }
+
+    #[test]
+    fn channel_reason_tooltip_localizes_known_states_and_falls_back_for_new_ones() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(channel_reason_label("switched off"), if enabled { "已关闭" } else { "switched off" });
+            assert_eq!(channel_reason_label("outside the receiver's window"), if enabled { "超出接收机接收范围" } else { "outside the receiver's window" });
+            assert_eq!(channel_reason_label("future decoder state"), "future decoder state");
+        }
     }
 }

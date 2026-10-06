@@ -2192,7 +2192,7 @@ impl ScrollPalette {
     }
 }
 
-fn install_fonts(ctx: &egui::Context) {
+pub(crate) fn install_fonts(ctx: &egui::Context) {
     let mut fonts = FontDefinitions::default();
     fonts.font_data.insert(
         "chakra".into(),
@@ -2226,6 +2226,7 @@ fn install_fonts(ctx: &egui::Context) {
     }
     fonts.families.insert(FontFamily::Name("chakra-bold".into()), bold_stack);
 
+    crate::language_plugin::add_fonts(&mut fonts);
     ctx.set_fonts(fonts);
 }
 

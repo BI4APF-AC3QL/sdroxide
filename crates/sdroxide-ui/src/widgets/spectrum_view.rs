@@ -1266,7 +1266,7 @@ pub fn show_ext(
         painter.text(
             rect.center(),
             Align2::CENTER_CENTER,
-            "waiting for spectrum…",
+            crate::language_plugin::text("spectrum.painter.text_1269_6e0edd", "waiting for spectrum…"),
             FontId::proportional(16.0),
             Color32::GRAY,
         );
@@ -2355,7 +2355,7 @@ pub fn show_ext(
             painter.text(
                 pos2(tx, wf_rect.top() + 2.0),
                 anchor,
-                "SUB",
+                crate::language_plugin::text("panel23.widgets_spectrum_view.text_2358_ea1fae", "SUB"),
                 FontId::proportional(9.5 * crate::theme::panadapter_font_scale()),
                 SUB_COLOR,
             );
@@ -2371,14 +2371,14 @@ pub fn show_ext(
             (
                 0.0,
                 sdroxide_types::FOX_ZONE_MAX_HZ as f64,
-                "FOX",
+                crate::language_plugin::text("panel23.widgets_spectrum_view.text_2374_5c1f65", "FOX"),
                 Color32::from_rgb(255, 120, 160),
                 mine(sdroxide_types::DxpedMode::Fox),
             ),
             (
                 sdroxide_types::FOX_ZONE_MAX_HZ as f64,
                 sdroxide_types::HOUND_ZONE_MAX_HZ as f64,
-                "HOUNDS",
+                crate::language_plugin::text("panel23.widgets_spectrum_view.text_2381_9a09ff", "HOUNDS"),
                 crate::theme::scope().accent,
                 mine(sdroxide_types::DxpedMode::Hound),
             ),

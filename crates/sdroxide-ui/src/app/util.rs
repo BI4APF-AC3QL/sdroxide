@@ -38,11 +38,11 @@ pub(in crate::app) fn time_str(unix: i64) -> String {
 pub(crate) fn fmt_age(secs: i64) -> String {
     let s = secs.max(0);
     if s < 60 {
-        format!("{s}s")
+        crate::language_plugin::format("common.age.text_41_07f67a", "{s}s", &[format!("{s}")])
     } else if s < 3600 {
-        format!("{}m", s / 60)
+        { let __lp_arg_0 = &(s / 60); crate::language_plugin::format("common.age.text_43_d8ed65", "{}m", &[format!("{}", __lp_arg_0)]) }
     } else {
-        format!("{}h", s / 3600)
+        { let __lp_arg_0 = &(s / 3600); crate::language_plugin::format("common.age.text_45_bb1507", "{}h", &[format!("{}", __lp_arg_0)]) }
     }
 }
 

@@ -135,7 +135,7 @@ impl crate::app::SdroxideApp {
         // folder is empty.
         let min_h = crate::layout::window_h(ctx, 520.0);
         let mut open = self.mail.open;
-        egui::Window::new("MAIL")
+        egui::Window::new(crate::language_plugin::text("winlink.text_138_619437", "MAIL")).id(egui::Id::new("MAIL"))
             .id(crate::layout::salted_id(ctx, "MAIL"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -237,9 +237,9 @@ impl crate::app::SdroxideApp {
             for folder in MailFolder::ALL {
                 let count = self.mail.status.counts[folder as usize];
                 let label = if count > 0 {
-                    format!("{} {count}", folder.label())
+                    format!("{} {count}", crate::language_plugin::display_label(folder.label()))
                 } else {
-                    folder.label().to_string()
+                    crate::language_plugin::display_label(folder.label())
                 };
                 if bar.tab(ui, self.mail.folder == folder, label).clicked() {
                     self.mail.select_folder(folder);
@@ -254,16 +254,16 @@ impl crate::app::SdroxideApp {
             // anything is happening — and a greyed-out CONNECT says nothing
             // about how to get out of it.
             if busy {
-                if ui.button("ABORT").on_hover_text("Stop the session in progress").clicked() {
+                if ui.button(crate::language_plugin::text("winlink.text_257_315a1f", "ABORT")).on_hover_text(crate::language_plugin::text("winlink.text_257_dbec93", "Stop the session in progress")).clicked() {
                     cmds.push(Command::WinlinkAbort);
                 }
-            } else if ui.button("CONNECT").clicked() {
+            } else if ui.button(crate::language_plugin::text("winlink.text_260_5bb4dc", "CONNECT")).clicked() {
                 cmds.push(Command::WinlinkConnect);
             }
-            if ui.add_enabled(!busy, egui::Button::new("COMPOSE")).clicked() {
+            if ui.add_enabled(!busy, egui::Button::new(crate::language_plugin::text("winlink.text_263_32619c", "COMPOSE"))).clicked() {
                 self.mail.draft = Some(MailDraft::default());
             }
-            if ui.selectable_label(self.mail.log_open, "LOG").clicked() {
+            if ui.selectable_label(self.mail.log_open, crate::language_plugin::text("winlink.text_266_77e868", "LOG")).clicked() {
                 self.mail.log_open = !self.mail.log_open;
             }
         });
@@ -273,33 +273,30 @@ impl crate::app::SdroxideApp {
             ui.horizontal(|ui| {
                 ui.spinner();
                 ui.label(if self.mail.status.activity.is_empty() {
-                    "connecting…"
+                    crate::language_plugin::text("winlink.text_276_4b6394", "connecting…")
                 } else {
-                    &self.mail.status.activity
+                    crate::language_plugin::winlink_activity_status(&self.mail.status.activity)
                 });
             });
         } else if let Some(err) = self.mail.status.last_error.clone() {
             // Errors persist until the next session rather than flashing past:
             // a forwarding failure is the thing the operator most needs to
             // read, and it is often the only clue to why no mail arrived.
-            ui.colored_label(crate::theme::ALERT(), format!("last session failed — {err}"));
+            ui.colored_label(crate::theme::ALERT(), crate::language_plugin::format("winlink.text_285_c21e3f", "last session failed — {err}", &[crate::language_plugin::winlink_error_status(&err)]));
         } else if self.mail.status.last_session.is_some() {
-            ui.label(format!(
-                "last session: {} received, {} sent",
-                self.mail.status.last_received, self.mail.status.last_sent
-            ));
+            ui.label({ let __lp_arg_0 = &(self.mail.status.last_received); let __lp_arg_1 = &(self.mail.status.last_sent); crate::language_plugin::format("winlink.text_288_63eb4d", "last session: {} received, {} sent", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
         } else {
-            ui.label("not connected yet");
+            ui.label(crate::language_plugin::text("winlink.text_292_2c5380", "not connected yet"));
         }
     }
 
     fn mail_list(&mut self, ui: &mut egui::Ui, cmds: &mut Vec<Command>) {
         let Some(listing) = self.mail.listing.clone() else {
-            ui.label("loading…");
+            ui.label(crate::language_plugin::text("winlink.text_298_fbc6d7", "loading…"));
             return;
         };
         if listing.entries.is_empty() {
-            ui.label(format!("{} is empty", self.mail.folder.label().to_lowercase()));
+            ui.label({ let __lp_arg_0 = &(crate::language_plugin::display_label(self.mail.folder.label()).to_lowercase()); crate::language_plugin::format("winlink.text_302_cf1021", "{} is empty", &[format!("{}", __lp_arg_0)]) });
             return;
         }
 
@@ -322,11 +319,7 @@ impl crate::app::SdroxideApp {
 
         if listing.total as usize > listing.entries.len() {
             ui.label(
-                egui::RichText::new(format!(
-                    "showing {} of {}",
-                    listing.entries.len(),
-                    listing.total
-                ))
+                egui::RichText::new({ let __lp_arg_0 = &(listing.entries.len()); let __lp_arg_1 = &(listing.total); crate::language_plugin::format("winlink.text_326_312d00", "showing {} of {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                 .size(11.0)
                 .color(crate::theme::TEXT()),
             );
@@ -344,20 +337,15 @@ impl crate::app::SdroxideApp {
         subject_w: f32,
     ) {
         let inbox = self.mail.folder == MailFolder::Inbox;
-        let head = |text: &str| {
-            egui::Label::new(
-                egui::RichText::new(text).size(10.0).strong().color(crate::theme::CYAN_DIM()),
-            )
-            .selectable(false)
-        };
+        let head = mail_heading;
         ui.horizontal(|ui| {
             // Matches the rows' frame margin, or the headings sit left of the
             // columns they name.
             ui.add_space(11.0);
-            row_cell(ui, date_w, 16.0, false, head("DATE"));
-            row_cell(ui, who_w, 16.0, false, head(if inbox { "FROM" } else { "TO" }));
+            row_cell(ui, date_w, 16.0, false, head(&crate::language_plugin::text("boundaries.app.winlink.text_357_17f9a0", "DATE")));
+            row_cell(ui, who_w, 16.0, false, head(&if inbox { crate::language_plugin::text("boundaries.app.winlink.text_358_f4383c", "FROM") } else { crate::language_plugin::text("boundaries.app.winlink.text_358_c3bd7d", "TO") }));
             row_cell(ui, att_w, 16.0, false, head(""));
-            row_cell(ui, subject_w, 16.0, false, head("SUBJECT"));
+            row_cell(ui, subject_w, 16.0, false, head(&crate::language_plugin::text("boundaries.app.winlink.text_360_5995c8", "SUBJECT")));
         });
     }
 
@@ -448,7 +436,7 @@ impl crate::app::SdroxideApp {
                     );
 
                     let subject = if entry.subject.is_empty() {
-                        egui::RichText::new("(no subject)").size(12.0).italics().color(dim)
+                        egui::RichText::new(crate::language_plugin::text("winlink.text_451_14fee0", "(no subject)")).size(12.0).italics().color(dim)
                     } else {
                         // Unread stands out by weight and brightness; read mail
                         // recedes. Colour alone would not survive a colourblind
@@ -468,7 +456,7 @@ impl crate::app::SdroxideApp {
                     // clicks before the row-body interaction below sees them.
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         let left = ui.cursor().max.x;
-                        if ui.small_button("DEL").on_hover_text("Delete this message").clicked() {
+                        if ui.small_button(crate::language_plugin::text("window.winlink.buttons.text_471_9b8949", "DEL")).on_hover_text(crate::language_plugin::text("winlink.text_471_989ad8", "Delete this message")).clicked() {
                             cmds.push(Command::MailDelete {
                                 folder: self.mail.folder,
                                 mid: entry.mid.clone(),
@@ -476,8 +464,8 @@ impl crate::app::SdroxideApp {
                         }
                         if self.mail.folder != MailFolder::Archive
                             && ui
-                                .small_button("ARCH")
-                                .on_hover_text("Move to the archive")
+                                .small_button(crate::language_plugin::text("window.winlink.buttons.text_479_734126", "ARCH"))
+                                .on_hover_text(crate::language_plugin::text("winlink.text_480_b2a476", "Move to the archive"))
                                 .clicked()
                         {
                             cmds.push(Command::MailMove {
@@ -527,19 +515,19 @@ impl crate::app::SdroxideApp {
 
     fn mail_message(&mut self, ui: &mut egui::Ui, cmds: &mut Vec<Command>) {
         if let Some(mid) = self.mail.loading.clone() {
-            ui.label(format!("fetching {mid}…"));
+            ui.label(crate::language_plugin::format("winlink.text_530_77a79d", "fetching {mid}…", &[format!("{mid}")]));
             return;
         }
         let Some(msg) = self.mail.selected.clone() else {
-            ui.label("select a message");
+            ui.label(crate::language_plugin::text("winlink.text_534_67d11f", "select a message"));
             return;
         };
 
-        ui.heading(if msg.subject.is_empty() { "(no subject)" } else { &msg.subject });
-        ui.label(format!("from {}   {}", msg.from, msg.date));
-        ui.label(format!("to {}", msg.to.join(", ")));
+        ui.heading(if msg.subject.is_empty() { crate::language_plugin::text("winlink.text_538_14fee0", "(no subject)") } else { msg.subject.clone() });
+        ui.label({ let __lp_arg_0 = &(msg.from); let __lp_arg_1 = &(msg.date); crate::language_plugin::format("winlink.text_539_1e5482", "from {}   {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
+        ui.label({ let __lp_arg_0 = &(msg.to.join(", ")); crate::language_plugin::format("winlink.text_540_ed9069", "to {}", &[format!("{}", __lp_arg_0)]) });
         if !msg.cc.is_empty() {
-            ui.label(format!("cc {}", msg.cc.join(", ")));
+            ui.label({ let __lp_arg_0 = &(msg.cc.join(", ")); crate::language_plugin::format("winlink.text_542_7d6b79", "cc {}", &[format!("{}", __lp_arg_0)]) });
         }
 
         if !msg.attachments.is_empty() {
@@ -549,13 +537,13 @@ impl crate::app::SdroxideApp {
                 // write to the operator's disk, and the native one would be
                 // writing somewhere it has not asked about. Naming them is
                 // enough to know the message arrived whole.
-                ui.label(format!("attachment: {} ({} bytes)", att.name, att.data.len()));
+                ui.label({ let __lp_arg_0 = &(att.name); let __lp_arg_1 = &(att.data.len()); crate::language_plugin::format("winlink.text_552_7eb9ab", "attachment: {} ({} bytes)", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
             }
         }
 
         ui.separator();
         ui.horizontal(|ui| {
-            if ui.button("REPLY").clicked() {
+            if ui.button(crate::language_plugin::text("winlink.text_558_623026", "REPLY")).clicked() {
                 let mut subject = msg.subject.clone();
                 if !subject.to_ascii_uppercase().starts_with("RE:") {
                     subject = format!("RE: {subject}");
@@ -572,7 +560,7 @@ impl crate::app::SdroxideApp {
                     attachments: vec![],
                 });
             }
-            if ui.button("DELETE").clicked() {
+            if ui.button(crate::language_plugin::text("winlink.text_575_65daeb", "DELETE")).clicked() {
                 cmds.push(Command::MailDelete { folder: msg.folder, mid: msg.mid.clone() });
             }
         });
@@ -590,19 +578,19 @@ impl crate::app::SdroxideApp {
         let Some(mut draft) = self.mail.draft.clone() else { return };
 
         egui::Grid::new("mail-compose").num_columns(2).show(ui, |ui| {
-            ui.label("To");
+            ui.label(crate::language_plugin::text("winlink.text_593_f4b06e", "To"));
             crate::chrome::field(ui, egui::TextEdit::singleline(&mut self.mail.compose_to));
             ui.end_row();
-            ui.label("Cc");
+            ui.label(crate::language_plugin::text("winlink.text_596_b28037", "Cc"));
             crate::chrome::field(ui, egui::TextEdit::singleline(&mut self.mail.compose_cc));
             ui.end_row();
-            ui.label("Subject");
+            ui.label(crate::language_plugin::text("winlink.text_599_689712", "Subject"));
             crate::chrome::field(ui, egui::TextEdit::singleline(&mut draft.subject));
             ui.end_row();
         });
         ui.label(
-            "A callsign, or SMTP:someone@example.org for internet mail. \
-             Separate several with commas.",
+            crate::language_plugin::text("winlink.text_604_2f4298", "A callsign, or SMTP:someone@example.org for internet mail. \
+             Separate several with commas."),
         );
 
         ui.separator();
@@ -617,18 +605,18 @@ impl crate::app::SdroxideApp {
         ui.separator();
         ui.horizontal(|ui| {
             let to = split_addresses(&self.mail.compose_to);
-            if ui.add_enabled(!to.is_empty(), egui::Button::new("FILE IN OUTBOX")).clicked() {
+            if ui.add_enabled(!to.is_empty(), egui::Button::new(crate::language_plugin::text("winlink.text_620_b9ba8f", "FILE IN OUTBOX"))).clicked() {
                 draft.to = to;
                 draft.cc = split_addresses(&self.mail.compose_cc);
                 cmds.push(Command::MailCompose(Box::new(draft.clone())));
             }
-            if ui.button("DISCARD").clicked() {
+            if ui.button(crate::language_plugin::text("winlink.text_625_61413a", "DISCARD")).clicked() {
                 self.mail.draft = None;
                 self.mail.compose_to.clear();
                 self.mail.compose_cc.clear();
                 return;
             }
-            ui.label("filed messages go out on the next session");
+            ui.label(crate::language_plugin::text("winlink.text_631_e3deca", "filed messages go out on the next session"));
         });
 
         if self.mail.draft.is_some() {
@@ -648,7 +636,7 @@ impl crate::app::SdroxideApp {
         }
 
         let mut open = self.mail.log_open;
-        egui::Window::new("MAIL LOG")
+        egui::Window::new(crate::language_plugin::text("winlink.text_651_a2a726", "MAIL LOG")).id(egui::Id::new("MAIL LOG"))
             .id(crate::layout::salted_id(ctx, "MAIL-LOG"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -664,7 +652,7 @@ impl crate::app::SdroxideApp {
                 if self.mail.status.busy {
                     ui.horizontal(|ui| {
                         ui.spinner();
-                        ui.label("session running…");
+                        ui.label(crate::language_plugin::text("winlink.text_667_9542a7", "session running…"));
                     });
                     // Keep the transcript moving while a session is live; there
                     // is no other repaint source when the radio is idle.
@@ -673,7 +661,7 @@ impl crate::app::SdroxideApp {
                 }
 
                 if self.mail.status.log.is_empty() {
-                    ui.label("no session yet");
+                    ui.label(crate::language_plugin::text("winlink.text_676_9d58c0", "no session yet"));
                     return;
                 }
 
@@ -819,5 +807,30 @@ mod tests {
         };
         ui.on_deleted(MailFolder::Inbox, "ABC");
         assert!(ui.selected.is_none());
+    }
+}
+
+fn mail_heading(text: &str) -> egui::Label {
+    egui::Label::new(egui::RichText::new(text).size(10.0).strong().color(crate::theme::CYAN_DIM())).selectable(false)
+}
+
+#[cfg(test)]
+mod language_mail_header_tests {
+    use super::*;
+    #[test]
+    fn both_mail_directions_draw_translated_date_address_and_subject_headers() {
+        let c:serde_json::Value=serde_json::from_str(include_str!("../../../../plugins/zh-CN/translations.zh-CN.json")).unwrap();
+        for enabled in [true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for inbox in [true,false] {for width in [360.0,600.0,1000.0] {
+                let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let raw=["DATE",if inbox {"FROM"} else {"TO"},"SUBJECT"];
+                let labels:Vec<_>=raw.iter().map(|source| {let (k,_)=c["entries"].as_object().unwrap().iter().find(|(k,e)|k.starts_with("boundaries.app.winlink.")&&e["source"]==*source).unwrap();crate::language_plugin::text(k,source)}).collect();
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,100.0))),..Default::default()},|ui| {ui.horizontal(|ui| {for label in &labels {ui.add(mail_heading(label));}});});
+                let rendered:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();output.drop_without_applying_deltas();
+                for (i,label) in labels.iter().enumerate() {assert!(rendered.contains(label),"{rendered:?}");assert_eq!(label==raw[i],!enabled);}
+            }}
+        }
     }
 }

@@ -110,6 +110,7 @@ fn notice_banner_colors() -> (Color32, Color32, Color32, Color32) {
 impl eframe::App for SdroxideApp {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
+        crate::language_plugin::prepare_frame(&ctx);
         let now = ctx.input(|i| i.time);
         // The rate every animation in the tree paces itself to. Published here,
         // before anything draws, so a change in Settings → UI reaches the
@@ -283,7 +284,7 @@ impl eframe::App for SdroxideApp {
                 .show(ui, |ui| {
                     ui.horizontal_wrapped(|ui| {
                         ui.label(RichText::new("⚠").size(15.0).color(mark));
-                        ui.label(RichText::new(notice).size(13.0).color(ink));
+                        ui.label(RichText::new(notice.display()).size(13.0).color(ink));
                         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                             // ⛔ A TRIPPED SWR GUARD IS NOT DISMISSIBLE, and the
                             // distinction is the point. Plain "Dismiss" clears
@@ -295,18 +296,16 @@ impl eframe::App for SdroxideApp {
                             // actually clears it in the engine.
                             if let Some(swr) = self.state.tx.swr_tripped {
                                 if ui
-                                    .button(RichText::new("Acknowledge").size(13.0))
-                                    .on_hover_text(format!(
-                                        "Re-enables transmit after {swr:.1}:1. Check the antenna \
+                                    .button(RichText::new(crate::language_plugin::text("app.frame.text_298_f9236d", "Acknowledge")).size(13.0))
+                                    .on_hover_text(crate::language_plugin::format("app.frame.text_300_6e6e65", "Re-enables transmit after {swr:.1}:1. Check the antenna \
                                          first: if the fault is still there, the next \
-                                         transmission stops too."
-                                    ))
+                                         transmission stops too.", &[format!("{swr:.1}")]))
                                     .clicked()
                                 {
                                     cmds.push(Command::ClearSwrTrip);
                                     self.radio_notice = None;
                                 }
-                            } else if ui.small_button("Dismiss").clicked() {
+                            } else if ui.small_button(crate::language_plugin::text("frame.notice.buttons.text_309_48845b", "Dismiss")).clicked() {
                                 self.radio_notice = None;
                             }
                         });
@@ -340,19 +339,16 @@ impl eframe::App for SdroxideApp {
                     ui.horizontal_wrapped(|ui| {
                         ui.label(RichText::new("⚠").size(15.0).color(mark));
                         ui.label(
-                            RichText::new(format!(
-                                "SDRoxide {version} has been released — this is {}.",
-                                sdroxide_version::VERSION
-                            ))
+                            RichText::new({ let __lp_arg_0 = &(sdroxide_version::VERSION); crate::language_plugin::format("app.frame.text_344_487f7f", "SDRoxide {version} has been released — this is {}.", &[format!("{version}"), format!("{}", __lp_arg_0)]) })
                             .size(13.0)
                             .color(ink),
                         );
                         ui.hyperlink_to(
-                            RichText::new("Get it at sdroxide.com").size(13.0),
+                            RichText::new(crate::language_plugin::text("app.frame.text_351_fb9713", "Get it at sdroxide.com")).size(13.0),
                             "https://sdroxide.com/",
                         );
                         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                            if ui.small_button("Dismiss").clicked() {
+                            if ui.small_button(crate::language_plugin::text("frame.notice.buttons.text_355_48845b", "Dismiss")).clicked() {
                                 crate::app::persist::persist_dismissed_update(&version);
                                 self.update_notice = None;
                             }
@@ -390,20 +386,20 @@ impl eframe::App for SdroxideApp {
                 // Roughly where `centered_and_justified` used to put the text,
                 // with the button under it rather than beside it.
                 ui.add_space(ui.available_height() * 0.4);
-                ui.label(RichText::new(err).size(18.0).color(crate::theme::ALERT()));
+                ui.label(RichText::new(err.display()).size(18.0).color(crate::theme::ALERT()));
                 if offer_retry {
                     ui.add_space(10.0);
                     ui.label(
                         RichText::new(match due_in {
-                            Some(s) if s >= 1.0 => format!("Reconnecting in {}s…", s.ceil() as u64),
-                            Some(_) => "Reconnecting…".to_string(),
-                            None => "Not connected.".to_string(),
+                            Some(s) if s >= 1.0 => { let __lp_arg_0 = &(s.ceil() as u64); crate::language_plugin::format("app.frame.text_398_e1301e", "Reconnecting in {}s…", &[format!("{}", __lp_arg_0)]) },
+                            Some(_) => crate::language_plugin::text("app.frame.text_399_27b803", "Reconnecting…").to_string(),
+                            None => crate::language_plugin::text("app.frame.text_400_3b3d27", "Not connected.").to_string(),
                         })
                         .size(13.0)
                         .color(crate::theme::gray(150)),
                     );
                     ui.add_space(10.0);
-                    retry = ui.button(RichText::new("Reconnect now").size(16.0)).clicked();
+                    retry = ui.button(RichText::new(crate::language_plugin::text("app.frame.text_406_f786f0", "Reconnect now")).size(16.0)).clicked();
                 }
             });
             if retry {
@@ -1168,7 +1164,7 @@ impl SdroxideApp {
                     if self.focused {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Title(format!(
                             "sdroxide — {}",
-                            c.label
+                            crate::language_plugin::radio_label(&c.label)
                         )));
                     }
                     // A different interface on this radio: the stored zoom
@@ -1295,15 +1291,16 @@ impl SdroxideApp {
                     if self.focused {
                         self.speech.announcer.on_error(&e, now);
                     }
-                    self.error = Some(e);
+                    self.error = Some(crate::language_plugin::connection_error_notice(e, self.ctrl.event_text_origin()));
                     self.arm_retry(now);
                 }
                 RadioEvent::LoginTest(r) => {
                     self.login_tests_pending.remove(&r.target);
+                    let message = crate::language_plugin::login_test_message(&r);
                     self.push_net_log(format!(
                         "{}: {}",
                         r.target.label(),
-                        if r.ok { format!("ok, {}", r.message) } else { r.message.clone() }
+                        if r.ok { crate::language_plugin::format("app.frame.login_test_success", "ok, {message}", &[message]) } else { message }
                     ));
                     self.login_tests.insert(r.target, r);
                 }
@@ -1311,7 +1308,7 @@ impl SdroxideApp {
                     if self.focused {
                         self.speech.announcer.on_notice(n.as_deref(), now);
                     }
-                    self.radio_notice = n;
+                    self.radio_notice = crate::language_plugin::radio_notice_projection(n, self.ctrl.event_text_origin());
                 }
                 RadioEvent::Ft8Decodes(d) => {
                     if let Some(st) = self.digi_status.as_ref()
@@ -1716,7 +1713,7 @@ impl SdroxideApp {
             return;
         }
         let mut dismissed = false;
-        let resp = egui::Window::new("⚠  TRANSMIT LOCKOUT DISABLED")
+        let resp = egui::Window::new(crate::language_plugin::text("app.frame.text_1719_e34050", "⚠  TRANSMIT LOCKOUT DISABLED")).id(egui::Id::new("⚠  TRANSMIT LOCKOUT DISABLED"))
             .id(crate::layout::salted_id(ctx, "oob-tx-window"))
             .frame(crate::chrome::window_frame())
             .collapsible(false)
@@ -1727,9 +1724,9 @@ impl SdroxideApp {
                 ui.set_max_width(crate::layout::window_w(ctx, 430.0));
                 ui.label(
                     RichText::new(
-                        "This engine was started with --oob-tx. The amateur-band lockout is \
+                        crate::language_plugin::text("app.frame.text_1730_c6d7cc", "This engine was started with --oob-tx. The amateur-band lockout is \
                          off: it will key the transmitter on any frequency the hardware \
-                         supports.",
+                         supports."),
                     )
                     .color(crate::theme::TEXT_STRONG())
                     .size(13.0),
@@ -1737,10 +1734,10 @@ impl SdroxideApp {
                 ui.add_space(6.0);
                 ui.label(
                     RichText::new(
-                        "Transmitting outside your licence is an offence in every country that \
+                        crate::language_plugin::text("app.frame.text_1740_1da86c", "Transmitting outside your licence is an offence in every country that \
                          issues one. Only continue if you are authorised to use the frequencies \
                          you are about to key on — a MARS/CAP or commercial licence, an \
-                         experimental permit, or a dummy load.",
+                         experimental permit, or a dummy load."),
                     )
                     .color(crate::theme::TEXT()),
                 );
@@ -1749,7 +1746,7 @@ impl SdroxideApp {
                     if crate::chrome::chip_accent(
                         ui,
                         false,
-                        RichText::new("  I UNDERSTAND  ").strong(),
+                        RichText::new(crate::language_plugin::text("app.frame.text_1752_fcde45", "  I UNDERSTAND  ")).strong(),
                         crate::theme::ALERT(),
                         crate::theme::TEXT_STRONG(),
                     )
@@ -1758,7 +1755,7 @@ impl SdroxideApp {
                         dismissed = true;
                     }
                     ui.label(
-                        RichText::new("Restart without --oob-tx to put the lockout back.")
+                        RichText::new(crate::language_plugin::text("app.frame.text_1761_0bbbc1", "Restart without --oob-tx to put the lockout back."))
                             .color(crate::theme::LINE_LIT())
                             .size(10.5),
                     );

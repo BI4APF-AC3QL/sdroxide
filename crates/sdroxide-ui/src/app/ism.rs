@@ -57,7 +57,7 @@ impl SdroxideApp {
         // scanner's are; the engine persists it and echoes it back, so there is
         // no apply step to get wrong.
         let mut cfg = self.state.ism;
-        let resp = egui::Window::new("ISM DEVICES")
+        let resp = egui::Window::new(crate::language_plugin::text("window.ism.text_60_ccf31e", "ISM DEVICES")).id(egui::Id::new("ISM DEVICES"))
             .id(crate::layout::salted_id(ctx, "Ism"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -89,24 +89,24 @@ impl SdroxideApp {
                 ui,
                 wideband,
                 cfg.enabled,
-                if cfg.enabled { "DECODING" } else { "OFF" },
+                if cfg.enabled { crate::language_plugin::text("window.ism.text_92_ce8133", "DECODING") } else { crate::language_plugin::text("window.ism.text_92_38cca6", "OFF") },
             );
             if run.clicked() {
                 cfg.enabled = !cfg.enabled;
             }
             if !wideband {
-                run.on_hover_text("Needs a wideband IQ source; a CAT rig sends only audio");
+                run.on_hover_text(crate::language_plugin::text("window.ism.text_98_3abbc8", "Needs a wideband IQ source; a CAT rig sends only audio"));
             }
 
             ui.add_space(8.0);
-            ui.label(RichText::new("sql").size(10.0).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.ism.text_102_4ec7c5", "sql")).size(10.0).color(crate::theme::CYAN_DIM()));
             ui.add_enabled(
                 wideband,
                 egui::DragValue::new(&mut cfg.threshold_db).range(6..=30).suffix(" dB").speed(0.2),
             )
             .on_hover_text(
-                "How far a burst must stand above the channel's own noise floor \
-                 before it is decoded",
+                crate::language_plugin::text("window.ism.text_108_249393", "How far a burst must stand above the channel's own noise floor \
+                 before it is decoded"),
             );
         });
 
@@ -127,7 +127,7 @@ impl SdroxideApp {
                 chip.on_hover_text(if f.implemented() {
                     f.hint().to_string()
                 } else {
-                    format!("{} — not decoded yet", f.hint())
+                    { let __lp_arg_0 = &(f.hint()); crate::language_plugin::format("window.ism.text_130_3afa88", "{} — not decoded yet", &[format!("{}", __lp_arg_0)]) }
                 });
             }
         });
@@ -163,7 +163,7 @@ impl SdroxideApp {
         wideband: bool,
     ) {
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("band").size(10.0).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.ism.text_166_65f15c", "band")).size(10.0).color(crate::theme::CYAN_DIM()));
             for (bit, label, center_hz) in sdroxide_types::RTL433_BAND_LABELS {
                 let selected = cfg.rtl433.band_enabled(bit);
                 let chip = crate::chrome::chip_enabled(ui, wideband, selected, label);
@@ -177,15 +177,13 @@ impl SdroxideApp {
                     // centre puts the window a quarter-span above it (#310).
                     cmds.push(Command::TuneWidebandTo(center_hz));
                 }
-                chip.on_hover_text(format!(
-                    "Listen on {label} — tunes the radio there. One band at a time: they are \
-                     too far apart for any receiver to cover two at once."
-                ));
+                chip.on_hover_text(crate::language_plugin::format("window.ism.text_181_b9f5f8", "Listen on {label} — tunes the radio there. One band at a time: they are \
+                     too far apart for any receiver to cover two at once.", &[format!("{label}")]));
             }
         });
 
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("bw").size(10.0).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.ism.text_188_ab02ee", "bw")).size(10.0).color(crate::theme::CYAN_DIM()));
             for (hz, label) in sdroxide_types::RTL433_BANDWIDTHS {
                 let selected = cfg.rtl433.bandwidth_hz == hz;
                 let chip = crate::chrome::chip_enabled(ui, wideband, selected, label);
@@ -193,16 +191,14 @@ impl SdroxideApp {
                     cfg.rtl433.bandwidth_hz = hz;
                 }
                 chip.on_hover_text(if hz == sdroxide_types::RTL433_BANDWIDTH_AUTO {
-                    "Give each band the width it normally needs — a quarter of a megahertz \
-                     for the OOK bands at 315, 345 and 433 MHz, a full one for 868 and 915."
+                    crate::language_plugin::text("window.ism.text_196_a8e6a2", "Give each band the width it normally needs — a quarter of a megahertz \
+                     for the OOK bands at 315, 345 and 433 MHz, a full one for 868 and 915.")
                         .to_string()
                 } else {
-                    format!(
-                        "Watch {label}Hz around the band centre, whatever the band would have \
+                    crate::language_plugin::format("window.ism.text_201_280fae", "Watch {label}Hz around the band centre, whatever the band would have \
                          asked for. Narrower fits a receiver that cannot deliver the band's \
                          own width; wider reaches devices sitting further off centre. Your \
-                         receiver has to hand over about a third more than this."
-                    )
+                         receiver has to hand over about a third more than this.", &[format!("{label}")])
                 });
             }
         });
@@ -230,20 +226,12 @@ impl SdroxideApp {
             } else {
                 crate::theme::CYAN_DIM()
             }));
-            let tail = match (&rt.unavailable, live) {
-                (Some(why), _) => format!("rtl_433  —  {why}"),
-                // The width as well as the place: the operator chooses it now,
-                // and what the downconverter settles on is a whole-number
-                // division of the receiver's stream rather than the round figure
-                // that was asked for.
-                (None, Some(b)) => format!("rtl_433 {}  ·  {:.0} kHz", b.label, rt.rate_hz / 1e3),
-                (None, None) => "rtl_433".to_string(),
-            };
+            let tail = rtl433_status_tail(rt.unavailable.as_deref(), live.map(|b| b.label.as_str()), rt.rate_hz);
             ui.label(RichText::new(tail).size(10.5).color(crate::theme::CYAN_DIM())).on_hover_text(
-                "Several hundred more device decoders, from the rtl_433 project, built in. \
+                crate::language_plugin::text("window.ism.text_243_fe234a", "Several hundred more device decoders, from the rtl_433 project, built in. \
                      Reads the 433 MHz OOK devices sdroxide's own decoders do not reach at all. \
                      Where both can read a device, rtl_433 knows far more variants and takes \
-                     over.",
+                     over."),
             );
         });
 
@@ -251,31 +239,28 @@ impl SdroxideApp {
         ui.horizontal(|ui| {
             if rt.running {
                 let flex = if rt.flex == 1 {
-                    "1 of your own".to_string()
+                    crate::language_plugin::text("window.ism.text_254_c156d9", "1 of your own").to_string()
                 } else {
-                    format!("{} of your own", rt.flex)
+                    { let __lp_arg_0 = &(rt.flex); crate::language_plugin::format("window.ism.text_256_baa432", "{} of your own", &[format!("{}", __lp_arg_0)]) }
                 };
                 ui.label(
-                    RichText::new(format!(
-                        "{} decoders ({flex}), {} decoded",
-                        rt.decoders, rt.decodes
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(rt.decoders); let __lp_arg_1 = &(rt.decodes); crate::language_plugin::format("window.ism.text_260_465aff", "{} decoders ({flex}), {} decoded", &[format!("{}", __lp_arg_0), format!("{flex}"), format!("{}", __lp_arg_1)]) })
                     .size(10.0)
                     .color(crate::theme::CYAN_DIM()),
                 )
                 .on_hover_text(
-                    "Device decoders registered, how many came from your rtl433_flex.conf, \
-                     and how many transmissions have been decoded since it started.",
+                    crate::language_plugin::text("window.ism.text_267_f8418a", "Device decoders registered, how many came from your rtl433_flex.conf, \
+                     and how many transmissions have been decoded since it started."),
                 );
                 ui.add_space(6.0);
             }
             // The operator's decoder file is edited outside sdroxide, so nothing
             // notices it changed until asked — the same reason the band plan has
             // a reload button.
-            if crate::chrome::chip(ui, false, "RELOAD DECODERS")
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.ism.text_275_280ede", "RELOAD DECODERS"))
                 .on_hover_text(
-                    "Re-read rtl433_flex.conf after editing it. The devices already \
-                     heard stay in the list.",
+                    crate::language_plugin::text("window.ism.text_277_601b15", "Re-read rtl433_flex.conf after editing it. The devices already \
+                     heard stay in the list."),
                 )
                 .clicked()
             {
@@ -288,22 +273,22 @@ impl SdroxideApp {
         if !rt.superseded.is_empty() {
             let names: Vec<&str> = rt.superseded.iter().map(|p| p.label()).collect();
             ui.label(
-                RichText::new(format!("handled by rtl_433: {}", names.join(", ")))
+                RichText::new({ let __lp_arg_0 = &(names.join(", ")); crate::language_plugin::format("window.ism.text_291_d276d7", "handled by rtl_433: {}", &[format!("{}", __lp_arg_0)]) })
                     .size(10.0)
                     .color(crate::theme::CYAN_DIM()),
             )
             .on_hover_text(
-                "rtl_433 knows more variants of these than sdroxide's own decoders do, so it \
+                crate::language_plugin::text("window.ism.text_296_a65f9a", "rtl_433 knows more variants of these than sdroxide's own decoders do, so it \
                  reads them while it is listening here. Select another band and sdroxide's \
-                 own take over again.",
+                 own take over again."),
             );
         }
 
         for e in &rt.errors {
-            ui.label(RichText::new(format!("flex: {e}")).size(10.0).color(crate::theme::YELLOW()))
+            ui.label(RichText::new(crate::language_plugin::format("window.ism.text_303_2f201d", "flex: {e}", &[format!("{e}")])).size(10.0).color(crate::theme::YELLOW()))
                 .on_hover_text(
-                    "A decoder in your rtl433_flex.conf was refused. The others still loaded. \
-                     Fix the line, then press RELOAD DECODERS.",
+                    crate::language_plugin::text("window.ism.text_305_8ae82c", "A decoder in your rtl433_flex.conf was refused. The others still loaded. \
+                     Fix the line, then press RELOAD DECODERS."),
                 );
         }
     }
@@ -328,7 +313,7 @@ impl SdroxideApp {
     fn ism_channels(&self, ui: &mut egui::Ui) {
         let Some(st) = &self.ism_status else {
             ui.label(
-                RichText::new("waiting for the decoder…")
+                RichText::new(crate::language_plugin::text("window.ism.text_331_317c5e", "waiting for the decoder…"))
                     .size(11.0)
                     .color(crate::theme::CYAN_DIM()),
             );
@@ -336,7 +321,7 @@ impl SdroxideApp {
         };
 
         if let Some(why) = &st.unavailable {
-            ui.label(RichText::new(why).size(11.0).color(crate::theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(11.0).color(crate::theme::YELLOW()));
             // Which window, exactly. The decoder's window sits on the *hardware
             // centre*, not the VFO, and on a wide front end those are routinely
             // far apart — so "nothing is inside the window" reads as plainly
@@ -344,18 +329,14 @@ impl SdroxideApp {
             // is on screen too.
             if st.window_rate_hz > 0.0 {
                 ui.label(
-                    RichText::new(format!(
-                        "window {:.3} MHz, {:.3} MHz wide",
-                        st.window_center_hz / 1e6,
-                        st.window_rate_hz / 1e6
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(st.window_center_hz / 1e6); let __lp_arg_1 = &(st.window_rate_hz / 1e6); crate::language_plugin::format("window.ism.text_348_ae1f04", "window {:.3} MHz, {:.3} MHz wide", &[format!("{:.3}", __lp_arg_0), format!("{:.3}", __lp_arg_1)]) })
                     .size(10.5)
                     .color(crate::theme::CYAN_DIM()),
                 )
                 .on_hover_text(
-                    "Where the decoder is actually listening. This follows the receiver's \
+                    crate::language_plugin::text("window.ism.text_356_2b30c1", "Where the decoder is actually listening. This follows the receiver's \
                      hardware centre, not the VFO — on a wide front end the two can be a long \
-                     way apart, and it is the window that decides which channels are reachable.",
+                     way apart, and it is the window that decides which channels are reachable."),
                 );
             }
             // No TUNE button here. The band buttons above are the one place
@@ -389,15 +370,15 @@ impl SdroxideApp {
         if st.channels.iter().any(|c| c.live) {
             ui.add_space(3.0);
             ui.label(
-                RichText::new(format!("{} bursts, {} decoded", st.bursts, st.decodes))
+                RichText::new({ let __lp_arg_0 = &(st.bursts); let __lp_arg_1 = &(st.decodes); crate::language_plugin::format("window.ism.text_392_a939b0", "{} bursts, {} decoded", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                     .size(10.0)
                     .color(crate::theme::CYAN_DIM()),
             )
             .on_hover_text(
-                "Transmissions the gate opened on, and how many produced a valid frame. \
+                crate::language_plugin::text("window.ism.text_397_dc1c72", "Transmissions the gate opened on, and how many produced a valid frame. \
                  Many bursts and no decodes means the band is busy with devices \
                  sdroxide cannot read yet. None at all means nothing is reaching the \
-                 threshold — lower it, or check that the dial is on the band.",
+                 threshold — lower it, or check that the dial is on the band."),
             );
         }
     }
@@ -409,7 +390,7 @@ impl SdroxideApp {
         ui.horizontal(|ui| {
             crate::chrome::row_tail(ui, |ui| {
                 ui.label(
-                    RichText::new(format!("{} devices", self.ism_reports.len()))
+                    RichText::new({ let __lp_arg_0 = &(self.ism_reports.len()); crate::language_plugin::format("window.ism.text_412_b46511", "{} devices", &[format!("{}", __lp_arg_0)]) })
                         .size(10.0)
                         .color(crate::theme::CYAN_DIM()),
                 );
@@ -420,7 +401,7 @@ impl SdroxideApp {
     fn ism_list(&mut self, ui: &mut egui::Ui, cmds: &mut Vec<Command>) {
         if self.ism_reports.is_empty() {
             ui.add_space(6.0);
-            ui.label(RichText::new("nothing heard yet").size(11.0).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("window.ism.text_423_63ee8f", "nothing heard yet")).size(11.0).color(crate::theme::CYAN_DIM()));
             return;
         }
 
@@ -469,6 +450,17 @@ impl SdroxideApp {
     }
 }
 
+fn rtl433_status_tail(unavailable: Option<&str>, live_label: Option<&str>, rate_hz: f64) -> String {
+    match (unavailable, live_label) {
+        (Some(why), _) => format!("rtl_433  —  {}", crate::language_plugin::backend_status(why)),
+        // The width as well as the place: the operator chooses it now, and
+        // what the downconverter settles on is a whole-number division of the
+        // receiver's stream rather than the round figure that was asked for.
+        (None, Some(label)) => format!("rtl_433 {}  ·  {:.0} kHz", label, rate_hz / 1e3),
+        (None, None) => "rtl_433".to_string(),
+    }
+}
+
 /// The column headings, so the numbers in a row say what they are — and what
 /// re-orders the list.
 fn ism_header(ui: &mut egui::Ui, narrow: bool, sort: &mut IsmSort, desc: &mut bool) {
@@ -479,18 +471,18 @@ fn ism_header(ui: &mut egui::Ui, narrow: bool, sort: &mut IsmSort, desc: &mut bo
         let mut head = |ui: &mut egui::Ui, w: f32, right: bool, text: &str, key| {
             sort_head_cell(ui, w, right, text, key, sort, desc);
         };
-        head(ui, W_AGE, true, "age", Some(IsmSort::Heard));
+        head(ui, W_AGE, true, &crate::language_plugin::text("controls.app.ism.text_482_013f54", "age"), Some(IsmSort::Heard));
         head(ui, W_FREQ, true, "MHz", Some(IsmSort::Frequency));
         // The model name and the device id are labels, not measurements: an
         // alphabetical sky of thermometers answers no question this window is
         // for.
-        head(ui, W_KIND, false, "device", None);
-        head(ui, W_DEVICE, false, "id", None);
+        head(ui, W_KIND, false, &crate::language_plugin::text("controls.app.ism.text_487_263a4d", "device"), None);
+        head(ui, W_DEVICE, false, &crate::language_plugin::text("controls.app.ism.text_488_a56145", "id"), None);
         if !narrow {
-            head(ui, W_SNR, true, "sig", Some(IsmSort::Signal));
-            head(ui, W_COUNT, true, "n", Some(IsmSort::Count));
+            head(ui, W_SNR, true, &crate::language_plugin::text("controls.app.ism.text_490_a54399", "sig"), Some(IsmSort::Signal));
+            head(ui, W_COUNT, true, &crate::language_plugin::text("controls.app.ism.text_491_1b16b1", "n"), Some(IsmSort::Count));
         }
-        head(ui, ui.available_width().max(40.0), false, "readings", None);
+        head(ui, ui.available_width().max(40.0), false, &crate::language_plugin::text("controls.app.ism.text_493_303d03", "readings"), None);
     });
 }
 
@@ -602,18 +594,44 @@ fn ism_row(ui: &mut egui::Ui, r: &IsmReport, now: i64, narrow: bool) -> egui::Re
     if resp.hovered() {
         ui.ctx().set_cursor_icon(egui::CursorIcon::PointingHand);
     }
-    let mut hover = format!(
-        "{}  id {}\n{:.4} MHz   {} dB   heard {}×\nfirst heard {} ago",
-        r.protocol.label(),
-        r.device,
-        r.freq_hz / 1e6,
-        r.snr_db,
-        r.count,
-        fmt_age(now - r.first_at),
-    );
+    let mut hover = { let __lp_arg_0 = &(r.protocol.label()); let __lp_arg_1 = &(r.device); let __lp_arg_2 = &(r.freq_hz / 1e6); let __lp_arg_3 = &(r.snr_db); let __lp_arg_4 = &(r.count); let __lp_arg_5 = &(fmt_age(now - r.first_at)); crate::language_plugin::format("window.ism.text_606_9d4279", "{}  id {}\n{:.4} MHz   {} dB   heard {}×\nfirst heard {} ago", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{:.4}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{}", __lp_arg_4), format!("{}", __lp_arg_5)]) };
     if !r.raw_hex.is_empty() {
         hover.push_str(&format!("\n\n{}", r.raw_hex));
     }
-    hover.push_str("\n\nClick to tune the receiver to it");
+    hover.push_str(&crate::language_plugin::text("window.ism.text_617_524ec2", "\n\nClick to tune the receiver to it"));
     resp.on_hover_text(hover)
+}
+
+#[cfg(test)]
+mod language_ism_header_tests {
+    use super::*;
+
+    #[test]
+    fn rtl433_header_status_translates_and_falls_back_without_radio_activity() {
+        for enabled in [true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let reason = "rtl_433 could not start";
+            let shown = rtl433_status_tail(Some(reason), None, 0.0);
+            assert_eq!(shown, format!("rtl_433  —  {}", if enabled { "rtl_433 无法启动" } else { reason }));
+            assert_eq!(rtl433_status_tail(None, Some("433 MHz"), 250_000.0), "rtl_433 433 MHz  ·  250 kHz");
+            assert_eq!(rtl433_status_tail(None, None, 0.0), "rtl_433");
+        }
+    }
+    #[test]
+    fn sensor_headers_render_without_changing_sort_key_or_direction() {
+        for enabled in [true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for (width,narrow) in [(360.0,true),(600.0,false),(1000.0,false)] {
+                let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let mut sort=IsmSort::Heard;let mut desc=true;
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,100.0))),..Default::default()},|ui|ism_header(ui,narrow,&mut sort,&mut desc));
+                let rendered:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();output.drop_without_applying_deltas();
+                for (raw,zh) in [("age","时龄"),("device","设备"),("id","标识"),("readings","读数")] {
+                    assert!(rendered.iter().any(|t|t.starts_with(if enabled {zh} else {raw})),"{rendered:?}");
+                }
+                assert_eq!(sort,IsmSort::Heard);assert!(desc);
+            }
+        }
+    }
 }

@@ -51,7 +51,7 @@ impl SdroxideApp {
         let st: Vdl2Status = match self.vdl2_status.as_ref() {
             Some(s) => (**s).clone(),
             None => {
-                ui.label(RichText::new("starting the VDL2 decoder…").weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_54_b47043", "starting the VDL2 decoder…")).weak());
                 return;
             }
         };
@@ -105,13 +105,13 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(22.0);
             ui.label(RichText::new("VDL2").size(11.0).strong().color(theme::CYAN()));
-            ui.label(RichText::new("aircraft datalink").weak().size(10.5));
+            ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_108_511769", "aircraft datalink")).weak().size(10.5));
 
             if crate::chrome::chip(ui, centred, "136.8125")
                 .on_hover_text(
-                    "Tune to the middle of the VDL2 group. The decoder's own window slides \
+                    crate::language_plugin::text("panels.vdl2.text_112_d8d742", "Tune to the middle of the VDL2 group. The decoder's own window slides \
                      from there to take in as many of the fourteen channels as the receiver \
-                     can reach.",
+                     can reach."),
                 )
                 .clicked()
             {
@@ -122,17 +122,17 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            slot(ui, 70.0, &format!("{} frames", count(st.frames)), theme::CYAN());
-            slot(ui, 70.0, &format!("{} bursts", count(st.bursts)), theme::gray(150));
+            { let face = vdl2_counter_face("{} frames", st.frames); slot(ui, vdl2_counter_width(ui, 70.0, &face), &face, theme::CYAN()); }
+            { let face = vdl2_counter_face("{} bursts", st.bursts); slot(ui, vdl2_counter_width(ui, 70.0, &face), &face, theme::gray(150)); }
             // These are the diagnosis, in the order the chain fails in. Bursts
             // without syncs is a channel busy with something else; syncs
             // without headers is a decoder problem; headers without frames,
             // with this climbing, is a decoder problem one layer further in;
             // and a bad frame check is this decoder misreading a frame the
             // radio path delivered intact.
-            slot(ui, 62.0, &format!("{} sync", count(st.syncs)), theme::gray(120));
-            slot(ui, 76.0, &format!("{} HDLC bad", count(st.hdlc_bad)), theme::gray(120));
-            slot(ui, 68.0, &format!("{} bad FCS", count(st.fcs_bad)), theme::gray(120));
+            { let face = vdl2_counter_face("{} sync", st.syncs); slot(ui, vdl2_counter_width(ui, 62.0, &face), &face, theme::gray(120)); }
+            slot(ui, 76.0, &{ let __lp_arg_0 = &(count(st.hdlc_bad)); crate::language_plugin::format("boundaries.app.panels.vdl2.text_134_4ec086", "{} HDLC bad", &[format!("{}", __lp_arg_0)]) }, theme::gray(120));
+            { let face = vdl2_counter_face("{} bad FCS", st.fcs_bad); slot(ui, vdl2_counter_width(ui, 68.0, &face), &face, theme::gray(120)); }
 
             if st.window_rate_hz > 0.0 {
                 slot(
@@ -148,10 +148,10 @@ impl SdroxideApp {
             }
 
             ui.separator();
-            if crate::chrome::chip(ui, self.show_vdl2_setup, "SETUP")
+            if crate::chrome::chip(ui, self.show_vdl2_setup, crate::language_plugin::text("panels.vdl2.text_151_7175b0", "SETUP"))
                 .on_hover_text(
-                    "Which channels to listen on, how hard a burst has to be, \
-                                and how much log to keep",
+                    crate::language_plugin::text("panels.vdl2.text_153_3056ea", "Which channels to listen on, how hard a burst has to be, \
+                                and how much log to keep"),
                 )
                 .clicked()
             {
@@ -161,7 +161,7 @@ impl SdroxideApp {
                 ui,
                 !st.messages.is_empty(),
                 "sdroxide-vdl2-log.txt",
-                "Save the VDL2 message log to a file",
+                crate::language_plugin::text("panels.vdl2.text_164_7b20fc", "Save the VDL2 message log to a file"),
                 || crate::app::save_text::vdl2_log_text(&st.messages),
             );
         });
@@ -192,17 +192,11 @@ impl SdroxideApp {
                     };
                     let what = sdroxide_types::VDL2_CHANNEL_LABELS
                         .get(i)
-                        .copied()
-                        .unwrap_or("VDL2 channel");
+                        .copied().map(crate::language_plugin::vdl2_channel_role)
+                        .unwrap_or(crate::language_plugin::text("boundaries.app.panels.vdl2.text_196_2bfcbb", "VDL2 channel"));
                     let hover = match &c.reason {
-                        Some(r) => format!("{:.3} MHz, {what} — {r}", c.freq_hz / 1e6),
-                        None => format!(
-                            "{:.3} MHz, {what} — {} bursts, {} frames, noise floor {:.0} dBFS",
-                            c.freq_hz / 1e6,
-                            c.bursts,
-                            c.frames,
-                            c.floor_dbfs
-                        ),
+                        Some(r) => { let __lp_arg_0 = &(c.freq_hz / 1e6); crate::language_plugin::format("boundaries.app.panels.vdl2.text_198_72ba42", "{:.3} MHz, {what} — {r}", &[format!("{:.3}", __lp_arg_0), format!("{what}"), format!("{r}")]) },
+                        None => { let __lp_arg_0 = &(c.freq_hz / 1e6); let __lp_arg_1 = &(c.bursts); let __lp_arg_2 = &(c.frames); let __lp_arg_3 = &(c.floor_dbfs); crate::language_plugin::format("boundaries.app.panels.vdl2.text_200_79c2e6", "{:.3} MHz, {what} — {} bursts, {} frames, noise floor {:.0} dBFS", &[format!("{:.3}", __lp_arg_0), format!("{what}"), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{:.0}", __lp_arg_3)]) },
                     };
                     // Wide enough for the longest a channel ever reads —
                     // "136.975 (999k)" — since the painter clips to the slot
@@ -224,10 +218,10 @@ impl SdroxideApp {
 
         if let Some(why) = &st.unavailable {
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new(why).size(10.5).color(theme::HAZARD()));
+                ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::HAZARD()));
                 if let Some(hz) = st.suggest_center_hz
                     && (dial - hz).abs() > 1.0
-                    && crate::chrome::chip(ui, false, format!("TUNE {:.3}", hz / 1e6)).clicked()
+                    && crate::chrome::chip(ui, false, { let __lp_arg_0 = &(hz / 1e6); crate::language_plugin::format("panels.vdl2.text_230_d27f87", "TUNE {:.3}", &[format!("{:.3}", __lp_arg_0)]) }).clicked()
                 {
                     cmds.push(Command::SetVfo { vfo: self.state.active_vfo, hz });
                 }
@@ -236,7 +230,7 @@ impl SdroxideApp {
         // Running, but not on all of it. Said out loud because the symptom — a
         // thin log — is exactly what a quiet hour looks like.
         if let Some(why) = &st.degraded {
-            ui.label(RichText::new(why).size(10.5).color(theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::backend_status(why)).size(10.5).color(theme::YELLOW()));
         }
     }
 
@@ -247,10 +241,10 @@ impl SdroxideApp {
         let mut hold = self.vdl2_hold.take();
         ui.horizontal(|ui| {
             ui.set_min_height(20.0);
-            ui.label(RichText::new("MESSAGES").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_250_2b1427", "MESSAGES")).strong().size(10.5).color(theme::CYAN()));
             ui.add(
                 egui::TextEdit::singleline(&mut self.vdl2_filter)
-                    .hint_text("address, flight, registration or label")
+                    .hint_text(crate::language_plugin::text("panels.vdl2.text_253_796f45", "address, flight, registration or label"))
                     .desired_width(190.0),
             );
             if !self.vdl2_filter.is_empty() && crate::chrome::chip(ui, false, "×").clicked() {
@@ -264,16 +258,16 @@ impl SdroxideApp {
             let label = match &hold {
                 Some((_, at)) => {
                     let since = st.frames.saturating_sub(*at);
-                    if since > 0 { format!("HELD  +{}", count(since)) } else { "HELD".to_string() }
+                    if since > 0 { { let __lp_arg_0 = &(count(since)); crate::language_plugin::format("panel23.app_panels_vdl2.text_267_293f06", "HELD  +{}", &[format!("{}", __lp_arg_0)]) } } else { crate::language_plugin::text("panel23.app_panels_vdl2.text_267_0b6463", "HELD").to_string() }
                 }
-                None => "HOLD".to_string(),
+                None => crate::language_plugin::text("panel23.app_panels_vdl2.text_269_aacf94", "HOLD").to_string(),
             };
             if crate::chrome::chip(ui, held, label)
                 .on_hover_text(
-                    "Hold the message log where it is, so one can be read without the next \
+                    crate::language_plugin::text("panels.vdl2.text_273_dfb7b4", "Hold the message log where it is, so one can be read without the next \
                      transmission pushing it up the screen. The decoder keeps running and \
                      the counters keep moving; letting go shows everything that arrived \
-                     meanwhile.",
+                     meanwhile."),
                 )
                 .clicked()
             {
@@ -313,9 +307,9 @@ impl SdroxideApp {
                 if rows.is_empty() {
                     ui.label(
                         RichText::new(if log.is_empty() {
-                            "nothing decoded yet"
+                            crate::language_plugin::text("panels.vdl2.text_316_480cd8", "nothing decoded yet")
                         } else {
-                            "nothing matches the filter"
+                            crate::language_plugin::text("panels.vdl2.text_318_c79aed", "nothing matches the filter")
                         })
                         .weak(),
                     );
@@ -342,7 +336,7 @@ impl SdroxideApp {
     fn vdl2_stations(&mut self, ui: &mut egui::Ui, st: &Vdl2Status, now: i64, avail_h: f32) {
         ui.horizontal_wrapped(|ui| {
             ui.set_min_height(20.0);
-            ui.label(RichText::new("STATIONS").strong().size(10.5).color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_345_791930", "STATIONS")).strong().size(10.5).color(theme::CYAN()));
         });
 
         let filter = self.vdl2_filter.trim().to_ascii_uppercase();
@@ -365,7 +359,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if rows.is_empty() {
-                    ui.label(RichText::new("nobody heard yet").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_368_87e920", "nobody heard yet")).weak());
                 }
                 for (i, s) in rows.iter().enumerate() {
                     if station_row(ui, s, now, i) {
@@ -397,7 +391,7 @@ impl SdroxideApp {
         // arrives and echoes it back in the state, so there is no apply step and
         // no way for the two copies to drift.
         let mut cfg = self.state.vdl2;
-        egui::Window::new("VDL2 Setup")
+        egui::Window::new(crate::language_plugin::text("panels.vdl2.text_400_ba39b0", "VDL2 Setup")).id(egui::Id::new("VDL2 Setup"))
             .id(crate::layout::salted_id(ctx, "Vdl2Setup"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -405,13 +399,13 @@ impl SdroxideApp {
             .default_width(crate::layout::window_w(ctx, 420.0))
             .show(ctx, |ui| {
                 crate::chrome::window_body_bg(ui);
-                ui.label(RichText::new("Channels").strong());
+                ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_408_4c8906", "Channels")).strong());
                 ui.label(
                     RichText::new(
-                        "Every 25 kHz slot from 136.650 to 136.975 MHz. One downconverter \
+                        crate::language_plugin::text("panels.vdl2.text_411_71ff55", "Every 25 kHz slot from 136.650 to 136.975 MHz. One downconverter \
                          each, all inside the same receiver window. Switching one off saves \
                          a little processor time; it does not make the others any more \
-                         sensitive.",
+                         sensitive."),
                     )
                     .size(10.0)
                     .weak(),
@@ -420,18 +414,14 @@ impl SdroxideApp {
                     for (i, &hz) in sdroxide_types::VDL2_CHANNELS_HZ.iter().enumerate() {
                         let mut on = cfg.channel_enabled(i);
                         let label = format!("{:.3}", hz / 1e6);
-                        let what = sdroxide_types::VDL2_CHANNEL_LABELS[i];
+                        let what = crate::language_plugin::vdl2_channel_role(sdroxide_types::VDL2_CHANNEL_LABELS[i]);
                         let tip = if hz == sdroxide_types::VDL2_CSC_HZ {
-                            format!(
-                                "{what} — in use worldwide, and where every link starts. \
-                                 The one to keep if you keep only one."
-                            )
+                            crate::language_plugin::format("boundaries.app.panels.vdl2.text_426_bc2dff", "{what} — in use worldwide, and where every link starts. \
+                                 The one to keep if you keep only one.", &[format!("{what}")])
                         } else {
-                            format!(
-                                "Assigned to an {what}. Which channels carry anything \
+                            crate::language_plugin::format("boundaries.app.panels.vdl2.text_431_f114af", "Assigned to an {what}. Which channels carry anything \
                                  depends on where you are: leave them all on unless you \
-                                 know otherwise."
-                            )
+                                 know otherwise.", &[format!("{what}")])
                         };
                         if ui.checkbox(&mut on, label).on_hover_text(tip).changed() {
                             if on {
@@ -445,72 +435,72 @@ impl SdroxideApp {
                 ui.add_space(6.0);
 
                 egui::Grid::new("vdl2-cfg").num_columns(2).spacing([10.0, 6.0]).show(ui, |ui| {
-                    ui.label("Burst threshold");
+                    ui.label(crate::language_plugin::text("panels.vdl2.text_448_b4a620", "Burst threshold"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.threshold_db).range(3..=40).suffix(" dB"),
                         );
                         ui.label(
-                            RichText::new("above each channel's own noise floor").size(9.5).weak(),
+                            RichText::new(crate::language_plugin::text("panels.vdl2.text_454_b6a518", "above each channel's own noise floor")).size(9.5).weak(),
                         );
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "Lower catches weaker transmissions and costs processor time on \
+                            crate::language_plugin::text("panels.vdl2.text_461_a88fe5", "Lower catches weaker transmissions and costs processor time on \
                              noise; higher misses them. The floor is learned per channel and \
-                             a change here does not throw it away.",
+                             a change here does not throw it away."),
                         )
                         .size(10.0)
                         .weak(),
                     );
                     ui.end_row();
 
-                    ui.label("Keep in the log");
+                    ui.label(crate::language_plugin::text("panels.vdl2.text_470_2e76fe", "Keep in the log"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.max_messages)
                                 .range(10..=sdroxide_types::VDL2_MESSAGE_MAX)
-                                .suffix(" messages"),
+                                .suffix(crate::language_plugin::text("panels.vdl2.text_475_6e2fd2", " messages")),
                         );
                     });
                     ui.end_row();
 
-                    ui.label("Track at most");
+                    ui.label(crate::language_plugin::text("panels.vdl2.text_480_94d6c7", "Track at most"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.max_stations)
                                 .range(10..=sdroxide_types::VDL2_STATION_MAX)
-                                .suffix(" stations"),
+                                .suffix(crate::language_plugin::text("panels.vdl2.text_485_6893b1", " stations")),
                         );
-                        ui.label(RichText::new("the longest silent go first").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_487_effdc4", "the longest silent go first")).size(9.5).weak());
                     });
                     ui.end_row();
 
-                    ui.label("Forget a station after");
+                    ui.label(crate::language_plugin::text("panels.vdl2.text_491_cd7122", "Forget a station after"));
                     ui.horizontal(|ui| {
                         ui.add(
                             egui::DragValue::new(&mut cfg.drop_list_s)
                                 .range(30..=21_600)
                                 .suffix(" s"),
                         );
-                        ui.label(RichText::new("with nothing heard from it").size(9.5).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_498_b1a473", "with nothing heard from it")).size(9.5).weak());
                     });
                     ui.end_row();
 
-                    ui.label("Show unread payloads");
+                    ui.label(crate::language_plugin::text("panels.vdl2.text_502_bb20a9", "Show unread payloads"));
                     ui.horizontal(|ui| {
-                        ui.checkbox(&mut cfg.show_other, "as hex");
+                        ui.checkbox(&mut cfg.show_other, crate::language_plugin::text("panels.vdl2.text_504_4cd38b", "as hex"));
                     });
                     ui.end_row();
                     ui.label("");
                     ui.label(
                         RichText::new(
-                            "Frames carrying X.25, CLNP or the datalink applications above \
+                            crate::language_plugin::text("panels.vdl2.text_510_cbcb72", "Frames carrying X.25, CLNP or the datalink applications above \
                              them. SDRoxide names them and shows the bytes rather than \
                              reading them, and hiding them would hide how much of the \
-                             traffic that is.",
+                             traffic that is."),
                         )
                         .size(10.0)
                         .weak(),
@@ -621,20 +611,12 @@ fn vdl2_card(ui: &mut egui::Ui, m: &Vdl2Message, h: f32) {
                 );
                 ui.label(RichText::new(m.frame.label()).monospace().size(10.5));
                 ui.label(
-                    RichText::new(if m.command { "command" } else { "response" }).size(10.0).weak(),
+                    RichText::new(if m.command { crate::language_plugin::text("panels.vdl2.text_624_5d347f", "command") } else { crate::language_plugin::text("panels.vdl2.text_624_a9f4b3", "response") }).size(10.0).weak(),
                 );
             });
             ui.label(
-                RichText::new(format!(
-                    "{:.3} MHz · {:.0} dB SNR · {:.0} dBFS · EVM {:.1}° · \
-                     {:+.0} Hz · {} RS symbols fixed",
-                    m.freq_hz / 1e6,
-                    m.snr_db,
-                    m.rssi_dbfs,
-                    m.evm_deg,
-                    m.freq_err_hz,
-                    m.rs_corrected
-                ))
+                RichText::new({ let __lp_arg_0 = &(m.freq_hz / 1e6); let __lp_arg_1 = &(m.snr_db); let __lp_arg_2 = &(m.rssi_dbfs); let __lp_arg_3 = &(m.evm_deg); let __lp_arg_4 = &(m.freq_err_hz); let __lp_arg_5 = &(m.rs_corrected); crate::language_plugin::format("panels.vdl2.text_629_263d33", "{:.3} MHz · {:.0} dB SNR · {:.0} dBFS · EVM {:.1}° · \
+                     {:+.0} Hz · {} RS symbols fixed", &[format!("{:.3}", __lp_arg_0), format!("{:.0}", __lp_arg_1), format!("{:.0}", __lp_arg_2), format!("{:.1}", __lp_arg_3), format!("{:+.0}", __lp_arg_4), format!("{}", __lp_arg_5)]) })
                 .size(9.5)
                 .weak(),
             );
@@ -645,26 +627,26 @@ fn vdl2_card(ui: &mut egui::Ui, m: &Vdl2Message, h: f32) {
                     egui::Grid::new("vdl2-acars").num_columns(2).spacing([10.0, 3.0]).show(
                         ui,
                         |ui| {
-                            kv(ui, "Registration", &a.registration);
-                            kv(ui, "Flight", &a.flight);
-                            kv(ui, "Label", &a.label);
-                            kv(ui, "Block", &a.block_id.to_string());
-                            kv(ui, "Sequence", &a.msn);
-                            kv(ui, "Mode", &a.mode.to_string());
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_648_c793e0", "Registration"), &a.registration);
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_649_d839f0", "Flight"), &a.flight);
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_650_0e6637", "Label"), &a.label);
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_651_211d0b", "Block"), &a.block_id.to_string());
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_652_0740f4", "Sequence"), &a.msn);
+                            kv(ui, crate::language_plugin::text("panels.vdl2.text_653_5e23ec", "Mode"), &a.mode.to_string());
                             if a.more {
-                                kv(ui, "", "more blocks follow");
+                                kv(ui, "", crate::language_plugin::text("panels.vdl2.text_655_b180c3", "more blocks follow"));
                             }
                             kv(
                                 ui,
-                                "Check",
+                                crate::language_plugin::text("panels.vdl2.text_659_9d6084", "Check"),
                                 if a.crc_ok {
-                                    "message CRC good"
+                                    crate::language_plugin::text("panels.vdl2.text_661_0a4275", "message CRC good")
                                 } else {
-                                    "message CRC not checked"
+                                    crate::language_plugin::text("panels.vdl2.text_663_39dea1", "message CRC not checked")
                                 },
                             );
                             if a.parity_errors > 0 {
-                                kv(ui, "Parity", &format!("{} characters", a.parity_errors));
+                                kv(ui, crate::language_plugin::text("panels.vdl2.text_667_717ef1", "Parity"), &{ let __lp_arg_0 = &(a.parity_errors); crate::language_plugin::format("panels.vdl2.text_667_39fc1b", "{} characters", &[format!("{}", __lp_arg_0)]) });
                             }
                         },
                     );
@@ -687,12 +669,8 @@ fn vdl2_card(ui: &mut egui::Ui, m: &Vdl2Message, h: f32) {
                     );
                     if x.unknown > 0 {
                         ui.label(
-                            RichText::new(format!(
-                                "{} parameter{} SDRoxide does not read — shown above as \
-                                 identifier and bytes",
-                                x.unknown,
-                                if x.unknown == 1 { "" } else { "s" }
-                            ))
+                            RichText::new({ let __lp_arg_0 = &(x.unknown); let __lp_arg_1 = &(crate::language_plugin::plural_suffix("window.vdl2.text_691_db005a", "{} parameter{} SDRoxide does not read — shown above as identifier and bytes", x.unknown == 1)); crate::language_plugin::format("window.vdl2.text_691_db005a", "{} parameter{} SDRoxide does not read — shown above as \
+                                 identifier and bytes", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                             .size(9.5)
                             .weak(),
                         );
@@ -703,17 +681,19 @@ fn vdl2_card(ui: &mut egui::Ui, m: &Vdl2Message, h: f32) {
                     ui.label(RichText::new(hex).monospace().size(9.5).weak());
                 }
                 Vdl2Payload::None => {
-                    ui.label(RichText::new("link control, no payload").size(10.5).weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_706_35cce8", "link control, no payload")).size(10.5).weak());
                 }
             }
 
             ui.add_space(4.0);
-            ui.label(RichText::new("frame").size(9.0).weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.vdl2.text_711_9dff50", "frame")).size(9.0).weak());
             ui.label(RichText::new(&m.raw_hex).monospace().size(9.0).color(theme::gray(110)));
         });
 }
 
-fn kv(ui: &mut egui::Ui, k: &str, v: &str) {
+fn kv(ui: &mut egui::Ui, k: impl AsRef<str>, v: impl AsRef<str>) {
+    let k = k.as_ref();
+    let v = v.as_ref();
     if v.trim().is_empty() {
         return;
     }
@@ -748,14 +728,14 @@ fn station_head_row(ui: &mut egui::Ui, sort: &mut Vdl2Sort, desc: &mut bool) {
     crate::app::panels::widgets::sort_head_row(
         ui,
         &[
-            (cols.name, L, "NAME", Some(Vdl2Sort::Name)),
-            (cols.addr, L, "ADDR", Some(Vdl2Sort::Address)),
+            (cols.name, L, &crate::language_plugin::text("panels.vdl2.sort_headers.text_751_eaa589", "NAME"), Some(Vdl2Sort::Name)),
+            (cols.addr, L, &crate::language_plugin::text("panels.vdl2.sort_headers.text_752_6418e1", "ADDR"), Some(Vdl2Sort::Address)),
             // Ground station or aircraft, which is two values: an order on it
             // would be a grouping, and the address column already gives one.
-            (cols.kind, L, "TYPE", None),
-            (cols.msgs, R, "MSGS", Some(Vdl2Sort::Messages)),
-            (cols.sig, R, "SIG", Some(Vdl2Sort::Signal)),
-            (cols.age, R, "AGE", Some(Vdl2Sort::Heard)),
+            (cols.kind, L, &crate::language_plugin::text("panels.vdl2.sort_headers.text_755_a90bab", "TYPE"), None),
+            (cols.msgs, R, &crate::language_plugin::text("panels.vdl2.sort_headers.text_756_549811", "MSGS"), Some(Vdl2Sort::Messages)),
+            (cols.sig, R, &crate::language_plugin::text("panels.vdl2.sort_headers.text_757_cc7109", "SIG"), Some(Vdl2Sort::Signal)),
+            (cols.age, R, &crate::language_plugin::text("panels.vdl2.sort_headers.text_758_ab864b", "AGE"), Some(Vdl2Sort::Heard)),
         ],
         sort,
         desc,
@@ -989,4 +969,66 @@ mod tests {
             }
         }
     }
+}
+
+#[cfg(test)]
+mod language_header_render_tests {
+    use super::*;
+    #[test]
+    fn localized_column_headers_render_without_changing_sort_state() {
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            for width in [400.0,600.0,1000.0] {
+                let ctx=egui::Context::default();
+                let mut fonts=egui::FontDefinitions::default();
+                crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let mut sort=Vdl2Sort::Name;let before=sort;let mut desc=false;
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,100.0))),..Default::default()},|ui| {station_head_row(ui, &mut sort, &mut desc);});
+                let texts:Vec<String>=output.shapes.iter().filter_map(|shape|match &shape.shape {
+                    egui::epaint::Shape::Text(text)=>Some(text.galley.job.text.clone()),_=>None
+                }).collect();
+                output.drop_without_applying_deltas();
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"名称"} else {"NAME"})),"{texts:?}");
+                assert!(texts.iter().any(|text|text.starts_with(if enabled {"时龄"} else {"AGE"})),"{texts:?}");
+                assert_eq!(sort,before);assert!(!desc);
+            }
+        }
+    }
+}
+
+/// The number abbreviation remains count()'s original output; only its caption changes.
+fn vdl2_counter_face(source: &str, n: u64) -> String {
+    let translated = crate::language_plugin::scope_text("shell.app_panels_vdl2.", source);
+    sdroxide_language_pack::render(&translated, &[count(n)])
+        .unwrap_or_else(|_| source.replace("{}", &count(n)))
+}
+/// Keep each column stable for current counts, including longer Chinese captions.
+fn vdl2_counter_width(ui: &egui::Ui, minimum: f32, face: &str) -> f32 {
+    let measured = ui.painter().layout_no_wrap(face.to_owned(), egui::FontId::monospace(10.0), theme::CYAN()).size().x;
+    minimum.max(measured + 2.0)
+}
+
+#[cfg(test)]
+mod language_counter_tests {
+ use super::*;
+ #[test]
+ fn vdl2_counters_draw_chinese_and_restore_numeric_english_without_clipping() {
+  for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+   for width in [360.0,600.0,1000.0] {
+    let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+    let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,700.0))),..Default::default()},|ui| {
+     for (source,zh,w) in [("{} frames","帧",70.0),("{} bursts","突发",70.0),("{} sync","同步",62.0),("{} bad FCS","FCS 错误",68.0)] {
+      for n in [0,1,999,1000,999999,1_000_000_000,u64::MAX] {
+       let face=vdl2_counter_face(source,n);let raw=count(n);
+       assert_eq!(face,if enabled {format!("{raw} {zh}")} else {source.replace("{}",&raw)});
+       slot(ui,vdl2_counter_width(ui,w,&face),&face,theme::CYAN());
+      }
+     }
+    });
+    let rendered:Vec<_>=output.shapes.iter().filter_map(|s|if let egui::epaint::Shape::Text(t)=&s.shape {Some((t.galley.job.text.clone(),t.galley.size().x,s.clip_rect.width()))} else {None}).collect();
+    assert_eq!(rendered.len(),28);for (_,text_width,clip) in &rendered {assert!(*text_width<=*clip,"{text_width}>{clip}");}
+    output.drop_without_applying_deltas();
+   }
+  }
+ }
 }

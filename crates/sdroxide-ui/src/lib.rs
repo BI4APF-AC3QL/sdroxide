@@ -31,6 +31,7 @@ mod input;
 /// Which layout the window wears — desktop strip, tablet menus, or the compact
 /// phone strip — and the metrics that follow from it.
 pub mod layout;
+mod language_plugin;
 mod login;
 mod login_globe;
 /// Multi-radio shell: one window, one radio per tab. Native-only — the

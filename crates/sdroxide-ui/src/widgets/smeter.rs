@@ -174,90 +174,69 @@ pub fn hover_text(meters: Option<&Meters>) -> String {
     let mut out = String::new();
     if let Some(tx) = meters.and_then(|m| m.tx.as_ref()) {
         out.push_str(
-            "ALC — how hard the transmitter is being driven, as a percentage of the most it \
+            &crate::language_plugin::text("widgets.smeter.dynamic.text_177_9d842b", "ALC — how hard the transmitter is being driven, as a percentage of the most it \
              can put out. 100 % is full scale, not full power in watts: what that is worth at \
-             the antenna depends on the radio and on Drive.",
+             the antenna depends on the radio and on Drive."),
         );
         match tx.fwd_w {
-            Some(w) => out.push_str(&format!(
-                "\n\nForward power — {w:.1} W, measured by the radio's own sensor.",
-            )),
+            Some(w) => out.push_str(&crate::language_plugin::format("widgets.smeter.dynamic.text_183_c12fd5", "\n\nForward power — {w:.1} W, measured by the radio's own sensor.", &[format!("{w:.1}")])),
             None => out.push_str(
-                "\n\nThis radio reports no forward power, so the figure beside ALC is the \
-                 ALC reading again rather than watts.",
+                &crate::language_plugin::text("widgets.smeter.dynamic.text_186_32b131", "\n\nThis radio reports no forward power, so the figure beside ALC is the \
+                 ALC reading again rather than watts."),
             ),
         }
         if let Some(po) = tx.po {
-            out.push_str(&format!(
-                "\n\nPO — the radio's own power-output meter, at {:.0} % of its full scale. A \
+            out.push_str(&{ let __lp_arg_0 = &(po.clamp(0.0, 1.0) * 100.0); crate::language_plugin::format("widgets.smeter.dynamic.text_192_d232e9", "\n\nPO — the radio's own power-output meter, at {:.0} % of its full scale. A \
                  needle position as the radio reports it, not a calibrated wattage; what to \
-                 watch is whether it falls while Drive stays put.",
-                po.clamp(0.0, 1.0) * 100.0,
-            ));
+                 watch is whether it falls while Drive stays put.", &[format!("{:.0}", __lp_arg_0)]) });
         }
         match tx.swr {
-            Some(swr) => out.push_str(&format!(
-                "\n\nSWR — {swr:.1}:1, the match the antenna is presenting, as the radio \
-                 measures it. Under 2:1 is unremarkable; past 3:1 the scale turns red.",
-            )),
+            Some(swr) => out.push_str(&crate::language_plugin::format("widgets.smeter.dynamic.text_200_f945e4", "\n\nSWR — {swr:.1}:1, the match the antenna is presenting, as the radio \
+                 measures it. Under 2:1 is unremarkable; past 3:1 the scale turns red.", &[format!("{swr:.1}")])),
             None => out.push_str(
-                "\n\nNo SWR: this radio has no bridge to measure it with, and sdroxide will \
+                &crate::language_plugin::text("widgets.smeter.dynamic.text_204_b57219", "\n\nNo SWR: this radio has no bridge to measure it with, and sdroxide will \
                  not invent one — it can only show what the radio itself reports. A rig with \
                  an SWR meter (over CAT, TCI or a LAN link) and an HPSDR board both fill this \
-                 in; a plain SDR transmitter cannot.",
+                 in; a plain SDR transmitter cannot."),
             ),
         }
         return out;
     }
 
     let Some(m) = meters else {
-        return "No signal report yet — the receiver has not delivered a meter reading.".into();
+        return crate::language_plugin::text("widgets.smeter.dynamic.text_214_f966d5", "No signal report yet — the receiver has not delivered a meter reading.").into();
     };
     let (s, over) = m.s_units();
     if over > 0.0 {
-        out.push_str(&format!(
-            "Received signal strength: S9 + {over:.0} dB ({:.0} dBm in the passband).",
-            m.s_dbm,
-        ));
+        out.push_str(&{ let __lp_arg_0 = &(m.s_dbm); crate::language_plugin::format("widgets.smeter.dynamic.text_219_f249da", "Received signal strength: S9 + {over:.0} dB ({:.0} dBm in the passband).", &[format!("{over:.0}"), format!("{:.0}", __lp_arg_0)]) });
     } else {
-        out.push_str(&format!(
-            "Received signal strength: S{s} ({:.0} dBm in the passband).",
-            m.s_dbm,
-        ));
+        out.push_str(&{ let __lp_arg_0 = &(m.s_dbm); crate::language_plugin::format("widgets.smeter.dynamic.text_224_ca70d7", "Received signal strength: S{s} ({:.0} dBm in the passband).", &[format!("{s}"), format!("{:.0}", __lp_arg_0)]) });
     }
     out.push_str(
-        "\n\nS9 is −73 dBm and each S-unit below it is 6 dB. The dBm figure is only as \
+        &crate::language_plugin::text("widgets.smeter.dynamic.text_229_fbf3ce", "\n\nS9 is −73 dBm and each S-unit below it is 6 dB. The dBm figure is only as \
          honest as the front end's calibration — an uncalibrated receiver reports dBFS with a \
-         dBm label.",
+         dBm label."),
     );
     if m.adc_overloaded() {
         out.push_str(
-            "\n\nOVLD: the converter is into its rails, so the level shown understates the \
-             signal. Wind the front-end gain back.",
+            &crate::language_plugin::text("widgets.smeter.dynamic.text_235_1c3ae5", "\n\nOVLD: the converter is into its rails, so the level shown understates the \
+             signal. Wind the front-end gain back."),
         );
     }
     if let Some(t) = m.pa_temp_c {
-        out.push_str(&format!("\n\nThe radio reports {t:.0} °C."));
+        out.push_str(&crate::language_plugin::format("widgets.smeter.dynamic.text_240_a9f2a0", "\n\nThe radio reports {t:.0} °C.", &[format!("{t:.0}")]));
     }
     if let Some(ps) = m.puresignal {
         if ps.locked {
-            out.push_str(&format!(
-                "\n\nPS — PureSignal is correcting {:.1} dB of compression{} (the feedback \
-                 matched the transmission at {:.2}).",
-                ps.correction_db,
-                if ps.frozen { ", table held" } else { "" },
-                ps.score,
-            ));
+            out.push_str(&{ let __lp_arg_0 = &(ps.correction_db); let __lp_arg_1 = &(if ps.frozen { crate::language_plugin::text("widgets.smeter.dynamic.text_248_dcba38", ", table held") } else { String::new() }); let __lp_arg_2 = &(ps.score); crate::language_plugin::format("widgets.smeter.dynamic.text_245_39edb4", "\n\nPS — PureSignal is correcting {:.1} dB of compression{} (the feedback \
+                 matched the transmission at {:.2}).", &[format!("{:.1}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{:.2}", __lp_arg_2)]) });
         } else {
-            out.push_str(&format!(
-                "\n\nPS −− — PureSignal is switched on but has not found the transmission in \
+            out.push_str(&{ let __lp_arg_0 = &(ps.score); crate::language_plugin::format("widgets.smeter.dynamic.text_253_7b85e1", "\n\nPS −− — PureSignal is switched on but has not found the transmission in \
                  the feedback path (best match {:.2}), so the transmitter is going out \
                  uncorrected. Check that a sample of the amplifier's output really reaches a \
                  receive input the T/R switch does not take away on transmit, and that its \
                  attenuator is not swallowing it. The loop listens on this receiver only — a \
-                 coupler wired to a second receiver (RX2, ADC2) is never read as the feedback.",
-                ps.score,
-            ));
+                 coupler wired to a second receiver (RX2, ADC2) is never read as the feedback.", &[format!("{:.2}", __lp_arg_0)]) });
         }
     }
     out
@@ -702,7 +681,7 @@ fn reading(meters: Option<&Meters>) -> Reading {
             None => Reading {
                 scale: alc_scale(),
                 frac: tx.alc.clamp(0.0, 1.0),
-                chip: "TX".to_string(),
+                chip: crate::language_plugin::text("boundary25.widgets_smeter.text_705_536939", "TX").to_string(),
                 accent: RED(),
                 right: power,
                 right_strong: true,
@@ -727,7 +706,7 @@ fn reading(meters: Option<&Meters>) -> Reading {
         frac: frac_of(dbm),
         chip: primary,
         accent: if overload { RED() } else { crate::theme::CYAN() },
-        right: if overload { "OVL".to_string() } else { secondary },
+        right: if overload { crate::language_plugin::text("boundary25.widgets_smeter.text_730_751d5e", "OVL").to_string() } else { secondary },
         right_strong: overload,
         right_alert: overload,
     }
@@ -1109,7 +1088,7 @@ fn show_bar(ui: &mut Ui, meters: Option<&Meters>, size: Vec2) -> Response {
             p.text(
                 pos2(rect.left() - 4.0 * k, rect.center().y),
                 Align2::RIGHT_CENTER,
-                text,
+                crate::language_plugin::meter_row_display(text),
                 FontId::monospace(9.5 * k),
                 SUBDUED(),
             );
@@ -1453,5 +1432,42 @@ mod tests {
         }
         assert_eq!(seen.len(), 3, "the desktop cycle lost a face: {seen:?}");
         assert_eq!(s, SmeterStyle::default(), "the cycle should come back round");
+    }
+}
+
+#[cfg(test)]
+mod meter_language_tests25 {
+    use super::*;
+    fn baseline_meters() -> Meters {
+        Meters{s_dbm:-80.0,adc_peak_dbfs:-15.0,pa_temp_c:None,adc_clip:0.0,adc_overload:None,tx:None,stereo:false,tone:None,passband_dbfs:-70.0,puresignal:None}
+    }
+
+    #[test]
+    fn localized_meter_readouts_preserve_telemetry_scales_and_alert_thresholds() {
+        let tx=Meters{tx:Some(sdroxide_types::TxMeters{fwd_w:Some(12.3),swr:None,alc:0.45,po:Some(0.5)}),..baseline_meters()};
+        let overload=Meters{s_dbm:-60.0,adc_clip:0.5,..baseline_meters()};
+        let tx_before=serde_json::to_value(&tx).unwrap();let ov_before=serde_json::to_value(&overload).unwrap();
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            let t=reading(Some(&tx));assert_eq!(t.chip,if enabled{"发射"}else{"TX"});assert_eq!(t.right,"12.3 W");assert_eq!(t.frac,0.45);assert!(!t.right_alert);
+            let o=reading(Some(&overload));assert_eq!(o.right,if enabled{"过载"}else{"OVL"});assert!(o.right_alert);assert!(o.right_strong);
+            assert_eq!(serde_json::to_value(&tx).unwrap(),tx_before);assert_eq!(serde_json::to_value(&overload).unwrap(),ov_before);
+            assert_eq!(crate::language_plugin::meter_row_display("PO"),if enabled{"功率"}else{"PO"});
+            for raw in ["SWR","ALC","NewMeter",""] {assert_eq!(crate::language_plugin::meter_row_display(raw),raw);}
+        }
+    }
+    #[test]
+    fn simulated_meter_labels_draw_in_all_faces_without_device_or_transmit_operations() {
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            for style in [SmeterStyle::Needle,SmeterStyle::Bar,SmeterStyle::Trace] {
+                for tx in [true,false] {
+                    let meters=if tx {Meters{tx:Some(sdroxide_types::TxMeters{fwd_w:Some(1.5),swr:None,alc:0.3,po:Some(0.5)}),..baseline_meters()}}else{Meters{adc_clip:0.5,s_dbm:-60.0,..baseline_meters()}};
+                    let ctx=eframe::egui::Context::default();let mut fonts=eframe::egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                    let output=ctx.run_ui(eframe::egui::RawInput{screen_rect:Some(Rect::from_min_size(Pos2::ZERO,vec2(360.0,100.0))),..Default::default()},|ui|{show(ui,Some(&meters),style);});
+                    let texts:Vec<_>=output.shapes.iter().filter_map(|s|if let Shape::Text(t)=&s.shape{Some(t.galley.job.text.clone())}else{None}).collect();
+                    let expected=if tx{if enabled{"发射"}else{"TX"}}else{if enabled{"过载"}else{"OVL"}};assert!(texts.iter().any(|s|s.contains(expected)),"{texts:?}");
+                    output.drop_without_applying_deltas();
+                }
+            }
+        }
     }
 }

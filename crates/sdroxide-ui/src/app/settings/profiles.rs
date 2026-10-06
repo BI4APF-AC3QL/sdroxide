@@ -27,7 +27,7 @@ pub(in crate::app) fn settings_profiles_tab(
     use crate::theme;
 
     ui.label(
-        RichText::new("Profiles: the station's saved setups")
+        RichText::new(crate::language_plugin::text("settings.profiles.profiles_the_station_s_saved_setups", "Profiles: the station's saved setups"))
             .size(14.0)
             .strong()
             .color(theme::CYAN()),
@@ -35,53 +35,51 @@ pub(in crate::app) fn settings_profiles_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "A profile captures the whole working setup — the dials and VFOs, the mode \
+            crate::language_plugin::text("settings.profiles.a_profile_captures_the_whole_working_setup_the_dials", "A profile captures the whole working setup — the dials and VFOs, the mode \
              and filters, the gains, drive and antennas, your callsign and message \
              templates, and the per-band registers — and applies it back in one click. \
              The hardware (back end, audio devices, converters) is deliberately left \
-             alone: a profile is the way you work the station, not the radio it runs on.",
+             alone: a profile is the way you work the station, not the radio it runs on."),
         )
         .weak(),
     );
     ui.add_space(10.0);
 
-    ui.label(RichText::new("Save the current setup").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.profiles.save_the_current_setup", "Save the current setup")).strong());
     ui.horizontal(|ui| {
         crate::chrome::field(
             ui,
-            egui::TextEdit::singleline(io.profile_name).hint_text("profile name"),
+            egui::TextEdit::singleline(io.profile_name).hint_text(crate::language_plugin::text("settings.profiles.profile_name", "profile name")),
         );
-        if !io.profile_name.trim().is_empty() && ui.button("Save").clicked() {
+        if !io.profile_name.trim().is_empty() && ui.button(crate::language_plugin::text("settings.profiles.save", "Save")).clicked() {
             cmds.push(Command::ProfileSave(io.profile_name.trim().to_string()));
             io.profile_name.clear();
         }
     });
     ui.label(
         RichText::new(
-            "Applies to whatever sdroxide is attached to: dials and VFOs, mode and \
+            crate::language_plugin::text("settings.profiles.applies_to_whatever_sdroxide_is_attached_to_dials_and", "Applies to whatever sdroxide is attached to: dials and VFOs, mode and \
              filters, levels, gains, drive, antennas, the digital identity and the band \
-             stacks.",
+             stacks."),
         )
         .weak(),
     );
     ui.add_space(12.0);
 
     if profiles.is_empty() {
-        ui.label(RichText::new("No profiles saved yet — name one above and press Save.").weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.profiles.no_profiles_saved_yet_name_one_above_and_press", "No profiles saved yet — name one above and press Save.")).weak());
         return;
     }
 
-    ui.label(RichText::new("Saved profiles").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.profiles.saved_profiles", "Saved profiles")).strong());
     ui.add_space(4.0);
     for name in profiles {
         ui.horizontal(|ui| {
             ui.label(RichText::new(name).strong());
             if ui
-                .button("Apply")
-                .on_hover_text(format!(
-                    "Put the station back onto \u{201c}{name}\u{201d}: dials, VFOs, mode, filters, \
-                 gains, drive, antennas, identity and band stacks."
-                ))
+                .button(crate::language_plugin::text("settings.profiles.apply", "Apply"))
+                .on_hover_text(crate::language_plugin::format("settings.profiles.put_the_station_back_onto_name_dials_vfos_mode", "Put the station back onto \u{201c}{name}\u{201d}: dials, VFOs, mode, filters, \
+                 gains, drive, antennas, identity and band stacks.", &[format!("{name}")]))
                 .clicked()
             {
                 cmds.push(Command::ProfileApply(name.clone()));
@@ -90,7 +88,7 @@ pub(in crate::app) fn settings_profiles_tab(
                 // would put the old callsign back.
                 *io.digi_reseed = true;
             }
-            if ui.button("✕").on_hover_text(format!("Delete \u{201c}{name}\u{201d}")).clicked() {
+            if ui.button("✕").on_hover_text(crate::language_plugin::format("settings.profiles.delete_name", "Delete \u{201c}{name}\u{201d}", &[format!("{name}")])).clicked() {
                 cmds.push(Command::ProfileDelete(name.clone()));
             }
         });

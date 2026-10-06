@@ -30,7 +30,7 @@ const NO_ANSWER_YET: &str = "Waiting for the machine the radio is attached to: t
 fn probe_only<R>(ui: &mut egui::Ui, can_probe: bool, add: impl FnOnce(&mut egui::Ui) -> R) {
     let group = ui.add_enabled_ui(can_probe, add);
     if !can_probe {
-        group.response.on_hover_text(NO_ANSWER_YET);
+        group.response.on_hover_text(crate::language_plugin::text("boundaries.app.settings.radio.text_25_f63475", NO_ANSWER_YET));
     }
 }
 
@@ -55,8 +55,8 @@ fn radio_antenna_row(
     if ports.len() < 2 {
         return;
     }
-    ui.label("Antenna").on_hover_text(
-        "Which socket on the back the radio is using — its own ANT command, the \
+    ui.label(crate::language_plugin::text("settings.radio.antenna", "Antenna")).on_hover_text(
+        crate::language_plugin::text("settings.radio.text_59_4cc9b8", "Which socket on the back the radio is using — its own ANT command, the \
          same setting as the ANT button on the front panel.\n\n\
          Applies immediately, and it is the radio's setting rather than a copy \
          kept here: the socket the radio is on is read back when the session \
@@ -64,7 +64,7 @@ fn radio_antenna_row(
          The choice is remembered per band. Switch to the beam on 2 m and the \
          wire on 40, and each comes back the next time the dial crosses into \
          that band — and the next time sdroxide starts. A memory channel \
-         stored here carries its socket too.",
+         stored here carries its socket too."),
     );
     let shown = if antenna_rx.is_empty() { "—" } else { antenna_rx };
     ComboBox::from_id_salt(id).selected_text(shown).show_styled(ui, |ui| {
@@ -99,8 +99,8 @@ fn radio_rx_antenna_row(
     if !caps.is_some_and(|c| c.has_rx_antenna) {
         return;
     }
-    ui.label("Receive antenna").on_hover_text(
-        "The radio's separate receiving antenna — RX ANT on the back — switched \
+    ui.label(crate::language_plugin::text("settings.radio.receive_antenna", "Receive antenna")).on_hover_text(
+        crate::language_plugin::text("settings.radio.text_103_a2a62b", "The radio's separate receiving antenna — RX ANT on the back — switched \
          into the receive path or out of it. Its own setting, the same one as \
          the radio's RX ANT button.\n\n\
          The aerial on the main socket stays on transmit either way: this is an \
@@ -109,10 +109,10 @@ fn radio_rx_antenna_row(
          Unlike the antenna above, this is *not* remembered here. The radio \
          holds it per band itself, so sdroxide reads it back after every band \
          change and shows what the radio says; ticking this box is the only \
-         thing that moves it.",
+         thing that moves it."),
     );
     let mut on = rx_antenna;
-    if ui.checkbox(&mut on, "In the receive path").changed() {
+    if ui.checkbox(&mut on, crate::language_plugin::text("common.in_the_receive_path", "In the receive path")).changed() {
         cmds.push(Command::SetRxAntenna(on));
     }
     ui.end_row();
@@ -133,8 +133,8 @@ fn radio_power_row(
     if !caps.is_some_and(|c| c.commands_rig_power) {
         return;
     }
-    ui.label("Radio power").on_hover_text(
-        "Switch the radio itself off, and back on again, over the control \
+    ui.label(crate::language_plugin::text("settings.radio.radio_power", "Radio power")).on_hover_text(
+        crate::language_plugin::text("settings.radio.text_137_e1fa78", "Switch the radio itself off, and back on again, over the control \
          link. This is the one true on/off in the program — not sdroxide's own \
          LINK switch, which closes sdroxide's end and leaves the radio \
          running.\n\n\
@@ -147,13 +147,13 @@ fn radio_power_row(
          power-on.\n\n\
          Switching off ends the audio and the meters — there is no radio \
          behind them — and sdroxide keeps the control link open so the \
-         switch back on has somewhere to go.",
+         switch back on has somewhere to go."),
     );
     ui.horizontal(|ui| {
-        if ui.button("On").clicked() {
+        if ui.button(crate::language_plugin::text("settings.radio.on", "On")).clicked() {
             cmds.push(Command::SetRigPower(true));
         }
-        if ui.button("Off").clicked() {
+        if ui.button(crate::language_plugin::text("settings.radio.off", "Off")).clicked() {
             cmds.push(Command::SetRigPower(false));
         }
     });
@@ -184,7 +184,7 @@ pub(in crate::app) fn settings_cat_tab(
         RS_HFIQ_CAT_BAUD, SoundFormat, StopBits, TrUsdxAudio,
     };
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_187_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     egui::Grid::new("cat-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
@@ -195,28 +195,28 @@ pub(in crate::app) fn settings_cat_tab(
         let format_before = cfg.cat.format;
         let family_before = cfg.cat.family;
 
-        ui.label("Sound format");
+        ui.label(crate::language_plugin::text("settings.radio.sound_format", "Sound format"));
         enum_combo(ui, "sfmt", &mut cfg.cat.format, &SoundFormat::ALL, SoundFormat::label);
         ui.end_row();
 
         // Only meaningful for I/Q: demod audio is a real signal, with no
         // sideband to swap.
         if matches!(cfg.cat.format, SoundFormat::Iq) {
-            ui.label("Invert spectrum");
-            crate::chrome::checkbox(ui, &mut cfg.cat.invert_spectrum, "Swap I/Q").on_hover_text(
-                "Mirror the panadapter about the tuned frequency, for a rig that \
+            ui.label(crate::language_plugin::text("settings.radio.invert_spectrum", "Invert spectrum"));
+            crate::chrome::checkbox(ui, &mut cfg.cat.invert_spectrum, crate::language_plugin::text("common.swap_i_q", "Swap I/Q")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_207_6aae99", "Mirror the panadapter about the tuned frequency, for a rig that \
                  carries I and Q the other way round on its sound card. The \
                  giveaway is a waterfall full of convincing signals that are all \
                  on the wrong side of the dial, with SSB coming out on the \
                  opposite sideband — swapping the two cables at the sound card \
                  would fix it just as well.\n\n\
                  Receive only: transmit hands the radio one real audio signal, \
-                 which has no sideband to invert.",
+                 which has no sideband to invert."),
             );
             ui.end_row();
 
-            ui.label("I/Q sample rate").on_hover_text(
-                "How fast the radio's I/Q sound card is run — and so how much \
+            ui.label(crate::language_plugin::text("settings.radio.i_q_sample_rate", "I/Q sample rate")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_219_e4805e", "How fast the radio's I/Q sound card is run — and so how much \
                  band the panadapter shows, because a quadrature stream spans \
                  its whole sample rate: 48 kHz gives ±24 kHz either side of the \
                  dial, 192 kHz gives ±96.\n\n\
@@ -228,7 +228,7 @@ pub(in crate::app) fn settings_cat_tab(
                  less time to empty it, and one that cannot keep up drops \
                  samples. That shows up as audio breaking up while the waterfall \
                  still looks perfect, and it too is logged. If you see it, come \
-                 back down a step.",
+                 back down a step."),
             );
             // Labelled with the span each rate buys as well as the rate itself:
             // the width is the reason to touch this, and it is the half of it
@@ -244,8 +244,8 @@ pub(in crate::app) fn settings_cat_tab(
             });
             ui.end_row();
 
-            ui.label("I/Q centre offset").on_hover_text(
-                "How far the radio's I/Q output is centred above its own dial, \
+            ui.label(crate::language_plugin::text("settings.radio.i_q_centre_offset", "I/Q centre offset")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_248_b30e6c", "How far the radio's I/Q output is centred above its own dial, \
                  for a rig whose receive I.F. has been moved off zero — on an \
                  Elecraft, MENU:RX SHFT set to 8.0 instead of NOR, which takes \
                  the dial off the mixer's DC spike (and stops a strong nearby \
@@ -256,7 +256,7 @@ pub(in crate::app) fn settings_cat_tab(
                  shifted back onto the dial as it arrives.\n\n\
                  Leave at 0 unless you have turned such a menu entry on. If \
                  signals land twice the offset away, the sign is the other way \
-                 round.",
+                 round."),
             );
             ui.add(
                 DragValue::new(&mut cfg.cat.iq_offset_hz)
@@ -269,8 +269,8 @@ pub(in crate::app) fn settings_cat_tab(
             );
             ui.end_row();
 
-            ui.label("IQ correction").on_hover_text(
-                "Cancel the mirror image of every signal, and the DC spike in \
+            ui.label(crate::language_plugin::text("settings.radio.iq_correction", "IQ correction")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_273_5f826e", "Cancel the mirror image of every signal, and the DC spike in \
                  the middle of the waterfall.\n\n\
                  A radio's I/Q output is two analogue paths that are never \
                  quite equal in gain nor exactly 90° apart, and what that \
@@ -283,13 +283,13 @@ pub(in crate::app) fn settings_cat_tab(
                  Leave it on. Turn it off if you are listening to AM tuned \
                  dead on the carrier — the carrier is DC, so it goes with the \
                  spike — or to check whether a signal is real by watching \
-                 whether it survives.",
+                 whether it survives."),
             );
-            crate::chrome::checkbox(ui, &mut cfg.cat.iq_correction, "Cancel mirror images");
+            crate::chrome::checkbox(ui, &mut cfg.cat.iq_correction, crate::language_plugin::text("common.cancel_mirror_images", "Cancel mirror images"));
             ui.end_row();
 
-            ui.label("DC notch").on_hover_text(
-                "Widen the hole taken out of the middle of the span, for a \
+            ui.label(crate::language_plugin::text("settings.radio.dc_notch", "DC notch")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_292_8a1cbf", "Widen the hole taken out of the middle of the span, for a \
                  radio whose centre spike is broader than the offset \
                  underneath it.\n\n\
                  0 leaves the ordinary blocker, which is a few tens of hertz \
@@ -300,7 +300,7 @@ pub(in crate::app) fn settings_cat_tab(
                  It is centred where the radio's I/Q is centred, which is the \
                  dial unless the offset above has moved it — so anything tuned \
                  there goes too. A CW note at 600 Hz is inside a 600 Hz \
-                 setting.",
+                 setting."),
             );
             ui.add(
                 DragValue::new(&mut cfg.cat.iq_dc_block_hz)
@@ -312,7 +312,7 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if matches!(cfg.cat.format, SoundFormat::DemodAudio) {
-            ui.label("Panadapter BW");
+            ui.label(crate::language_plugin::text("settings.radio.panadapter_bw", "Panadapter BW"));
             ui.add(
                 DragValue::new(&mut cfg.cat.audio_bw_hz)
                     .speed(100.0)
@@ -322,7 +322,7 @@ pub(in crate::app) fn settings_cat_tab(
             ui.end_row();
         }
 
-        ui.label("CAT family");
+        ui.label(crate::language_plugin::text("settings.radio.cat_family", "CAT family"));
         enum_combo(ui, "fam", &mut cfg.cat.family, &CatFamily::ALL, CatFamily::label);
         ui.end_row();
 
@@ -384,8 +384,8 @@ pub(in crate::app) fn settings_cat_tab(
         let serial = !cfg.cat.family.is_network();
 
         if cfg.cat.family == CatFamily::Rigctld {
-            ui.label("rigctld address").on_hover_text(
-                "host:port of a running Hamlib rigctld — 127.0.0.1:4532 is its \
+            ui.label(crate::language_plugin::text("common.rigctld_address", "rigctld address")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_388_347ae2", "host:port of a running Hamlib rigctld — 127.0.0.1:4532 is its \
                  own default, on this machine.\n\n\
                  Start one with, for example, \
                  `rigctld -m 2028 -r /dev/ttyUSB0 -s 38400`, where -m is the \
@@ -394,7 +394,7 @@ pub(in crate::app) fn settings_cat_tab(
                  power, S-meter and SWR and nothing else. Where one of the \
                  native families above fits your radio it does more — keying \
                  from the rig's own text buffer, the receive filter, and \
-                 per-model meter scales.",
+                 per-model meter scales."),
             );
             crate::chrome::field(
                 ui,
@@ -406,8 +406,8 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if cfg.cat.family == CatFamily::Flrig {
-            ui.label("flrig address").on_hover_text(
-                "host:port of a running flrig — 127.0.0.1:12345 is its own \
+            ui.label(crate::language_plugin::text("common.flrig_address", "flrig address")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_410_61439a", "host:port of a running flrig — 127.0.0.1:12345 is its own \
                  default, on this machine. flrig serves XML-RPC whenever it is \
                  running; the port is under its Config → Setup → Server.\n\n\
                  Like the Hamlib option this drives a daemon rather than the \
@@ -416,7 +416,7 @@ pub(in crate::app) fn settings_cat_tab(
                  the two. It reaches the frequency, mode, PTT, transmit power \
                  (in whole watts), the receive bandwidth, the S-meter, SWR and \
                  power-out. CW keys through flrig's own cwio port, which must \
-                 be configured in flrig itself.",
+                 be configured in flrig itself."),
             );
             crate::chrome::field(
                 ui,
@@ -428,9 +428,9 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if serial {
-            ui.label("Serial port");
+            ui.label(crate::language_plugin::text("settings.radio.serial_port", "Serial port"));
             let shown = if cfg.cat.serial.path.is_empty() {
-                "— select —".to_string()
+                crate::language_plugin::text("choices.app.settings.radio.text_433_8a3c9e", "— select —").to_string()
             } else {
                 cfg.cat.serial.path.clone()
             };
@@ -453,7 +453,7 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if serial {
-            ui.label("Baud");
+            ui.label(crate::language_plugin::text("settings.radio.baud", "Baud"));
             // Most families take whatever the operator has set at the radio, so
             // the whole spread is offered. An ELAD is the exception: an FDM-DUO's
             // CAT port has four rates and no others, and at any other one the
@@ -488,11 +488,8 @@ pub(in crate::app) fn settings_cat_tab(
                 if !bauds.contains(&cfg.cat.serial.baud) {
                     ui.add(
                         egui::Label::new(
-                            RichText::new(format!(
-                                "the radio has no {} baud setting — {ELAD_DEFAULT_CAT_BAUD} \
-                                 will be used instead",
-                                cfg.cat.serial.baud,
-                            ))
+                            RichText::new({ let __lp_arg_0 = &(cfg.cat.serial.baud); crate::language_plugin::format("settings.radio.text_492_94f379", "the radio has no {} baud setting — {ELAD_DEFAULT_CAT_BAUD} \
+                                 will be used instead", &[format!("{}", __lp_arg_0), format!("{ELAD_DEFAULT_CAT_BAUD}")]) })
                             .color(crate::theme::YELLOW()),
                         )
                         .wrap(),
@@ -501,7 +498,7 @@ pub(in crate::app) fn settings_cat_tab(
             });
             ui.end_row();
 
-            ui.label("Data bits");
+            ui.label(crate::language_plugin::text("settings.radio.data_bits", "Data bits"));
             ComboBox::from_id_salt("databits")
                 .selected_text(cfg.cat.serial.data_bits.to_string())
                 .show_styled(ui, |ui| {
@@ -516,38 +513,38 @@ pub(in crate::app) fn settings_cat_tab(
                 });
             ui.end_row();
 
-            ui.label("Parity");
+            ui.label(crate::language_plugin::text("settings.radio.parity", "Parity"));
             enum_combo(ui, "parity", &mut cfg.cat.serial.parity, &Parity::ALL, Parity::label);
             ui.end_row();
 
-            ui.label("Stop bits");
+            ui.label(crate::language_plugin::text("settings.radio.stop_bits", "Stop bits"));
             enum_combo(ui, "stop", &mut cfg.cat.serial.stop_bits, &StopBits::ALL, StopBits::label);
             ui.end_row();
 
-            ui.label("Force RTS");
+            ui.label(crate::language_plugin::text("settings.radio.force_rts", "Force RTS"));
             enum_combo(ui, "rts", &mut cfg.cat.serial.force_rts, &LineState::ALL, LineState::label);
             ui.end_row();
-            ui.label("Force DTR");
+            ui.label(crate::language_plugin::text("settings.radio.force_dtr", "Force DTR"));
             enum_combo(ui, "dtr", &mut cfg.cat.serial.force_dtr, &LineState::ALL, LineState::label);
             ui.end_row();
         }
 
-        ui.label("PTT method").on_hover_text(if serial {
-            "How transmit is keyed."
+        ui.label(crate::language_plugin::text("settings.radio.ptt_method", "PTT method")).on_hover_text(if serial {
+            crate::language_plugin::text("settings.radio.text_536_f36348", "How transmit is keyed.")
         } else {
-            "How transmit is keyed. A network link has no control lines, so \
+            crate::language_plugin::text("settings.radio.text_538_c97cac", "How transmit is keyed. A network link has no control lines, so \
              DTR and RTS key nothing here — use CAT, which asks the daemon to \
-             key the radio, or VOX."
+             key the radio, or VOX.")
         });
         enum_combo(ui, "ptt", &mut cfg.cat.ptt, &PttMethod::ALL, PttMethod::label);
         ui.end_row();
 
-        ui.label("Mode control");
+        ui.label(crate::language_plugin::text("settings.radio.mode_control", "Mode control"));
         enum_combo(ui, "modectl", &mut cfg.cat.mode_control, &ModeControl::ALL, ModeControl::label);
         ui.end_row();
 
-        ui.label("Digimode mode").on_hover_text(
-            "What to put the radio in for a mode sdroxide modulates through its sound \
+        ui.label(crate::language_plugin::text("settings.radio.digimode_mode", "Digimode mode")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_550_5f488b", "What to put the radio in for a mode sdroxide modulates through its sound \
              card. \"DIGI\" selects the rig's DATA/PKT position, which takes the \
              transmit audio from the USB or ACC input with the microphone path's \
              speech processing out of it; \"USB\" leaves it on the plain sideband, for \
@@ -557,13 +554,13 @@ pub(in crate::app) fn settings_cat_tab(
              and CW sent as \"Sound card\", and it overrides Mode control for them. \
              SSTV is the one whose sideband follows the band, so there it means the \
              DATA position on that sideband: USB-D above 40 m, LSB-D at and below it. \
-             SSTV-FM is not part of it — an FM carrier has no sideband to choose.",
+             SSTV-FM is not part of it — an FM carrier has no sideband to choose."),
         );
         enum_combo(ui, "digimode", &mut cfg.cat.digi_mode, &DigiMode::ALL, DigiMode::label);
         ui.end_row();
 
-        ui.label("CW keying").on_hover_text(
-            "How the CW panel's keyer transmits. \"Rig keyer\" puts the radio in CW \
+        ui.label(crate::language_plugin::text("settings.radio.cw_keying", "CW keying")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_566_d80c4f", "How the CW panel's keyer transmits. \"Rig keyer\" puts the radio in CW \
              and hands it the text to send with its own keyer. It uses the rig's \
              keyer speed (set from the panel's WPM), and on Yaesu \
              it sends by way of keyer memory 1, overwriting whatever was stored in it.\n\n\
@@ -576,13 +573,13 @@ pub(in crate::app) fn settings_cat_tab(
              entirely, selecting CW then follows the Digimode mode setting (USB, DATA, \
              or Radio controlled) instead of switching the rig to CW. Pick \"Radio \
              controlled\" there for rigs whose data position can't be commanded over \
-             CAT (a Xiegu's U-D) and park the rig on it yourself, as for FT8.",
+             CAT (a Xiegu's U-D) and park the rig on it yourself, as for FT8."),
         );
         enum_combo(ui, "cwkey", &mut cfg.cat.cw_keying, &CwKeying::ALL, CwKeying::label);
         ui.end_row();
 
-        ui.label("Poll rate").on_hover_text(
-            "How often the radio is asked what it is doing — its dial, its mode \
+        ui.label(crate::language_plugin::text("settings.radio.poll_rate", "Poll rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_585_9e1702", "How often the radio is asked what it is doing — its dial, its mode \
              and its meters. This is the half of the control link that runs from \
              the radio back to sdroxide: turn the rig's own VFO knob or change \
              its mode on the front panel and the readout, the band and the \
@@ -603,14 +600,14 @@ pub(in crate::app) fn settings_cat_tab(
              without saying so.\n\n\
              The rate is the dial's. The mode rides along with only every \
              fourth poll, since it is a setting that changes a few times in an \
-             evening rather than one that follows a knob.",
+             evening rather than one that follows a knob."),
         );
         ui.add(DragValue::new(&mut cfg.cat.poll_hz).speed(0.5).range(0.5..=20.0).suffix(" Hz"));
         ui.end_row();
 
         if cfg.cat.family == CatFamily::Kenwood {
-            ui.label("Send command").on_hover_text(
-                "Which transceiver generation keys the rig, for PTT method \
+            ui.label(crate::language_plugin::text("settings.radio.send_command", "Send command")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_613_af6529", "Which transceiver generation keys the rig, for PTT method \
                  \"CAT\". The two disagree about what the TX parameter means \
                  and nothing on the wire tells them apart, so pick the one \
                  that matches your radio.\n\n\
@@ -621,7 +618,7 @@ pub(in crate::app) fn settings_cat_tab(
                  rigs the plain send selects the microphone instead and mutes \
                  the audio sdroxide transmits.\n\n\
                  Set wrong, a TS-590 transmits silence — but a TS-2000 \
-                 transmits on the sub-band, which is another band entirely.",
+                 transmits on the sub-band, which is another band entirely."),
             );
             enum_combo(
                 ui,
@@ -634,23 +631,23 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if cfg.cat.family == CatFamily::Elecraft {
-            ui.label("Radio");
+            ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
             ui.label(RichText::new("K3 · K3S · KX3 · KX2 · K4").weak()).on_hover_text(
-                "One profile covers the family: the K3 command set, which the \
+                crate::language_plugin::text("settings.radio.text_639_9845cc", "One profile covers the family: the K3 command set, which the \
                  KX3, KX2 and K4 all answer. There is nothing to pick here — \
                  how many watts the Drive slider spans (12 on a bare KX2 or \
                  KX3, 110 with a KPA3 or a KXPA100) is read from the rig's own \
                  option-module query when the port opens.\n\n\
                  Note the baud rates above: the K3, K3S, KX3 and KX2 go no \
                  faster than 38400, and a rig set below the rate chosen here \
-                 answers nothing at all.",
+                 answers nothing at all."),
             );
             ui.end_row();
         }
 
         if cfg.cat.family == CatFamily::Elad {
-            ui.label("Transmit input").on_hover_text(
-                "Where the radio takes its transmit audio from — the rig's TI \
+            ui.label(crate::language_plugin::text("settings.radio.transmit_input", "Transmit input")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_653_c4b004", "Where the radio takes its transmit audio from — the rig's TI \
                  command, which is menu 32 \"TX IN\" at the front panel. \
                  Asserted when the port opens.\n\n\
                  \"USB audio\" is what makes this interface work: the FDM-DUO \
@@ -660,7 +657,7 @@ pub(in crate::app) fn settings_cat_tab(
                  \"Auto\" lets the rig choose — the microphone for a PTT press \
                  on the microphone, the USB port for a CAT or RTS key-down.\n\n\
                  \"Leave as set on the radio\" sends no TI at all, for an \
-                 operator who sets this at the front panel.",
+                 operator who sets this at the front panel."),
             );
             enum_combo(
                 ui,
@@ -671,8 +668,8 @@ pub(in crate::app) fn settings_cat_tab(
             );
             ui.end_row();
 
-            ui.label("Antenna").on_hover_text(
-                "Which of the two sockets on the back the receiver listens on — \
+            ui.label(crate::language_plugin::text("settings.radio.antenna", "Antenna")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_675_f35698", "Which of the two sockets on the back the receiver listens on — \
                  the rig's AN command, which is menu 31 \"ANTENNAS\" at the \
                  front panel and the \"ANT 1 2\" indicator on its display.\n\n\
                  \"RTX\" is one antenna doing both jobs, on the M-type socket \
@@ -682,12 +679,12 @@ pub(in crate::app) fn settings_cat_tab(
                  transmitter.\n\n\
                  Applies immediately, and is read back from the radio when the \
                  port opens: this is the rig's own setting rather than a copy \
-                 kept here.",
+                 kept here."),
             );
             let shown = if antenna_rx.is_empty() { "—" } else { antenna_rx };
             ComboBox::from_id_salt("cat_elad_antenna").selected_text(shown).show_styled(ui, |ui| {
                 for a in EladAntenna::ALL {
-                    if ui.selectable_label(antenna_rx == a.label(), a.label()).clicked() {
+                    if ui.selectable_label(antenna_rx == a.label(),crate::language_plugin::display_label(a.label())).clicked() {
                         cmds.push(Command::SetAntenna {
                             dir: Direction::Rx,
                             name: a.label().to_string(),
@@ -697,9 +694,9 @@ pub(in crate::app) fn settings_cat_tab(
             });
             ui.end_row();
 
-            ui.label("Radio");
+            ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
             ui.label(RichText::new("FDM-DUO · FDM-DUOr").weak()).on_hover_text(
-                "One profile covers both. There is nothing to pick here — the \
+                crate::language_plugin::text("settings.radio.text_702_50fb1f", "One profile covers both. There is nothing to pick here — the \
                  radio names itself when the port opens.\n\n\
                  This is the CAT half only: it drives the dial, the mode, PTT, \
                  the S-meter, the SWR and the transmit power over the rig's \
@@ -711,15 +708,15 @@ pub(in crate::app) fn settings_cat_tab(
                  match, and it ships at 38400.\n\n\
                  CW is keyed by the radio's own key or paddle. The FDM-DUO has \
                  no command that accepts text, so the CW panel cannot key it \
-                 over CAT.",
+                 over CAT."),
             );
             ui.end_row();
         }
 
         if cfg.cat.family == CatFamily::QrpLabs {
-            ui.label("Radio");
+            ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
             ui.label(RichText::new("QMX · QMX+ · QDX").weak()).on_hover_text(
-                "One profile covers the range: QRP Labs' own command set, which \
+                crate::language_plugin::text("settings.radio.text_722_a4316d", "One profile covers the range: QRP Labs' own command set, which \
                  is a subset of the Kenwood TS-480's with a good deal added. \
                  There is nothing to pick here — the radio names itself and its \
                  firmware version when the port opens, and the version is what \
@@ -733,13 +730,13 @@ pub(in crate::app) fn settings_cat_tab(
                  going into the sound card.\n\n\
                  The receive filter is the radio's too: it reports the width its \
                  mode implies (3.2 kHz in Digi, 300 Hz in CW) and offers nothing \
-                 to change it with.",
+                 to change it with."),
             );
             ui.end_row();
 
             ui.label("");
-            ui.label(RichText::new("Baud rate is ignored — the port is USB").weak()).on_hover_text(
-                "A QMX serves its own virtual COM ports over USB, so the rate \
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.baud_rate_is_ignored_the_port_is_usb", "Baud rate is ignored — the port is USB")).weak()).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_742_50bb8c", "A QMX serves its own virtual COM ports over USB, so the rate \
                  set above has no effect on either end. It offers up to three of \
                  them; if the radio answers nothing, the most likely reason is \
                  the wrong one.\n\n\
@@ -747,15 +744,15 @@ pub(in crate::app) fn settings_cat_tab(
                  it switches the radio into terminal mode for the rest of the \
                  session. sdroxide never sends one — but a terminal program left \
                  open on the same port will, and CAT stops working the moment it \
-                 does.",
+                 does."),
             );
             ui.end_row();
 
             if matches!(cfg.cat.format, SoundFormat::Iq) {
                 ui.label("");
-                ui.label(RichText::new("I/Q mode is switched on at the radio").weak())
+                ui.label(RichText::new(crate::language_plugin::text("settings.radio.i_q_mode_is_switched_on_at_the_radio", "I/Q mode is switched on at the radio")).weak())
                     .on_hover_text(
-                        "The radio's sound card carries either demodulated audio \
+                        crate::language_plugin::text("settings.radio.text_758_0d4e88", "The radio's sound card carries either demodulated audio \
                          or the raw I/Q its ADC sees, and sdroxide asserts \
                          whichever the Sound format above asks for when the port \
                          opens (the radio's Q9 command, the \"IQ mode\" menu \
@@ -773,16 +770,16 @@ pub(in crate::app) fn settings_cat_tab(
                          nothing to add.\n\n\
                          QRP Labs note that I/Q mode is not suitable for WSJT-X \
                          and other programs that expect demodulated audio; here \
-                         the demodulation happens on this side, so it is.",
+                         the demodulation happens on this side, so it is."),
                     );
                 ui.end_row();
             }
         }
 
         if cfg.cat.family == CatFamily::RsHfiq {
-            ui.label("Radio");
-            ui.label(RichText::new("RS-HFIQ (5 W HF transceiver)").weak()).on_hover_text(
-                "HobbyPCB's RS-HFIQ. There is nothing to pick here: the profile \
+            ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.text_784_09c2bf", "RS-HFIQ (5 W HF transceiver)")).weak()).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_785_3528c2", "HobbyPCB's RS-HFIQ. There is nothing to pick here: the profile \
                  is the whole of the radio's command set, and the firmware \
                  version is logged when the port opens.\n\n\
                  The control link carries two things and no more — where to put \
@@ -797,16 +794,16 @@ pub(in crate::app) fn settings_cat_tab(
                  CW is keyed as audio through the transmit chain — this radio \
                  has no keyer that takes text. (It has an internal CW \
                  generator; sdroxide never uses it, on the firmware's own \
-                 advice.)",
+                 advice.)"),
             );
             ui.end_row();
 
             ui.label("");
             ui.label(
-                RichText::new("Sound format, baud and PTT are the radio's, not settings").weak(),
+                RichText::new(crate::language_plugin::text("settings.radio.text_806_e7e063", "Sound format, baud and PTT are the radio's, not settings")).weak(),
             )
             .on_hover_text(
-                "All three have been filled in and none of them is a \
+                crate::language_plugin::text("settings.radio.text_809_20aa43", "All three have been filled in and none of them is a \
                  preference:\n\n\
                  • Sound format is I/Q (stereo) — the card carries complex \
                  baseband and nothing else.\n\
@@ -819,15 +816,15 @@ pub(in crate::app) fn settings_cat_tab(
                  at four times the dial into a quadrature detector, so the \
                  middle of the span is the dial. Set the sample rate above to \
                  whatever your sound card is actually running at; that is what \
-                 makes the panadapter as wide as it is.",
+                 makes the panadapter as wide as it is."),
             );
             ui.end_row();
         }
 
         if cfg.cat.family == CatFamily::TrUsdx {
-            ui.label("Radio");
+            ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
             ui.label(RichText::new("(tr)uSDX · open uSDX").weak()).on_hover_text(
-                "DL2MAN/PE1NNZ's pocket QRP transceiver and the open uSDX firmware \
+                crate::language_plugin::text("settings.radio.text_830_0050c0", "DL2MAN/PE1NNZ's pocket QRP transceiver and the open uSDX firmware \
                  it grew from. It emulates a Kenwood TS-480, but the subset is \
                  thin: the dial, the mode, PTT and RIT/XIT clear are all it \
                  answers. No S-meter, no SWR, no power control, no VFO B, no \
@@ -835,12 +832,12 @@ pub(in crate::app) fn settings_cat_tab(
                  nothing over CAT — the audio level is the only transmit control \
                  there is.\n\n\
                  CW is keyed as audio (MCW) through the sideband, or with the \
-                 key or paddle at the radio; there is no command that takes text.",
+                 key or paddle at the radio; there is no command that takes text."),
             );
             ui.end_row();
 
-            ui.label("Audio").on_hover_text(
-                "A (tr)uSDX has no sound card of its own and two ways to be heard, \
+            ui.label(crate::language_plugin::text("settings.radio.audio", "Audio")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_843_0d07d0", "A (tr)uSDX has no sound card of its own and two ways to be heard, \
                  and which is right is a fact about your shack rather than the radio.\n\n\
                  \"One cable\" takes the audio inside the CAT serial link itself — the \
                  radio's own 8-bit stream, over the same USB cable as the control, with \
@@ -858,7 +855,7 @@ pub(in crate::app) fn settings_cat_tab(
                  the card under Radio audio below.\n\n\
                  Both modes open the port with DTR held high: the serial adapter's DTR \
                  is wired to the radio's reset, so opening the port reboots it and the \
-                 first second or two is quiet while it comes up. DTR is never used to key.",
+                 first second or two is quiet while it comes up. DTR is never used to key."),
             );
             enum_combo(
                 ui,
@@ -871,8 +868,8 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if cfg.cat.family == CatFamily::Icom {
-            ui.label("Radio model").on_hover_text(
-                "Which Icom, for the two things CI-V does not do the same way \
+            ui.label(crate::language_plugin::text("settings.radio.radio_model", "Radio model")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_875_c997ad", "Which Icom, for the two things CI-V does not do the same way \
                  on all of them.\n\n\
                  The transceiver address below is filled in from it: every \
                  model ships with a different one, and a frame sent to the \
@@ -884,7 +881,7 @@ pub(in crate::app) fn settings_cat_tab(
                  out through the microphone input, with the rig's speech \
                  processing and SSB filter in the path.\n\n\
                  \"Other\" leaves the address to you and sends no DATA-mode \
-                 command at all.",
+                 command at all."),
             );
             let before = cfg.cat.icom_model;
             enum_combo(ui, "icommodel", &mut cfg.cat.icom_model, &IcomModel::ALL, IcomModel::label);
@@ -906,7 +903,7 @@ pub(in crate::app) fn settings_cat_tab(
         }
 
         if matches!(cfg.cat.family, CatFamily::Icom | CatFamily::Xiegu) {
-            ui.label("Radio ID (hex)");
+            ui.label(crate::language_plugin::text("settings.radio.radio_id_hex", "Radio ID (hex)"));
             let mut hex = format!("{:02X}", cfg.cat.icom_radio_id);
             let resp =
                 crate::chrome::field(ui, egui::TextEdit::singleline(&mut hex).desired_width(48.0));
@@ -920,9 +917,8 @@ pub(in crate::app) fn settings_cat_tab(
 
         if cfg.cat.family == CatFamily::Icom {
             ui.label("");
-            crate::chrome::checkbox(ui, &mut cfg.cat.scope, "Show the radio's spectrum scope")
-                .on_hover_text(format!(
-                    "Streams the radio's own scope sweep over the CI-V link and draws it \
+            crate::chrome::checkbox(ui, &mut cfg.cat.scope, crate::language_plugin::text("settings.radio.text_923_2bb529", "Show the radio's spectrum scope"))
+                .on_hover_text(crate::language_plugin::format("settings.radio.text_925_78ad85", "Streams the radio's own scope sweep over the CI-V link and draws it \
                      as the panadapter — the only picture of the band a demod-audio rig \
                      can give, since the audio it sends is what already came through its \
                      filter.\n\n\
@@ -933,22 +929,21 @@ pub(in crate::app) fn settings_cat_tab(
                      scope stays off.\n\n\
                      The sweeps share the radio's internal USB bus with its own sound \
                      card. If received audio starts to drop out with the scope on, this \
-                     box is the first thing to try turning off.",
-                ));
+                     box is the first thing to try turning off.", &[format!("{CAT_SCOPE_MIN_BAUD}")]));
             ui.end_row();
 
             if cfg.cat.scope {
-                ui.label("Scope span").on_hover_text(
-                    "How wide to sweep it. The radio keeps whatever span was last chosen \
+                ui.label(crate::language_plugin::text("settings.radio.scope_span", "Scope span")).on_hover_text(
+                    crate::language_plugin::text("settings.radio.text_942_0f8975", "How wide to sweep it. The radio keeps whatever span was last chosen \
                      on its own screen — often a few kHz. Setting a span here also puts \
                      the scope into centre mode, so it follows the dial. It changes the \
-                     radio's own display too; \"As set on the radio\" leaves it alone.",
+                     radio's own display too; \"As set on the radio\" leaves it alone."),
                 );
                 ComboBox::from_id_salt("cat_scope_span")
-                    .selected_text(cfg.cat.scope_span.label())
+                    .selected_text(crate::language_plugin::display_label(cfg.cat.scope_span.label()))
                     .show_styled(ui, |ui| {
                         for sp in IcomScopeSpan::ALL {
-                            if ui.selectable_label(cfg.cat.scope_span == sp, sp.label()).clicked() {
+                            if ui.selectable_label(cfg.cat.scope_span == sp,crate::language_plugin::display_label(sp.label())).clicked() {
                                 cfg.cat.scope_span = sp;
                             }
                         }
@@ -959,7 +954,7 @@ pub(in crate::app) fn settings_cat_tab(
     });
     cat_radio_audio(ui, cfg, radio_audio, can_probe, apply);
     ui.add_space(6.0);
-    ui.label(RichText::new("Press \"Apply / reconnect\" to switch without a restart.").weak());
+    ui.label(RichText::new(crate::language_plugin::text("common.press_apply_reconnect_to_switch_without_a_restart", "Press \"Apply / reconnect\" to switch without a restart.")).weak());
 }
 
 /// The rig's own sound card, and how loud what comes back off it is.
@@ -988,22 +983,22 @@ fn cat_radio_audio(
     ui.add_space(10.0);
     ui.separator();
     ui.add_space(6.0);
-    ui.label(RichText::new("Radio audio (sound card)").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.radio.radio_audio_sound_card", "Radio audio (sound card)")).strong());
     let Some((inputs, outputs)) = devices else {
         ui.label(
-            RichText::new("Waiting for the sound cards on the machine the radio is plugged into.")
+            RichText::new(crate::language_plugin::text("settings.radio.text_994_21cf7a", "Waiting for the sound cards on the machine the radio is plugged into."))
                 .weak(),
         );
         return;
     };
     let (ci, co) = (cfg.radio_audio_in.clone(), cfg.radio_audio_out.clone());
     egui::Grid::new("radio-audio").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("From radio (RX)");
+        ui.label(crate::language_plugin::text("settings.radio.from_radio_rx", "From radio (RX)"));
         probe_only(ui, can_probe, |ui| {
             device_combo(ui, "r-in", inputs, &ci, |n| cfg.radio_audio_in = n)
         });
         ui.end_row();
-        ui.label("To radio (TX)");
+        ui.label(crate::language_plugin::text("settings.radio.to_radio_tx", "To radio (TX)"));
         probe_only(ui, can_probe, |ui| {
             device_combo(ui, "r-out", outputs, &co, |n| cfg.radio_audio_out = n)
         });
@@ -1012,14 +1007,14 @@ fn cat_radio_audio(
     ui.add_space(4.0);
     ui.horizontal(|ui| {
         if ui
-            .button("Apply / reconnect")
-            .on_hover_text("Reopen the CAT rig with these sound cards — no restart")
+            .button(crate::language_plugin::text("settings.radio.apply_reconnect", "Apply / reconnect"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.reopen_the_cat_rig_with_these_sound_cards_no_restart", "Reopen the CAT rig with these sound cards — no restart"))
             .clicked()
         {
             *apply = true;
         }
         ui.add(
-            egui::Label::new(RichText::new("Reconnects the radio without restarting.").weak())
+            egui::Label::new(RichText::new(crate::language_plugin::text("settings.radio.reconnects_the_radio_without_restarting", "Reconnects the radio without restarting.")).weak())
                 .wrap(),
         );
     });
@@ -1038,7 +1033,7 @@ pub(in crate::app) fn settings_usb_audio_tab(
     can_probe: bool,
 ) {
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_1041_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     // The two lists are the cards on the machine the radio is plugged into,
@@ -1046,7 +1041,7 @@ pub(in crate::app) fn settings_usb_audio_tab(
     // but "System default", which reads as a machine with no sound cards.
     let Some((inputs, outputs)) = devices else {
         ui.label(
-            RichText::new("Waiting for the sound cards on the machine the radio is plugged into.")
+            RichText::new(crate::language_plugin::text("settings.radio.text_1049_21cf7a", "Waiting for the sound cards on the machine the radio is plugged into."))
                 .weak(),
         );
         return;
@@ -1056,20 +1051,20 @@ pub(in crate::app) fn settings_usb_audio_tab(
     egui::Grid::new("usb-audio-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
         // Only the combos are greyed: wrapping whole rows would put both of
         // them, `end_row` and all, inside a single cell of the grid.
-        ui.label("Receive (radio → PC)").on_hover_text(
-            "The sound card the radio's own audio comes in on — its headphone \
+        ui.label(crate::language_plugin::text("settings.radio.receive_radio_pc", "Receive (radio → PC)")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1060_9e3228", "The sound card the radio's own audio comes in on — its headphone \
              socket into the computer's line or mic input. Everything on the \
-             panadapter and in the decoders arrives here.",
+             panadapter and in the decoders arrives here."),
         );
         probe_only(ui, can_probe, |ui| {
             device_combo(ui, "ua-in", inputs, &ci, |n| cfg.radio_audio_in = n)
         });
         ui.end_row();
-        ui.label("Transmit (PC → radio mic)").on_hover_text(
-            "The sound card that carries the audio the radio must broadcast — \
+        ui.label(crate::language_plugin::text("settings.radio.transmit_pc_radio_mic", "Transmit (PC → radio mic)")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1069_9764b9", "The sound card that carries the audio the radio must broadcast — \
              the computer's output into the radio's mic socket. The radio keys \
              itself, by VOX, the moment audio arrives here, so this device is \
-             silent unless the radio is being transmitted through.",
+             silent unless the radio is being transmitted through."),
         );
         probe_only(ui, can_probe, |ui| {
             device_combo(ui, "ua-out", outputs, &co, |n| cfg.radio_audio_out = n)
@@ -1079,21 +1074,21 @@ pub(in crate::app) fn settings_usb_audio_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "This radio has no control cable — it keys itself off VOX, so there is no PTT to \
-             command. Transmit is audio into the radio's microphone.",
+            crate::language_plugin::text("settings.radio.text_1082_658e80", "This radio has no control cable — it keys itself off VOX, so there is no PTT to \
+             command. Transmit is audio into the radio's microphone."),
         )
         .weak(),
     );
     ui.horizontal(|ui| {
         if ui
-            .button("Apply / reconnect")
-            .on_hover_text("Reopen the radio with these sound cards — no restart")
+            .button(crate::language_plugin::text("settings.radio.apply_reconnect", "Apply / reconnect"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.reopen_the_radio_with_these_sound_cards_no_restart", "Reopen the radio with these sound cards — no restart"))
             .clicked()
         {
             *apply = true;
         }
         ui.add(
-            egui::Label::new(RichText::new("Reconnects the radio without restarting.").weak())
+            egui::Label::new(RichText::new(crate::language_plugin::text("settings.radio.reconnects_the_radio_without_restarting", "Reconnects the radio without restarting.")).weak())
                 .wrap(),
         );
     });
@@ -1111,30 +1106,30 @@ pub(in crate::app) fn settings_hpsdr_tab(
 ) {
     use sdroxide_types::HpsdrConfig;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_1114_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     egui::Grid::new("hpsdr-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Devices");
+        ui.label(crate::language_plugin::text("settings.radio.devices", "Devices"));
         // The scan goes out on this machine's LAN; the radio is on the
         // engine's. The manual IP below is typed, so it still works from here.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
-                if ui.button("Discover").clicked() {
+                if ui.button(crate::language_plugin::text("settings.radio.discover", "Discover")).clicked() {
                     *discover = true;
                 }
-                let shown = cfg.hpsdr.selected_ip.clone().unwrap_or_else(|| "— none —".into());
+                let shown = cfg.hpsdr.selected_ip.clone().unwrap_or_else(|| crate::language_plugin::text("choices.app.settings.radio.text_1126_13915b", "— none —").into());
                 ComboBox::from_id_salt("hpsdr_dev").width(320.0).selected_text(shown).show_styled(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no devices — press Discover").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_devices_press_discover", "no devices — press Discover")).weak());
                         }
                         for d in devices {
                             // Both protocols are drivable; anything else is greyed out.
                             if d.supported() {
                                 let sel = cfg.hpsdr.selected_ip.as_deref() == Some(d.ip.as_str());
-                                if ui.selectable_label(sel, d.label()).clicked() {
+                                if ui.selectable_label(sel,crate::language_plugin::display_label(d.label())).clicked() {
                                     cfg.hpsdr.selected_ip = Some(d.ip.clone());
                                 }
                             } else {
@@ -1147,13 +1142,13 @@ pub(in crate::app) fn settings_hpsdr_tab(
         });
         ui.end_row();
 
-        ui.label("Manual IP");
+        ui.label(crate::language_plugin::text("settings.radio.manual_ip", "Manual IP"));
         let mut ip = cfg.hpsdr.manual_ip.clone().unwrap_or_default();
         let resp = crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut ip)
                 .desired_width(160.0)
-                .hint_text("optional, e.g. 192.168.1.50"),
+                .hint_text(crate::language_plugin::text("common.optional_e_g_192_168_1_50", "optional, e.g. 192.168.1.50")),
         );
         if resp.changed() {
             let t = ip.trim();
@@ -1161,7 +1156,7 @@ pub(in crate::app) fn settings_hpsdr_tab(
         }
         ui.end_row();
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         // Show only rates valid for the selected device's protocol (P1 ≤ 384 kHz).
         let proto = devices
             .iter()
@@ -1182,7 +1177,7 @@ pub(in crate::app) fn settings_hpsdr_tab(
         // Which of the board's DDCs this radio runs. Protocol 2 only — a P1
         // board refuses anything but the first at open, with a clear message.
         // Shown 1-based, stored 0-based as the wire counts.
-        ui.label("Receiver (DDC)");
+        ui.label(crate::language_plugin::text("settings.radio.receiver_ddc", "Receiver (DDC)"));
         let shown = format!("DDC{}", cfg.hpsdr.ddc + 1);
         ComboBox::from_id_salt("hpsdr_ddc")
             .selected_text(shown)
@@ -1198,17 +1193,17 @@ pub(in crate::app) fn settings_hpsdr_tab(
             })
             .response
             .on_hover_text(
-                "A Protocol 2 board carries several independently tunable receivers (DDCs) on \
+                crate::language_plugin::text("settings.radio.text_1201_322c03", "A Protocol 2 board carries several independently tunable receivers (DDCs) on \
                  one connection — run this radio on DDC1 and another radio, same address, on \
                  DDC2. The transmitter belongs to the DDC1 radio. Protocol 1 boards have DDC1 \
-                 only.",
+                 only."),
             );
         ui.end_row();
 
-        ui.label("LNA gain").on_hover_text(
-            "Front-end gain of a Hermes-Lite 2. Takes effect immediately — no reconnect — \
+        ui.label(crate::language_plugin::text("settings.radio.lna_gain", "LNA gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1209_856c3c", "Front-end gain of a Hermes-Lite 2. Takes effect immediately — no reconnect — \
              and is remembered as the level the radio starts at. Too high clips the ADC and \
-             the whole band looks distorted; too low and the receiver goes deaf.",
+             the whole band looks distorted; too low and the receiver goes deaf."),
         );
         // Applies live as well as being persisted: this is the gain an operator
         // retunes per band, and making it wait for Apply/reconnect would mean
@@ -1232,33 +1227,33 @@ pub(in crate::app) fn settings_hpsdr_tab(
         }
         ui.end_row();
 
-        ui.label("Overload protection").on_hover_text(
-            "Back the LNA gain off by itself while the board reports its ADC overflowing, and \
+        ui.label(crate::language_plugin::text("settings.radio.overload_protection", "Overload protection")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1236_f6629c", "Back the LNA gain off by itself while the board reports its ADC overflowing, and \
              let it back up once it stops.\n\n\
              A Hermes-Lite 2 samples the whole of 0-38 MHz onto one 12-bit converter with no \
              mixer and no preselector in front of it, so a broadcast station a band away can \
              drive it into overflow while the band you are looking at shows nothing wrong at \
              all — the noise floor climbs, everything intermodulates and the decoders stop. \
              The board knows, and this is what acts on it.\n\n\
-             Off by default: it moves a control you set. Nothing happens while transmitting.",
+             Off by default: it moves a control you set. Nothing happens while transmitting."),
         );
         crate::chrome::checkbox(
             ui,
             &mut cfg.hpsdr.auto_gain,
-            "Wind the gain back when the ADC overflows",
+            crate::language_plugin::text("common.wind_the_gain_back_when_the_adc_overflows", "Wind the gain back when the ADC overflows"),
         )
         .on_hover_text(
-            "Applies on Apply / reconnect. The main window's Gain rail reads the gain the \
+            crate::language_plugin::text("settings.radio.text_1251_7e3d47", "Applies on Apply / reconnect. The main window's Gain rail reads the gain the \
              board is actually running, so it follows the loop and you can watch what it \
              does; the slider above is the level the radio starts at, and the loop does not \
-             rewrite it.",
+             rewrite it."),
         );
         ui.end_row();
 
         if cfg.hpsdr.auto_gain {
-            ui.label("  Step").on_hover_text(
-                "How far the gain moves each time, in dB. One is the step the board's own \
-                 gain register has.",
+            ui.label(crate::language_plugin::text("common.step", "  Step")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_1260_b1fbf6", "How far the gain moves each time, in dB. One is the step the board's own \
+                 gain register has."),
             );
             ui.add(
                 egui::DragValue::new(&mut cfg.hpsdr.auto_gain_step_db)
@@ -1268,15 +1263,15 @@ pub(in crate::app) fn settings_hpsdr_tab(
             );
             ui.end_row();
 
-            ui.label("  Attack / decay").on_hover_text(
-                "How often the gain may come down while the converter is overflowing, and how \
+            ui.label(crate::language_plugin::text("common.attack_decay", "  Attack / decay")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_1272_660e81", "How often the gain may come down while the converter is overflowing, and how \
                  often it may go back up once it has stopped.\n\n\
                  The two are deliberately a hundred times apart. Retreat immediately: every \
                  millisecond of overflow is a receiver full of intermodulation. Return slowly: \
                  whatever caused it — a neighbour keying, a broadcaster coming up at dusk — has \
                  usually not gone away, and a loop that recovered as fast as it retreated would \
                  spend the evening oscillating across the threshold. 100 ms and 10 s per \
-                 decibel is what PowerSDR's Auto S-Att and N1GP's HermesIntf have both used.",
+                 decibel is what PowerSDR's Auto S-Att and N1GP's HermesIntf have both used."),
             );
             ui.horizontal(|ui| {
                 ui.add(
@@ -1295,11 +1290,11 @@ pub(in crate::app) fn settings_hpsdr_tab(
             });
             ui.end_row();
 
-            ui.label("  Range").on_hover_text(
-                "The lowest and highest gain the loop may use, in dB. The ceiling is what stops \
+            ui.label(crate::language_plugin::text("common.range", "  Range")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_1299_b35844", "The lowest and highest gain the loop may use, in dB. The ceiling is what stops \
                  it deciding how sensitive your receiver should be; the floor is where you say \
                  that below some point the overload is somebody else's problem and the answer \
-                 is a filter, not another twenty decibels.",
+                 is a filter, not another twenty decibels."),
             );
             ui.horizontal(|ui| {
                 ui.add(
@@ -1319,8 +1314,8 @@ pub(in crate::app) fn settings_hpsdr_tab(
             ui.end_row();
         }
 
-        ui.label("Filter board").on_hover_text(
-            "Accessory board on the Hermes-Lite 2's J16 header (or the open-collector \
+        ui.label(crate::language_plugin::text("settings.radio.filter_board", "Filter board")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1323_1b3bf1", "Accessory board on the Hermes-Lite 2's J16 header (or the open-collector \
              outputs of any other openHPSDR board — Protocol 2 included). \"N2ADR\" picks \
              one relay per band; \"Alex / Hermes band code\" puts the band number on \
              outputs 1-4, which is what an ANAN's Alex board, a Zeus SDR, a HiQSDR and \
@@ -1332,63 +1327,63 @@ pub(in crate::app) fn settings_hpsdr_tab(
              general-purpose open-collector outputs, and operators also wire them to \
              amplifier PTT, antenna relays and transverter switching. Driving them from \
              band data would start operating whatever is connected. Applies on \
-             Apply / reconnect.",
+             Apply / reconnect."),
         );
         ComboBox::from_id_salt("hpsdr_filter")
             .width(220.0)
-            .selected_text(cfg.hpsdr.filter_board.label())
+            .selected_text(crate::language_plugin::display_label(cfg.hpsdr.filter_board.label()))
             .show_styled(ui, |ui| {
                 for b in sdroxide_types::HpsdrFilterBoard::ALL {
-                    if ui.selectable_label(cfg.hpsdr.filter_board == b, b.label()).clicked() {
+                    if ui.selectable_label(cfg.hpsdr.filter_board == b,crate::language_plugin::display_label(b.label())).clicked() {
                         cfg.hpsdr.filter_board = b;
                     }
                 }
             });
         ui.end_row();
 
-        ui.label("IO board RX input").on_hover_text(
-            "Where an N2ADR HL2IOBoard takes its receive signal from. The board itself is found \
+        ui.label(crate::language_plugin::text("settings.radio.io_board_rx_input", "IO board RX input")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1350_5d2018", "Where an N2ADR HL2IOBoard takes its receive signal from. The board itself is found \
              automatically and needs no setting; this one exists only for operators who have \
              wired its own SMA jacks. Leave it at \"Radio's own input\" otherwise — selecting the \
              IO board's J9 with nothing connected to it leaves the receiver deaf. Applies on \
              Apply / reconnect. Set to either J9 choice, the inputs also appear on the ANT \
-             control and are remembered per band.",
+             control and are remembered per band."),
         );
         ComboBox::from_id_salt("hpsdr_io_rx")
             .width(220.0)
-            .selected_text(cfg.hpsdr.io_rx_input.label())
+            .selected_text(crate::language_plugin::display_label(cfg.hpsdr.io_rx_input.label()))
             .show_styled(ui, |ui| {
                 for m in sdroxide_types::HpsdrIoRxInput::ALL {
-                    if ui.selectable_label(cfg.hpsdr.io_rx_input == m, m.label()).clicked() {
+                    if ui.selectable_label(cfg.hpsdr.io_rx_input == m,crate::language_plugin::display_label(m.label())).clicked() {
                         cfg.hpsdr.io_rx_input = m;
                     }
                 }
             });
         ui.end_row();
 
-        ui.label("Power amplifier");
-        crate::chrome::checkbox(ui, &mut cfg.hpsdr.pa_enable, "Use the Hermes-Lite 2's onboard PA")
+        ui.label(crate::language_plugin::text("settings.radio.power_amplifier", "Power amplifier"));
+        crate::chrome::checkbox(ui, &mut cfg.hpsdr.pa_enable, crate::language_plugin::text("settings.radio.text_1370_886622", "Use the Hermes-Lite 2's onboard PA"))
             .on_hover_text(
-                "On by default, and what you want unless an external amplifier is driven from the \
+                crate::language_plugin::text("settings.radio.text_1372_9e3943", "On by default, and what you want unless an external amplifier is driven from the \
              board's low-power RF1 output. With it off the radio still keys — the T/R relay \
              throws and any accessory board follows — but the antenna jack makes no power at \
              all, and the relay is deliberately held in receive. Ignored on boards other than a \
-             Hermes-Lite.",
+             Hermes-Lite."),
             );
         ui.end_row();
 
-        ui.label("Invert spectrum");
-        crate::chrome::checkbox(ui, &mut cfg.hpsdr.invert_spectrum, "Swap I/Q").on_hover_text(
-            "Mirror the board's spectrum about the tuned frequency, on transmit as well \
+        ui.label(crate::language_plugin::text("settings.radio.invert_spectrum", "Invert spectrum"));
+        crate::chrome::checkbox(ui, &mut cfg.hpsdr.invert_spectrum, crate::language_plugin::text("common.swap_i_q", "Swap I/Q")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1382_f831e9", "Mirror the board's spectrum about the tuned frequency, on transmit as well \
              as receive. On by default: a Hermes-Lite 2 needs it. Turn it off only if \
              signals show up on the wrong side of the dial and nothing decodes — the \
              giveaway is a waterfall full of convincing traces while SSB lands on the \
-             wrong sideband and FT8 returns no decodes at all.",
+             wrong sideband and FT8 returns no decodes at all."),
         );
         ui.end_row();
 
-        ui.label("Frequency correction")
-            .on_hover_text("Crystal/TCXO error in ppm, applied to RX and TX. Applies immediately.");
+        ui.label(crate::language_plugin::text("settings.radio.frequency_correction", "Frequency correction"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.crystal_tcxo_error_in_ppm_applied_to_rx_and_tx", "Crystal/TCXO error in ppm, applied to RX and TX. Applies immediately."));
         let mut ppm = cfg.hpsdr.ppm;
         let resp =
             ui.add(egui::DragValue::new(&mut ppm).range(-100.0..=100.0).speed(0.1).suffix(" ppm"));
@@ -1402,25 +1397,25 @@ pub(in crate::app) fn settings_hpsdr_tab(
         }
         ui.end_row();
 
-        ui.label("Transmit buffer");
+        ui.label(crate::language_plugin::text("settings.radio.transmit_buffer", "Transmit buffer"));
         ui.add(
             egui::DragValue::new(&mut cfg.hpsdr.tx_latency_ms)
                 .range(HpsdrConfig::TX_LATENCY_MS_RANGE)
                 .suffix(" ms"),
         )
         .on_hover_text(
-            "How far ahead of real time transmit audio is fed to the board over the network, \
+            crate::language_plugin::text("settings.radio.text_1412_7d5932", "How far ahead of real time transmit audio is fed to the board over the network, \
              before sdroxide slows down to match it. The board itself holds no such buffer — \
              this only widens sdroxide's own margin. Raise it on a WiFi link or a VPN, where \
              the low default (right for a direct wired connection) is not enough headroom \
              against jitter and the transmitted audio or PTT stutters; higher costs transmit \
-             latency. Takes effect on APPLY, which reconnects to the board.",
+             latency. Takes effect on APPLY, which reconnects to the board."),
         );
         ui.end_row();
 
         // ── PureSignal ──
         ui.label("PureSignal").on_hover_text(
-            "Adaptive predistortion: linearise the transmitter from a sample of what it actually \
+            crate::language_plugin::text("settings.radio.text_1423_61cd49", "Adaptive predistortion: linearise the transmitter from a sample of what it actually \
              emitted, for twenty-odd decibels less intermodulation at the same power. The \
              receiver is the feedback path — the board keeps receiving through an over — so a \
              directional coupler and an attenuator have to put a sample of the amplifier's \
@@ -1431,19 +1426,19 @@ pub(in crate::app) fn settings_hpsdr_tab(
              is read — a board with a second ADC cannot use RX2 as the feedback tap, however \
              its own firmware routes it. With nothing coupled in, the loop never locks and the \
              transmitter is left exactly as it would have been. Applies on Apply / reconnect, \
-             and only on the radio that owns the transmitter (DDC1).",
+             and only on the radio that owns the transmitter (DDC1)."),
         );
         crate::chrome::checkbox(
             ui,
             &mut cfg.hpsdr.puresignal,
-            "Correct the transmitter from the receiver's own feedback",
+            crate::language_plugin::text("settings.radio.text_1439_e10fa9", "Correct the transmitter from the receiver's own feedback"),
         );
         ui.end_row();
 
         ui.add_enabled_ui(cfg.hpsdr.puresignal, |ui| {
-            ui.label("  Table steps").on_hover_text(
-                "How finely the amplifier's curve is modelled. More steps follow a sharper knee \
-                 and take longer to fill in; 32 is a sensible start.",
+            ui.label(crate::language_plugin::text("common.table_steps", "  Table steps")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_1445_c9ad00", "How finely the amplifier's curve is modelled. More steps follow a sharper knee \
+                 and take longer to fill in; 32 is a sensible start."),
             );
         });
         ui.add_enabled_ui(cfg.hpsdr.puresignal, |ui| {
@@ -1461,18 +1456,18 @@ pub(in crate::app) fn settings_hpsdr_tab(
         ui.end_row();
 
         ui.add_enabled_ui(cfg.hpsdr.puresignal, |ui| {
-            ui.label("  Adaptation").on_hover_text(
-                "How fast the correction follows what the coupler reports. Slow is right — this \
+            ui.label(crate::language_plugin::text("common.adaptation", "  Adaptation")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_1465_98bbd2", "How fast the correction follows what the coupler reports. Slow is right — this \
                  is averaging an amplifier's curve, which does not move, out of a feedback path \
-                 that has noise in it.",
+                 that has noise in it."),
             );
         });
         ui.add_enabled_ui(cfg.hpsdr.puresignal, |ui| {
             ui.horizontal(|ui| {
                 ui.add(egui::Slider::new(&mut cfg.hpsdr.ps_rate, 0.0..=1.0).show_value(false));
-                crate::chrome::checkbox(ui, &mut cfg.hpsdr.ps_frozen, "Hold").on_hover_text(
-                    "Stop adapting and keep the correction where it is — for measuring, and for \
-                     an operator happy with what it has learned.",
+                crate::chrome::checkbox(ui, &mut cfg.hpsdr.ps_frozen, crate::language_plugin::text("common.hold", "Hold")).on_hover_text(
+                    crate::language_plugin::text("settings.radio.text_1474_6038b5", "Stop adapting and keep the correction where it is — for measuring, and for \
+                     an operator happy with what it has learned."),
                 );
             });
         });
@@ -1482,7 +1477,7 @@ pub(in crate::app) fn settings_hpsdr_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "A manual IP overrides discovery. Press \"Apply / reconnect\" to switch without a restart.",
+            crate::language_plugin::text("settings.radio.text_1485_a12a3c", "A manual IP overrides discovery. Press \"Apply / reconnect\" to switch without a restart."),
         )
         .weak(),
     );
@@ -1507,7 +1502,7 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
     ui.separator();
     ui.add_space(4.0);
     ui.label(
-        RichText::new("Open-collector outputs by band")
+        RichText::new(crate::language_plugin::text("settings.radio.open_collector_outputs_by_band", "Open-collector outputs by band"))
             .size(14.0)
             .strong()
             .color(crate::theme::CYAN()),
@@ -1515,12 +1510,12 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
     ui.add_space(2.0);
     ui.label(
         RichText::new(
-            "One control word per band, as your hardware's documentation states it: bit 0 is \
+            crate::language_plugin::text("settings.radio.text_1518_5caff2", "One control word per band, as your hardware's documentation states it: bit 0 is \
              output 1, bit 6 is output 7. RX is asserted while receiving on that band and TX \
              while the transmitter is keyed — give them the same value for a filter, and \
              different ones for anything that belongs on one side of the changeover only \
              (an amplifier's key line, a receive preamplifier's bypass). Bands left at 00 \
-             assert nothing. Applies on Apply / reconnect.",
+             assert nothing. Applies on Apply / reconnect."),
         )
         .weak(),
     );
@@ -1528,13 +1523,13 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
 
     ui.horizontal(|ui| {
         for (preset, name) in
-            [(HpsdrFilterBoard::N2adr, "N2ADR"), (HpsdrFilterBoard::Alex, "ALEX BAND CODE")]
+            [(HpsdrFilterBoard::N2adr, "N2ADR".to_owned()), (HpsdrFilterBoard::Alex, crate::language_plugin::text("choices.app.settings.radio.text_1531_4f586d", "ALEX BAND CODE"))]
         {
             if ui
-                .button(format!("FILL FROM {name}"))
+                .button(crate::language_plugin::format("settings.radio.text_1534_fbd69a", "FILL FROM {name}", &[format!("{name}")]))
                 .on_hover_text(
-                    "Replace the table with what this preset would send on every band, as a \
-                     starting point to edit. Nothing else in the configuration changes.",
+                    crate::language_plugin::text("settings.radio.text_1536_e661ae", "Replace the table with what this preset would send on every band, as a \
+                     starting point to edit. Nothing else in the configuration changes."),
                 )
                 .clicked()
             {
@@ -1542,8 +1537,8 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
             }
         }
         if ui
-            .add_enabled(!cfg.hpsdr.oc_table.is_empty(), egui::Button::new("CLEAR"))
-            .on_hover_text("Every output off on every band, which is what \"None\" does.")
+            .add_enabled(!cfg.hpsdr.oc_table.is_empty(), egui::Button::new(crate::language_plugin::text("settings.radio.text_1545_9cc3a0", "CLEAR")))
+            .on_hover_text(crate::language_plugin::text("common.every_output_off_on_every_band_which_is_what_none_does", "Every output off on every band, which is what \"None\" does."))
             .clicked()
         {
             cfg.hpsdr.oc_table.clear();
@@ -1561,8 +1556,8 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
     egui::Grid::new("hpsdr-oc-grid").num_columns(4).spacing([12.0, 4.0]).striped(true).show(
         ui,
         |ui| {
-            for h in ["Band", "RX", "TX", "Outputs asserted"] {
-                ui.label(RichText::new(h).weak().size(10.0));
+            for h in [&crate::language_plugin::text("boundaries.app.settings.radio.text_1564_0bd9ce", "Band"), "RX", "TX", &crate::language_plugin::text("boundaries.app.settings.radio.text_1564_f96e06", "Outputs asserted")] {
+                ui.label(RichText::new(crate::language_plugin::hpsdr_header_display(h)).weak().size(10.0));
             }
             ui.end_row();
             for band in bands {
@@ -1571,9 +1566,9 @@ fn hpsdr_oc_table(ui: &mut egui::Ui, cfg: &mut sdroxide_types::RadioConfig) {
                     .map(|i| (cfg.hpsdr.oc_table[i].rx, cfg.hpsdr.oc_table[i].tx))
                     .unwrap_or((0, 0));
                 if band == Band::Gen {
-                    ui.label("Other").on_hover_text(
-                        "Everywhere outside the amateur bands — short-wave listening, and \
-                         anything a transverter's dial lands on that no band covers.",
+                    ui.label(crate::language_plugin::text("settings.radio.other", "Other")).on_hover_text(
+                        crate::language_plugin::text("settings.radio.text_1575_4dc840", "Everywhere outside the amateur bands — short-wave listening, and \
+                         anything a transverter's dial lands on that no band covers."),
                     );
                 } else {
                     ui.label(band.label());
@@ -1630,7 +1625,7 @@ fn oc_pins(rx: u8, tx: u8) -> String {
             (0..7).filter(|b| w & (1 << b) != 0).map(|b| (b + 1).to_string()).collect();
         if pins.is_empty() { "—".into() } else { pins.join(", ") }
     };
-    if rx == tx { list(rx) } else { format!("{} / TX {}", list(rx), list(tx)) }
+    if rx == tx { list(rx) } else { { let __lp_arg_0 = &(list(rx)); let __lp_arg_1 = &(list(tx)); crate::language_plugin::format("boundary25.app_settings_radio.text_1633_2917bc", "{} / TX {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) } }
 }
 
 /// RTL-SDR interface: which dongle, sample rate, gain/AGC, frequency
@@ -1651,36 +1646,36 @@ pub(in crate::app) fn settings_rtlsdr_tab(
 ) {
     use sdroxide_types::{RtlSdrAgc, RtlSdrConfig, RtlSdrHfMode};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_1654_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
     egui::Grid::new("rtlsdr-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Dongle");
+        ui.label(crate::language_plugin::text("settings.radio.dongle", "Dongle"));
         // Which dongle is the one row here that names a USB bus rather than the
         // radio. Everything below reaches the dongle wherever it is plugged in.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_1667_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown =
-                    cfg.rtlsdr.serial.clone().unwrap_or_else(|| "— first one found —".into());
+                    cfg.rtlsdr.serial.clone().unwrap_or_else(|| crate::language_plugin::text("boundaries.app.settings.radio.text_1675_4a541a", "— first one found —").into());
                 ComboBox::from_id_salt("rtlsdr_dev").width(300.0).selected_text(shown).show_styled(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no dongles — press Rescan").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_dongles_press_rescan", "no dongles — press Rescan")).weak());
                         }
                         if ui
-                            .selectable_label(cfg.rtlsdr.serial.is_none(), "— first one found —")
+                            .selectable_label(cfg.rtlsdr.serial.is_none(), crate::language_plugin::text("common.first_one_found", "— first one found —"))
                             .clicked()
                         {
                             cfg.rtlsdr.serial = None;
@@ -1691,7 +1686,7 @@ pub(in crate::app) fn settings_rtlsdr_tab(
                             // position changes on every replug.
                             if let Some(sn) = &d.serial {
                                 let sel = cfg.rtlsdr.serial.as_deref() == Some(sn.as_str());
-                                if ui.selectable_label(sel, d.label()).clicked() {
+                                if ui.selectable_label(sel,crate::language_plugin::display_label(d.label())).clicked() {
                                     cfg.rtlsdr.serial = Some(sn.clone());
                                 }
                             } else {
@@ -1704,9 +1699,9 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         });
         ui.end_row();
 
-        ui.label("Sample rate").on_hover_text(
-            "The RTL2832U's resampler reaches 225–300 kHz and 900 kHz–3.2 MHz, \
-             nothing between. Takes effect on Apply.",
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1708_22e039", "The RTL2832U's resampler reaches 225–300 kHz and 900 kHz–3.2 MHz, \
+             nothing between. Takes effect on Apply."),
         );
         let shown = format!("{:.3} Msps", cfg.rtlsdr.sample_rate_hz / 1e6);
         ComboBox::from_id_salt("rtlsdr_rate").selected_text(shown).show_styled(ui, |ui| {
@@ -1714,7 +1709,7 @@ pub(in crate::app) fn settings_rtlsdr_tab(
                 let sel = (cfg.rtlsdr.sample_rate_hz - r).abs() < 1.0;
                 let mut label = format!("{:.3} Msps", r / 1e6);
                 if r >= 3_200_000.0 {
-                    label.push_str("  (often drops samples)");
+                    label.push_str(&crate::language_plugin::text("boundaries.app.settings.radio.text_1717_3e76f5", "  (often drops samples)"));
                 }
                 if ui.selectable_label(sel, label).clicked() {
                     cfg.rtlsdr.sample_rate_hz = r;
@@ -1724,8 +1719,8 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         ui.end_row();
 
         ui.label("AGC").on_hover_text(
-            "Manual is the setting for measurement and weak-signal digital modes. \
-             The tuner and the demodulator have independent automatic loops.",
+            crate::language_plugin::text("settings.radio.text_1727_969b52", "Manual is the setting for measurement and weak-signal digital modes. \
+             The tuner and the demodulator have independent automatic loops."),
         );
         let mut agc = cfg.rtlsdr.agc;
         enum_combo(ui, "rtlsdr_agc", &mut agc, &RtlSdrAgc::ALL, RtlSdrAgc::label);
@@ -1739,10 +1734,10 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         }
         ui.end_row();
 
-        ui.label("Tuner gain").on_hover_text(
-            "Applies immediately — no reconnect. The tuner has 29 discrete steps, \
+        ui.label(crate::language_plugin::text("settings.radio.tuner_gain", "Tuner gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1743_829cf1", "Applies immediately — no reconnect. The tuner has 29 discrete steps, \
              so the value snaps to the nearest one it can produce. Ignored while \
-             the tuner AGC is running.",
+             the tuner AGC is running."),
         );
         ui.add_enabled_ui(!cfg.rtlsdr.agc.tuner_auto(), |ui| {
             if crate::chrome::slider(
@@ -1762,11 +1757,11 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         });
         ui.end_row();
 
-        ui.label("Frequency correction").on_hover_text(
-            "Crystal error in parts per million. Run with \
+        ui.label(crate::language_plugin::text("settings.radio.frequency_correction", "Frequency correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1766_dc8134", "Crystal error in parts per million. Run with \
              RUST_LOG=sdroxide_rtlsdr=debug and the log prints the measured \
              clock error after about 20 seconds — that is the number to enter. \
-             Applies immediately.",
+             Applies immediately."),
         );
         let mut ppm = cfg.rtlsdr.ppm;
         if ui.add(egui::DragValue::new(&mut ppm).range(-200..=200).suffix(" ppm")).changed() {
@@ -1779,8 +1774,8 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         }
         ui.end_row();
 
-        ui.label("HF reception").on_hover_text(
-            "The tuner itself starts at 24 MHz. An RTL-SDR Blog V4 upconverts \
+        ui.label(crate::language_plugin::text("settings.radio.hf_reception", "HF reception")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1783_dafdc5", "The tuner itself starts at 24 MHz. An RTL-SDR Blog V4 upconverts \
              below that in hardware; other dongles reach HF only by sampling the \
              ADC directly, through the V3's HF port. Automatic hands everything \
              below 24 MHz to the ADC and everything above it to the tuner.\n\n\
@@ -1789,7 +1784,7 @@ pub(in crate::app) fn settings_rtlsdr_tab(
              filters the ADC's input, though, so whatever is at 28.8 MHz minus \
              the dial comes with them: 10.7 MHz under 17 m, 7.726 MHz under \
              15 m.\n\n\
-             Switching modes briefly interrupts the stream.",
+             Switching modes briefly interrupts the stream."),
         );
         let mut hf = cfg.rtlsdr.hf_mode;
         enum_combo(ui, "rtlsdr_hf", &mut hf, &RtlSdrHfMode::ALL, RtlSdrHfMode::label);
@@ -1803,17 +1798,17 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         }
         ui.end_row();
 
-        ui.label("IQ correction").on_hover_text(
-            "Removes the dongle's own DC spike from the centre of the span, and \
+        ui.label(crate::language_plugin::text("settings.radio.iq_correction", "IQ correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1807_7ff8c3", "Removes the dongle's own DC spike from the centre of the span, and \
              the mirror image every signal leaves reflected about it, by \
              measuring the imbalance in the samples themselves — no calibration, \
              and it applies immediately. The tuner has no offset-tuning mode, so \
              this is the only way to clear the centre.\n\n\
              An AM carrier tuned dead on the dial is at DC too, so it goes with \
-             the spike: tune a kilohertz off it, or switch this off.",
+             the spike: tune a kilohertz off it, or switch this off."),
         );
         let mut iq = cfg.rtlsdr.iq_correction;
-        if crate::chrome::checkbox(ui, &mut iq, "Remove the centre spike and mirror image")
+        if crate::chrome::checkbox(ui, &mut iq, crate::language_plugin::text("common.remove_the_centre_spike_and_mirror_image", "Remove the centre spike and mirror image"))
             .changed()
         {
             cfg.rtlsdr.iq_correction = iq;
@@ -1825,9 +1820,9 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         }
         ui.end_row();
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         let mut bias = cfg.rtlsdr.bias_tee;
-        if crate::chrome::checkbox(ui, &mut bias, "Feed ~4.5 V DC up the coax").changed() {
+        if crate::chrome::checkbox(ui, &mut bias, crate::language_plugin::text("common.feed_4_5_v_dc_up_the_coax", "Feed ~4.5 V DC up the coax")).changed() {
             cfg.rtlsdr.bias_tee = bias;
             cmds.push(Command::SetGain {
                 dir: Direction::Rx,
@@ -1842,9 +1837,9 @@ pub(in crate::app) fn settings_rtlsdr_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_1845_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -1853,8 +1848,8 @@ pub(in crate::app) fn settings_rtlsdr_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only. The dongle and sample rate take effect on Apply; \
-             everything else applies as you change it.",
+            crate::language_plugin::text("settings.radio.text_1856_952115", "Receive only. The dongle and sample rate take effect on Apply; \
+             everything else applies as you change it."),
         )
         .weak(),
     );
@@ -1875,33 +1870,33 @@ pub(in crate::app) fn settings_rtltcp_tab(
 ) {
     use sdroxide_types::{RtlSdrAgc, RtlSdrConfig, RtlSdrHfMode, RtlTcpConfig};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_1878_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
     egui::Grid::new("rtltcp-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Server address").on_hover_text(
-            "Where rtl_tcp is listening: an address, or an address and port. \
+        ui.label(crate::language_plugin::text("settings.radio.server_address", "Server address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1884_38dfdc", "Where rtl_tcp is listening: an address, or an address and port. \
              The port defaults to 1234, which is rtl_tcp's own default.\n\n\
              On the far end, start it as `rtl_tcp -a 0.0.0.0` — bound to \
              127.0.0.1, which is what it does with no -a, it only accepts \
-             connections from that same machine.\n\nTakes effect on Apply.",
+             connections from that same machine.\n\nTakes effect on Apply."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.rtltcp.address)
                 .desired_width(220.0)
-                .hint_text("host or host:port, e.g. raspberrypi.local:1234"),
+                .hint_text(crate::language_plugin::text("common.host_or_host_port_e_g_raspberrypi_local_1234", "host or host:port, e.g. raspberrypi.local:1234")),
         );
         ui.end_row();
 
-        ui.label("Sample rate").on_hover_text(
-            "Requested of the server, with the same resampler limits as a local \
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1899_4665fa", "Requested of the server, with the same resampler limits as a local \
              dongle — it is the same silicon on the far end.\n\n\
              The figure beside each rate is what it costs on the link: the \
              samples are sent uncompressed, and a rate the network cannot carry \
              makes rtl_tcp drop the connection rather than degrade. \
-             Takes effect on Apply.",
+             Takes effect on Apply."),
         );
         let shown = format!(
             "{:.3} Msps  —  {:.0} Mbit/s",
@@ -1919,7 +1914,7 @@ pub(in crate::app) fn settings_rtltcp_tab(
                     // what a single WiFi hop delivers in practice, which is well
                     // under its nominal rate.
                     if mbit >= 30.0 {
-                        label.push_str("  (wired link)");
+                        label.push_str(&crate::language_plugin::text("boundaries.app.settings.radio.text_1922_6f5fd8", "  (wired link)"));
                     }
                     if ui.selectable_label(sel, label).clicked() {
                         cfg.rtltcp.sample_rate_hz = r;
@@ -1930,8 +1925,8 @@ pub(in crate::app) fn settings_rtltcp_tab(
         ui.end_row();
 
         ui.label("AGC").on_hover_text(
-            "Runs on the server's dongle. Manual is the setting for measurement \
-             and weak-signal digital modes.",
+            crate::language_plugin::text("settings.radio.text_1933_ba368e", "Runs on the server's dongle. Manual is the setting for measurement \
+             and weak-signal digital modes."),
         );
         let mut agc = cfg.rtltcp.agc;
         enum_combo(ui, "rtltcp_agc", &mut agc, &RtlSdrAgc::ALL, RtlSdrAgc::label);
@@ -1945,12 +1940,12 @@ pub(in crate::app) fn settings_rtltcp_tab(
         }
         ui.end_row();
 
-        ui.label("Tuner gain").on_hover_text(
-            "Applies immediately — no reconnect. Sent in tenths of a dB and \
+        ui.label(crate::language_plugin::text("settings.radio.tuner_gain", "Tuner gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1949_93adc5", "Applies immediately — no reconnect. Sent in tenths of a dB and \
              snapped by the server to a step its tuner has; the protocol has no \
              replies, so what it settled on cannot be read back and this slider \
              keeps showing what was asked for. Ignored while the tuner AGC is \
-             running.",
+             running."),
         );
         ui.add_enabled_ui(!cfg.rtltcp.agc.tuner_auto(), |ui| {
             if crate::chrome::slider(
@@ -1970,15 +1965,15 @@ pub(in crate::app) fn settings_rtltcp_tab(
         });
         ui.end_row();
 
-        ui.label("Frequency correction").on_hover_text(
-            "Crystal error of the *server's* dongle, in parts per million — a \
+        ui.label(crate::language_plugin::text("settings.radio.frequency_correction", "Frequency correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1974_792c1d", "Crystal error of the *server's* dongle, in parts per million — a \
              property of that hardware, so it is set here and not on this \
              machine's dongles. Applies immediately.\n\n\
              The measured clock error the USB interface prints is not available \
              here: over a network what that measurement sees is the buffering, \
              not the crystal, and it is wrong by thousands of ppm. Calibrate the \
              dongle on USB once and carry the number over, or tune a broadcast \
-             station of known frequency and adjust until it sits on the dial.",
+             station of known frequency and adjust until it sits on the dial."),
         );
         let mut ppm = cfg.rtltcp.ppm;
         if ui.add(egui::DragValue::new(&mut ppm).range(-200..=200).suffix(" ppm")).changed() {
@@ -1991,8 +1986,8 @@ pub(in crate::app) fn settings_rtltcp_tab(
         }
         ui.end_row();
 
-        ui.label("HF reception").on_hover_text(
-            "The tuner starts at 24 MHz; below that the far end needs help. A \
+        ui.label(crate::language_plugin::text("settings.radio.hf_reception", "HF reception")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_1995_5c394b", "The tuner starts at 24 MHz; below that the far end needs help. A \
              Blog V4 upconverts by itself and Automatic leaves it alone — which \
              is the only thing it can do, since the protocol reports the tuner \
              chip and nothing else, and a V4 is indistinguishable from a plain \
@@ -2002,7 +1997,7 @@ pub(in crate::app) fn settings_rtltcp_tab(
              every HF band, 17 m and 15 m arriving in the ADC's second Nyquist \
              zone with 28.8 MHz minus the dial folded on top. Choose Direct \
              sampling explicitly for a plain R828D that hears nothing on HF. \
-             Switching briefly interrupts the stream.",
+             Switching briefly interrupts the stream."),
         );
         let mut hf = cfg.rtltcp.hf_mode;
         enum_combo(ui, "rtltcp_hf", &mut hf, &RtlSdrHfMode::ALL, RtlSdrHfMode::label);
@@ -2016,16 +2011,16 @@ pub(in crate::app) fn settings_rtltcp_tab(
         }
         ui.end_row();
 
-        ui.label("IQ correction").on_hover_text(
-            "Removes the dongle's DC spike and mirror image here, from the \
+        ui.label(crate::language_plugin::text("settings.radio.iq_correction", "IQ correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2020_15daf1", "Removes the dongle's DC spike and mirror image here, from the \
              samples as they arrive — they are artefacts of the hardware, so \
              they travel over the network with everything else. Applies \
              immediately.\n\n\
              An AM carrier tuned dead on the dial sits at DC too, so it goes \
-             with the spike: tune a kilohertz off it, or switch this off.",
+             with the spike: tune a kilohertz off it, or switch this off."),
         );
         let mut iq = cfg.rtltcp.iq_correction;
-        if crate::chrome::checkbox(ui, &mut iq, "Remove the centre spike and mirror image")
+        if crate::chrome::checkbox(ui, &mut iq, crate::language_plugin::text("common.remove_the_centre_spike_and_mirror_image", "Remove the centre spike and mirror image"))
             .changed()
         {
             cfg.rtltcp.iq_correction = iq;
@@ -2037,14 +2032,14 @@ pub(in crate::app) fn settings_rtltcp_tab(
         }
         ui.end_row();
 
-        ui.label("Bias tee").on_hover_text(
-            "Powers a preamp from the far end's dongle. Older servers do not \
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2041_ad1d14", "Powers a preamp from the far end's dongle. Older servers do not \
              implement the command and ignore it silently — the protocol has no \
              way to say no — so a bias tee that does not come on is not \
-             necessarily this end's doing.",
+             necessarily this end's doing."),
         );
         let mut bias = cfg.rtltcp.bias_tee;
-        if crate::chrome::checkbox(ui, &mut bias, "Feed ~4.5 V DC up the remote coax").changed() {
+        if crate::chrome::checkbox(ui, &mut bias, crate::language_plugin::text("common.feed_4_5_v_dc_up_the_remote_coax", "Feed ~4.5 V DC up the remote coax")).changed() {
             cfg.rtltcp.bias_tee = bias;
             cmds.push(Command::SetGain {
                 dir: Direction::Rx,
@@ -2059,10 +2054,10 @@ pub(in crate::app) fn settings_rtltcp_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON, on hardware that is somewhere else. Whatever is \
+                crate::language_plugin::text("settings.radio.text_2062_2b32f4", "Bias tee is ON, on hardware that is somewhere else. Whatever is \
                  on the other end of that feedline — a transceiver, a grounded \
                  antenna, a preamp already powered — is not in front of you to \
-                 check.",
+                 check."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -2070,23 +2065,23 @@ pub(in crate::app) fn settings_rtltcp_tab(
 
     ui.add_space(8.0);
     ui.separator();
-    ui.label(RichText::new("SDRplay server (rsp_tcp)").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.radio.sdrplay_server_rsp_tcp", "SDRplay server (rsp_tcp)")).strong());
     ui.label(
         RichText::new(
-            "An SDRplay server greets exactly like a dongle, so these are shown \
+            crate::language_plugin::text("settings.radio.text_2076_a82ec2", "An SDRplay server greets exactly like a dongle, so these are shown \
              always rather than when one is detected. Against an ordinary \
              rtl_tcp server they are simply ignored — the protocol has no \
              replies and discards commands it does not know. The Device tab \
-             names the server as rsp_tcp once one has identified itself.",
+             names the server as rsp_tcp once one has identified itself."),
         )
         .weak(),
     );
     ui.add_space(4.0);
 
     egui::Grid::new("rsptcp-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Antenna");
+        ui.label(crate::language_plugin::text("settings.radio.antenna", "Antenna"));
         ui.horizontal(|ui| {
-            for (v, name) in [(0u8, "Input A"), (1, "Input B"), (2, "Hi-Z")] {
+            for (v, name) in [(0u8, crate::language_plugin::text("choices.app.settings.radio.text_2089_34f9cc", "Input A")), (1, crate::language_plugin::text("choices.app.settings.radio.text_2089_d7bd3e", "Input B")), (2, crate::language_plugin::text("choices.app.settings.radio.text_2089_c70d6c", "Hi-Z"))] {
                 if ui.selectable_label(cfg.rtltcp.rsp_antenna == v, name).clicked() {
                     cfg.rtltcp.rsp_antenna = v;
                     push_gain(cmds, RtlTcpConfig::RSP_ANTENNA_ELEMENT, v as f64);
@@ -2095,11 +2090,11 @@ pub(in crate::app) fn settings_rtltcp_tab(
         });
         ui.end_row();
 
-        ui.label("LNA state");
+        ui.label(crate::language_plugin::text("settings.radio.lna_state", "LNA state"));
         if crate::chrome::slider(ui, egui::Slider::new(&mut cfg.rtltcp.rsp_lna_state, 0..=9))
             .on_hover_text(
-                "A step index, not a dB figure: how much each step is worth \
-                 depends on the RSP model and the band. 0 is the most gain.",
+                crate::language_plugin::text("settings.radio.text_2101_b4b414", "A step index, not a dB figure: how much each step is worth \
+                 depends on the RSP model and the band. 0 is the most gain."),
             )
             .changed()
         {
@@ -2107,14 +2102,14 @@ pub(in crate::app) fn settings_rtltcp_tab(
         }
         ui.end_row();
 
-        ui.label("IF gain reduction");
+        ui.label(crate::language_plugin::text("settings.radio.if_gain_reduction", "IF gain reduction"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.rtltcp.rsp_if_gain_reduction, 20..=59).suffix(" dB"),
         )
         .on_hover_text(
-            "A reduction, so more is less signal. Only obeyed with the RSP's \
-                 AGC off.",
+            crate::language_plugin::text("settings.radio.text_2116_f0c427", "A reduction, so more is less signal. Only obeyed with the RSP's \
+                 AGC off."),
         )
         .changed()
         {
@@ -2128,7 +2123,7 @@ pub(in crate::app) fn settings_rtltcp_tab(
 
         ui.label("AGC");
         ui.horizontal(|ui| {
-            if crate::chrome::checkbox(ui, &mut cfg.rtltcp.rsp_agc, "Enable").changed() {
+            if crate::chrome::checkbox(ui, &mut cfg.rtltcp.rsp_agc, crate::language_plugin::text("common.enable", "Enable")).changed() {
                 push_gain(cmds, RtlTcpConfig::RSP_AGC_ELEMENT, cfg.rtltcp.rsp_agc as u8 as f64);
             }
             ui.add_enabled_ui(cfg.rtltcp.rsp_agc, |ui| {
@@ -2138,7 +2133,7 @@ pub(in crate::app) fn settings_rtltcp_tab(
                             .range(-72..=0)
                             .suffix(" dBfs"),
                     )
-                    .on_hover_text("The level the RSP's AGC aims to hold.")
+                    .on_hover_text(crate::language_plugin::text("settings.radio.text_2141_8e9054", "The level the RSP's AGC aims to hold."))
                     .changed()
                 {
                     push_gain(
@@ -2151,7 +2146,7 @@ pub(in crate::app) fn settings_rtltcp_tab(
         });
         ui.end_row();
 
-        ui.label("Notches");
+        ui.label(crate::language_plugin::text("settings.radio.notches", "Notches"));
         ui.horizontal(|ui| {
             let mut mask = cfg.rtltcp.rsp_notch;
             for (bit, name) in [
@@ -2172,10 +2167,10 @@ pub(in crate::app) fn settings_rtltcp_tab(
         });
         ui.end_row();
 
-        ui.label("Reference out");
+        ui.label(crate::language_plugin::text("settings.radio.reference_out", "Reference out"));
         if ui
-            .checkbox(&mut cfg.rtltcp.rsp_ref_out, "24 MHz clock out")
-            .on_hover_text("RSP2 and RSPduo only.")
+            .checkbox(&mut cfg.rtltcp.rsp_ref_out, crate::language_plugin::text("settings.radio.text_2177_2c72b4", "24 MHz clock out"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.text_2178_22048e", "RSP2 and RSPduo only."))
             .changed()
         {
             push_gain(cmds, RtlTcpConfig::RSP_REF_OUT_ELEMENT, cfg.rtltcp.rsp_ref_out as u8 as f64);
@@ -2186,10 +2181,10 @@ pub(in crate::app) fn settings_rtltcp_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only. The address and sample rate take effect on Apply; \
+            crate::language_plugin::text("settings.radio.text_2189_0f4447", "Receive only. The address and sample rate take effect on Apply; \
              everything else applies as you change it. A dropped connection is \
              retried on its own, so a server that is restarted comes back \
-             without touching anything here.",
+             without touching anything here."),
         )
         .weak(),
     );
@@ -2223,44 +2218,44 @@ pub(in crate::app) fn settings_spyserver_tab(
 ) {
     use sdroxide_types::{SpyServerConfig, SpyServerFormat};
     let Some(radio) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_2226_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     let cfg = if vfo { &mut radio.spyserver_vfo } else { &mut radio.spyserver };
     let salt = if vfo { "spyservervfo" } else { "spyserver" };
 
     egui::Grid::new(format!("{salt}-grid")).num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Server address").on_hover_text(
-            "Where spyserver is listening: an address, or an address and port. \
+        ui.label(crate::language_plugin::text("settings.radio.server_address", "Server address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2234_cc568a", "Where spyserver is listening: an address, or an address and port. \
              The port defaults to 5555, which is spyserver's own default.\n\n\
              On the far end, check that its config file binds an address other \
              machines can reach — bound to 127.0.0.1 it only accepts \
-             connections from that same machine.\n\nTakes effect on Apply.",
+             connections from that same machine.\n\nTakes effect on Apply."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.address)
                 .desired_width(220.0)
-                .hint_text("host or host:port, e.g. raspberrypi.local:5555"),
+                .hint_text(crate::language_plugin::text("common.host_or_host_port_e_g_raspberrypi_local_5555", "host or host:port, e.g. raspberrypi.local:5555")),
         );
         ui.end_row();
 
-        ui.label("I/Q bandwidth").on_hover_text(if vfo {
-            "How wide a slice of the band arrives as I/Q — and so how much of \
+        ui.label(crate::language_plugin::text("settings.radio.i_q_bandwidth", "I/Q bandwidth")).on_hover_text(if vfo {
+            crate::language_plugin::text("settings.radio.text_2249_a27f23", "How wide a slice of the band arrives as I/Q — and so how much of \
              the link this uses. This is the *demodulated* window: it follows \
              the dial, and everything wider than it is the server's FFT in the \
              strip above the panadapter.\n\n\
              Automatic aims at about 96 kHz, which carries every mode here \
              including wide FM and still fits down a cellular uplink. \
-             Takes effect on Apply."
+             Takes effect on Apply.")
         } else {
-            "Which stage of the server's own rate ladder to ask for. Every \
+            crate::language_plugin::text("settings.radio.text_2257_056ce9", "Which stage of the server's own rate ladder to ask for. Every \
              receiver has a different ladder — it is its maximum rate halved \
              stage by stage — so this is stored as the stage rather than as a \
              figure in hertz, and the same setting still means something \
              sensible pointed at a different server.\n\n\
              Automatic aims at about 1 Msps. Press Test connection to see what \
-             the stages come to on this server. Takes effect on Apply."
+             the stages come to on this server. Takes effect on Apply.")
         });
         let shown = if cfg.iq_decimation < 0 {
             let target = if vfo {
@@ -2268,19 +2263,15 @@ pub(in crate::app) fn settings_spyserver_tab(
             } else {
                 SpyServerConfig::WIDEBAND_TARGET_RATE_HZ
             };
-            format!("Automatic (nearest {:.0} kHz)", target / 1e3)
+            { let __lp_arg_0 = &(target / 1e3); crate::language_plugin::format("boundaries.app.settings.radio.text_2271_1eff2f", "Automatic (nearest {:.0} kHz)", &[format!("{:.0}", __lp_arg_0)]) }
         } else {
-            format!(
-                "Stage {} — the server's rate ÷ {}",
-                cfg.iq_decimation,
-                1u32 << cfg.iq_decimation.min(20)
-            )
+            { let __lp_arg_0 = &(cfg.iq_decimation); let __lp_arg_1 = &(1u32 << cfg.iq_decimation.min(20)); crate::language_plugin::format("boundaries.app.settings.radio.text_2274_9388e8", "Stage {} — the server's rate ÷ {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
         };
         ComboBox::from_id_salt(format!("{salt}_decim"))
             .width(260.0)
             .selected_text(shown)
             .show_styled(ui, |ui| {
-                if ui.selectable_label(cfg.iq_decimation < 0, "Automatic").clicked() {
+                if ui.selectable_label(cfg.iq_decimation < 0, crate::language_plugin::text("common.automatic", "Automatic")).clicked() {
                     cfg.iq_decimation = SpyServerConfig::AUTO_DECIMATION;
                 }
                 // The ladder's real depth is the server's, and it is not known
@@ -2289,7 +2280,7 @@ pub(in crate::app) fn settings_spyserver_tab(
                 // says so in the log.
                 for stage in 0..16i32 {
                     let sel = cfg.iq_decimation == stage;
-                    let label = format!("Stage {stage} — rate ÷ {}", 1u32 << stage.min(20));
+                    let label = { let __lp_arg_0 = &(1u32 << stage.min(20)); crate::language_plugin::format("boundaries.app.settings.radio.text_2292_26fac7", "Stage {stage} — rate ÷ {}", &[format!("{stage}"), format!("{}", __lp_arg_0)]) };
                     if ui.selectable_label(sel, label).clicked() {
                         cfg.iq_decimation = stage;
                     }
@@ -2297,14 +2288,14 @@ pub(in crate::app) fn settings_spyserver_tab(
             });
         ui.end_row();
 
-        ui.label("Sample format").on_hover_text(
-            "Bits per component on the wire, and so what this costs on the \
+        ui.label(crate::language_plugin::text("settings.radio.sample_format", "Sample format")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2301_241c93", "Bits per component on the wire, and so what this costs on the \
              link: 16-bit is twice 8-bit, and 32-bit float is four times it for \
              no more information than the receiver's ADC had.\n\n\
              8-bit is what makes a remote receiver work over a domestic uplink \
              and is right for almost everything. A server may override this — \
              some are configured to insist on one format — and says so in the \
-             log when it does. Takes effect on Apply.",
+             log when it does. Takes effect on Apply."),
         );
         let mut fmt = cfg.iq_format;
         enum_combo(
@@ -2317,16 +2308,16 @@ pub(in crate::app) fn settings_spyserver_tab(
         cfg.iq_format = fmt;
         ui.end_row();
 
-        ui.label("Gain").on_hover_text(
-            "The server's gain stage, as an index — not a number of decibels. \
+        ui.label(crate::language_plugin::text("settings.radio.gain", "Gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2321_dafe38", "The server's gain stage, as an index — not a number of decibels. \
              What each index means belongs to the receiver on the far end and \
              changes with the band, and the protocol never says, so nothing \
              here can turn it into dB without inventing a figure.\n\n\
              The real range is the server's and is only known once connected; \
-             an index past it is clamped. Applies immediately — no reconnect.",
+             an index past it is clamped. Applies immediately — no reconnect."),
         );
         let mut gain = cfg.gain_index as i32;
-        if ui.add(egui::DragValue::new(&mut gain).range(0..=45).prefix("index ")).changed() {
+        if ui.add(egui::DragValue::new(&mut gain).range(0..=45).prefix(crate::language_plugin::text("settings.radio.text_2329_f6bbd9", "index "))).changed() {
             cfg.gain_index = gain.max(0) as u32;
             cmds.push(Command::SetGain {
                 dir: Direction::Rx,
@@ -2336,8 +2327,8 @@ pub(in crate::app) fn settings_spyserver_tab(
         }
         ui.end_row();
 
-        ui.label("Digital gain").on_hover_text(
-            "How far the server scales its samples up before quantising them \
+        ui.label(crate::language_plugin::text("settings.radio.digital_gain", "Digital gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2340_3ed6b0", "How far the server scales its samples up before quantising them \
              for the wire. Automatic watches what actually arrives and holds \
              the peak at half of full scale, which is the only thing that can \
              be right on both a dead band and a crowded one — the two are \
@@ -2346,11 +2337,11 @@ pub(in crate::app) fn settings_spyserver_tab(
              loses its lower bits to the quantiser and one above it is clipped \
              flat. Wider formats have room to spare and get the figure every \
              other client computes, from the gain index and the decimation \
-             stage. Applies immediately.",
+             stage. Applies immediately."),
         );
         ui.horizontal(|ui| {
             let mut auto = cfg.auto_digital_gain;
-            if crate::chrome::checkbox(ui, &mut auto, "Automatic").changed() {
+            if crate::chrome::checkbox(ui, &mut auto, crate::language_plugin::text("common.automatic", "Automatic")).changed() {
                 cfg.auto_digital_gain = auto;
                 cmds.push(Command::SetGain {
                     dir: Direction::Rx,
@@ -2373,26 +2364,26 @@ pub(in crate::app) fn settings_spyserver_tab(
         });
         ui.end_row();
 
-        ui.label("Full-band strip").on_hover_text(if vfo {
-            "The server's own FFT of the whole band, drawn in the strip above \
+        ui.label(crate::language_plugin::text("settings.radio.full_band_strip", "Full-band strip")).on_hover_text(if vfo {
+            crate::language_plugin::text("settings.radio.text_2377_85c565", "The server's own FFT of the whole band, drawn in the strip above \
              the panadapter. In this interface it is the only band view there \
              is — the panadapter itself is only as wide as the I/Q being \
              received.\n\n\
              Switching it off leaves a receiver with no way to see anything it \
              is not already tuned to. Applies immediately, with a short break \
-             in the audio while the server changes what it is sending."
+             in the audio while the server changes what it is sending.")
         } else {
-            "Ask the server for a low-rate FFT of the whole band as well as \
+            crate::language_plugin::text("settings.radio.text_2385_99057d", "Ask the server for a low-rate FFT of the whole band as well as \
              the I/Q, and draw it in the strip above the panadapter.\n\n\
              It costs almost nothing — a couple of kilobytes a frame, a dozen \
              or so times a second — and it shows the whole receiver rather \
              than the slice being demodulated. Worth switching off only on a \
              link where every byte counts. Applies immediately, with a short \
-             break in the audio."
+             break in the audio.")
         });
         ui.horizontal(|ui| {
             let mut on = cfg.fft_enabled;
-            if crate::chrome::checkbox(ui, &mut on, "Show").changed() {
+            if crate::chrome::checkbox(ui, &mut on, crate::language_plugin::text("common.show", "Show")).changed() {
                 cfg.fft_enabled = on;
                 cmds.push(Command::SetGain {
                     dir: Direction::Rx,
@@ -2402,7 +2393,7 @@ pub(in crate::app) fn settings_spyserver_tab(
             }
             ui.add_enabled_ui(cfg.fft_enabled, |ui| {
                 let shown = if cfg.fft_decimation == 0 {
-                    "whole band".to_string()
+                    crate::language_plugin::text("choices.app.settings.radio.text_2405_15e3a6", "whole band").to_string()
                 } else {
                     format!("÷ {}", 1u32 << cfg.fft_decimation.min(20))
                 };
@@ -2413,7 +2404,7 @@ pub(in crate::app) fn settings_spyserver_tab(
                         for stage in 0..8u32 {
                             let sel = cfg.fft_decimation == stage;
                             let label = if stage == 0 {
-                                "whole band".to_string()
+                                crate::language_plugin::text("choices.app.settings.radio.text_2416_15e3a6", "whole band").to_string()
                             } else {
                                 format!("÷ {}", 1u32 << stage)
                             };
@@ -2429,17 +2420,17 @@ pub(in crate::app) fn settings_spyserver_tab(
                     })
                     .response
                     .on_hover_text(
-                        "How much of the receiver the strip covers. The whole \
+                        crate::language_plugin::text("settings.radio.text_2432_4fb4fb", "How much of the receiver the strip covers. The whole \
                          band is the widest view there is; narrowing it puts \
                          the same number of bins across less spectrum, which \
-                         is finer detail over a smaller stretch.",
+                         is finer detail over a smaller stretch."),
                     );
             });
         });
         ui.end_row();
 
-        ui.label("Strip dB window").on_hover_text(
-            "The server quantises its FFT into this window before sending it, \
+        ui.label(crate::language_plugin::text("settings.radio.strip_db_window", "Strip dB window")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2442_bcc75a", "The server quantises its FFT into this window before sending it, \
              one byte a bin — so these decide how finely the strip is \
              measured, not just how it is drawn. The floor and ceiling the \
              strip is *displayed* with are set by the engine's own \
@@ -2447,7 +2438,7 @@ pub(in crate::app) fn settings_spyserver_tab(
              The default 150 dB is the whole protocol range and needs no \
              attention. Narrowing it around the noise floor buys resolution on \
              a receiver whose signals all sit in a small part of the scale. \
-             Applies immediately.",
+             Applies immediately."),
         );
         ui.horizontal(|ui| {
             ui.add_enabled_ui(cfg.fft_enabled, |ui| {
@@ -2458,7 +2449,7 @@ pub(in crate::app) fn settings_spyserver_tab(
                                 SpyServerConfig::FFT_DB_OFFSET_MIN
                                     ..=SpyServerConfig::FFT_DB_OFFSET_MAX,
                             )
-                            .prefix("top ")
+                            .prefix(crate::language_plugin::text("settings.radio.text_2461_ff5cbb", "top "))
                             .suffix(" dB"),
                     )
                     .changed()
@@ -2476,7 +2467,7 @@ pub(in crate::app) fn settings_spyserver_tab(
                                 SpyServerConfig::FFT_DB_RANGE_MIN
                                     ..=SpyServerConfig::FFT_DB_RANGE_MAX,
                             )
-                            .prefix("range ")
+                            .prefix(crate::language_plugin::text("settings.radio.text_2479_04eec6", "range "))
                             .suffix(" dB"),
                     )
                     .changed()
@@ -2491,14 +2482,14 @@ pub(in crate::app) fn settings_spyserver_tab(
         });
         ui.end_row();
 
-        ui.label("I/Q correction").on_hover_text(
-            "Remove the DC spike and the mirror image in DSP, on this side. \
+        ui.label(crate::language_plugin::text("settings.radio.i_q_correction", "I/Q correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2495_3775e6", "Remove the DC spike and the mirror image in DSP, on this side. \
              Whether the receiver on the far end needs it depends on what it \
              is — an Airspy HF+ does not, an RTL-SDR does — and the protocol \
-             does not say which it is talking to. Applies immediately.",
+             does not say which it is talking to. Applies immediately."),
         );
         let mut iq = cfg.iq_correction;
-        if crate::chrome::checkbox(ui, &mut iq, "Enabled").changed() {
+        if crate::chrome::checkbox(ui, &mut iq, crate::language_plugin::text("common.enabled", "Enabled")).changed() {
             cfg.iq_correction = iq;
             cmds.push(Command::SetGain {
                 dir: Direction::Rx,
@@ -2514,11 +2505,11 @@ pub(in crate::app) fn settings_spyserver_tab(
         // different question from the one being asked.
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Test connection")
+                .button(crate::language_plugin::text("settings.radio.test_connection", "Test connection"))
                 .on_hover_text(
-                    "Connect, read what the server says about its receiver, and \
+                    crate::language_plugin::text("settings.radio.text_2519_6e71fe", "Connect, read what the server says about its receiver, and \
                      disconnect again — without starting a stream, so it is safe \
-                     to press against a server somebody else is using.",
+                     to press against a server somebody else is using."),
                 )
                 .clicked()
             {
@@ -2531,12 +2522,12 @@ pub(in crate::app) fn settings_spyserver_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(if vfo {
-            "Receive only. The panadapter is the narrow I/Q window, which follows the dial; \
+            crate::language_plugin::text("settings.radio.text_2534_6ddc33", "Receive only. The panadapter is the narrow I/Q window, which follows the dial; \
              the band view is the server's FFT in the strip above it. Press \"Apply / \
-             reconnect\" to switch without a restart."
+             reconnect\" to switch without a restart.")
         } else {
-            "Receive only. Wideband I/Q, the same as any local SDR. Press \"Apply / reconnect\" \
-             to switch without a restart."
+            crate::language_plugin::text("settings.radio.text_2538_c4c52e", "Receive only. Wideband I/Q, the same as any local SDR. Press \"Apply / reconnect\" \
+             to switch without a restart.")
         })
         .weak(),
     );
@@ -2557,32 +2548,32 @@ pub(in crate::app) fn settings_kiwisdr_tab(
 ) {
     use sdroxide_types::KiwiConfig;
     let Some(radio) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_2560_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     let cfg = &mut radio.kiwi;
 
     egui::Grid::new("kiwi-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver address").on_hover_text(
-            "Where the receiver serves its web page: an address, or an address \
+        ui.label(crate::language_plugin::text("settings.radio.receiver_address", "Receiver address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2567_665d2a", "Where the receiver serves its web page: an address, or an address \
              and port. The port defaults to 8073, which is a KiwiSDR's own.\n\n\
              Note that a receiver reached through the project's proxy \
              (something.proxy.kiwisdr.com — nearly half the public ones) answers \
              on port 80 instead, so give it explicitly. Picking a receiver from \
-             \"Public SDRs\" fills this in correctly.\n\nTakes effect on Apply.",
+             \"Public SDRs\" fills this in correctly.\n\nTakes effect on Apply."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.address)
                 .desired_width(240.0)
-                .hint_text("host or host:port, e.g. kiwi.example.org:8073"),
+                .hint_text(crate::language_plugin::text("common.host_or_host_port_e_g_kiwi_example_org_8073", "host or host:port, e.g. kiwi.example.org:8073")),
         );
         ui.end_row();
 
-        ui.label("Password").on_hover_text(
-            "The receiver's *user* password, where its operator has set one. \
+        ui.label(crate::language_plugin::text("settings.radio.password", "Password")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2583_389689", "The receiver's *user* password, where its operator has set one. \
              Blank on almost every public receiver. Not the admin password.\n\n\
-             Takes effect on Apply.",
+             Takes effect on Apply."),
         );
         crate::chrome::field(
             ui,
@@ -2590,39 +2581,39 @@ pub(in crate::app) fn settings_kiwisdr_tab(
         );
         ui.end_row();
 
-        ui.label("Announce as").on_hover_text(
-            "The name this connection shows up under, which the receiver's \
+        ui.label(crate::language_plugin::text("settings.radio.announce_as", "Announce as")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2594_c2b4e7", "The name this connection shows up under, which the receiver's \
              owner and everybody else listening to it can see.\n\n\
              Left blank it is your station callsign, which is the network's own \
              convention — some operators do block clients that will not \
-             identify. Takes effect on Apply.",
+             identify. Takes effect on Apply."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.ident)
                 .desired_width(160.0)
-                .hint_text("blank = station callsign"),
+                .hint_text(crate::language_plugin::text("settings.radio.blank_station_callsign", "blank = station callsign")),
         );
         ui.end_row();
 
-        ui.label("Band view").on_hover_text(
-            "Ask the receiver for its own waterfall as well as its I/Q, and \
+        ui.label(crate::language_plugin::text("settings.radio.band_view", "Band view")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2609_eac863", "Ask the receiver for its own waterfall as well as its I/Q, and \
              draw it in the strip above the panadapter.\n\n\
              Worth having: the I/Q is only about 12 kHz wide, so without this \
              there is nothing to tune *by*. It is a second connection carrying \
              roughly 20 kB/s at full speed, against the I/Q's 44 kB/s.\n\n\
-             Takes effect on Apply.",
+             Takes effect on Apply."),
         );
         let mut wide = cfg.wide_lane;
-        crate::chrome::checkbox(ui, &mut wide, "show the receiver's 0-30 MHz waterfall");
+        crate::chrome::checkbox(ui, &mut wide, crate::language_plugin::text("settings.radio.text_2617_f820e2", "show the receiver's 0-30 MHz waterfall"));
         cfg.wide_lane = wide;
         ui.end_row();
 
-        ui.label("Band view speed").on_hover_text(
-            "How often the receiver sends a waterfall row, 1 (slowest) to 4. \
+        ui.label(crate::language_plugin::text("settings.radio.band_view_speed", "Band view speed")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2622_a937e4", "How often the receiver sends a waterfall row, 1 (slowest) to 4. \
              The only setting here that changes what the link costs while \
              running, so turn it down on a metered connection.\n\n\
-             Applies immediately.",
+             Applies immediately."),
         );
         let mut speed = cfg.wf_speed.clamp(KiwiConfig::WF_SPEED_MIN, KiwiConfig::WF_SPEED_MAX);
         if ui
@@ -2641,8 +2632,8 @@ pub(in crate::app) fn settings_kiwisdr_tab(
         }
         ui.end_row();
 
-        ui.label("Band view span").on_hover_text(
-            "How much band the receiver's waterfall covers. Its full 0-30 MHz \
+        ui.label(crate::language_plugin::text("settings.radio.band_view_span", "Band view span")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2645_e14ce2", "How much band the receiver's waterfall covers. Its full 0-30 MHz \
              at the left of the slider, halving with each step to the right.\n\n\
              The waterfall is always 1024 bins wide however wide the window is, \
              so this is really a resolution control: the whole band is 29 kHz to \
@@ -2651,7 +2642,7 @@ pub(in crate::app) fn settings_kiwisdr_tab(
              broadcast band. Zoomed in, the window follows your dial.\n\n\
              The whole band is the default and is what makes the strip a thing \
              to tune by; the panadapter below it is the ~12 kHz of I/Q. \
-             Applies immediately.",
+             Applies immediately."),
         );
         let mut zoom = cfg.wf_zoom.min(KiwiConfig::WF_ZOOM_MAX);
         let span_label = |z: u8, bw: f64| {
@@ -2677,8 +2668,8 @@ pub(in crate::app) fn settings_kiwisdr_tab(
         }
         ui.end_row();
 
-        ui.label("Receiver AGC").on_hover_text(
-            "The *receiver's* AGC, which is on the far side of the link and \
+        ui.label(crate::language_plugin::text("settings.radio.receiver_agc", "Receiver AGC")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2681_174c4d", "The *receiver's* AGC, which is on the far side of the link and \
              ahead of the I/Q — so it acts before anything sdroxide does.\n\n\
              On by default, unlike every local SDR here, because the measured \
              alternative was worse: on a live receiver the manual gain was not \
@@ -2686,10 +2677,10 @@ pub(in crate::app) fn settings_kiwisdr_tab(
              scale, while the AGC held about -24 dBFS with 7 dB of headroom.\n\n\
              It does mean the sample amplitude is not a signal level, which is \
              why the S-meter is read from the receiver's own figure instead. \
-             Applies immediately.",
+             Applies immediately."),
         );
         let mut agc = cfg.agc;
-        if crate::chrome::checkbox(ui, &mut agc, "let the receiver ride its own gain").changed() {
+        if crate::chrome::checkbox(ui, &mut agc, crate::language_plugin::text("common.let_the_receiver_ride_its_own_gain", "let the receiver ride its own gain")).changed() {
             cfg.agc = agc;
             cmds.push(Command::SetGain {
                 dir: Direction::Rx,
@@ -2699,12 +2690,12 @@ pub(in crate::app) fn settings_kiwisdr_tab(
         }
         ui.end_row();
 
-        ui.label("Manual gain").on_hover_text(
-            "Fixed gain when the receiver's AGC is off, on its own 0-90 scale. \
+        ui.label(crate::language_plugin::text("settings.radio.manual_gain", "Manual gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2703_acd373", "Fixed gain when the receiver's AGC is off, on its own 0-90 scale. \
              Not decibels of anything stated — the protocol calls it manGain \
              and says no more, and it was measured not to be monotonic, so \
              treat it as a dial to find a good spot on rather than a \
-             calibration. Applies immediately.",
+             calibration. Applies immediately."),
         );
         let mut gain = cfg.man_gain;
         if ui.add_enabled(!cfg.agc, egui::Slider::new(&mut gain, 0..=90)).changed() {
@@ -2724,12 +2715,12 @@ pub(in crate::app) fn settings_kiwisdr_tab(
         // busy receiver, be the reason it was full.
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Test connection")
+                .button(crate::language_plugin::text("settings.radio.test_connection", "Test connection"))
                 .on_hover_text(
-                    "Read the receiver's status page: what it is, what it \
+                    crate::language_plugin::text("settings.radio.text_2729_28af15", "Read the receiver's status page: what it is, what it \
                      covers, how many channels are free, and whether its \
                      operator allows connections from apps other than a \
-                     browser. Takes none of its channels.",
+                     browser. Takes none of its channels."),
                 )
                 .clicked()
             {
@@ -2741,13 +2732,10 @@ pub(in crate::app) fn settings_kiwisdr_tab(
     test_result_line(ui, test_result);
     ui.add_space(6.0);
     ui.label(
-        RichText::new(format!(
-            "Receive only — this is somebody else's antenna. The panadapter is the ~12 kHz \
+        RichText::new({ let __lp_arg_0 = &(cfg.link_kbytes_s()); crate::language_plugin::format("settings.radio.text_2745_09e3b4", "Receive only — this is somebody else's antenna. The panadapter is the ~12 kHz \
              the receiver sends as I/Q, which follows the dial; the band view above it is its \
              own waterfall, and tuning across it retunes the receiver. About {:.0} kB/s while \
-             connected. Press \"Apply / reconnect\" to switch without a restart.",
-            cfg.link_kbytes_s(),
-        ))
+             connected. Press \"Apply / reconnect\" to switch without a restart.", &[format!("{:.0}", __lp_arg_0)]) })
         .weak(),
     );
 }
@@ -2761,20 +2749,20 @@ pub(in crate::app) fn settings_tci_tab(
 ) {
     use sdroxide_types::TciConfig;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_2764_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     egui::Grid::new("tci-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Server address");
+        ui.label(crate::language_plugin::text("settings.radio.server_address", "Server address"));
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.tci.address)
                 .desired_width(220.0)
-                .hint_text("host:port, e.g. 127.0.0.1:50001"),
+                .hint_text(crate::language_plugin::text("common.host_port_e_g_127_0_0_1_50001", "host:port, e.g. 127.0.0.1:50001")),
         );
         ui.end_row();
 
-        ui.label("IQ sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.iq_sample_rate", "IQ sample rate"));
         let shown = format!("{} kHz", (cfg.tci.iq_sample_rate_hz / 1000.0) as u32);
         ComboBox::from_id_salt("tci_rate").selected_text(shown).show_styled(ui, |ui| {
             for &r in &TciConfig::IQ_RATES {
@@ -2790,7 +2778,7 @@ pub(in crate::app) fn settings_tci_tab(
         // SunSDR2DX has; the rig reports its real count when the connection
         // opens, and asking for one it doesn't have is refused with that
         // count. Shown 1-based, stored 0-based as the wire counts.
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         let shown = format!("RX{}", cfg.tci.rx + 1);
         ComboBox::from_id_salt("tci_rx")
             .selected_text(shown)
@@ -2803,9 +2791,9 @@ pub(in crate::app) fn settings_tci_tab(
             })
             .response
             .on_hover_text(
-                "A rig with two receivers (SunSDR2DX) can serve two radio tabs from one \
+                crate::language_plugin::text("settings.radio.text_2806_4ec578", "A rig with two receivers (SunSDR2DX) can serve two radio tabs from one \
                  connection — run this radio on RX1 and another on RX2. The transmitter \
-                 belongs to the RX1 radio.",
+                 belongs to the RX1 radio."),
             );
         ui.end_row();
 
@@ -2814,19 +2802,19 @@ pub(in crate::app) fn settings_tci_tab(
         // at, and this is the only number that says which centre that was — so
         // it belongs to the rig, not to sdroxide, and the default is a
         // measurement of one particular rig rather than a constant.
-        ui.label("Stream delay");
+        ui.label(crate::language_plugin::text("settings.radio.stream_delay", "Stream delay"));
         crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.tci.stream_delay_ms, 0.0..=400.0).suffix(" ms").step_by(1.0),
         )
         .on_hover_text(
-            "How long the rig's IQ takes to arrive on a new centre after sdroxide moves it. \
+            crate::language_plugin::text("settings.radio.text_2823_0aca66", "How long the rig's IQ takes to arrive on a new centre after sdroxide moves it. \
              It is the rig's own DSP pipeline, not the network — a server on this machine \
              has one too — and while the panadapter is dragged fully zoomed out, being wrong \
              by this much moves the newest waterfall rows sideways of the history by the \
              error times the speed of the drag. Too high displaces them exactly as far as \
              too low, the other way. Measure it with `cargo run --release -p sdroxide-tci \
-             --example retune_latency`; the default is a SunSDR2DX on ExpertSDR3 at 192 kHz.",
+             --example retune_latency`; the default is a SunSDR2DX on ExpertSDR3 at 192 kHz."),
         );
         ui.end_row();
 
@@ -2835,7 +2823,7 @@ pub(in crate::app) fn settings_tci_tab(
         // green answer here would only say this screen can reach the rig — a
         // different question from the one being asked.
         probe_only(ui, can_probe, |ui| {
-            if ui.button("Test connection").clicked() {
+            if ui.button(crate::language_plugin::text("settings.radio.test_connection", "Test connection")).clicked() {
                 *tci_test = true;
             }
         });
@@ -2845,7 +2833,7 @@ pub(in crate::app) fn settings_tci_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "Wideband IQ receive, audio transmit. Press \"Apply / reconnect\" to switch without a restart.",
+            crate::language_plugin::text("settings.radio.text_2848_edf3eb", "Wideband IQ receive, audio transmit. Press \"Apply / reconnect\" to switch without a restart."),
         )
         .weak(),
     );
@@ -2869,39 +2857,39 @@ pub(in crate::app) fn settings_icomnet_tab(
 ) {
     use sdroxide_types::{CwKeying, IcomNetConfig, IcomRxSource, IcomScopeSpan};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_2872_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     let net = &mut cfg.icomnet;
 
     egui::Grid::new("icomnet-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Radio address").on_hover_text(
-            "The address shown on the radio under SET > Network. Network Control has to \
-             be on there, and the radio needs a network user name and password set.",
+        ui.label(crate::language_plugin::text("settings.radio.radio_address", "Radio address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2879_611bda", "The address shown on the radio under SET > Network. Network Control has to \
+             be on there, and the radio needs a network user name and password set."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut net.address)
                 .desired_width(220.0)
-                .hint_text("host or IP, e.g. 192.168.1.50"),
+                .hint_text(crate::language_plugin::text("common.host_or_ip_e_g_192_168_1_50", "host or IP, e.g. 192.168.1.50")),
         );
         ui.end_row();
 
-        ui.label("Control port");
+        ui.label(crate::language_plugin::text("settings.radio.control_port", "Control port"));
         ui.add(egui::DragValue::new(&mut net.control_port).range(1..=65535))
-            .on_hover_text("50001 unless it has been changed on the radio.");
+            .on_hover_text(crate::language_plugin::text("settings.radio.text_2892_25d175", "50001 unless it has been changed on the radio."));
         ui.end_row();
 
-        ui.label("Network user");
+        ui.label(crate::language_plugin::text("settings.radio.network_user", "Network user"));
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut net.username).desired_width(220.0),
         );
         ui.end_row();
 
-        ui.label("Password").on_hover_text(
-            "Stored in the clear in radio.json. The protocol obfuscates it reversibly on \
-             the wire, so nothing here would make it a secret.",
+        ui.label(crate::language_plugin::text("settings.radio.password", "Password")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2903_900bf6", "Stored in the clear in radio.json. The protocol obfuscates it reversibly on \
+             the wire, so nothing here would make it a secret."),
         );
         crate::chrome::field(
             ui,
@@ -2909,18 +2897,18 @@ pub(in crate::app) fn settings_icomnet_tab(
         );
         ui.end_row();
 
-        ui.label("Receive from").on_hover_text(
-            "AF: the radio demodulates and sdroxide shows the audio band. \
+        ui.label(crate::language_plugin::text("settings.radio.receive_from", "Receive from")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_2913_123518", "AF: the radio demodulates and sdroxide shows the audio band. \
              12 kHz IF: the radio sends its DRM intermediate frequency instead and \
              sdroxide demodulates, which brings its own filters, noise reduction and \
              decoders to bear over about ±12 kHz. Either way the wide waterfall is the \
-             radio's own scope — no Icom outputs I/Q.",
+             radio's own scope — no Icom outputs I/Q."),
         );
         ComboBox::from_id_salt("icomnet_rx_source")
-            .selected_text(net.rx_source.label())
+            .selected_text(crate::language_plugin::display_label(net.rx_source.label()))
             .show_styled(ui, |ui| {
                 for s in IcomRxSource::ALL {
-                    if ui.selectable_label(net.rx_source == s, s.label()).clicked() {
+                    if ui.selectable_label(net.rx_source == s,crate::language_plugin::display_label(s.label())).clicked() {
                         net.rx_source = s;
                     }
                 }
@@ -2931,7 +2919,7 @@ pub(in crate::app) fn settings_icomnet_tab(
         radio_rx_antenna_row(ui, caps, rx_antenna, cmds);
         radio_power_row(ui, caps, cmds);
 
-        ui.label("Audio sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.audio_sample_rate", "Audio sample rate"));
         ComboBox::from_id_salt("icomnet_rate")
             .selected_text(format!("{} Hz", net.sample_rate_hz))
             .show_styled(ui, |ui| {
@@ -2949,8 +2937,8 @@ pub(in crate::app) fn settings_icomnet_tab(
             ui.label("");
             ui.colored_label(
                 egui::Color32::from_rgb(0xd0, 0x90, 0x30),
-                "A 12 kHz IF needs the 48000 Hz stream — at this rate the radio's \
-                 demodulated audio is used instead.",
+                crate::language_plugin::text("settings.radio.text_2952_6a4da0", "A 12 kHz IF needs the 48000 Hz stream — at this rate the radio's \
+                 demodulated audio is used instead."),
             );
             ui.end_row();
         }
@@ -2958,22 +2946,22 @@ pub(in crate::app) fn settings_icomnet_tab(
         // Only on the IF path: the AF path is audio the radio has already
         // demodulated, and there is nothing left in it to mirror.
         if net.rx_source == IcomRxSource::If12k && net.if_mode_usable() {
-            ui.label("IF spectrum").on_hover_text(
-                "Which way round the radio's 12 kHz IF runs. \"Automatic\" uses what \
+            ui.label(crate::language_plugin::text("settings.radio.if_spectrum", "IF spectrum")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_2962_9c87cb", "Which way round the radio's 12 kHz IF runs. \"Automatic\" uses what \
                  the model is known to do — mirrored on an IC-7760, normal on every \
                  other Icom. Set it by hand if SSB comes out on the wrong sideband: \
                  the giveaway is having to select USB where the band runs LSB while \
-                 the radio's own mode display agrees with sdroxide throughout.",
+                 the radio's own mode display agrees with sdroxide throughout."),
             );
             ComboBox::from_id_salt("icomnet_invert_if")
                 .selected_text(match net.invert_if {
-                    None => "Automatic",
-                    Some(false) => "Normal",
-                    Some(true) => "Mirrored",
+                    None => crate::language_plugin::text("settings.radio.text_2970_d461a4", "Automatic"),
+                    Some(false) => crate::language_plugin::text("settings.radio.text_2971_a7248e", "Normal"),
+                    Some(true) => crate::language_plugin::text("settings.radio.text_2972_ed059f", "Mirrored"),
                 })
                 .show_styled(ui, |ui| {
                     for (v, label) in
-                        [(None, "Automatic"), (Some(false), "Normal"), (Some(true), "Mirrored")]
+                        [(None, crate::language_plugin::text("choices.app.settings.radio.text_2976_d461a4", "Automatic")), (Some(false), crate::language_plugin::text("choices.app.settings.radio.text_2976_a7248e", "Normal")), (Some(true), crate::language_plugin::text("choices.app.settings.radio.text_2976_ed059f", "Mirrored"))]
                     {
                         if ui.selectable_label(net.invert_if == v, label).clicked() {
                             net.invert_if = v;
@@ -2984,31 +2972,31 @@ pub(in crate::app) fn settings_icomnet_tab(
         }
 
         if net.rx_source == IcomRxSource::Af {
-            ui.label("Displayed bandwidth");
+            ui.label(crate::language_plugin::text("settings.radio.displayed_bandwidth", "Displayed bandwidth"));
             ui.add(
                 egui::DragValue::new(&mut net.audio_bw_hz).range(1000.0..=24_000.0).suffix(" Hz"),
             )
             .on_hover_text(
-                "Width of the audio-band panadapter, as for a CAT rig. Used in the \
+                crate::language_plugin::text("settings.radio.text_2992_81dfa2", "Width of the audio-band panadapter, as for a CAT rig. Used in the \
                  digital modes and where the radio's scope is off; otherwise the \
-                 panadapter is the scope, and Scope span sets its width.",
+                 panadapter is the scope, and Scope span sets its width."),
             );
             ui.end_row();
         }
 
-        ui.label("CW keying").on_hover_text(
-            "How the CW panel's keyer transmits. \"Rig keyer\" puts the radio in CW \
+        ui.label(crate::language_plugin::text("settings.radio.cw_keying", "CW keying")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3000_d93b1e", "How the CW panel's keyer transmits. \"Rig keyer\" puts the radio in CW \
              and hands it the text to send with its own keyer (CI-V 0x17). \"Sound \
              card\" sends the keyed sidetone over the LAN as audio instead (MCW), a \
              tone at dial + pitch — and because a rig in CW would ignore its \
              modulator input, selecting CW then keeps the radio in plain USB, the \
-             same mode the digital modes ride.",
+             same mode the digital modes ride."),
         );
-        ComboBox::from_id_salt("icomnet_cw").selected_text(net.cw_keying.label()).show_styled(
+        ComboBox::from_id_salt("icomnet_cw").selected_text(crate::language_plugin::display_label(net.cw_keying.label())).show_styled(
             ui,
             |ui| {
                 for k in CwKeying::ALL {
-                    if ui.selectable_label(net.cw_keying == k, k.label()).clicked() {
+                    if ui.selectable_label(net.cw_keying == k,crate::language_plugin::display_label(k.label())).clicked() {
                         net.cw_keying = k;
                     }
                 }
@@ -3016,39 +3004,39 @@ pub(in crate::app) fn settings_icomnet_tab(
         );
         ui.end_row();
 
-        ui.label("Transmit buffer");
+        ui.label(crate::language_plugin::text("settings.radio.transmit_buffer", "Transmit buffer"));
         ui.add(egui::DragValue::new(&mut net.tx_latency_ms).range(20..=1000).suffix(" ms"))
             .on_hover_text(
-                "How much audio the radio holds before modulating. More survives a worse \
-                 network, at the cost of transmit latency.",
+                crate::language_plugin::text("settings.radio.text_3022_09e2b3", "How much audio the radio holds before modulating. More survives a worse \
+                 network, at the cost of transmit latency."),
             );
         ui.end_row();
 
         ui.label("");
-        crate::chrome::checkbox(ui, &mut net.scope, "Show the radio's spectrum scope")
+        crate::chrome::checkbox(ui, &mut net.scope, crate::language_plugin::text("settings.radio.text_3028_2bb529", "Show the radio's spectrum scope"))
             .on_hover_text(
-                "Streams the radio's own 475-bin sweep. On AF it is the panadapter — the \
+                crate::language_plugin::text("settings.radio.text_3030_7cb5e5", "Streams the radio's own 475-bin sweep. On AF it is the panadapter — the \
              audio the radio sends is what came through its filter, not a picture of \
              the band — and on the 12 kHz IF it is the full-band waterfall above one. \
              Either way it is the radio's picture, not sdroxide's DSP: there is no I/Q \
-             to compute one from.",
+             to compute one from."),
             );
         ui.end_row();
 
         if net.scope {
-            ui.label("Scope span").on_hover_text(
-                "How wide to sweep it. This is the only wide view an Icom has, and the \
+            ui.label(crate::language_plugin::text("settings.radio.scope_span", "Scope span")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_3040_120f0b", "How wide to sweep it. This is the only wide view an Icom has, and the \
                  radio keeps whatever span was last chosen on its own screen — often a \
                  few kHz, which is why the strip can come up no wider than the \
                  panadapter under it. Setting a span here also puts the scope into \
                  centre mode, so it follows the dial. It changes the radio's own \
-                 display too; \"As set on the radio\" leaves it alone.",
+                 display too; \"As set on the radio\" leaves it alone."),
             );
             ComboBox::from_id_salt("icomnet_scope_span")
-                .selected_text(net.scope_span.label())
+                .selected_text(crate::language_plugin::display_label(net.scope_span.label()))
                 .show_styled(ui, |ui| {
                     for sp in IcomScopeSpan::ALL {
-                        if ui.selectable_label(net.scope_span == sp, sp.label()).clicked() {
+                        if ui.selectable_label(net.scope_span == sp,crate::language_plugin::display_label(sp.label())).clicked() {
                             net.scope_span = sp;
                         }
                     }
@@ -3060,14 +3048,14 @@ pub(in crate::app) fn settings_icomnet_tab(
         crate::chrome::checkbox(
             ui,
             &mut net.set_mod_input_on_open,
-            "Switch modulation input to LAN",
+            crate::language_plugin::text("common.switch_modulation_input_to_lan", "Switch modulation input to LAN"),
         )
         .on_hover_text(
-            "Transmit audio is only heard when the radio's MOD input is set to LAN. \
+            crate::language_plugin::text("settings.radio.text_3066_98d0f1", "Transmit audio is only heard when the radio's MOD input is set to LAN. \
                  sdroxide can write that on a model whose menu numbering it knows; on any \
                  other it says so and leaves the menu alone. It is a loan: whatever the \
                  radio held there is read first and put back when the session ends, so a \
-                 rig used on its own afterwards still hears its own microphone.",
+                 rig used on its own afterwards still hears its own microphone."),
         );
         ui.end_row();
 
@@ -3077,15 +3065,15 @@ pub(in crate::app) fn settings_icomnet_tab(
         // is on the engine's machine.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
-                if ui.button("Test connection").clicked() {
+                if ui.button(crate::language_plugin::text("settings.radio.test_connection", "Test connection")).clicked() {
                     *test = true;
                 }
                 if ui
-                    .button("Copy diagnostic report")
+                    .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                     .on_hover_text(
-                        "Copies this radio's last session — its handshake and CI-V trace — \
+                        crate::language_plugin::text("settings.radio.text_3086_897e43", "Copies this radio's last session — its handshake and CI-V trace — \
                          to the clipboard, for a bug report. This radio's, not the station's: \
-                         with two Icoms on the LAN each tab answers about its own address.",
+                         with two Icoms on the LAN each tab answers about its own address."),
                     )
                     .clicked()
                 {
@@ -3101,9 +3089,9 @@ pub(in crate::app) fn settings_icomnet_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "Control, audio and the radio's own scope over one network connection — no \
+            crate::language_plugin::text("settings.radio.text_3104_0d2997", "Control, audio and the radio's own scope over one network connection — no \
              serial cable and no sound card. Press \"Apply / reconnect\" to switch without \
-             a restart.",
+             a restart."),
         )
         .weak(),
     );
@@ -3123,29 +3111,34 @@ pub(in crate::app) fn settings_icomnet_tab(
 /// between would be pressed again.
 fn test_result_line(ui: &mut egui::Ui, result: &Option<crate::app::settings::TestOutcome>) {
     use crate::app::settings::TestOutcome;
+    let local_result;
     let result = match result {
         None => return,
         Some(TestOutcome::Waiting) => {
-            ui.label(RichText::new("Testing…").weak());
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.testing", "Testing…")).weak());
             return;
+        }
+        Some(TestOutcome::LocalError(e)) => {
+            local_result = Err(e.display());
+            &local_result
         }
         Some(TestOutcome::Done(r)) => r,
     };
     match result {
         Ok(s) => {
             ui.label(
-                RichText::new(format!("Connected: {s}")).color(Color32::from_rgb(90, 200, 110)),
+                RichText::new(crate::language_plugin::format("settings.radio.text_3137_48f475", "Connected: {s}", &[format!("{s}")])).color(Color32::from_rgb(90, 200, 110)),
             );
             ui.label(
                 RichText::new(
-                    "That was only a check — press Apply / reconnect below to start \
-                     using this radio.",
+                    crate::language_plugin::text("settings.radio.text_3141_1a6d6a", "That was only a check — press Apply / reconnect below to start \
+                     using this radio."),
                 )
                 .weak(),
             );
         }
         Err(e) => {
-            ui.label(RichText::new(format!("Failed: {e}")).color(Color32::from_rgb(230, 90, 80)));
+            ui.label(RichText::new(crate::language_plugin::format("common.failed_e", "Failed: {e}", &[format!("{e}")])).color(Color32::from_rgb(230, 90, 80)));
         }
     }
 }
@@ -3173,34 +3166,34 @@ pub(in crate::app) fn settings_pluto_tab(
 ) {
     use sdroxide_types::{PlutoAgc, PlutoConfig, PlutoDuplex, PlutoPtt};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_3176_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
     egui::Grid::new("pluto-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Radios").on_hover_text(
-            "Asks the network for IIO devices, and also tries 192.168.2.1 directly — \
+        ui.label(crate::language_plugin::text("settings.radio.radios", "Radios")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3182_d5b32d", "Asks the network for IIO devices, and also tries 192.168.2.1 directly — \
              a Pluto on the end of a USB cable is often unreachable by multicast even \
-             though the address works.",
+             though the address works."),
         );
         // The mDNS query and the USB-gadget probe both go out from here, and a
         // Pluto on a USB cable is only reachable from the machine it is plugged
         // into. The Address row below is typed, so it still works from here.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
-                if ui.button("Discover").clicked() {
+                if ui.button(crate::language_plugin::text("settings.radio.discover", "Discover")).clicked() {
                     *discover = true;
                 }
-                let shown = cfg.pluto.selected_ip.clone().unwrap_or_else(|| "— none —".into());
+                let shown = cfg.pluto.selected_ip.clone().unwrap_or_else(|| crate::language_plugin::text("choices.app.settings.radio.text_3194_13915b", "— none —").into());
                 ComboBox::from_id_salt("pluto_dev").width(340.0).selected_text(shown).show_styled(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no radios — press Discover").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_radios_press_discover", "no radios — press Discover")).weak());
                         }
                         for d in devices {
                             let sel = cfg.pluto.selected_ip.as_deref() == Some(d.ip.as_str());
-                            if ui.selectable_label(sel, d.label()).clicked() {
+                            if ui.selectable_label(sel,crate::language_plugin::display_label(d.label())).clicked() {
                                 cfg.pluto.selected_ip = Some(d.ip.clone());
                                 // The typed address wins over a selection, so a
                                 // click here has no visible effect until it is
@@ -3214,10 +3207,10 @@ pub(in crate::app) fn settings_pluto_tab(
         });
         ui.end_row();
 
-        ui.label("Address").on_hover_text(
-            "Overrides the selection above. The USB cable presents the Pluto as a \
+        ui.label(crate::language_plugin::text("settings.radio.address", "Address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3218_857ebd", "Overrides the selection above. The USB cable presents the Pluto as a \
              network adapter, not a serial port, so this is an IP address even when \
-             the radio is on your desk.",
+             the radio is on your desk."),
         );
         crate::chrome::field(
             ui,
@@ -3230,7 +3223,7 @@ pub(in crate::app) fn settings_pluto_tab(
         // Which receive chain of the AD9361 this radio runs. Unlike TCI or
         // HPSDR the chains are not independently tunable — one synthesiser
         // serves both — so RX2 is a second *antenna*, not a second frequency.
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         let shown = format!("RX{}", cfg.pluto.rx + 1);
         ComboBox::from_id_salt("pluto_rx")
             .selected_text(shown)
@@ -3243,21 +3236,21 @@ pub(in crate::app) fn settings_pluto_tab(
             })
             .response
             .on_hover_text(
-                "A Pluto+ or a revision-C Pluto unlocked to 2R2T can serve two radio \
+                crate::language_plugin::text("settings.radio.text_3246_4eb985", "A Pluto+ or a revision-C Pluto unlocked to 2R2T can serve two radio \
                  tabs from one box — this radio on RX1 and another on RX2, each on its \
                  own antenna. The two chains share the one oscillator, so retuning \
                  either radio moves both; what RX2 buys is a second antenna on the \
                  same spectrum (diversity), not a second band. The transmitter belongs \
-                 to the RX1 radio. A stock 1R1T Pluto refuses RX2 when it connects.",
+                 to the RX1 radio. A stock 1R1T Pluto refuses RX2 when it connects."),
             );
         ui.end_row();
 
-        ui.label("Sample rate").on_hover_text(
-            "Width of the spectrum sdroxide receives. The AD9361 reaches 61.44 Msps; \
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3256_0af4fc", "Width of the spectrum sdroxide receives. The AD9361 reaches 61.44 Msps; \
              the USB network link does not, which is what this list is scaled to. \
              The lowest rates need a filter configuration loaded into the AD9361, \
              which sdroxide does not do — a stock Pluto runs them at about 2.084 \
-             Msps instead and says so when it connects. Takes effect on Apply.",
+             Msps instead and says so when it connects. Takes effect on Apply."),
         );
         let shown = format!("{:.3} Msps", cfg.pluto.sample_rate_hz / 1e6);
         ComboBox::from_id_salt("pluto_rate").selected_text(shown).show_styled(ui, |ui| {
@@ -3265,9 +3258,9 @@ pub(in crate::app) fn settings_pluto_tab(
                 let sel = (cfg.pluto.sample_rate_hz - r).abs() < 1.0;
                 let mut label = format!("{:.3} Msps", r / 1e6);
                 if r >= 3_840_000.0 {
-                    label.push_str("  (more than USB 2 will carry)");
+                    label.push_str(&crate::language_plugin::text("boundaries.app.settings.radio.text_3268_0caba0", "  (more than USB 2 will carry)"));
                 } else if r < PlutoConfig::NO_FIR_FLOOR_HZ {
-                    label.push_str("  (a stock Pluto runs at 2.084)");
+                    label.push_str(&crate::language_plugin::text("boundaries.app.settings.radio.text_3270_f14f00", "  (a stock Pluto runs at 2.084)"));
                 }
                 if ui.selectable_label(sel, label).clicked() {
                     cfg.pluto.sample_rate_hz = r;
@@ -3276,18 +3269,18 @@ pub(in crate::app) fn settings_pluto_tab(
         });
         ui.end_row();
 
-        ui.label("Analog filter").on_hover_text(
-            "The AD9361's baseband filter. Leave at 0 for automatic, which opens it \
+        ui.label(crate::language_plugin::text("settings.radio.analog_filter", "Analog filter")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3280_3bc186", "The AD9361's baseband filter. Leave at 0 for automatic, which opens it \
              to nine tenths of the sample rate — wide on purpose, because the \
              receiver parks its oscillator a quarter of a span off the dial to keep \
              signals clear of the DC spike, and a narrow filter would cut off exactly \
-             the part it moved them to. Takes effect on Apply.",
+             the part it moved them to. Takes effect on Apply."),
         );
         let mut bw_khz = (cfg.pluto.rf_bandwidth_hz / 1000.0).round() as i64;
         if ui
             .add(DragValue::new(&mut bw_khz).range(0..=56_000).suffix(" kHz").custom_formatter(
                 |v, _| {
-                    if v <= 0.0 { "auto".to_string() } else { format!("{v:.0}") }
+                    if v <= 0.0 { crate::language_plugin::text("choices.app.settings.radio.text_3290_929260", "auto").to_string() } else { format!("{v:.0}") }
                 },
             ))
             .changed()
@@ -3297,9 +3290,9 @@ pub(in crate::app) fn settings_pluto_tab(
         ui.end_row();
 
         ui.label("AGC").on_hover_text(
-            "The AD9361 has four modes, not an on/off switch. Slow attack suits SSB \
+            crate::language_plugin::text("settings.radio.text_3300_40b5aa", "The AD9361 has four modes, not an on/off switch. Slow attack suits SSB \
              and CW; fast attack suits bursty signals; manual is the setting for \
-             measurement and weak-signal digital modes. Applies immediately.",
+             measurement and weak-signal digital modes. Applies immediately."),
         );
         let mut agc = cfg.pluto.agc;
         enum_combo(ui, "pluto_agc", &mut agc, &PlutoAgc::ALL, PlutoAgc::label);
@@ -3313,9 +3306,9 @@ pub(in crate::app) fn settings_pluto_tab(
         }
         ui.end_row();
 
-        ui.label("RX gain").on_hover_text(
-            "Applies immediately — no reconnect. Ignored unless the AGC is set to \
-             manual, which is the AD9361's own behaviour, not sdroxide's.",
+        ui.label(crate::language_plugin::text("settings.radio.rx_gain", "RX gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3317_54459b", "Applies immediately — no reconnect. Ignored unless the AGC is set to \
+             manual, which is the AD9361's own behaviour, not sdroxide's."),
         );
         ui.add_enabled_ui(cfg.pluto.agc == PlutoAgc::Manual, |ui| {
             if crate::chrome::slider(
@@ -3333,11 +3326,11 @@ pub(in crate::app) fn settings_pluto_tab(
         });
         ui.end_row();
 
-        ui.label("TX gain").on_hover_text(
-            "Negative because the AD9361 expresses transmit level as attenuation: \
+        ui.label(crate::language_plugin::text("settings.radio.tx_gain", "TX gain")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3337_c6e23a", "Negative because the AD9361 expresses transmit level as attenuation: \
              0 dB is full output. Applies immediately. The transmitter is set to its \
              quietest before this value is applied on connect, so nothing the \
-             previous program left behind can be live.",
+             previous program left behind can be live."),
         );
         if crate::chrome::slider(
             ui,
@@ -3353,12 +3346,12 @@ pub(in crate::app) fn settings_pluto_tab(
         }
         ui.end_row();
 
-        ui.label("Frequency correction").on_hover_text(
-            "Reference error in parts per million. Run with \
+        ui.label(crate::language_plugin::text("settings.radio.frequency_correction", "Frequency correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3357_fdc86c", "Reference error in parts per million. Run with \
              RUST_LOG=sdroxide_pluto=debug and the log prints the measured clock \
              error after about 20 seconds — that is the number to enter. Applied by \
              sdroxide, not written to the radio's own persistent trim. Applies \
-             immediately.",
+             immediately."),
         );
         let mut ppm = cfg.pluto.ppm;
         if ui
@@ -3378,14 +3371,14 @@ pub(in crate::app) fn settings_pluto_tab(
         // the network it is on, which is why it is asked rather than detected:
         // the failure mode is a starved transmit buffer, heard on the air as a
         // chopped envelope rather than reported as an error.
-        ui.label("Full duplex");
+        ui.label(crate::language_plugin::text("settings.radio.full_duplex", "Full duplex"));
         crate::chrome::checkbox(
             ui,
             &mut cfg.pluto.full_duplex,
-            "Keep receiving while transmitting",
+            crate::language_plugin::text("common.keep_receiving_while_transmitting", "Keep receiving while transmitting"),
         )
         .on_hover_text(
-            "Leave this off on a Pluto reached over its USB cable. That link cannot \
+            crate::language_plugin::text("settings.radio.text_3388_6cce20", "Leave this off on a Pluto reached over its USB cable. That link cannot \
                  carry a megasample per second in both directions at once, and an over \
                  that starves the transmit buffer goes out chopped — so by default \
                  receive stops for the length of an over.\n\nTurn it on for a board on \
@@ -3396,26 +3389,26 @@ pub(in crate::app) fn settings_pluto_tab(
                  2.5 Msps is 10 MB/s each way — so lower the rate if the log starts \
                  saying the link is not carrying it. The panadapter still shows the \
                  transmitted signal during an over; it is the audio that keeps \
-                 coming.\n\nTakes effect on Apply.",
+                 coming.\n\nTakes effect on Apply."),
         );
         ui.end_row();
 
         // Below Full duplex because the two argue: TDD is one direction at a
         // time in the silicon, so it settles the question the checkbox above
         // asks about the link.
-        ui.label("Duplex").on_hover_text(
-            "Whether the AD9361 runs both directions at once (FDD, which is how a Pluto \
+        ui.label(crate::language_plugin::text("settings.radio.duplex", "Duplex")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3407_a9dbb4", "Whether the AD9361 runs both directions at once (FDD, which is how a Pluto \
              boots and what sdroxide has always left it in) or one at a time (TDD).\n\n\
              Leave this on FDD unless you want the PTT pins below — TDD is what those \
-             key from, and it rules out Full duplex above. Takes effect on Apply.",
+             key from, and it rules out Full duplex above. Takes effect on Apply."),
         );
         let mut duplex = cfg.pluto.duplex;
         enum_combo(ui, "pluto_duplex", &mut duplex, &PlutoDuplex::ALL, PlutoDuplex::label);
         cfg.pluto.duplex = duplex;
         ui.end_row();
 
-        ui.label("PTT pins").on_hover_text(
-            "The Pluto's four GPO test points can key an external power amplifier, LNA \
+        ui.label(crate::language_plugin::text("settings.radio.ptt_pins", "PTT pins")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3418_13d4e3", "The Pluto's four GPO test points can key an external power amplifier, LNA \
              or transmit-receive switch by themselves. Pick a pair and one pin is high \
              the whole time the radio receives, the other the whole time it transmits — \
              no host software in the loop and no serial PTT line to wire.\n\nThis puts \
@@ -3426,7 +3419,7 @@ pub(in crate::app) fn settings_pluto_tab(
              own note puts an external LNA on GPO0/GPO1, so use GPO2/GPO3 if your board \
              is wired that way. The pins are about 1.3 V at a few milliamps: drive a \
              transistor or an opto-isolator with them, never a relay coil.\n\nTakes \
-             effect on Apply.",
+             effect on Apply."),
         );
         let mut ptt = cfg.pluto.ptt_gpo;
         enum_combo(ui, "pluto_ptt", &mut ptt, &PlutoPtt::ALL, PlutoPtt::label);
@@ -3438,8 +3431,8 @@ pub(in crate::app) fn settings_pluto_tab(
         // what the AD9361 can do. This one used to be reachable only by hand-
         // editing radio.json, which is no use to the operator who needs it —
         // the one whose log is reporting a replaced receive socket.
-        ui.label("Buffer size").on_hover_text(
-            "How much the device holds before each transfer, in complex samples. \
+        ui.label(crate::language_plugin::text("settings.radio.buffer_size", "Buffer size")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3442_14ccb7", "How much the device holds before each transfer, in complex samples. \
              The default of 32768 is about 16 ms at 2 Msps: long enough that the \
              per-transfer round trip is not the bottleneck, short enough that a \
              retune is not visibly late.\n\nHalve it if the log reports the receive \
@@ -3447,7 +3440,7 @@ pub(in crate::app) fn settings_pluto_tab(
              cable at a high sample rate is the usual one — stalls part-way through a \
              transfer, and a smaller transfer is both less likely to be caught mid-\
              flight and quicker to make good afterwards. Raise it to trade retune \
-             latency for fewer round trips.\n\nTakes effect on Apply.",
+             latency for fewer round trips.\n\nTakes effect on Apply."),
         );
         ui.horizontal(|ui| {
             let mut samples = cfg.pluto.buffer_samples as i64;
@@ -3456,7 +3449,7 @@ pub(in crate::app) fn settings_pluto_tab(
                     DragValue::new(&mut samples)
                         .range(1024..=1_048_576)
                         .speed(256.0)
-                        .suffix(" samples"),
+                        .suffix(crate::language_plugin::text("settings.radio.text_3459_686dd9", " samples")),
                 )
                 .changed()
             {
@@ -3470,19 +3463,15 @@ pub(in crate::app) fn settings_pluto_tab(
             // up rather than left to the operator.
             let rate = cfg.pluto.sample_rate_hz.max(1.0);
             ui.label(
-                RichText::new(format!(
-                    "≈ {:.1} ms, {} KiB per transfer",
-                    cfg.pluto.buffer_samples as f64 / rate * 1e3,
-                    cfg.pluto.buffer_samples * 4 / 1024,
-                ))
+                RichText::new({ let __lp_arg_0 = &(cfg.pluto.buffer_samples as f64 / rate * 1e3); let __lp_arg_1 = &(cfg.pluto.buffer_samples * 4 / 1024); crate::language_plugin::format("settings.radio.text_3474_216e37", "≈ {:.1} ms, {} KiB per transfer", &[format!("{:.1}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                 .weak(),
             );
         });
         ui.end_row();
 
-        ui.label("RX / TX port").on_hover_text(
-            "The AD9361's rf_port_select. A stock Pluto wires one of each, so leave \
-             these empty unless you have a board that does not. Takes effect on Apply.",
+        ui.label(crate::language_plugin::text("settings.radio.rx_tx_port", "RX / TX port")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3484_7988fd", "The AD9361's rf_port_select. A stock Pluto wires one of each, so leave \
+             these empty unless you have a board that does not. Takes effect on Apply."),
         );
         ui.horizontal(|ui| {
             crate::chrome::field(
@@ -3506,20 +3495,20 @@ pub(in crate::app) fn settings_pluto_tab(
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Test connection")
+                    .button(crate::language_plugin::text("settings.radio.test_connection", "Test connection"))
                     .on_hover_text(
-                        "Opens the radio, reads what it says about itself, and reports the \
-                         tuning range this particular board has. Does not start a stream.",
+                        crate::language_plugin::text("settings.radio.text_3511_533d9c", "Opens the radio, reads what it says about itself, and reports the \
+                         tuning range this particular board has. Does not start a stream."),
                     )
                     .clicked()
                 {
                     *test = true;
                 }
                 if ui
-                    .button("Copy diagnostic report")
+                    .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                     .on_hover_text(
-                        "Copies the last session's protocol trace to the clipboard, for a \
-                         bug report.",
+                        crate::language_plugin::text("settings.radio.text_3521_47ab19", "Copies the last session's protocol trace to the clipboard, for a \
+                         bug report."),
                     )
                     .clicked()
                 {
@@ -3535,17 +3524,17 @@ pub(in crate::app) fn settings_pluto_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "Wideband IQ receive and transmit. Half duplex — receive stops for the \
+            crate::language_plugin::text("settings.radio.text_3538_3275a4", "Wideband IQ receive and transmit. Half duplex — receive stops for the \
              length of an over, because the USB network link will not carry both at \
-             once. No SoapySDR and no libiio needed.",
+             once. No SoapySDR and no libiio needed."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "Not yet verified against real hardware. If it misbehaves, please send the \
+            crate::language_plugin::text("settings.radio.text_3546_ceb074", "Not yet verified against real hardware. If it misbehaves, please send the \
              diagnostic report — it contains every command exchanged with the radio, \
-             and the first bytes of the sample stream.",
+             and the first bytes of the sample stream."),
         )
         .color(crate::theme::YELLOW()),
     );
@@ -3572,44 +3561,44 @@ pub(in crate::app) fn settings_smartsdr_tab(
 ) {
     use sdroxide_types::SmartSdrConfig;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_3575_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
     egui::Grid::new("smartsdr-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Radios").on_hover_text(
-            "A FlexRadio announces itself on the local network about once a second. \
+        ui.label(crate::language_plugin::text("settings.radio.radios", "Radios")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3581_4a36ad", "A FlexRadio announces itself on the local network about once a second. \
              A radio reached through a router or a VPN never broadcasts to you — \
-             enter its address below instead.",
+             enter its address below instead."),
         );
         // The broadcasts a FLEX sends reach its own network segment, which is
         // the engine's, not this screen's. The Address row below is typed, so
         // it still works from here.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
-                if ui.button("Discover").clicked() {
+                if ui.button(crate::language_plugin::text("settings.radio.discover", "Discover")).clicked() {
                     *discover = true;
                 }
-                let shown = cfg.smartsdr.selected_ip.clone().unwrap_or_else(|| "— none —".into());
+                let shown = cfg.smartsdr.selected_ip.clone().unwrap_or_else(|| crate::language_plugin::text("choices.app.settings.radio.text_3593_13915b", "— none —").into());
                 ComboBox::from_id_salt("flex_dev").width(340.0).selected_text(shown).show_styled(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no radios — press Discover").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_radios_press_discover", "no radios — press Discover")).weak());
                         }
                         for d in devices {
                             let sel = cfg.smartsdr.selected_ip.as_deref() == Some(d.ip.as_str());
                             // A radio that is already claimed and has multiFLEX off
                             // will refuse us, so it is shown but not selectable.
                             if d.joinable {
-                                if ui.selectable_label(sel, d.label()).clicked() {
+                                if ui.selectable_label(sel,crate::language_plugin::display_label(d.label())).clicked() {
                                     cfg.smartsdr.selected_ip = Some(d.ip.clone());
                                 }
                             } else {
                                 ui.label(RichText::new(d.label()).weak()).on_hover_text(
-                                    "Another GUI client has this radio and multiFLEX is \
+                                    crate::language_plugin::text("settings.radio.text_3610_077b98", "Another GUI client has this radio and multiFLEX is \
                                      disabled. Disconnect that client, or enable multiFLEX \
-                                     on the radio.",
+                                     on the radio."),
                                 );
                             }
                         }
@@ -3619,21 +3608,21 @@ pub(in crate::app) fn settings_smartsdr_tab(
         });
         ui.end_row();
 
-        ui.label("Address").on_hover_text(
-            "Overrides the selection above. Use this for a radio on another subnet, \
-             behind a VPN, or on a non-standard port.",
+        ui.label(crate::language_plugin::text("settings.radio.address", "Address")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3623_5bf9f3", "Overrides the selection above. Use this for a radio on another subnet, \
+             behind a VPN, or on a non-standard port."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.smartsdr.address)
                 .desired_width(220.0)
-                .hint_text("optional, e.g. 192.168.1.50"),
+                .hint_text(crate::language_plugin::text("common.optional_e_g_192_168_1_50", "optional, e.g. 192.168.1.50")),
         );
         ui.end_row();
 
-        ui.label("IQ sample rate").on_hover_text(
-            "Width of the spectrum sdroxide receives. 192 kHz is the radio's maximum \
-             for a DAX IQ stream, and so the widest span this interface can show.",
+        ui.label(crate::language_plugin::text("settings.radio.iq_sample_rate", "IQ sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3635_1d2916", "Width of the spectrum sdroxide receives. 192 kHz is the radio's maximum \
+             for a DAX IQ stream, and so the widest span this interface can show."),
         );
         let shown = format!("{} kHz", (cfg.smartsdr.iq_sample_rate_hz / 1000.0) as u32);
         ComboBox::from_id_salt("flex_rate").selected_text(shown).show_styled(ui, |ui| {
@@ -3653,17 +3642,17 @@ pub(in crate::app) fn settings_smartsdr_tab(
         ui.label("");
         ui.label(
             RichText::new(
-                "192 kHz is the widest DAX IQ stream a FLEX will send, and the radio ties \
+                crate::language_plugin::text("settings.radio.text_3656_32bdf1", "192 kHz is the widest DAX IQ stream a FLEX will send, and the radio ties \
                  the panadapter's span to it — so that is the whole span, and no setting \
-                 here widens it.",
+                 here widens it."),
             )
             .weak(),
         );
         ui.end_row();
 
-        ui.label("DAX IQ channel").on_hover_text(
-            "The radio has four. Change this only if something else on the network \
-             is already using channel 1 — the radio refuses a channel twice over.",
+        ui.label(crate::language_plugin::text("settings.radio.dax_iq_channel", "DAX IQ channel")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3665_d27227", "The radio has four. Change this only if something else on the network \
+             is already using channel 1 — the radio refuses a channel twice over."),
         );
         ComboBox::from_id_salt("flex_ch")
             .selected_text(cfg.smartsdr.iq_channel.to_string())
@@ -3677,10 +3666,10 @@ pub(in crate::app) fn settings_smartsdr_tab(
             });
         ui.end_row();
 
-        ui.label("Station name").on_hover_text(
-            "Shown against this session in the radio's client list. The radio also \
+        ui.label(crate::language_plugin::text("settings.radio.station_name", "Station name")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3681_d176e6", "Shown against this session in the radio's client list. The radio also \
              remembers a client by it, so renaming makes the radio treat sdroxide as \
-             a new one.",
+             a new one."),
         );
         crate::chrome::field(
             ui,
@@ -3688,38 +3677,38 @@ pub(in crate::app) fn settings_smartsdr_tab(
         );
         ui.end_row();
 
-        ui.label("GUI client ID").on_hover_text(
-            "The identity the radio restores this session's slices and panadapters to. \
+        ui.label(crate::language_plugin::text("settings.radio.gui_client_id", "GUI client ID")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3692_3d4eeb", "The identity the radio restores this session's slices and panadapters to. \
              Left empty it is derived from the station name — stable, but the same on \
              every sdroxide that kept the default name, and a radio settles a duplicate \
              by throwing the earlier client off. sdroxide spots that on the wire and \
              falls back to a one-session identity, which costs the restore; put a UUID \
-             of your own here to keep it.",
+             of your own here to keep it."),
         );
         crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.smartsdr.gui_client_id)
                 .desired_width(280.0)
-                .hint_text("optional, e.g. a UUID of your own"),
+                .hint_text(crate::language_plugin::text("common.optional_e_g_a_uuid_of_your_own", "optional, e.g. a UUID of your own")),
         );
         ui.end_row();
 
-        ui.label("Invert spectrum");
-        crate::chrome::checkbox(ui, &mut cfg.smartsdr.swap_iq, "Swap I/Q").on_hover_text(
-            "Mirror the radio's I/Q about the centre of the panadapter. Off by default, \
+        ui.label(crate::language_plugin::text("settings.radio.invert_spectrum", "Invert spectrum"));
+        crate::chrome::checkbox(ui, &mut cfg.smartsdr.swap_iq, crate::language_plugin::text("common.swap_i_q", "Swap I/Q")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3709_f53fae", "Mirror the radio's I/Q about the centre of the panadapter. Off by default, \
              which is how a FLEX-6600 was verified.\n\n\
              Try it if receive audio is unintelligible on USB *and* on LSB and nothing \
              decodes, while the waterfall looks entirely convincing — that is what a \
              mirrored stream looks like, and it is the one fault with no other symptom \
              (issue #368). If it is not that, turning this on makes it obvious rather \
-             than subtle. Applies on Apply / reconnect.",
+             than subtle. Applies on Apply / reconnect."),
         );
         ui.end_row();
 
-        ui.label("Network MTU").on_hover_text(
-            "Largest datagram the radio may send. 1450 is what SmartSDR itself asks for. \
+        ui.label(crate::language_plugin::text("settings.radio.network_mtu", "Network MTU")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_3720_cf97ce", "Largest datagram the radio may send. 1450 is what SmartSDR itself asks for. \
              Lower it on a path with a smaller MTU — a VPN or a tunnel — where the \
-             fragments are dropped and no spectrum arrives at all.",
+             fragments are dropped and no spectrum arrives at all."),
         );
         let mut mtu = cfg.smartsdr.network_mtu as f64;
         if crate::chrome::field(
@@ -3738,20 +3727,20 @@ pub(in crate::app) fn settings_smartsdr_tab(
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Test connection")
+                    .button(crate::language_plugin::text("settings.radio.test_connection", "Test connection"))
                     .on_hover_text(
-                        "Checks the radio answers, without registering as a GUI client — \
-                         so it will not disturb a SmartSDR session already running.",
+                        crate::language_plugin::text("settings.radio.text_3743_44c163", "Checks the radio answers, without registering as a GUI client — \
+                         so it will not disturb a SmartSDR session already running."),
                     )
                     .clicked()
                 {
                     *test = true;
                 }
                 if ui
-                    .button("Copy diagnostic report")
+                    .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                     .on_hover_text(
-                        "Copies the last session's protocol trace to the clipboard, for a \
-                         bug report.",
+                        crate::language_plugin::text("settings.radio.text_3753_47ab19", "Copies the last session's protocol trace to the clipboard, for a \
+                         bug report."),
                     )
                     .clicked()
                 {
@@ -3767,15 +3756,15 @@ pub(in crate::app) fn settings_smartsdr_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "Wideband IQ receive over DAX, audio transmit the radio modulates. Press \
-             \"Apply / reconnect\" to switch without a restart.",
+            crate::language_plugin::text("settings.radio.text_3770_ad4968", "Wideband IQ receive over DAX, audio transmit the radio modulates. Press \
+             \"Apply / reconnect\" to switch without a restart."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "Not yet verified against real hardware. If it misbehaves, please send the \
-             diagnostic report — it contains every protocol line exchanged with the radio.",
+            crate::language_plugin::text("settings.radio.text_3777_a0ab89", "Not yet verified against real hardware. If it misbehaves, please send the \
+             diagnostic report — it contains every protocol line exchanged with the radio."),
         )
         .color(Color32::from_rgb(220, 170, 70)),
     );
@@ -3802,12 +3791,12 @@ pub(in crate::app) fn settings_soapy_devices(
     // are installed and where `device_args` is read from. Until it has
     // answered there is nothing here worth drawing a Rescan button beside.
     if !can_probe && devices.is_none() {
-        ui.label(RichText::new("Devices SoapySDR can see").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.devices_soapysdr_can_see", "Devices SoapySDR can see")).strong());
         ui.label(
             RichText::new(
-                "Waiting for the machine the radio is attached to, where the modules are \
+                crate::language_plugin::text("settings.radio.text_3808_b2fed3", "Waiting for the machine the radio is attached to, where the modules are \
                  installed. Which device it opens is `device_args` in that machine's \
-                 config.toml, or its --device.",
+                 config.toml, or its --device."),
             )
             .weak(),
         );
@@ -3815,13 +3804,13 @@ pub(in crate::app) fn settings_soapy_devices(
     }
 
     ui.horizontal(|ui| {
-        ui.label(RichText::new("Devices SoapySDR can see").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.devices_soapysdr_can_see", "Devices SoapySDR can see")).strong());
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Rescan")
+                .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                 .on_hover_text(
-                    "Ask every installed SoapySDR module to scan. Nothing is opened, \
-                     so this is safe while receiving — but it can take a moment.",
+                    crate::language_plugin::text("settings.radio.text_3823_95a348", "Ask every installed SoapySDR module to scan. Nothing is opened, \
+                     so this is safe while receiving — but it can take a moment."),
                 )
                 .clicked()
             {
@@ -3831,14 +3820,14 @@ pub(in crate::app) fn settings_soapy_devices(
     });
 
     let Some(devices) = devices else {
-        ui.label(RichText::new("Not enumerated yet — press Rescan.").weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.not_enumerated_yet_press_rescan", "Not enumerated yet — press Rescan.")).weak());
         return;
     };
     if devices.is_empty() {
         ui.label(
             RichText::new(
-                "No SoapySDR devices found. Check that the module for your radio is \
-                 installed and that you may access the device.",
+                crate::language_plugin::text("settings.radio.text_3840_8c11ef", "No SoapySDR devices found. Check that the module for your radio is \
+                 installed and that you may access the device."),
             )
             .weak(),
         );
@@ -3849,7 +3838,7 @@ pub(in crate::app) fn settings_soapy_devices(
         ui.horizontal(|ui| {
             ui.label(RichText::new(d.label()).monospace());
             if d.is_pseudo() {
-                ui.label(RichText::new("not a radio").color(Color32::from_rgb(220, 170, 70)));
+                ui.label(RichText::new(crate::language_plugin::text("common.not_a_radio", "not a radio")).color(Color32::from_rgb(220, 170, 70)));
             }
         });
     }
@@ -3859,10 +3848,10 @@ pub(in crate::app) fn settings_soapy_devices(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "A sound card is listed above as if it were an SDR. It accepts any \
+                crate::language_plugin::text("settings.radio.text_3862_6fdb62", "A sound card is listed above as if it were an SDR. It accepts any \
                  frequency and ignores it, so opening it shows the sound card's input \
                  instead of the band. sdroxide does not pick those automatically — but \
-                 a device_args line naming one is still obeyed.",
+                 a device_args line naming one is still obeyed."),
             )
             .color(Color32::from_rgb(220, 170, 70)),
         );
@@ -3883,11 +3872,9 @@ pub(in crate::app) fn settings_soapy_devices(
         ui.add_space(4.0);
         let names = native.iter().map(|b| b.label()).collect::<Vec<_>>().join(", ");
         ui.label(
-            RichText::new(format!(
-                "Hardware above is supported directly by sdroxide: {names}. Selecting that \
+            RichText::new(crate::language_plugin::format("settings.radio.text_3887_b7ad33", "Hardware above is supported directly by sdroxide: {names}. Selecting that \
                  interface above gives you its own settings — gain stages, filters and \
-                 notches SoapySDR cannot express — and needs no SoapySDR module.",
-            ))
+                 notches SoapySDR cannot express — and needs no SoapySDR module.", &[format!("{names}")]))
             .color(crate::theme::CYAN()),
         );
     }
@@ -3895,8 +3882,8 @@ pub(in crate::app) fn settings_soapy_devices(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Which one opens is set by --device or device_args in config.toml; with \
-             neither, the first radio listed wins.",
+            crate::language_plugin::text("settings.radio.text_3898_c18588", "Which one opens is set by --device or device_args in config.toml; with \
+             neither, the first radio listed wins."),
         )
         .weak(),
     );
@@ -3906,15 +3893,15 @@ impl SdroxideApp {
     /// SoapySDR RX/TX gains + antenna (empty for a CAT rig).
     pub(in crate::app) fn settings_device_tab(&self, ui: &mut egui::Ui, cmds: &mut Vec<Command>) {
         let Some(caps) = &self.caps else {
-            ui.label("no device");
+            ui.label(crate::language_plugin::text("settings.radio.no_device", "no device"));
             return;
         };
-        ui.label(RichText::new(&caps.label).size(14.0).strong().color(crate::theme::CYAN()));
+        ui.label(RichText::new(crate::language_plugin::radio_label(&caps.label)).size(14.0).strong().color(crate::theme::CYAN()));
         ui.add_space(6.0);
         if caps.gains.iter().all(|g| g.direction != Direction::Rx) {
-            ui.label(RichText::new("This rig has no software-adjustable gains.").weak());
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.this_rig_has_no_software_adjustable_gains", "This rig has no software-adjustable gains.")).weak());
         }
-        ui.label(RichText::new("RX gains").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.rx_gains", "RX gains")).strong());
         egui::Grid::new("gains").num_columns(2).show(ui, |ui| {
             for g in caps.gains.iter().filter(|g| g.direction == Direction::Rx) {
                 ui.label(&g.name);
@@ -3939,7 +3926,7 @@ impl SdroxideApp {
         });
         if caps.gains.iter().any(|g| g.direction == Direction::Tx) {
             ui.separator();
-            ui.label(RichText::new("TX gains").strong().color(Color32::from_rgb(240, 90, 60)));
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.tx_gains", "TX gains")).strong().color(Color32::from_rgb(240, 90, 60)));
             egui::Grid::new("tx-gains").num_columns(2).show(ui, |ui| {
                 for g in caps.gains.iter().filter(|g| g.direction == Direction::Tx) {
                     ui.label(&g.name);
@@ -3973,10 +3960,10 @@ impl SdroxideApp {
         let tx_ports = caps.antennas_tx.len() > 1;
         if rx_ports || tx_ports {
             ui.separator();
-            ui.label(RichText::new("Antennas").strong());
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.antennas", "Antennas")).strong());
             egui::Grid::new("antennas").num_columns(2).show(ui, |ui| {
                 if rx_ports {
-                    ui.label("RX");
+                    ui.label(crate::language_plugin::text("settings.radio.text_3979_05c449", "RX"));
                     ComboBox::from_id_salt("ant-rx")
                         .selected_text(self.state.antenna_rx.clone())
                         .show_styled(ui, |ui| {
@@ -3992,7 +3979,7 @@ impl SdroxideApp {
                     ui.end_row();
                 }
                 if tx_ports {
-                    ui.label(RichText::new("TX").color(Color32::from_rgb(240, 90, 60)));
+                    ui.label(RichText::new(crate::language_plugin::text("settings.radio.text_3995_536939", "TX")).color(Color32::from_rgb(240, 90, 60)));
                     ComboBox::from_id_salt("ant-tx")
                         .selected_text(self.state.antenna_tx.clone())
                         .show_styled(ui, |ui| {
@@ -4008,7 +3995,7 @@ impl SdroxideApp {
                     ui.end_row();
                 }
             });
-            ui.label(RichText::new("Remembered for the next start.").weak());
+            ui.label(RichText::new(crate::language_plugin::text("settings.radio.remembered_for_the_next_start", "Remembered for the next start.")).weak());
         }
     }
 }
@@ -4057,14 +4044,14 @@ pub(in crate::app) fn settings_soapy_tab(
     use sdroxide_types::SettingKind;
 
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_4060_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
     let Some(caps) = caps else {
         ui.label(
             RichText::new(
-                "These controls appear once a SoapySDR device is open — they are the \
-                 device's own, and it has to be asked.",
+                crate::language_plugin::text("settings.radio.text_4066_a5e497", "These controls appear once a SoapySDR device is open — they are the \
+                 device's own, and it has to be asked."),
             )
             .weak(),
         );
@@ -4072,17 +4059,17 @@ pub(in crate::app) fn settings_soapy_tab(
     };
 
     if !caps.sample_rates.is_empty() || !caps.rate_ranges.is_empty() {
-        ui.label(RichText::new("Stream").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.stream", "Stream")).strong());
         egui::Grid::new("soapy-stream").num_columns(2).show(ui, |ui| {
-            ui.label("Sample rate");
+            ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
             let shown = if cfg.soapy.sample_rate_hz > 0.0 {
                 rate_label(cfg.soapy.sample_rate_hz)
             } else {
-                "Follow the app setting".to_string()
+                crate::language_plugin::text("boundaries.app.settings.radio.text_4081_6d1f24", "Follow the app setting").to_string()
             };
             ComboBox::from_id_salt("soapy-rate").selected_text(shown).show_styled(ui, |ui| {
                 if ui
-                    .selectable_label(cfg.soapy.sample_rate_hz <= 0.0, "Follow the app setting")
+                    .selectable_label(cfg.soapy.sample_rate_hz <= 0.0, crate::language_plugin::text("common.follow_the_app_setting", "Follow the app setting"))
                     .clicked()
                 {
                     cfg.soapy.sample_rate_hz = 0.0;
@@ -4107,7 +4094,7 @@ pub(in crate::app) fn settings_soapy_tab(
                     .rate_ranges
                     .iter()
                     .fold((f64::MAX, 0.0f64), |(a, b), &(l, h)| (a.min(l), b.max(h)));
-                ui.label("or, in Msps");
+                ui.label(crate::language_plugin::text("settings.radio.text_4110_b940d3", "or, in Msps"));
                 let mut msps = cfg.soapy.sample_rate_hz / 1e6;
                 let r =
                     ui.add(egui::DragValue::new(&mut msps).speed(0.05).range(lo / 1e6..=hi / 1e6));
@@ -4121,15 +4108,15 @@ pub(in crate::app) fn settings_soapy_tab(
             }
 
             if !caps.bandwidths.is_empty() {
-                ui.label("Baseband filter");
+                ui.label(crate::language_plugin::text("settings.radio.baseband_filter", "Baseband filter"));
                 let shown = if cfg.soapy.bandwidth_hz > 0.0 {
                     bw_label(cfg.soapy.bandwidth_hz)
                 } else {
-                    "Let the driver choose".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_4128_6900bf", "Let the driver choose").to_string()
                 };
                 ComboBox::from_id_salt("soapy-bw").selected_text(shown).show_styled(ui, |ui| {
                     if ui
-                        .selectable_label(cfg.soapy.bandwidth_hz <= 0.0, "Let the driver choose")
+                        .selectable_label(cfg.soapy.bandwidth_hz <= 0.0, crate::language_plugin::text("common.let_the_driver_choose", "Let the driver choose"))
                         .clicked()
                     {
                         cfg.soapy.bandwidth_hz = 0.0;
@@ -4146,17 +4133,17 @@ pub(in crate::app) fn settings_soapy_tab(
                 ui.end_row();
             }
         });
-        ui.label(RichText::new("Changing either reopens the radio.").weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.changing_either_reopens_the_radio", "Changing either reopens the radio.")).weak());
     }
 
     if caps.settings.is_empty() {
         ui.add_space(4.0);
-        ui.label(RichText::new("This driver publishes no settings of its own.").weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.this_driver_publishes_no_settings_of_its_own", "This driver publishes no settings of its own.")).weak());
         return;
     }
 
     ui.separator();
-    ui.label(RichText::new(format!("{} settings", caps.driver)).strong());
+    ui.label(RichText::new({ let __lp_arg_0 = &(caps.driver); crate::language_plugin::format("settings.radio.text_4159_72c519", "{} settings", &[format!("{}", __lp_arg_0)]) }).strong());
     egui::Grid::new("soapy-settings").num_columns(2).show(ui, |ui| {
         for st in &caps.settings {
             let label = ui.label(&st.name);
@@ -4211,7 +4198,7 @@ pub(in crate::app) fn settings_soapy_tab(
             ui.end_row();
         }
     });
-    ui.label(RichText::new("Applied at once, and remembered for the next start.").weak());
+    ui.label(RichText::new(crate::language_plugin::text("settings.radio.applied_at_once_and_remembered_for_the_next_start", "Applied at once, and remembered for the next start.")).weak());
 }
 
 /// Settings for the RX-888 direct-sampling receiver.
@@ -4235,7 +4222,7 @@ pub(in crate::app) fn settings_rx888_tab(
 ) {
     use sdroxide_types::Rx888Config;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_4238_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -4254,23 +4241,23 @@ pub(in crate::app) fn settings_rx888_tab(
     let before = (cfg.rx888.serial.clone(), cfg.rx888.randomize, cfg.rx888.ddc_bins);
 
     egui::Grid::new("rx888-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         // Which receiver is this panel's one row about a USB bus; everything
         // below reaches the device wherever it is plugged in.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_4265_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.rx888.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_4273_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.rx888.serial.clone()
                 };
@@ -4278,16 +4265,16 @@ pub(in crate::app) fn settings_rx888_tab(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label("No RX-888 found — press Rescan");
+                            ui.label(crate::language_plugin::text("settings.radio.no_rx_888_found_press_rescan", "No RX-888 found — press Rescan"));
                         }
                         ui.selectable_value(
                             &mut cfg.rx888.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_4286_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             let serial = d.serial.clone().unwrap_or_default();
-                            ui.selectable_value(&mut cfg.rx888.serial, serial, d.label());
+                            ui.selectable_value(&mut cfg.rx888.serial, serial,crate::language_plugin::display_label(d.label()));
                         }
                     },
                 );
@@ -4295,7 +4282,7 @@ pub(in crate::app) fn settings_rx888_tab(
         });
         ui.end_row();
 
-        ui.label("ADC clock");
+        ui.label(crate::language_plugin::text("settings.radio.adc_clock", "ADC clock"));
         ui.horizontal(|ui| {
             let rate = cfg.rx888.adc_rate_hz;
             ComboBox::from_id_salt("rx888_rate")
@@ -4319,11 +4306,7 @@ pub(in crate::app) fn settings_rx888_tab(
             // which pushes the row off the window edge instead of wrapping.
             ui.add(
                 egui::Label::new(
-                    egui::RichText::new(format!(
-                        "0–{:.1} MHz coverage, {:.0} MB/s over USB",
-                        rate / 2e6,
-                        rate * 2.0 / 1e6
-                    ))
+                    egui::RichText::new({ let __lp_arg_0 = &(rate / 2e6); let __lp_arg_1 = &(rate * 2.0 / 1e6); crate::language_plugin::format("settings.radio.text_4323_7afcbe", "0–{:.1} MHz coverage, {:.0} MB/s over USB", &[format!("{:.1}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) })
                     .weak(),
                 )
                 .wrap(),
@@ -4334,7 +4317,7 @@ pub(in crate::app) fn settings_rx888_tab(
         // The Si5351 synthesises nearly any clock in range, so the list above
         // is the common set, not a limit. Applied on release rather than per
         // keystroke — every digit typed would otherwise reopen the radio.
-        ui.label("or, in Msps");
+        ui.label(crate::language_plugin::text("settings.radio.text_4337_b940d3", "or, in Msps"));
         ui.horizontal(|ui| {
             let mut msps = cfg.rx888.adc_rate_hz / 1e6;
             let r = ui.add(
@@ -4354,9 +4337,9 @@ pub(in crate::app) fn settings_rx888_tab(
         ui.add(
             egui::Label::new(
                 egui::RichText::new(
-                    "129.6 Msps needs a SuperSpeed link and a fast host; 64.8 is the \
+                    crate::language_plugin::text("settings.radio.text_4357_294831", "129.6 Msps needs a SuperSpeed link and a fast host; 64.8 is the \
                      safe default. Changing it reopens the receiver automatically, \
-                     which takes a moment but needs no restart.",
+                     which takes a moment but needs no restart."),
                 )
                 .weak(),
             )
@@ -4364,7 +4347,7 @@ pub(in crate::app) fn settings_rx888_tab(
         );
         ui.end_row();
 
-        ui.label("Panadapter width");
+        ui.label(crate::language_plugin::text("settings.radio.panadapter_width", "Panadapter width"));
         ui.horizontal(|ui| {
             let rate = cfg.rx888.adc_rate_hz;
             // A width the tuner's IF cannot fill is marked rather than hidden:
@@ -4375,7 +4358,7 @@ pub(in crate::app) fn settings_rx888_tab(
                     "{} — 1/{}{}",
                     bw_label(Rx888Config::ddc_out_rate_hz(rate, bins)),
                     Rx888Config::DDC_BLOCK / bins.max(1),
-                    if Rx888Config::width_works_on_vhf(rate, bins) { "" } else { "  · HF only" },
+                    if Rx888Config::width_works_on_vhf(rate, bins) { "".to_owned() } else { crate::language_plugin::text("boundaries.app.settings.radio.text_4378_0cdadd", "  · HF only") },
                 )
             };
             let bins = cfg.rx888.ddc_bins;
@@ -4386,18 +4369,18 @@ pub(in crate::app) fn settings_rx888_tab(
                     for b in Rx888Config::DDC_BIN_CHOICES {
                         ui.selectable_value(&mut cfg.rx888.ddc_bins, b, width_label(b))
                             .on_hover_text(if Rx888Config::width_works_on_vhf(rate, b) {
-                                "Usable on both front ends."
+                                crate::language_plugin::text("settings.radio.text_4389_3c8f22", "Usable on both front ends.")
                             } else {
-                                "Below the VHF crossover this is an ordinary width. Above it \
+                                crate::language_plugin::text("settings.radio.text_4391_b8da5b", "Below the VHF crossover this is an ordinary width. Above it \
                                  the tuner's 8 MHz IF cannot be centred in a window this \
                                  wide, so the live spectrum sits off to one side of the \
-                                 panadapter with nothing beside it."
+                                 panadapter with nothing beside it.")
                             });
                     }
                 });
             ui.add(
                 egui::Label::new(
-                    egui::RichText::new(format!("of the {:.1} MHz digitised", rate / 2e6)).weak(),
+                    egui::RichText::new({ let __lp_arg_0 = &(rate / 2e6); crate::language_plugin::format("settings.radio.text_4400_83e2c5", "of the {:.1} MHz digitised", &[format!("{:.1}", __lp_arg_0)]) }).weak(),
                 )
                 .wrap(),
             );
@@ -4408,8 +4391,7 @@ pub(in crate::app) fn settings_rx888_tab(
         ui.vertical(|ui| {
             ui.add(
                 egui::Label::new(
-                    egui::RichText::new(format!(
-                        "How much of the digitised spectrum the panadapter shows at once. \
+                    egui::RichText::new({ let __lp_arg_0 = &(Rx888Config::vhf_crossover_hz(rate) / 1e6); let __lp_arg_1 = &(Rx888Config::VHF_IF_CENTER_HZ / 1e6); let __lp_arg_2 = &(bw_label(2.0 * Rx888Config::VHF_IF_CENTER_HZ)); crate::language_plugin::format("settings.radio.text_4412_349e09", "How much of the digitised spectrum the panadapter shows at once. \
                          The whole DSP chain runs at this width, so wider costs \
                          proportionally more CPU — 1/2 is the entire band in the \
                          waterfall, and a serious amount of arithmetic. Above the VHF \
@@ -4417,11 +4399,7 @@ pub(in crate::app) fn settings_rx888_tab(
                          antenna but at the tuner's IF, which is 8 MHz wide and parked \
                          at {:.2} MHz — so anything wider than {} cannot be centred on \
                          it, and the extra width is dead spectrum beside the signal \
-                         rather than more of it.",
-                        Rx888Config::vhf_crossover_hz(rate) / 1e6,
-                        Rx888Config::VHF_IF_CENTER_HZ / 1e6,
-                        bw_label(2.0 * Rx888Config::VHF_IF_CENTER_HZ),
-                    ))
+                         rather than more of it.", &[format!("{:.1}", __lp_arg_0), format!("{:.2}", __lp_arg_1), format!("{}", __lp_arg_2)]) })
                     .weak(),
                 )
                 .wrap(),
@@ -4435,9 +4413,9 @@ pub(in crate::app) fn settings_rx888_tab(
                 ui.add(
                     egui::Label::new(
                         egui::RichText::new(
-                            "The dial is above the crossover now, so this width is showing \
+                            crate::language_plugin::text("settings.radio.text_4438_519811", "The dial is above the crossover now, so this width is showing \
                              the tuner's 8 MHz off-centre with dead spectrum beside it. \
-                             Narrow the width to fill the panadapter.",
+                             Narrow the width to fill the panadapter."),
                         )
                         .color(crate::theme::YELLOW()),
                     )
@@ -4447,12 +4425,12 @@ pub(in crate::app) fn settings_rx888_tab(
         });
         ui.end_row();
 
-        ui.label("VGA gain");
+        ui.label(crate::language_plugin::text("settings.radio.vga_gain", "VGA gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.rx888.vga_db, -6.0..=34.0).suffix(" dB"),
         )
-        .on_hover_text("AD8370 variable-gain amplifier ahead of the ADC.")
+        .on_hover_text(crate::language_plugin::text("settings.radio.text_4455_4c9d93", "AD8370 variable-gain amplifier ahead of the ADC."))
         .changed()
         {
             cmds.push(Command::SetGain {
@@ -4463,12 +4441,12 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("Attenuator");
+        ui.label(crate::language_plugin::text("settings.radio.attenuator", "Attenuator"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.rx888.attenuator_db, -31.5..=0.0).suffix(" dB"),
         )
-        .on_hover_text("PE4304 step attenuator, in 0.5 dB steps.")
+        .on_hover_text(crate::language_plugin::text("settings.radio.text_4471_86b22b", "PE4304 step attenuator, in 0.5 dB steps."))
         .changed()
         {
             cmds.push(Command::SetGain {
@@ -4479,13 +4457,13 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("ADC range");
+        ui.label(crate::language_plugin::text("settings.radio.adc_range", "ADC range"));
         if ui
-            .checkbox(&mut cfg.rx888.pga, "Wide (2.25 Vp-p)")
+            .checkbox(&mut cfg.rx888.pga, crate::language_plugin::text("settings.radio.text_4484_fc1eb3", "Wide (2.25 Vp-p)"))
             .on_hover_text(
-                "Selects the ADC's wider input range: more headroom for strong \
+                crate::language_plugin::text("settings.radio.text_4486_30d960", "Selects the ADC's wider input range: more headroom for strong \
                  broadcast signals, fewer counts for weak ones. Off selects the \
-                 more sensitive 1.5 Vp-p range.",
+                 more sensitive 1.5 Vp-p range."),
             )
             .changed()
         {
@@ -4497,12 +4475,12 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("Dither");
+        ui.label(crate::language_plugin::text("settings.radio.dither", "Dither"));
         if ui
-            .checkbox(&mut cfg.rx888.dither, "Enable")
+            .checkbox(&mut cfg.rx888.dither, crate::language_plugin::text("common.enable", "Enable"))
             .on_hover_text(
-                "Adds a small dither signal ahead of the ADC: costs a little \
-                 noise floor, buys spurious-free dynamic range.",
+                crate::language_plugin::text("settings.radio.text_4504_bfc40c", "Adds a small dither signal ahead of the ADC: costs a little \
+                 noise floor, buys spurious-free dynamic range."),
             )
             .changed()
         {
@@ -4514,18 +4492,18 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("Randomiser");
-        crate::chrome::checkbox(ui, &mut cfg.rx888.randomize, "Enable").on_hover_text(
-            "The ADC scrambles its output so the digital bus stops radiating \
+        ui.label(crate::language_plugin::text("settings.radio.randomiser", "Randomiser"));
+        crate::chrome::checkbox(ui, &mut cfg.rx888.randomize, crate::language_plugin::text("common.enable", "Enable")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4519_14a7e0", "The ADC scrambles its output so the digital bus stops radiating \
                  into the front end; the driver unscrambles it. Leave this on \
-                 unless you are debugging. Applies on reconnect.",
+                 unless you are debugging. Applies on reconnect."),
         );
         ui.end_row();
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         if ui
-            .checkbox(&mut cfg.rx888.bias_tee_hf, "DC on the HF antenna port")
-            .on_hover_text("Powers an active antenna or preamp down the coax.")
+            .checkbox(&mut cfg.rx888.bias_tee_hf, crate::language_plugin::text("common.dc_on_the_hf_antenna_port", "DC on the HF antenna port"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.powers_an_active_antenna_or_preamp_down_the_coax", "Powers an active antenna or preamp down the coax."))
             .changed()
         {
             cmds.push(Command::SetGain {
@@ -4536,7 +4514,7 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("VHF tuner gain");
+        ui.label(crate::language_plugin::text("settings.radio.vhf_tuner_gain", "VHF tuner gain"));
         ui.horizontal(|ui| {
             let slider = crate::chrome::slider_enabled(
                 ui,
@@ -4549,8 +4527,8 @@ pub(in crate::app) fn settings_rx888_tab(
             );
             if slider
                 .on_hover_text(
-                    "R828D RF gain, used above the automatic HF/VHF crossover. \
-                     29 discrete steps; the nearest is used.",
+                    crate::language_plugin::text("settings.radio.text_4552_0635b7", "R828D RF gain, used above the automatic HF/VHF crossover. \
+                     29 discrete steps; the nearest is used."),
                 )
                 .changed()
             {
@@ -4561,8 +4539,8 @@ pub(in crate::app) fn settings_rx888_tab(
                 });
             }
             if ui
-                .checkbox(&mut cfg.rx888.tuner_agc, "Auto")
-                .on_hover_text("Let the tuner run its own LNA and mixer loops.")
+                .checkbox(&mut cfg.rx888.tuner_agc, crate::language_plugin::text("common.auto", "Auto"))
+                .on_hover_text(crate::language_plugin::text("settings.radio.let_the_tuner_run_its_own_lna_and_mixer_loops", "Let the tuner run its own LNA and mixer loops."))
                 .changed()
             {
                 cmds.push(Command::SetGain {
@@ -4574,10 +4552,10 @@ pub(in crate::app) fn settings_rx888_tab(
         });
         ui.end_row();
 
-        ui.label("Bias tee (VHF)");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee_vhf", "Bias tee (VHF)"));
         if ui
-            .checkbox(&mut cfg.rx888.bias_tee_vhf, "DC on the VHF antenna port")
-            .on_hover_text("Powers an active antenna or preamp down the coax.")
+            .checkbox(&mut cfg.rx888.bias_tee_vhf, crate::language_plugin::text("common.dc_on_the_vhf_antenna_port", "DC on the VHF antenna port"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.powers_an_active_antenna_or_preamp_down_the_coax", "Powers an active antenna or preamp down the coax."))
             .changed()
         {
             cmds.push(Command::SetGain {
@@ -4588,7 +4566,7 @@ pub(in crate::app) fn settings_rx888_tab(
         }
         ui.end_row();
 
-        ui.label("Clock trim");
+        ui.label(crate::language_plugin::text("settings.radio.clock_trim", "Clock trim"));
         let r = ui
             .add(
                 egui::DragValue::new(&mut cfg.rx888.ppm)
@@ -4597,9 +4575,9 @@ pub(in crate::app) fn settings_rx888_tab(
                     .suffix(" ppm"),
             )
             .on_hover_text(
-                "Corrects the reference oscillator. Applied when you let go of \
+                crate::language_plugin::text("settings.radio.text_4600_f26ece", "Corrects the reference oscillator. Applied when you let go of \
                  the value — reopening on every pixel of a drag would restart \
-                 the receiver hundreds of times.",
+                 the receiver hundreds of times."),
             );
         if r.drag_stopped() || r.lost_focus() {
             *apply = true;
@@ -4614,7 +4592,7 @@ pub(in crate::app) fn settings_rx888_tab(
     ui.add_space(6.0);
     ui.label(
         egui::RichText::new(
-            "Receive only. Below the ADC's Nyquist limit the antenna is sampled \
+            crate::language_plugin::text("settings.radio.text_4617_09a131", "Receive only. Below the ADC's Nyquist limit the antenna is sampled \
              directly and retuning is instant, because there is no hardware \
              downconverter — the full ADC stream is converted to baseband on the \
              host. Above it the receiver switches to its R828D tuner and the VHF \
@@ -4622,7 +4600,7 @@ pub(in crate::app) fn settings_rx888_tab(
              an ADC clock of 32.4 Msps or more for the tuner's IF to fit, and at \
              clocks below 48 Msps there is a gap between the two ranges that \
              nothing can reach. Every setting here applies straight away — there \
-             is no Apply button to press.",
+             is no Apply button to press."),
         )
         .weak(),
     );
@@ -4677,7 +4655,7 @@ pub(in crate::app) fn settings_elad_tab(
         EladAntenna, EladConfig, EladTxInput, ModeControl, PttMethod,
     };
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_4680_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -4693,21 +4671,21 @@ pub(in crate::app) fn settings_elad_tab(
     );
 
     egui::Grid::new("elad-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Device");
+        ui.label(crate::language_plugin::text("settings.radio.device", "Device"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_4702_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.elad.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_4710_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.elad.serial.clone()
                 };
@@ -4715,12 +4693,12 @@ pub(in crate::app) fn settings_elad_tab(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no devices — press Rescan").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_devices_press_rescan", "no devices — press Rescan")).weak());
                         }
                         ui.selectable_value(
                             &mut cfg.elad.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_4723_4a541a", "— first one found —"),
                         );
                         // Nothing here can be pinned by serial: ELAD keeps the
                         // number in the device's EEPROM rather than in its USB
@@ -4736,8 +4714,8 @@ pub(in crate::app) fn settings_elad_tab(
         });
         ui.end_row();
 
-        ui.label("Sample rate").on_hover_text(
-            "The six rates are six different FPGA images, not a register — which \
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4740_78e42c", "The six rates are six different FPGA images, not a register — which \
              is why nothing in ELAD's protocol selects between them, and why what \
              this setting means depends on the model.\n\n\
              FDM-S1 / FDM-S2: a command. Their FPGA is loaded by the computer at \
@@ -4750,7 +4728,7 @@ pub(in crate::app) fn settings_elad_tab(
              and the panadapter is simply the wrong width, with every frequency \
              inside it scaled to match.\n\n\
              The stream's real rate is measured a couple of seconds after it \
-             starts, and a mismatch is reported on screen. Takes effect on Apply.",
+             starts, and a mismatch is reported on screen. Takes effect on Apply."),
         );
         ui.horizontal(|ui| {
             let shown = format!("{:.0} kHz", cfg.elad.sample_rate_hz as f64 / 1e3);
@@ -4762,7 +4740,7 @@ pub(in crate::app) fn settings_elad_tab(
                         // themselves are half as wide, so picking it wrongly
                         // produces noise rather than a mis-scaled spectrum.
                         let label = if r >= 6_144_000 {
-                            format!("{:.0} kHz  (16-bit samples)", r as f64 / 1e3)
+                            { let __lp_arg_0 = &(r as f64 / 1e3); crate::language_plugin::format("boundaries.app.settings.radio.text_4765_af1d3f", "{:.0} kHz  (16-bit samples)", &[format!("{:.0}", __lp_arg_0)]) }
                         } else {
                             format!("{:.0} kHz", r as f64 / 1e3)
                         };
@@ -4774,7 +4752,7 @@ pub(in crate::app) fn settings_elad_tab(
             );
             ui.add(
                 egui::Label::new(
-                    RichText::new("FDM-S: the FPGA image loaded — FDM-DUO: how the stream is read")
+                    RichText::new(crate::language_plugin::text("settings.radio.text_4777_866ab2", "FDM-S: the FPGA image loaded — FDM-DUO: how the stream is read"))
                         .weak(),
                 )
                 .wrap(),
@@ -4782,12 +4760,12 @@ pub(in crate::app) fn settings_elad_tab(
         });
         ui.end_row();
 
-        ui.label("Attenuator").on_hover_text(
-            "The receiver's input pad — one step, in or out. The same control as \
-             the main window's Gain slider.",
+        ui.label(crate::language_plugin::text("settings.radio.attenuator", "Attenuator")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4786_720a4a", "The receiver's input pad — one step, in or out. The same control as \
+             the main window's Gain slider."),
         );
         let mut att = cfg.elad.attenuator;
-        if crate::chrome::checkbox(ui, &mut att, format!("{ELAD_ATTENUATOR_DB:.0} dB pad in"))
+        if crate::chrome::checkbox(ui, &mut att, crate::language_plugin::format("settings.radio.text_4790_457ca4", "{ELAD_ATTENUATOR_DB:.0} dB pad in", &[format!("{ELAD_ATTENUATOR_DB:.0}")]))
             .changed()
         {
             cfg.elad.attenuator = att;
@@ -4795,15 +4773,15 @@ pub(in crate::app) fn settings_elad_tab(
         }
         ui.end_row();
 
-        ui.label("Pre-selection filters").on_hover_text(
-            "The low-pass bank in front of the ADC. Bypassing it gives the widest \
+        ui.label(crate::language_plugin::text("settings.radio.pre_selection_filters", "Pre-selection filters")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4799_5ace05", "The low-pass bank in front of the ADC. Bypassing it gives the widest \
              view and the worst behaviour near strong out-of-band signals — a \
              broadcast transmitter a few miles away will put images across the \
              band. Leave it on unless you are deliberately listening outside the \
-             filtered range.",
+             filtered range."),
         );
         let mut lpf = cfg.elad.preselector;
-        if crate::chrome::checkbox(ui, &mut lpf, "Filters in circuit").changed() {
+        if crate::chrome::checkbox(ui, &mut lpf, crate::language_plugin::text("common.filters_in_circuit", "Filters in circuit")).changed() {
             cfg.elad.preselector = lpf;
             push_gain(cmds, EladConfig::LPF_ELEMENT, f64::from(u8::from(lpf)));
         }
@@ -4811,34 +4789,34 @@ pub(in crate::app) fn settings_elad_tab(
     });
 
     ui.add_space(8.0);
-    ui.label(RichText::new("Rig control — FDM-DUO only").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.radio.rig_control_fdm_duo_only", "Rig control — FDM-DUO only")).strong());
     ui.label(
         RichText::new(
-            "The transceiver's CAT USB port, which is a separate cable from the \
+            crate::language_plugin::text("settings.radio.text_4817_afba8f", "The transceiver's CAT USB port, which is a separate cable from the \
              receive one. Leave the port unset on an FDM-S1 or FDM-S2, which have \
              none — and on an FDM-DUO you would rather drive through its receive \
              cable alone, where it can still be tuned and keyed but no meter can \
-             be read.",
+             be read."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "With the port set, the radio's display and this dial are the same \
+            crate::language_plugin::text("settings.radio.text_4827_b50ad2", "With the port set, the radio's display and this dial are the same \
              number in both directions: the FDM-DUO's receive window is built \
              around its VFO, so tuning here moves the front panel and turning the \
              front-panel knob moves the readout here. The panadapter re-centres on \
              the dial as it goes. With no port — or none the radio answers on — \
              there is no VFO to command, and tuning stays inside the window the \
-             radio is already sending.",
+             radio is already sending."),
         )
         .weak(),
     );
 
     egui::Grid::new("elad-cat-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Serial port");
+        ui.label(crate::language_plugin::text("settings.radio.serial_port", "Serial port"));
         let shown = if cfg.cat.serial.path.is_empty() {
-            "— none (USB control only) —".to_string()
+            crate::language_plugin::text("boundaries.app.settings.radio.text_4841_b89344", "— none (USB control only) —").to_string()
         } else {
             cfg.cat.serial.path.clone()
         };
@@ -4849,7 +4827,7 @@ pub(in crate::app) fn settings_elad_tab(
                     ui.selectable_value(
                         &mut cfg.cat.serial.path,
                         String::new(),
-                        "— none (USB control only) —",
+                        crate::language_plugin::text("settings.radio.text_4852_b89344", "— none (USB control only) —"),
                     );
                     for p in serial_ports {
                         if ui.selectable_label(&cfg.cat.serial.path == p, p).clicked() {
@@ -4861,11 +4839,11 @@ pub(in crate::app) fn settings_elad_tab(
         });
         ui.end_row();
 
-        ui.label("Baud").on_hover_text(
-            "Must match menu 70 \"CAT BAUD\" on the radio, which ships at 38400. The \
+        ui.label(crate::language_plugin::text("settings.radio.baud", "Baud")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4865_9540a3", "Must match menu 70 \"CAT BAUD\" on the radio, which ships at 38400. The \
              radio has these four rates and no others, and a port opened at any \
              other one is silent both ways — the radio ignores the dial and refuses \
-             to key, with nothing to say why.",
+             to key, with nothing to say why."),
         );
         ui.horizontal(|ui| {
             ComboBox::from_id_salt("elad_baud")
@@ -4887,11 +4865,8 @@ pub(in crate::app) fn settings_elad_tab(
             if !ELAD_CAT_BAUDS.contains(&cfg.cat.serial.baud) {
                 ui.add(
                     egui::Label::new(
-                        RichText::new(format!(
-                            "the radio has no {} baud setting — {ELAD_DEFAULT_CAT_BAUD} will be \
-                             used instead",
-                            cfg.cat.serial.baud,
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(cfg.cat.serial.baud); crate::language_plugin::format("settings.radio.text_4891_94f379", "the radio has no {} baud setting — {ELAD_DEFAULT_CAT_BAUD} will be \
+                             used instead", &[format!("{}", __lp_arg_0), format!("{ELAD_DEFAULT_CAT_BAUD}")]) })
                         .color(crate::theme::YELLOW()),
                     )
                     .wrap(),
@@ -4900,21 +4875,21 @@ pub(in crate::app) fn settings_elad_tab(
         });
         ui.end_row();
 
-        ui.label("PTT method").on_hover_text(
-            "How transmit is keyed. \"CAT\" sends the radio's own TX command and \
+        ui.label(crate::language_plugin::text("settings.radio.ptt_method", "PTT method")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4904_ddfee0", "How transmit is keyed. \"CAT\" sends the radio's own TX command and \
              needs nothing set up on the rig; RTS needs menu 54 \"PTT\" set to \
-             PTT+RTS.",
+             PTT+RTS."),
         );
         enum_combo(ui, "elad_ptt", &mut cfg.cat.ptt, &PttMethod::ALL, PttMethod::label);
         ui.end_row();
 
-        ui.label("Transmit input").on_hover_text(
-            "Where the radio takes its transmit audio from — the rig's TI command, \
+        ui.label(crate::language_plugin::text("settings.radio.transmit_input", "Transmit input")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4912_44ef0f", "Where the radio takes its transmit audio from — the rig's TI command, \
              which is menu 32 \"TX IN\" at the front panel. Asserted when the port \
              opens.\n\n\
              \"USB audio\" is what makes transmit work here: the FDM-DUO sends \
              what sdroxide puts into its USB sound card. A radio left on \
-             \"Microphone\" sends the room instead, and nothing on screen says so.",
+             \"Microphone\" sends the room instead, and nothing on screen says so."),
         );
         enum_combo(
             ui,
@@ -4925,8 +4900,8 @@ pub(in crate::app) fn settings_elad_tab(
         );
         ui.end_row();
 
-        ui.label("Antenna").on_hover_text(
-            "Which of the two sockets on the back the receiver listens on — the \
+        ui.label(crate::language_plugin::text("settings.radio.antenna", "Antenna")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4929_c72a82", "Which of the two sockets on the back the receiver listens on — the \
              rig's AN command, which is menu 31 \"ANTENNAS\" at the front panel \
              and the \"ANT 1 2\" indicator on its display.\n\n\
              \"RTX\" is one antenna doing both jobs, on the M-type socket that \
@@ -4937,7 +4912,7 @@ pub(in crate::app) fn settings_elad_tab(
              the rig's own audio all come from the socket selected here.\n\n\
              Applies immediately, and is read back from the radio when the \
              control port opens — this is the rig's own setting, not a copy of \
-             it kept here.",
+             it kept here."),
         );
         // Live state rather than a config field, so what is shown is where the
         // radio actually is. Blank until the rig has answered (or an operator
@@ -4945,7 +4920,7 @@ pub(in crate::app) fn settings_elad_tab(
         let shown = if antenna_rx.is_empty() { "—" } else { antenna_rx };
         ComboBox::from_id_salt("elad_antenna").selected_text(shown).show_styled(ui, |ui| {
             for a in EladAntenna::ALL {
-                if ui.selectable_label(antenna_rx == a.label(), a.label()).clicked() {
+                if ui.selectable_label(antenna_rx == a.label(),crate::language_plugin::display_label(a.label())).clicked() {
                     cmds.push(Command::SetAntenna {
                         dir: Direction::Rx,
                         name: a.label().to_string(),
@@ -4955,7 +4930,7 @@ pub(in crate::app) fn settings_elad_tab(
         });
         ui.end_row();
 
-        ui.label("Mode control");
+        ui.label(crate::language_plugin::text("settings.radio.mode_control", "Mode control"));
         enum_combo(
             ui,
             "elad_modectl",
@@ -4965,37 +4940,37 @@ pub(in crate::app) fn settings_elad_tab(
         );
         ui.end_row();
 
-        ui.label("Poll rate").on_hover_text(
-            "How often the radio is asked what it is doing — its dial, its mode \
+        ui.label(crate::language_plugin::text("settings.radio.poll_rate", "Poll rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_4969_157f41", "How often the radio is asked what it is doing — its dial, its mode \
              and its meters. Turn the rig's own VFO knob and the readout follows \
              within one poll. It is also the whole of the control traffic this \
-             end generates, so lower it if the radio's audio breaks up.",
+             end generates, so lower it if the radio's audio breaks up."),
         );
         ui.add(DragValue::new(&mut cfg.cat.poll_hz).speed(0.5).range(0.5..=20.0).suffix(" Hz"));
         ui.end_row();
 
-        ui.label("Transmit audio");
+        ui.label(crate::language_plugin::text("settings.radio.transmit_audio", "Transmit audio"));
         match audio_outputs {
             Some(outs) => {
                 let shown =
-                    cfg.radio_audio_out.clone().unwrap_or_else(|| "— system default —".to_string());
+                    cfg.radio_audio_out.clone().unwrap_or_else(|| crate::language_plugin::text("boundaries.app.settings.radio.text_4981_9ff7d7", "— system default —").to_string());
                 ComboBox::from_id_salt("elad_txaudio")
                     .width(300.0)
                     .selected_text(shown)
                     .show_styled(ui, |ui| {
-                        ui.selectable_value(&mut cfg.radio_audio_out, None, "— system default —");
+                        ui.selectable_value(&mut cfg.radio_audio_out, None, crate::language_plugin::text("common.system_default", "— system default —"));
                         for o in outs {
                             ui.selectable_value(&mut cfg.radio_audio_out, Some(o.clone()), o);
                         }
                     })
                     .response
                     .on_hover_text(
-                        "The FDM-DUO's own USB Audio port. Left on the system default \
-                     it is almost never the radio — it is the machine's speakers.",
+                        crate::language_plugin::text("settings.radio.text_4993_2d5ac6", "The FDM-DUO's own USB Audio port. Left on the system default \
+                     it is almost never the radio — it is the machine's speakers."),
                     );
             }
             None => {
-                ui.label(RichText::new("press Rescan to list the sound cards").weak());
+                ui.label(RichText::new(crate::language_plugin::text("settings.radio.press_rescan_to_list_the_sound_cards", "press Rescan to list the sound cards")).weak());
             }
         }
         ui.end_row();
@@ -5003,11 +4978,11 @@ pub(in crate::app) fn settings_elad_tab(
         ui.label("");
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Copy diagnostic report")
+                .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                 .on_hover_text(
-                    "Copies the last session's trace to the clipboard, for a bug \
+                    crate::language_plugin::text("settings.radio.text_5008_c634b8", "Copies the last session's trace to the clipboard, for a bug \
                      report: every command exchanged with the device, and the \
-                     first bytes of the sample stream.",
+                     first bytes of the sample stream."),
                 )
                 .clicked()
             {
@@ -5020,15 +4995,15 @@ pub(in crate::app) fn settings_elad_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Only receiving on an FDM-DUO has been run on real hardware so far. If \
-             anything misbehaves, please attach the diagnostic report to a bug report.",
+            crate::language_plugin::text("settings.radio.text_5023_1a2427", "Only receiving on an FDM-DUO has been run on real hardware so far. If \
+             anything misbehaves, please attach the diagnostic report to a bug report."),
         )
         .color(crate::theme::YELLOW()),
     );
     ui.label(
         RichText::new(
-            "CW is keyed by the radio's own key or paddle: the FDM-DUO has no \
-             command that accepts text, so the CW panel cannot key it.",
+            crate::language_plugin::text("settings.radio.text_5030_006854", "CW is keyed by the radio's own key or paddle: the FDM-DUO has no \
+             command that accepts text, so the CW panel cannot key it."),
         )
         .weak(),
     );
@@ -5043,7 +5018,7 @@ pub(in crate::app) fn settings_elad_tab(
         // No `apply` flag here: the interface row's own Apply is what reopens
         // the source, and these four are the settings that need it.
         ui.add_space(4.0);
-        ui.label(RichText::new("Press Apply to reopen the radio.").weak());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.press_apply_to_reopen_the_radio", "Press Apply to reopen the radio.")).weak());
     }
 }
 
@@ -5060,7 +5035,7 @@ pub(in crate::app) fn settings_airspyhf_tab(
 ) {
     use sdroxide_types::AirspyHfConfig;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_5063_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -5088,23 +5063,23 @@ pub(in crate::app) fn settings_airspyhf_tab(
         .unwrap_or(AirspyHfConfig::ATT_STEP_DB);
 
     egui::Grid::new("airspyhf-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         // Which receiver is this panel's one row about a USB bus; everything
         // below reaches the device wherever it is plugged in.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_5099_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.airspyhf.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_5107_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.airspyhf.serial.clone()
                 };
@@ -5113,12 +5088,12 @@ pub(in crate::app) fn settings_airspyhf_tab(
                     .selected_text(shown)
                     .show_styled(ui, |ui| {
                         if devices.is_empty() {
-                            ui.label(RichText::new("no receivers — press Rescan").weak());
+                            ui.label(RichText::new(crate::language_plugin::text("settings.radio.no_receivers_press_rescan", "no receivers — press Rescan")).weak());
                         }
                         ui.selectable_value(
                             &mut cfg.airspyhf.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_5121_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             // Only a receiver whose serial parsed can be pinned;
@@ -5141,9 +5116,9 @@ pub(in crate::app) fn settings_airspyhf_tab(
         });
         ui.end_row();
 
-        ui.label("Sample rate").on_hover_text(
-            "Which rates a receiver has depends on the model and the firmware. \
-             Takes effect on Apply.",
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_5145_dff871", "Which rates a receiver has depends on the model and the firmware. \
+             Takes effect on Apply."),
         );
         ui.horizontal(|ui| {
             let shown = format!("{:.0} kSPS", cfg.airspyhf.sample_rate_hz / 1e3);
@@ -5154,7 +5129,7 @@ pub(in crate::app) fn settings_airspyhf_tab(
                         let label = if queried.is_some() {
                             format!("{:.0} kSPS", r / 1e3)
                         } else {
-                            format!("{:.0} kSPS  ({})", r / 1e3, AirspyHfConfig::rate_note(r))
+                            format!("{:.0} kSPS  ({})", r / 1e3, crate::language_plugin::rate_note_text(AirspyHfConfig::rate_note(r)))
                         };
                         if ui
                             .selectable_label((cfg.airspyhf.sample_rate_hz - r).abs() < 1.0, label)
@@ -5171,7 +5146,7 @@ pub(in crate::app) fn settings_airspyhf_tab(
                 ui.add(
                     egui::Label::new(
                         RichText::new(
-                            "every rate any HF+ model offers — connect one to see its own",
+                            crate::language_plugin::text("settings.radio.text_5174_d72fed", "every rate any HF+ model offers — connect one to see its own"),
                         )
                         .weak(),
                     )
@@ -5182,24 +5157,24 @@ pub(in crate::app) fn settings_airspyhf_tab(
         ui.end_row();
 
         ui.label("AGC").on_hover_text(
-            "The receiver's own gain control. Leave it on for general listening; \
-             turn it off to set the attenuator by hand for measurement.",
+            crate::language_plugin::text("settings.radio.text_5185_674df7", "The receiver's own gain control. Leave it on for general listening; \
+             turn it off to set the attenuator by hand for measurement."),
         );
         let mut agc = cfg.airspyhf.agc;
-        if crate::chrome::checkbox(ui, &mut agc, "Automatic").changed() {
+        if crate::chrome::checkbox(ui, &mut agc, crate::language_plugin::text("common.automatic", "Automatic")).changed() {
             cfg.airspyhf.agc = agc;
             push_gain(cmds, AirspyHfConfig::AGC_ELEMENT, f64::from(u8::from(agc)));
         }
         ui.end_row();
 
-        ui.label("AGC threshold");
+        ui.label(crate::language_plugin::text("settings.radio.agc_threshold", "AGC threshold"));
         ui.add_enabled_ui(cfg.airspyhf.agc, |ui| {
             let mut high = cfg.airspyhf.agc_threshold_high;
             if ui
-                .checkbox(&mut high, "High")
+                .checkbox(&mut high, crate::language_plugin::text("common.high", "High"))
                 .on_hover_text(
-                    "High trades a little sensitivity for headroom against strong \
-                     neighbours — the right setting on a crowded band at night.",
+                    crate::language_plugin::text("settings.radio.text_5201_b4ff09", "High trades a little sensitivity for headroom against strong \
+                     neighbours — the right setting on a crowded band at night."),
                 )
                 .changed()
             {
@@ -5209,9 +5184,9 @@ pub(in crate::app) fn settings_airspyhf_tab(
         });
         ui.end_row();
 
-        ui.label("Attenuator").on_hover_text(
-            "Front-end attenuation, as a gain — 0 dB is none. Only obeyed with \
-             the AGC off.",
+        ui.label(crate::language_plugin::text("settings.radio.attenuator", "Attenuator")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_5213_070bde", "Front-end attenuation, as a gain — 0 dB is none. Only obeyed with \
+             the AGC off."),
         );
         ui.add_enabled_ui(!cfg.airspyhf.agc, |ui| {
             let mut db = cfg.airspyhf.attenuator_db;
@@ -5227,26 +5202,26 @@ pub(in crate::app) fn settings_airspyhf_tab(
         });
         ui.end_row();
 
-        ui.label("Preamp").on_hover_text(
-            "The HF low-noise amplifier. Buys sensitivity at the cost of \
+        ui.label(crate::language_plugin::text("settings.radio.preamp", "Preamp")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_5231_3be718", "The HF low-noise amplifier. Buys sensitivity at the cost of \
              intermodulation, so it is off by default — which is usually right \
-             on a real antenna.",
+             on a real antenna."),
         );
         let mut lna = cfg.airspyhf.lna;
-        if crate::chrome::checkbox(ui, &mut lna, "LNA on").changed() {
+        if crate::chrome::checkbox(ui, &mut lna, crate::language_plugin::text("common.lna_on", "LNA on")).changed() {
             cfg.airspyhf.lna = lna;
             push_gain(cmds, AirspyHfConfig::LNA_ELEMENT, f64::from(u8::from(lna)));
         }
         ui.end_row();
 
-        ui.label("Frequency calibration").on_hover_text(
-            "Parts per billion — this receiver's own unit, a thousand times finer \
+        ui.label(crate::language_plugin::text("settings.radio.frequency_calibration", "Frequency calibration")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_5243_1eda9d", "Parts per billion — this receiver's own unit, a thousand times finer \
              than the ppm an RTL-SDR uses. Nothing here is ever written to the \
-             receiver's flash: this overrides the stored value for the session only.",
+             receiver's flash: this overrides the stored value for the session only."),
         );
         ui.horizontal(|ui| {
             let mut stored = cfg.airspyhf.calibration_ppb.is_none();
-            if crate::chrome::checkbox(ui, &mut stored, "Use the receiver's stored value").changed()
+            if crate::chrome::checkbox(ui, &mut stored, crate::language_plugin::text("settings.radio.text_5249_0dd39a", "Use the receiver's stored value")).changed()
             {
                 cfg.airspyhf.calibration_ppb = if stored { None } else { Some(0) };
                 if let Some(ppb) = cfg.airspyhf.calibration_ppb {
@@ -5265,11 +5240,11 @@ pub(in crate::app) fn settings_airspyhf_tab(
         });
         ui.end_row();
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         let mut bias = cfg.airspyhf.bias_tee;
         if ui
-            .checkbox(&mut bias, "Feed DC up the coax")
-            .on_hover_text("Not every HF+ has one; on a receiver without, this does nothing.")
+            .checkbox(&mut bias, crate::language_plugin::text("common.feed_dc_up_the_coax", "Feed DC up the coax"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.text_5272_72e095", "Not every HF+ has one; on a receiver without, this does nothing."))
             .changed()
         {
             cfg.airspyhf.bias_tee = bias;
@@ -5277,14 +5252,14 @@ pub(in crate::app) fn settings_airspyhf_tab(
         }
         ui.end_row();
 
-        ui.label("Host DSP").on_hover_text(
-            "The image balancer, the zero-IF offset and the fine-tuning \
+        ui.label(crate::language_plugin::text("settings.radio.host_dsp", "Host DSP")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_5281_5b6ebd", "The image balancer, the zero-IF offset and the fine-tuning \
              oscillator. Turn it off only to see raw hardware output — with it \
              off, the mirror image appears on the zero-IF rates and the dial is \
-             accurate only to the nearest kilohertz.",
+             accurate only to the nearest kilohertz."),
         );
         let mut dsp = cfg.airspyhf.lib_dsp;
-        if crate::chrome::checkbox(ui, &mut dsp, "Correct the image and fine-tune").changed() {
+        if crate::chrome::checkbox(ui, &mut dsp, crate::language_plugin::text("common.correct_the_image_and_fine_tune", "Correct the image and fine-tune")).changed() {
             cfg.airspyhf.lib_dsp = dsp;
             push_gain(cmds, AirspyHfConfig::LIB_DSP_ELEMENT, f64::from(u8::from(dsp)));
         }
@@ -5295,11 +5270,11 @@ pub(in crate::app) fn settings_airspyhf_tab(
         // on the engine's machine.
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Copy diagnostic report")
+                .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                 .on_hover_text(
-                    "Copies the last session's trace to the clipboard, for a bug \
+                    crate::language_plugin::text("settings.radio.text_5300_04ab26", "Copies the last session's trace to the clipboard, for a bug \
                      report: every command exchanged with the receiver, and the \
-                     first bytes of the sample stream.",
+                     first bytes of the sample stream."),
                 )
                 .clicked()
             {
@@ -5313,9 +5288,9 @@ pub(in crate::app) fn settings_airspyhf_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_5316_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -5328,18 +5303,18 @@ pub(in crate::app) fn settings_airspyhf_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only. No SoapySDR and no libairspyhf needed. Below the \
+            crate::language_plugin::text("settings.radio.text_5331_4fe097", "Receive only. No SoapySDR and no libairspyhf needed. Below the \
              synthesiser's floor the host oscillator does the tuning, which is how \
              this receiver reaches VLF. The receiver and sample rate take effect on \
-             Apply; everything else applies as you change it.",
+             Apply; everything else applies as you change it."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "Not yet verified against real hardware. If it misbehaves, please send the \
+            crate::language_plugin::text("settings.radio.text_5340_4899de", "Not yet verified against real hardware. If it misbehaves, please send the \
              diagnostic report — it contains every command exchanged with the receiver, \
-             and the first bytes of the sample stream decoded as I/Q pairs.",
+             and the first bytes of the sample stream decoded as I/Q pairs."),
         )
         .color(crate::theme::YELLOW()),
     );
@@ -5366,7 +5341,7 @@ pub(in crate::app) fn settings_airspy_tab(
 ) {
     use sdroxide_types::{AirspyConfig, AirspyGain};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_5369_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -5383,21 +5358,21 @@ pub(in crate::app) fn settings_airspy_tab(
     let from_device = caps.is_some_and(|c| !c.sample_rates.is_empty());
 
     egui::Grid::new("airspy-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_5392_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.airspy.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_5400_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.airspy.serial.clone()
                 };
@@ -5405,16 +5380,16 @@ pub(in crate::app) fn settings_airspy_tab(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label("No Airspy R2 or Mini found — press Rescan");
+                            ui.label(crate::language_plugin::text("settings.radio.no_airspy_r2_or_mini_found_press_rescan", "No Airspy R2 or Mini found — press Rescan"));
                         }
                         ui.selectable_value(
                             &mut cfg.airspy.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_5413_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             let serial = d.serial.clone().unwrap_or_default();
-                            ui.selectable_value(&mut cfg.airspy.serial, serial, d.label());
+                            ui.selectable_value(&mut cfg.airspy.serial, serial,crate::language_plugin::display_label(d.label()));
                         }
                     },
                 );
@@ -5422,14 +5397,14 @@ pub(in crate::app) fn settings_airspy_tab(
         });
         ui.end_row();
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         ui.horizontal(|ui| {
             ComboBox::from_id_salt("airspy_rate")
                 .width(180.0)
                 .selected_text(format!("{:.3} Msps", cfg.airspy.sample_rate_hz / 1e6))
                 .show_styled(ui, |ui| {
                     for r in &rates {
-                        let note = AirspyConfig::rate_note(*r);
+                        let note = crate::language_plugin::rate_note_text(AirspyConfig::rate_note(*r));
                         let text = if from_device || note.is_empty() {
                             format!("{:.3} Msps", r / 1e6)
                         } else {
@@ -5441,10 +5416,10 @@ pub(in crate::app) fn settings_airspy_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(if from_device {
-                        "read from this receiver".to_string()
+                        crate::language_plugin::text("settings.radio.text_5444_1acbef", "read from this receiver").to_string()
                     } else {
-                        "an R2 and a Mini offer different rates and cannot be told \
-                         apart until one is open"
+                        crate::language_plugin::text("settings.radio.text_5446_8cb39b", "an R2 and a Mini offer different rates and cannot be told \
+                         apart until one is open")
                             .to_string()
                     })
                     .weak(),
@@ -5457,9 +5432,9 @@ pub(in crate::app) fn settings_airspy_tab(
         ui.add(
             egui::Label::new(
                 RichText::new(
-                    "This is the rate you get. The receiver's ADC runs at twice it — \
+                    crate::language_plugin::text("settings.radio.text_5460_99619e", "This is the rate you get. The receiver's ADC runs at twice it — \
                      it digitises a real signal and sdroxide makes complex baseband \
-                     from it on the host.",
+                     from it on the host."),
                 )
                 .weak(),
             )
@@ -5467,10 +5442,10 @@ pub(in crate::app) fn settings_airspy_tab(
         );
         ui.end_row();
 
-        ui.label("Gain curve");
+        ui.label(crate::language_plugin::text("settings.radio.gain_curve", "Gain curve"));
         ui.horizontal(|ui| {
             for c in AirspyGain::ALL {
-                if ui.selectable_label(cfg.airspy.gain_curve == c, c.label()).clicked()
+                if ui.selectable_label(cfg.airspy.gain_curve == c,crate::language_plugin::display_label(c.label())).clicked()
                     && cfg.airspy.gain_curve != c
                 {
                     cfg.airspy.gain_curve = c;
@@ -5480,16 +5455,16 @@ pub(in crate::app) fn settings_airspy_tab(
         });
         ui.end_row();
 
-        ui.label("Gain");
+        ui.label(crate::language_plugin::text("settings.radio.gain", "Gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.airspy.gain_step, 0..=(AirspyConfig::GAIN_STEPS - 1))
-                .text("step"),
+                .text(crate::language_plugin::text("boundaries.app.settings.radio.text_5487_3e64cc", "step")),
         )
         .on_hover_text(
-            "A step along the curve above, not a dB figure — the tuner's LNA, \
+            crate::language_plugin::text("settings.radio.text_5490_02f0a1", "A step along the curve above, not a dB figure — the tuner's LNA, \
                  mixer and VGA move together, and how much each step is worth \
-                 depends on the curve and the band. 0 is the quiet end.",
+                 depends on the curve and the band. 0 is the quiet end."),
         )
         .changed()
         {
@@ -5497,18 +5472,18 @@ pub(in crate::app) fn settings_airspy_tab(
         }
         ui.end_row();
 
-        ui.label("Tuner AGC");
+        ui.label(crate::language_plugin::text("settings.radio.tuner_agc", "Tuner AGC"));
         ui.horizontal(|ui| {
             if ui
                 .checkbox(&mut cfg.airspy.lna_agc, "LNA")
-                .on_hover_text("Hands the LNA to the tuner's own loop, overriding the curve.")
+                .on_hover_text(crate::language_plugin::text("settings.radio.text_5504_6fe6f1", "Hands the LNA to the tuner's own loop, overriding the curve."))
                 .changed()
             {
                 push_gain(cmds, AirspyConfig::LNA_AGC_ELEMENT, cfg.airspy.lna_agc as u8 as f64);
             }
             if ui
-                .checkbox(&mut cfg.airspy.mixer_agc, "Mixer")
-                .on_hover_text("The same for the mixer stage.")
+                .checkbox(&mut cfg.airspy.mixer_agc, crate::language_plugin::text("common.mixer", "Mixer"))
+                .on_hover_text(crate::language_plugin::text("settings.radio.text_5511_90b256", "The same for the mixer stage."))
                 .changed()
             {
                 push_gain(cmds, AirspyConfig::MIXER_AGC_ELEMENT, cfg.airspy.mixer_agc as u8 as f64);
@@ -5520,8 +5495,8 @@ pub(in crate::app) fn settings_airspy_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(
-                        "With a loop running, the gain slider no longer sets the stage \
-                         it owns — the loop overwrites it.",
+                        crate::language_plugin::text("settings.radio.text_5523_7b39d8", "With a loop running, the gain slider no longer sets the stage \
+                         it owns — the loop overwrites it."),
                     )
                     .weak(),
                 )
@@ -5530,25 +5505,25 @@ pub(in crate::app) fn settings_airspy_tab(
             ui.end_row();
         }
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         if ui
-            .checkbox(&mut cfg.airspy.bias_tee, "DC on the antenna port")
-            .on_hover_text("Powers an active antenna or preamp down the coax.")
+            .checkbox(&mut cfg.airspy.bias_tee, crate::language_plugin::text("common.dc_on_the_antenna_port", "DC on the antenna port"))
+            .on_hover_text(crate::language_plugin::text("settings.radio.powers_an_active_antenna_or_preamp_down_the_coax", "Powers an active antenna or preamp down the coax."))
             .changed()
         {
             push_gain(cmds, AirspyConfig::BIAS_TEE_ELEMENT, cfg.airspy.bias_tee as u8 as f64);
         }
         ui.end_row();
 
-        ui.label("12-bit packing");
+        ui.label(crate::language_plugin::text("settings.radio.text_5543_2ef681", "12-bit packing"));
         ui.horizontal(|ui| {
-            crate::chrome::checkbox(ui, &mut cfg.airspy.packing, "Enable");
+            crate::chrome::checkbox(ui, &mut cfg.airspy.packing, crate::language_plugin::text("common.enable", "Enable"));
             ui.add(
                 egui::Label::new(
                     RichText::new(
-                        "A third less USB traffic. Leave it on: this is a USB 2.0 \
+                        crate::language_plugin::text("settings.radio.text_5549_fa75d4", "A third less USB traffic. Leave it on: this is a USB 2.0 \
                          device and the top rate is 30 MB/s packed against 40 \
-                         unpacked. Applies on reconnect.",
+                         unpacked. Applies on reconnect."),
                     )
                     .weak(),
                 )
@@ -5557,14 +5532,14 @@ pub(in crate::app) fn settings_airspy_tab(
         });
         ui.end_row();
 
-        ui.label("DC removal");
+        ui.label(crate::language_plugin::text("settings.radio.dc_removal", "DC removal"));
         if ui
-            .checkbox(&mut cfg.airspy.dc_block, "Remove the ADC's offset")
+            .checkbox(&mut cfg.airspy.dc_block, crate::language_plugin::text("settings.radio.text_5562_250062", "Remove the ADC's offset"))
             .on_hover_text(
-                "Turn it off to see raw hardware output. Worth knowing where the \
+                crate::language_plugin::text("settings.radio.text_5564_e2f48a", "Turn it off to see raw hardware output. Worth knowing where the \
                  spur goes: the offset lands at the edge of the span, not its \
                  centre, because the signal is translated by a quarter of the \
-                 sample rate on the way through.",
+                 sample rate on the way through."),
             )
             .changed()
         {
@@ -5577,9 +5552,9 @@ pub(in crate::app) fn settings_airspy_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_5580_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -5592,10 +5567,10 @@ pub(in crate::app) fn settings_airspy_tab(
     ui.add_space(6.0);
     probe_only(ui, can_probe, |ui| {
         if ui
-            .button("Copy diagnostic report")
+            .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
             .on_hover_text(
-                "Every command exchanged with the receiver, the sample-rate \
-                 arithmetic, and the first samples decoded as I/Q.",
+                crate::language_plugin::text("settings.radio.text_5597_5a424c", "Every command exchanged with the receiver, the sample-rate \
+                 arithmetic, and the first samples decoded as I/Q."),
             )
             .clicked()
         {
@@ -5606,17 +5581,17 @@ pub(in crate::app) fn settings_airspy_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only, 24–1800 MHz. No SoapySDR and no libairspy needed. The \
+            crate::language_plugin::text("settings.radio.text_5609_380a02", "Receive only, 24–1800 MHz. No SoapySDR and no libairspy needed. The \
              receiver, sample rate and packing take effect on Apply; everything \
-             else applies as you change it.",
+             else applies as you change it."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "Not yet verified against real hardware. If it misbehaves, please send the \
+            crate::language_plugin::text("settings.radio.text_5617_697e61", "Not yet verified against real hardware. If it misbehaves, please send the \
              diagnostic report — it contains every command exchanged with the receiver, \
-             the rate arithmetic, and the first samples decoded as I/Q pairs.",
+             the rate arithmetic, and the first samples decoded as I/Q pairs."),
         )
         .color(crate::theme::YELLOW()),
     );
@@ -5647,7 +5622,7 @@ pub(in crate::app) fn settings_hydrasdr_tab(
 ) {
     use sdroxide_types::{HydraSdrConfig, HydraSdrGain, HydraSdrPort};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_5650_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -5664,21 +5639,21 @@ pub(in crate::app) fn settings_hydrasdr_tab(
     let from_device = caps.is_some_and(|c| c.driver == "hydrasdr" && !c.sample_rates.is_empty());
 
     egui::Grid::new("hydrasdr-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_5673_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.hydrasdr.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_5681_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.hydrasdr.serial.clone()
                 };
@@ -5687,30 +5662,30 @@ pub(in crate::app) fn settings_hydrasdr_tab(
                     .selected_text(shown)
                     .show_styled(ui, |ui| {
                         if devices.is_empty() {
-                            ui.label("No HydraSDR RFOne found — press Rescan");
+                            ui.label(crate::language_plugin::text("settings.radio.no_hydrasdr_rfone_found_press_rescan", "No HydraSDR RFOne found — press Rescan"));
                         }
                         ui.selectable_value(
                             &mut cfg.hydrasdr.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_5695_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             let serial = d.serial.clone().unwrap_or_default();
-                            ui.selectable_value(&mut cfg.hydrasdr.serial, serial, d.label());
+                            ui.selectable_value(&mut cfg.hydrasdr.serial, serial,crate::language_plugin::display_label(d.label()));
                         }
                     });
             });
         });
         ui.end_row();
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         ui.horizontal(|ui| {
             ComboBox::from_id_salt("hydrasdr_rate")
                 .width(180.0)
                 .selected_text(format!("{:.3} Msps", cfg.hydrasdr.sample_rate_hz / 1e6))
                 .show_styled(ui, |ui| {
                     for r in &rates {
-                        let note = HydraSdrConfig::rate_note(*r);
+                        let note = crate::language_plugin::rate_note_text(HydraSdrConfig::rate_note(*r));
                         let text = if note.is_empty() {
                             format!("{:.3} Msps", r / 1e6)
                         } else {
@@ -5722,10 +5697,10 @@ pub(in crate::app) fn settings_hydrasdr_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(if from_device {
-                        "these are the rates this receiver turned out to have".to_string()
+                        crate::language_plugin::text("settings.radio.text_5725_e93a37", "these are the rates this receiver turned out to have").to_string()
                     } else {
-                        "the receiver only reports three of these; the rest are in the \
-                         firmware's alternate table and an older build may not carry them"
+                        crate::language_plugin::text("settings.radio.text_5727_194bbe", "the receiver only reports three of these; the rest are in the \
+                         firmware's alternate table and an older build may not carry them")
                             .to_string()
                     })
                     .weak(),
@@ -5738,9 +5713,9 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         ui.add(
             egui::Label::new(
                 RichText::new(
-                    "This is the rate you get. The receiver's ADC runs at twice it — \
+                    crate::language_plugin::text("settings.radio.text_5741_99619e", "This is the rate you get. The receiver's ADC runs at twice it — \
                      it digitises a real signal and sdroxide makes complex baseband \
-                     from it on the host.",
+                     from it on the host."),
                 )
                 .weak(),
             )
@@ -5748,13 +5723,13 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         );
         ui.end_row();
 
-        ui.label("RF input");
+        ui.label(crate::language_plugin::text("settings.radio.rf_input", "RF input"));
         ui.horizontal(|ui| {
             for p in HydraSdrPort::ALL {
                 let hover = if p.has_bias_tee() {
-                    "The antenna SMA — the only socket with the bias tee behind it."
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_5755_9bf5da", "The antenna SMA — the only socket with the bias tee behind it.")
                 } else {
-                    "A cable socket. No bias tee here; the hardware puts it on ANT alone."
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_5757_b34cc0", "A cable socket. No bias tee here; the hardware puts it on ANT alone.")
                 };
                 if ui
                     .selectable_label(cfg.hydrasdr.rf_port == p, p.name())
@@ -5776,10 +5751,10 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         });
         ui.end_row();
 
-        ui.label("Gain curve");
+        ui.label(crate::language_plugin::text("settings.radio.gain_curve", "Gain curve"));
         ui.horizontal(|ui| {
             for c in HydraSdrGain::ALL {
-                if ui.selectable_label(cfg.hydrasdr.gain_curve == c, c.label()).clicked()
+                if ui.selectable_label(cfg.hydrasdr.gain_curve == c,crate::language_plugin::display_label(c.label())).clicked()
                     && cfg.hydrasdr.gain_curve != c
                 {
                     cfg.hydrasdr.gain_curve = c;
@@ -5789,16 +5764,16 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         });
         ui.end_row();
 
-        ui.label("Gain");
+        ui.label(crate::language_plugin::text("settings.radio.gain", "Gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.hydrasdr.gain_step, 0..=(HydraSdrConfig::GAIN_STEPS - 1))
-                .text("step"),
+                .text(crate::language_plugin::text("boundaries.app.settings.radio.text_5796_3e64cc", "step")),
         )
         .on_hover_text(
-            "A step along the curve above, not a dB figure — the tuner's LNA, \
+            crate::language_plugin::text("settings.radio.text_5799_02f0a1", "A step along the curve above, not a dB figure — the tuner's LNA, \
              mixer and VGA move together, and how much each step is worth \
-             depends on the curve and the band. 0 is the quiet end.",
+             depends on the curve and the band. 0 is the quiet end."),
         )
         .changed()
         {
@@ -5806,18 +5781,18 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         }
         ui.end_row();
 
-        ui.label("Tuner AGC");
+        ui.label(crate::language_plugin::text("settings.radio.tuner_agc", "Tuner AGC"));
         ui.horizontal(|ui| {
             if ui
                 .checkbox(&mut cfg.hydrasdr.lna_agc, "LNA")
-                .on_hover_text("Hands the LNA to the tuner's own loop, overriding the curve.")
+                .on_hover_text(crate::language_plugin::text("settings.radio.text_5813_6fe6f1", "Hands the LNA to the tuner's own loop, overriding the curve."))
                 .changed()
             {
                 push_gain(cmds, HydraSdrConfig::LNA_AGC_ELEMENT, cfg.hydrasdr.lna_agc as u8 as f64);
             }
             if ui
-                .checkbox(&mut cfg.hydrasdr.mixer_agc, "Mixer")
-                .on_hover_text("The same for the mixer stage.")
+                .checkbox(&mut cfg.hydrasdr.mixer_agc, crate::language_plugin::text("common.mixer", "Mixer"))
+                .on_hover_text(crate::language_plugin::text("settings.radio.text_5820_90b256", "The same for the mixer stage."))
                 .changed()
             {
                 push_gain(
@@ -5833,8 +5808,8 @@ pub(in crate::app) fn settings_hydrasdr_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(
-                        "With a loop running, the gain slider no longer sets the stage \
-                         it owns — the loop overwrites it.",
+                        crate::language_plugin::text("settings.radio.text_5836_7b39d8", "With a loop running, the gain slider no longer sets the stage \
+                         it owns — the loop overwrites it."),
                     )
                     .weak(),
                 )
@@ -5843,13 +5818,13 @@ pub(in crate::app) fn settings_hydrasdr_tab(
             ui.end_row();
         }
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         ui.add_enabled_ui(cfg.hydrasdr.rf_port.has_bias_tee(), |ui| {
             if ui
-                .checkbox(&mut cfg.hydrasdr.bias_tee, "DC on the antenna port")
+                .checkbox(&mut cfg.hydrasdr.bias_tee, crate::language_plugin::text("common.dc_on_the_antenna_port", "DC on the antenna port"))
                 .on_hover_text(
-                    "Powers an active antenna or preamp down the coax. Only the ANT \
-                     socket has one — the two cable ports are plain inputs.",
+                    crate::language_plugin::text("settings.radio.text_5851_b65b5f", "Powers an active antenna or preamp down the coax. Only the ANT \
+                     socket has one — the two cable ports are plain inputs."),
                 )
                 .changed()
             {
@@ -5862,15 +5837,15 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         });
         ui.end_row();
 
-        ui.label("12-bit packing");
+        ui.label(crate::language_plugin::text("settings.radio.text_5865_2ef681", "12-bit packing"));
         ui.horizontal(|ui| {
-            crate::chrome::checkbox(ui, &mut cfg.hydrasdr.packing, "Enable");
+            crate::chrome::checkbox(ui, &mut cfg.hydrasdr.packing, crate::language_plugin::text("common.enable", "Enable"));
             ui.add(
                 egui::Label::new(
                     RichText::new(
-                        "A third less USB traffic. Leave it on: this is a USB 2.0 \
+                        crate::language_plugin::text("settings.radio.text_5871_924f15", "A third less USB traffic. Leave it on: this is a USB 2.0 \
                          device and the top rate is 36 MB/s packed against 48 \
-                         unpacked. Applies on reconnect.",
+                         unpacked. Applies on reconnect."),
                     )
                     .weak(),
                 )
@@ -5879,14 +5854,14 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         });
         ui.end_row();
 
-        ui.label("DC removal");
+        ui.label(crate::language_plugin::text("settings.radio.dc_removal", "DC removal"));
         if ui
-            .checkbox(&mut cfg.hydrasdr.dc_block, "Remove the ADC's offset")
+            .checkbox(&mut cfg.hydrasdr.dc_block, crate::language_plugin::text("settings.radio.text_5884_250062", "Remove the ADC's offset"))
             .on_hover_text(
-                "Turn it off to see raw hardware output. Worth knowing where the \
+                crate::language_plugin::text("settings.radio.text_5886_e2f48a", "Turn it off to see raw hardware output. Worth knowing where the \
                  spur goes: the offset lands at the edge of the span, not its \
                  centre, because the signal is translated by a quarter of the \
-                 sample rate on the way through.",
+                 sample rate on the way through."),
             )
             .changed()
         {
@@ -5899,9 +5874,9 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_5902_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -5911,10 +5886,10 @@ pub(in crate::app) fn settings_hydrasdr_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "One of these boards is on 1d50:60a1, the USB id HydraSDR's prototypes \
+                crate::language_plugin::text("settings.radio.text_5914_4bb994", "One of these boards is on 1d50:60a1, the USB id HydraSDR's prototypes \
                  share with the Airspy R2 and Mini. sdroxide checks the firmware after \
                  opening and will say so if the wrong interface has been picked, in \
-                 either direction.",
+                 either direction."),
             )
             .weak(),
         );
@@ -5927,10 +5902,10 @@ pub(in crate::app) fn settings_hydrasdr_tab(
     ui.add_space(6.0);
     probe_only(ui, can_probe, |ui| {
         if ui
-            .button("Copy diagnostic report")
+            .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
             .on_hover_text(
-                "Every command exchanged with the receiver, the sample-rate \
-                 arithmetic, and the first samples decoded as I/Q.",
+                crate::language_plugin::text("settings.radio.text_5932_5a424c", "Every command exchanged with the receiver, the sample-rate \
+                 arithmetic, and the first samples decoded as I/Q."),
             )
             .clicked()
         {
@@ -5941,17 +5916,17 @@ pub(in crate::app) fn settings_hydrasdr_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only, 24–1800 MHz. No SoapySDR and no libhydrasdr needed. The \
+            crate::language_plugin::text("settings.radio.text_5944_098157", "Receive only, 24–1800 MHz. No SoapySDR and no libhydrasdr needed. The \
              receiver, sample rate and packing take effect on Apply; everything \
-             else applies as you change it.",
+             else applies as you change it."),
         )
         .weak(),
     );
     ui.label(
         RichText::new(
-            "Not yet verified against real hardware. If it misbehaves, please send the \
+            crate::language_plugin::text("settings.radio.text_5952_697e61", "Not yet verified against real hardware. If it misbehaves, please send the \
              diagnostic report — it contains every command exchanged with the receiver, \
-             the rate arithmetic, and the first samples decoded as I/Q pairs.",
+             the rate arithmetic, and the first samples decoded as I/Q pairs."),
         )
         .color(crate::theme::YELLOW()),
     );
@@ -5982,7 +5957,7 @@ pub(in crate::app) fn settings_fobos_tab(
 ) {
     use sdroxide_types::{FobosConfig, FobosPort, diversity_cost_note};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_5985_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -5998,21 +5973,21 @@ pub(in crate::app) fn settings_fobos_tab(
     let from_device = caps.is_some_and(|c| c.driver == "fobos" && !c.sample_rates.is_empty());
 
     egui::Grid::new("fobos-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list Fobos SDRs. No device is opened, so this is safe to \
-                         press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_6007_835bd5", "Re-list Fobos SDRs. No device is opened, so this is safe to \
+                         press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.fobos.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_6015_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.fobos.serial.clone()
                 };
@@ -6020,15 +5995,15 @@ pub(in crate::app) fn settings_fobos_tab(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label("No Fobos SDR found — press Rescan");
+                            ui.label(crate::language_plugin::text("settings.radio.no_fobos_sdr_found_press_rescan", "No Fobos SDR found — press Rescan"));
                         }
                         ui.selectable_value(
                             &mut cfg.fobos.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_6028_4a541a", "— first one found —"),
                         );
                         for d in devices {
-                            ui.selectable_value(&mut cfg.fobos.serial, d.serial.clone(), d.label());
+                            ui.selectable_value(&mut cfg.fobos.serial, d.serial.clone(),crate::language_plugin::display_label(d.label()));
                         }
                     },
                 );
@@ -6036,21 +6011,21 @@ pub(in crate::app) fn settings_fobos_tab(
         });
         ui.end_row();
 
-        ui.label("Input");
+        ui.label(crate::language_plugin::text("settings.radio.input", "Input"));
         ui.horizontal(|ui| {
             for p in FobosPort::ALL {
                 let hover = match p {
                     FobosPort::Rf => {
-                        "Through the tuner: LNA, VGA, and the mixer's own frequency range."
+                        crate::language_plugin::text("boundaries.app.settings.radio.text_6044_908cf9", "Through the tuner: LNA, VGA, and the mixer's own frequency range.")
                     }
                     FobosPort::Hf1 => {
-                        "Direct sampling on the HF1 antenna input — no tuner, no LNA/VGA \
-                         gain, tuned entirely in software."
+                        crate::language_plugin::text("boundaries.app.settings.radio.text_6047_01aedb", "Direct sampling on the HF1 antenna input — no tuner, no LNA/VGA \
+                         gain, tuned entirely in software.")
                     }
-                    FobosPort::Hf2 => "Direct sampling on the HF2 antenna input, same as HF1.",
+                    FobosPort::Hf2 => crate::language_plugin::text("boundaries.app.settings.radio.text_6050_0c34b1", "Direct sampling on the HF2 antenna input, same as HF1."),
                     FobosPort::HfDual => {
-                        "Both real ADC channels at once, combined by the diversity filter \
-                         below — a noise source nulled, or two fading paths combined."
+                        crate::language_plugin::text("boundaries.app.settings.radio.text_6052_7ed011", "Both real ADC channels at once, combined by the diversity filter \
+                         below — a noise source nulled, or two fading paths combined.")
                     }
                 };
                 ui.selectable_value(&mut cfg.fobos.port, p, p.name()).on_hover_text(hover);
@@ -6062,9 +6037,9 @@ pub(in crate::app) fn settings_fobos_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(
-                        "Direct sampling — the tuner (and so LNA/VGA gain) is not in the \
+                        crate::language_plugin::text("settings.radio.text_6065_7b9b53", "Direct sampling — the tuner (and so LNA/VGA gain) is not in the \
                          path. The rate below is a target for the software downconverter, \
-                         not a hardware setting, so the achieved rate can differ from it.",
+                         not a hardware setting, so the achieved rate can differ from it."),
                     )
                     .weak(),
                 )
@@ -6073,7 +6048,7 @@ pub(in crate::app) fn settings_fobos_tab(
             ui.end_row();
         }
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         ui.horizontal(|ui| {
             ComboBox::from_id_salt("fobos_rate")
                 .width(150.0)
@@ -6090,10 +6065,10 @@ pub(in crate::app) fn settings_fobos_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(if from_device {
-                        "this receiver's own reported rates".to_string()
+                        crate::language_plugin::text("settings.radio.text_6093_a98307", "this receiver's own reported rates").to_string()
                     } else {
-                        "measured on one real unit — connect this receiver and Rescan to \
-                         see its own list"
+                        crate::language_plugin::text("settings.radio.text_6095_00a8c5", "measured on one real unit — connect this receiver and Rescan to \
+                         see its own list")
                             .to_string()
                     })
                     .weak(),
@@ -6103,7 +6078,7 @@ pub(in crate::app) fn settings_fobos_tab(
         });
         ui.end_row();
 
-        ui.label("LNA gain");
+        ui.label(crate::language_plugin::text("settings.radio.lna_gain", "LNA gain"));
         ui.add_enabled_ui(cfg.fobos.port == FobosPort::Rf, |ui| {
             if crate::chrome::slider(
                 ui,
@@ -6116,7 +6091,7 @@ pub(in crate::app) fn settings_fobos_tab(
         });
         ui.end_row();
 
-        ui.label("VGA gain");
+        ui.label(crate::language_plugin::text("settings.radio.vga_gain", "VGA gain"));
         ui.add_enabled_ui(cfg.fobos.port == FobosPort::Rf, |ui| {
             if crate::chrome::slider(
                 ui,
@@ -6129,8 +6104,8 @@ pub(in crate::app) fn settings_fobos_tab(
         });
         ui.end_row();
 
-        ui.label("Clock source");
-        if ui.checkbox(&mut cfg.fobos.clk_external, "External reference").changed() {
+        ui.label(crate::language_plugin::text("settings.radio.clock_source", "Clock source"));
+        if ui.checkbox(&mut cfg.fobos.clk_external, crate::language_plugin::text("common.external_reference", "External reference")).changed() {
             push_gain(cmds, FobosConfig::CLK_EXTERNAL_ELEMENT, cfg.fobos.clk_external as u8 as f64);
         }
         ui.end_row();
@@ -6141,22 +6116,22 @@ pub(in crate::app) fn settings_fobos_tab(
         // length is the one control that stays here, the same split every
         // other diversity-capable backend's settings tab uses.
         if cfg.fobos.port == FobosPort::HfDual {
-            ui.label("Diversity taps");
+            ui.label(crate::language_plugin::text("settings.radio.diversity_taps", "Diversity taps"));
             ui.horizontal(|ui| {
                 if ui
                     .add(
                         DragValue::new(&mut cfg.fobos.div_taps)
                             .speed(1.0)
                             .range(1..=FobosConfig::DIV_TAPS_MAX)
-                            .suffix(" taps"),
+                            .suffix(crate::language_plugin::text("settings.radio.text_6151_9dbddc", " taps")),
                     )
                     .on_hover_text(
-                        "One tap is a gain and a phase — a null at one frequency that \
+                        crate::language_plugin::text("settings.radio.text_6154_e67375", "One tap is a gain and a phase — a null at one frequency that \
                          gets worse either side of it, which is all an analogue phaser \
                          can do. Each further tap buys one sample period of the path \
                          difference between HF1 and HF2 that the filter can equalise, \
                          which is what turns that notch into a band quiet all the way \
-                         across.",
+                         across."),
                     )
                     .changed()
                 {
@@ -6185,11 +6160,11 @@ pub(in crate::app) fn settings_fobos_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "Receive only. RF port (tuner), HF1/HF2 (direct sampling, decoded in software) \
+            crate::language_plugin::text("settings.radio.text_6188_2fe432", "Receive only. RF port (tuner), HF1/HF2 (direct sampling, decoded in software) \
              and HF1+HF2 (both at once, combined by the diversity filter) all work. The \
              receiver, input and sample rate take effect on Apply; gain, clock source and \
              taps apply as you change them — the diversity filter's mode, adapt rate and \
-             hold are on the main window's own DIV box once this radio is selected.",
+             hold are on the main window's own DIV box once this radio is selected."),
         )
         .weak(),
     );
@@ -6215,7 +6190,7 @@ pub(in crate::app) fn settings_hackrf_tab(
 ) {
     use sdroxide_types::HackRfConfig;
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_6218_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -6244,21 +6219,21 @@ pub(in crate::app) fn settings_hackrf_tab(
         devices.iter().find(|d| d.matches_serial(&cfg.hackrf.serial)).is_some_and(|d| d.is_pro());
 
     egui::Grid::new("hackrf-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Radio");
+        ui.label(crate::language_plugin::text("settings.radio.radio", "Radio"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Re-list the USB bus. No device is opened, so this is safe \
-                         to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_6253_f6e0bf", "Re-list the USB bus. No device is opened, so this is safe \
+                         to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.hackrf.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_6261_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.hackrf.serial.clone()
                 };
@@ -6266,16 +6241,16 @@ pub(in crate::app) fn settings_hackrf_tab(
                     ui,
                     |ui| {
                         if devices.is_empty() {
-                            ui.label("No HackRF found — press Rescan");
+                            ui.label(crate::language_plugin::text("settings.radio.no_hackrf_found_press_rescan", "No HackRF found — press Rescan"));
                         }
                         ui.selectable_value(
                             &mut cfg.hackrf.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_6274_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             let serial = d.serial.clone().unwrap_or_default();
-                            ui.selectable_value(&mut cfg.hackrf.serial, serial, d.label());
+                            ui.selectable_value(&mut cfg.hackrf.serial, serial,crate::language_plugin::display_label(d.label()));
                         }
                     },
                 );
@@ -6283,7 +6258,7 @@ pub(in crate::app) fn settings_hackrf_tab(
         });
         ui.end_row();
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         ui.horizontal(|ui| {
             ComboBox::from_id_salt("hackrf_rate")
                 .width(150.0)
@@ -6293,28 +6268,28 @@ pub(in crate::app) fn settings_hackrf_tab(
                         ui.selectable_value(
                             &mut cfg.hackrf.sample_rate_hz,
                             r,
-                            format!("{} — {}", hackrf_rate_label(r), HackRfConfig::rate_note(r)),
+                            format!("{} — {}", hackrf_rate_label(r), crate::language_plugin::rate_note_text(HackRfConfig::rate_note(r))),
                         );
                     }
                 });
             ui.add(
                 egui::Label::new(
-                    RichText::new(HackRfConfig::rate_note(cfg.hackrf.sample_rate_hz)).weak(),
+                    RichText::new(crate::language_plugin::rate_note_text(HackRfConfig::rate_note(cfg.hackrf.sample_rate_hz))).weak(),
                 )
                 .wrap(),
             );
         });
         ui.end_row();
 
-        ui.label("LNA gain");
+        ui.label(crate::language_plugin::text("settings.radio.lna_gain", "LNA gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.hackrf.lna_db, 0.0..=40.0).step_by(8.0).suffix(" dB"),
         )
         .on_hover_text(
-            "Front-end amplifier, in 8 dB steps. This is the stage that \
+            crate::language_plugin::text("settings.radio.text_6315_b0177e", "Front-end amplifier, in 8 dB steps. This is the stage that \
                  changes sensitivity — and the stage that overloads first on a \
-                 real antenna.",
+                 real antenna."),
         )
         .changed()
         {
@@ -6322,14 +6297,14 @@ pub(in crate::app) fn settings_hackrf_tab(
         }
         ui.end_row();
 
-        ui.label("VGA gain");
+        ui.label(crate::language_plugin::text("settings.radio.vga_gain", "VGA gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(&mut cfg.hackrf.vga_db, 0.0..=62.0).step_by(2.0).suffix(" dB"),
         )
         .on_hover_text(
-            "Baseband amplifier after the mixer, in 2 dB steps. Turn this up \
-                 for a weak signal before reaching for the LNA.",
+            crate::language_plugin::text("settings.radio.text_6331_cf4a0b", "Baseband amplifier after the mixer, in 2 dB steps. Turn this up \
+                 for a weak signal before reaching for the LNA."),
         )
         .changed()
         {
@@ -6337,16 +6312,16 @@ pub(in crate::app) fn settings_hackrf_tab(
         }
         ui.end_row();
 
-        ui.label("RF amp");
+        ui.label(crate::language_plugin::text("settings.radio.rf_amp", "RF amp"));
         if ui
             .checkbox(
                 &mut cfg.hackrf.amp,
-                format!("{:.0} dB preamp on receive", HackRfConfig::AMP_DB),
+                { let __lp_arg_0 = &(HackRfConfig::AMP_DB); crate::language_plugin::format("settings.radio.text_6344_ff7bcc", "{:.0} dB preamp on receive", &[format!("{:.0}", __lp_arg_0)]) },
             )
             .on_hover_text(
-                "One switch, shared with the transmit setting below — the radio \
+                crate::language_plugin::text("settings.radio.text_6347_56955b", "One switch, shared with the transmit setting below — the radio \
                  applies whichever belongs to the direction it is entering. Off \
-                 is usually right on a real antenna.",
+                 is usually right on a real antenna."),
             )
             .changed()
         {
@@ -6354,10 +6329,10 @@ pub(in crate::app) fn settings_hackrf_tab(
         }
         ui.end_row();
 
-        ui.label("Baseband filter");
+        ui.label(crate::language_plugin::text("settings.radio.baseband_filter", "Baseband filter"));
         ui.horizontal(|ui| {
             let shown = if cfg.hackrf.filter_bw_hz <= 0.0 {
-                "Automatic".to_string()
+                crate::language_plugin::text("choices.app.settings.radio.text_6360_d461a4", "Automatic").to_string()
             } else {
                 format!("{:.2} MHz", cfg.hackrf.filter_bw_hz / 1e6)
             };
@@ -6371,7 +6346,7 @@ pub(in crate::app) fn settings_hackrf_tab(
                     .width(150.0)
                     .selected_text(shown)
                     .show_styled(ui, |ui| {
-                        ui.selectable_value(&mut picked, 0.0, "Automatic");
+                        ui.selectable_value(&mut picked, 0.0, crate::language_plugin::text("common.automatic", "Automatic"));
                         for bw in [
                             1.75e6, 2.5e6, 3.5e6, 5.0e6, 5.5e6, 6.0e6, 7.0e6, 8.0e6, 9.0e6, 10.0e6,
                             12.0e6, 14.0e6, 15.0e6, 20.0e6, 24.0e6, 28.0e6,
@@ -6387,13 +6362,13 @@ pub(in crate::app) fn settings_hackrf_tab(
             ui.add(
                 egui::Label::new(
                     RichText::new(if is_pro {
-                        "A HackRF Pro chooses this itself — three quarters of the \
+                        crate::language_plugin::text("settings.radio.text_6390_9c6327", "A HackRF Pro chooses this itself — three quarters of the \
                          sample rate, filtered in the FPGA — and ignores anything \
-                         the host asks for."
+                         the host asks for.")
                     } else {
-                        "Leave on Automatic. Choosing one too narrow does not just \
+                        crate::language_plugin::text("settings.radio.text_6394_9f0585", "Leave on Automatic. Choosing one too narrow does not just \
                          soften the band edges — it withdraws the LO offset that \
-                         keeps the DC spike off your signal."
+                         keeps the DC spike off your signal.")
                     })
                     .weak(),
                 )
@@ -6402,13 +6377,13 @@ pub(in crate::app) fn settings_hackrf_tab(
         });
         ui.end_row();
 
-        ui.label("Bias tee");
+        ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
         if ui
-            .checkbox(&mut cfg.hackrf.bias_tee, "DC on the antenna port")
+            .checkbox(&mut cfg.hackrf.bias_tee, crate::language_plugin::text("common.dc_on_the_antenna_port", "DC on the antenna port"))
             .on_hover_text(
-                "About 3 V at 50 mA down the coax, for an active antenna or a \
+                crate::language_plugin::text("settings.radio.text_6409_b96650", "About 3 V at 50 mA down the coax, for an active antenna or a \
                  preamp. A HackRF One or Pro only; the Jawbreaker and rad1o have \
-                 no such circuit.",
+                 no such circuit."),
             )
             .changed()
         {
@@ -6416,14 +6391,14 @@ pub(in crate::app) fn settings_hackrf_tab(
         }
         ui.end_row();
 
-        ui.label("IQ correction");
+        ui.label(crate::language_plugin::text("settings.radio.iq_correction", "IQ correction"));
         if ui
-            .checkbox(&mut cfg.hackrf.iq_correction, "Remove DC and the mirror image")
+            .checkbox(&mut cfg.hackrf.iq_correction, crate::language_plugin::text("common.remove_dc_and_the_mirror_image", "Remove DC and the mirror image"))
             .on_hover_text(
-                "This is a zero-IF radio, so its own LO leakage sits mid-span and \
+                crate::language_plugin::text("settings.radio.text_6423_1cba84", "This is a zero-IF radio, so its own LO leakage sits mid-span and \
                  the mixer's quadrature error puts a mirror image across it. \
                  Turning this off shows raw hardware output, which is the quick \
-                 way to tell a driver problem from a DSP one.",
+                 way to tell a driver problem from a DSP one."),
             )
             .changed()
         {
@@ -6435,7 +6410,7 @@ pub(in crate::app) fn settings_hackrf_tab(
         }
         ui.end_row();
 
-        ui.label("Clock trim");
+        ui.label(crate::language_plugin::text("settings.radio.clock_trim", "Clock trim"));
         if ui
             .add(
                 egui::DragValue::new(&mut cfg.hackrf.ppm)
@@ -6443,7 +6418,7 @@ pub(in crate::app) fn settings_hackrf_tab(
                     .range(-200.0..=200.0)
                     .suffix(" ppm"),
             )
-            .on_hover_text("Corrects the reference oscillator.")
+            .on_hover_text(crate::language_plugin::text("settings.radio.corrects_the_reference_oscillator", "Corrects the reference oscillator."))
             .changed()
         {
             push_gain(cmds, HackRfConfig::PPM_ELEMENT, cfg.hackrf.ppm);
@@ -6455,9 +6430,9 @@ pub(in crate::app) fn settings_hackrf_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_6458_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -6465,28 +6440,28 @@ pub(in crate::app) fn settings_hackrf_tab(
 
     ui.add_space(8.0);
     ui.separator();
-    ui.label(RichText::new("Transmit").strong());
+    ui.label(RichText::new(crate::language_plugin::text("settings.radio.transmit", "Transmit")).strong());
     ui.add_space(4.0);
 
     egui::Grid::new("hackrf-tx-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Transmitter");
-        crate::chrome::checkbox(ui, &mut cfg.hackrf.tx_enabled, "Enabled").on_hover_text(
-            "Off by default. While this is off the backend publishes no transmit \
-             channel at all, so nothing can key the radio. Applies on reconnect.",
+        ui.label(crate::language_plugin::text("settings.radio.transmitter", "Transmitter"));
+        crate::chrome::checkbox(ui, &mut cfg.hackrf.tx_enabled, crate::language_plugin::text("common.enabled", "Enabled")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6474_6e8596", "Off by default. While this is off the backend publishes no transmit \
+             channel at all, so nothing can key the radio. Applies on reconnect."),
         );
         ui.end_row();
 
         if cfg.hackrf.tx_enabled {
-            ui.label("TX VGA gain");
+            ui.label(crate::language_plugin::text("settings.radio.tx_vga_gain", "TX VGA gain"));
             if crate::chrome::slider(
                 ui,
                 egui::Slider::new(&mut cfg.hackrf.txvga_db, 0.0..=47.0).step_by(1.0).suffix(" dB"),
             )
             .on_hover_text(
-                "The transmit driver amplifier. Drive is applied digitally \
+                crate::language_plugin::text("settings.radio.text_6486_8afbd6", "The transmit driver amplifier. Drive is applied digitally \
                      before this stage, so leave the drive high and set output \
                      level here — turning drive down instead runs the DAC at a \
-                     fraction of full scale and raises intermodulation.",
+                     fraction of full scale and raises intermodulation."),
             )
             .changed()
             {
@@ -6498,15 +6473,15 @@ pub(in crate::app) fn settings_hackrf_tab(
             }
             ui.end_row();
 
-            ui.label("RF amp");
+            ui.label(crate::language_plugin::text("settings.radio.rf_amp", "RF amp"));
             if ui
                 .checkbox(
                     &mut cfg.hackrf.tx_amp,
-                    format!("{:.0} dB preamp on transmit", HackRfConfig::AMP_DB),
+                    { let __lp_arg_0 = &(HackRfConfig::AMP_DB); crate::language_plugin::format("settings.radio.text_6505_045d49", "{:.0} dB preamp on transmit", &[format!("{:.0}", __lp_arg_0)]) },
                 )
                 .on_hover_text(
-                    "The same switch as the receive setting above, applied when \
-                     the radio changes direction.",
+                    crate::language_plugin::text("settings.radio.text_6508_41a76f", "The same switch as the receive setting above, applied when \
+                     the radio changes direction."),
                 )
                 .changed()
             {
@@ -6524,10 +6499,10 @@ pub(in crate::app) fn settings_hackrf_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Transmit is armed. Into a dummy load until you have measured it: \
+                crate::language_plugin::text("settings.radio.text_6527_e99125", "Transmit is armed. Into a dummy load until you have measured it: \
                  a HackRF's harmonics are strong enough to need an external \
                  low-pass filter for the band you are on, and it is half duplex, \
-                 so receive stops for the length of every over.",
+                 so receive stops for the length of every over."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -6548,10 +6523,10 @@ pub(in crate::app) fn settings_hackrf_tab(
     ui.horizontal(|ui| {
         probe_only(ui, can_probe, |ui| {
             if ui
-                .button("Copy diagnostic report")
+                .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
                 .on_hover_text(
-                    "Every command exchanged with the radio this session, in order, \
-                     including the sequence around each key-down.",
+                    crate::language_plugin::text("settings.radio.text_6553_f77da3", "Every command exchanged with the radio this session, in order, \
+                     including the sequence around each key-down."),
                 )
                 .clicked()
             {
@@ -6563,12 +6538,12 @@ pub(in crate::app) fn settings_hackrf_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "DC – 7.25 GHz, half duplex. No SoapySDR, no libusb and no libhackrf \
+            crate::language_plugin::text("settings.radio.text_6566_eccb3c", "DC – 7.25 GHz, half duplex. No SoapySDR, no libusb and no libhackrf \
              needed. The radio and the sample rate take effect on Apply; \
              everything else applies as you change it. The band edges are the \
              firmware's: a HackRF is specified for 1 MHz – 6 GHz (100 kHz on a \
              Pro) and is heavily attenuated outside that, but it does tune \
-             there.",
+             there."),
         )
         .weak(),
     );
@@ -6602,7 +6577,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
 ) {
     use sdroxide_types::{SdrPlayAgc, SdrPlayConfig, SdrPlayDuoTuner, SdrPlayHdrBw, SdrPlayModel};
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_6605_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -6669,11 +6644,8 @@ pub(in crate::app) fn settings_sdrplay_tab(
     // though a receiver were selected.
     if listed.is_none() && !cfg.sdrplay.serial.trim().is_empty() && !devices.is_empty() {
         ui.label(
-            RichText::new(format!(
-                "Serial {} is not among the receivers the SDRplay service reports. Pick one \
-                 of the listed receivers, or replug this one and press Rescan.",
-                cfg.sdrplay.serial.trim()
-            ))
+            RichText::new({ let __lp_arg_0 = &(cfg.sdrplay.serial.trim()); crate::language_plugin::format("settings.radio.text_6673_cce436", "Serial {} is not among the receivers the SDRplay service reports. Pick one \
+                 of the listed receivers, or replug this one and press Rescan.", &[format!("{}", __lp_arg_0)]) })
             .color(Color32::from_rgb(220, 170, 70)),
         );
         ui.add_space(6.0);
@@ -6695,23 +6667,23 @@ pub(in crate::app) fn settings_sdrplay_tab(
         .unwrap_or_else(|| model.max_lna_state());
 
     egui::Grid::new("sdrplay-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Receiver");
+        ui.label(crate::language_plugin::text("settings.radio.receiver", "Receiver"));
         // The service that answers this is the one on the engine's machine;
         // everything below reaches the RSP through it.
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 if ui
-                    .button("Rescan")
+                    .button(crate::language_plugin::text("settings.radio.rescan", "Rescan"))
                     .on_hover_text(
-                        "Ask the SDRplay API service for its device list. Nothing is \
-                         opened, so this is safe to press while receiving.",
+                        crate::language_plugin::text("settings.radio.text_6706_a7d97c", "Ask the SDRplay API service for its device list. Nothing is \
+                         opened, so this is safe to press while receiving."),
                     )
                     .clicked()
                 {
                     *rescan = true;
                 }
                 let shown = if cfg.sdrplay.serial.is_empty() {
-                    "— first one found —".to_string()
+                    crate::language_plugin::text("boundaries.app.settings.radio.text_6714_4a541a", "— first one found —").to_string()
                 } else {
                     cfg.sdrplay.serial.clone()
                 };
@@ -6722,7 +6694,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
                         if devices.is_empty() {
                             ui.label(
                                 RichText::new(
-                                    "no RSPs — press Rescan (needs the SDRplay API service)",
+                                    crate::language_plugin::text("settings.radio.no_rsps_press_rescan_needs_the_sdrplay_api_service", "no RSPs — press Rescan (needs the SDRplay API service)"),
                                 )
                                 .weak(),
                             );
@@ -6730,7 +6702,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
                         ui.selectable_value(
                             &mut cfg.sdrplay.serial,
                             String::new(),
-                            "— first one found —",
+                            crate::language_plugin::text("settings.radio.text_6733_4a541a", "— first one found —"),
                         );
                         for d in devices {
                             ui.selectable_value(
@@ -6748,13 +6720,13 @@ pub(in crate::app) fn settings_sdrplay_tab(
         // reach is a different — and much shorter — one. Offering the wide
         // rates would offer spans this configuration cannot open.
         let dual = maybe_duo && cfg.sdrplay.duo.enabled;
-        ui.label("Sample rate").on_hover_text(if dual {
-            "With both tuners running, the API fixes the ADC at 6 MHz and hands back \
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate")).on_hover_text(if dual {
+            crate::language_plugin::text("settings.radio.text_6752_187f7c", "With both tuners running, the API fixes the ADC at 6 MHz and hands back \
              2 Msps from a low IF — so 2 Msps is the widest span, and the narrower ones \
-             are that decimated. Takes effect on Apply."
+             are that decimated. Takes effect on Apply.")
         } else {
-            "Rates below 2 Msps run the ADC at 2 Msps and decimate in the service. \
-             Takes effect on Apply."
+            crate::language_plugin::text("settings.radio.text_6756_159738", "Rates below 2 Msps run the ADC at 2 Msps and decimate in the service. \
+             Takes effect on Apply.")
         });
         let shown = format!("{:.3} Msps", cfg.sdrplay.sample_rate_hz / 1e6);
         ComboBox::from_id_salt("sdrplay_rate").selected_text(shown).show_styled(ui, |ui| {
@@ -6765,7 +6737,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
                 let mut label = format!("{:.3} Msps", r / 1e6);
                 if r > 6_048_000.0 {
                     // The ADC trades resolution for speed past 6.048 Msps.
-                    label.push_str("  (reduced ADC resolution)");
+                    label.push_str(&crate::language_plugin::text("boundaries.app.settings.radio.text_6768_3286cb", "  (reduced ADC resolution)"));
                 }
                 if ui.selectable_label(sel, label).clicked() {
                     cfg.sdrplay.sample_rate_hz = r;
@@ -6774,17 +6746,17 @@ pub(in crate::app) fn settings_sdrplay_tab(
         });
         ui.end_row();
 
-        ui.label("IF bandwidth").on_hover_text(
-            "The tuner's analog filter. Auto picks the widest one that fits \
-             the sample rate. Takes effect on Apply.",
+        ui.label(crate::language_plugin::text("settings.radio.if_bandwidth", "IF bandwidth")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6778_9723e7", "The tuner's analog filter. Auto picks the widest one that fits \
+             the sample rate. Takes effect on Apply."),
         );
         let shown = if cfg.sdrplay.bw_khz == 0 {
-            "Auto".to_string()
+            crate::language_plugin::text("choices.app.settings.radio.text_6782_028624", "Auto").to_string()
         } else {
             format!("{} kHz", cfg.sdrplay.bw_khz)
         };
         ComboBox::from_id_salt("sdrplay_bw").selected_text(shown).show_styled(ui, |ui| {
-            if ui.selectable_label(cfg.sdrplay.bw_khz == 0, "Auto").clicked() {
+            if ui.selectable_label(cfg.sdrplay.bw_khz == 0, crate::language_plugin::text("common.auto", "Auto")).clicked() {
                 cfg.sdrplay.bw_khz = 0;
             }
             for &khz in &SdrPlayConfig::BANDWIDTHS_KHZ {
@@ -6804,9 +6776,9 @@ pub(in crate::app) fn settings_sdrplay_tab(
         ui.end_row();
 
         ui.label("AGC").on_hover_text(
-            "The RSP's own IF-gain loop, run by the API service. Off hands the \
+            crate::language_plugin::text("settings.radio.text_6807_0b4c9b", "The RSP's own IF-gain loop, run by the API service. Off hands the \
              IF gain slider back to you — the setting for measurement and \
-             weak-signal digital modes.",
+             weak-signal digital modes."),
         );
         let mut agc = cfg.sdrplay.agc;
         enum_combo(ui, "sdrplay_agc", &mut agc, &SdrPlayAgc::ALL, SdrPlayAgc::label);
@@ -6821,11 +6793,11 @@ pub(in crate::app) fn settings_sdrplay_tab(
         ui.end_row();
 
         if cfg.sdrplay.agc != SdrPlayAgc::Off {
-            ui.label("AGC set point").on_hover_text(
-                "Signal level the loop holds the ADC at. Lower leaves more \
+            ui.label(crate::language_plugin::text("settings.radio.agc_set_point", "AGC set point")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_6825_4a2c64", "Signal level the loop holds the ADC at. Lower leaves more \
                  headroom for signals off-channel. How low it may go depends on \
                  the sample rate — above 8.064 Msps the converter has less \
-                 headroom to give, and above 9.216 Msps less still.",
+                 headroom to give, and above 9.216 Msps less still."),
             );
             // The range the *rate* allows, not the widest any rate allows: the
             // converter trades headroom for speed, and the API refuses a set
@@ -6849,11 +6821,11 @@ pub(in crate::app) fn settings_sdrplay_tab(
             ui.end_row();
         }
 
-        ui.label("IF gain reduction").on_hover_text(
-            "The RSP's native gain unit: 20 dB is maximum gain (0 with the extended \
+        ui.label(crate::language_plugin::text("settings.radio.if_gain_reduction", "IF gain reduction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6853_57bfc1", "The RSP's native gain unit: 20 dB is maximum gain (0 with the extended \
              range below), 59 dB minimum. \
              Applies immediately. Ignored while the AGC is running — the loop \
-             owns this value then, and the S-meter shows what it settled on.",
+             owns this value then, and the S-meter shows what it settled on."),
         );
         // Read before the borrow below: the floor is a property of the whole
         // config, and the slider takes one field of it mutably.
@@ -6875,17 +6847,17 @@ pub(in crate::app) fn settings_sdrplay_tab(
         });
         ui.end_row();
 
-        ui.label("Extended IF range").on_hover_text(
-            "Lets the IF gain reduction go below 20 dB, down to 0 — the last 20 dB \
+        ui.label(crate::language_plugin::text("settings.radio.extended_if_range", "Extended IF range")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6879_85389b", "Lets the IF gain reduction go below 20 dB, down to 0 — the last 20 dB \
              of gain the receiver has. Off is the API's own default and the right \
              one for ordinary listening, because the bottom of the range is where \
              an RSP is easiest to overload. Worth having on for weak signals with \
              the LNA already at 0. It also lets the AGC set point go up to 0 dBFS. \
-             Applies immediately.",
+             Applies immediately."),
         );
         {
             let mut on = cfg.sdrplay.extended_if_gr;
-            if ui.checkbox(&mut on, "Allow IF gain reduction below 20 dB").changed() {
+            if ui.checkbox(&mut on, crate::language_plugin::text("common.allow_if_gain_reduction_below_20_db", "Allow IF gain reduction below 20 dB")).changed() {
                 cfg.sdrplay.extended_if_gr = on;
                 // The floor moves under the value, so put it back in range
                 // before the slider above redraws with the new bound.
@@ -6900,13 +6872,13 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
         ui.end_row();
 
-        ui.label("LNA state").on_hover_text(
-            "Front-end attenuation in steps: 0 is maximum gain, each step up \
+        ui.label(crate::language_plugin::text("settings.radio.lna_state", "LNA state")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6904_51b078", "Front-end attenuation in steps: 0 is maximum gain, each step up \
              switches more attenuation in. Some bands have fewer steps — the \
              driver clamps and keeps your choice for when you tune back, and \
              the rail here ends at what the band the radio is on will take. A \
              higher choice made on another band is kept and still shown beside \
-             it. Applies immediately.",
+             it. Applies immediately."),
         );
         // Clamped on edit only. The rail is this band's, but the value is a
         // stored preference that outlives the band: clamping it on sight would
@@ -6917,7 +6889,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
             Slider::new(&mut cfg.sdrplay.lna_state, 0..=max_lna)
                 .clamping(egui::SliderClamping::Edits),
         )
-        .on_hover_text("0 = max gain")
+        .on_hover_text(crate::language_plugin::text("settings.radio.text_6920_3ed8fd", "0 = max gain"))
         .changed()
         {
             cmds.push(Command::SetGain {
@@ -6928,9 +6900,9 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
         ui.end_row();
 
-        ui.label("Frequency correction").on_hover_text(
-            "Reference error in parts per million, applied by the device \
-             itself. Applies immediately.",
+        ui.label(crate::language_plugin::text("settings.radio.frequency_correction", "Frequency correction")).on_hover_text(
+            crate::language_plugin::text("settings.radio.text_6932_9eb774", "Reference error in parts per million, applied by the device \
+             itself. Applies immediately."),
         );
         let mut ppm = cfg.sdrplay.ppm;
         if ui
@@ -6947,21 +6919,21 @@ pub(in crate::app) fn settings_sdrplay_tab(
         ui.end_row();
 
         if maybe_duo {
-            ui.label(if cfg.sdrplay.duo.enabled { "This radio's tuner" } else { "Tuner" })
+            ui.label(if cfg.sdrplay.duo.enabled { crate::language_plugin::text("settings.radio.text_6950_2e9096", "This radio's tuner") } else { crate::language_plugin::text("settings.radio.text_6950_fc1d20", "Tuner") })
                 .on_hover_text(match (cfg.sdrplay.duo.enabled, cfg.sdrplay.duo.role) {
                     (true, sdroxide_types::SdrPlayDuoRole::SecondRadio) => {
-                        "Which of the RSPduo's two tuners this radio listens on. The other \
+                        crate::language_plugin::text("settings.radio.text_6953_16610f", "Which of the RSPduo's two tuners this radio listens on. The other \
                          one belongs to the radio configured for it — give that one the \
-                         same receiver and the other tuner. Takes effect on Apply."
+                         same receiver and the other tuner. Takes effect on Apply.")
                     }
                     (true, _) => {
-                        "Which of the RSPduo's two tuners carries the aerial you are \
+                        crate::language_plugin::text("settings.radio.text_6958_766dd3", "Which of the RSPduo's two tuners carries the aerial you are \
                          listening to. The other one carries the second aerial. Takes \
-                         effect on Apply."
+                         effect on Apply.")
                     }
                     (false, _) => {
-                        "Which of the RSPduo's two tuners to run (one at a time). Takes \
-                         effect on Apply."
+                        crate::language_plugin::text("settings.radio.text_6963_c35655", "Which of the RSPduo's two tuners to run (one at a time). Takes \
+                         effect on Apply.")
                     }
                 });
             let mut tuner = cfg.sdrplay.duo_tuner;
@@ -6986,7 +6958,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
             None => model.antennas(cfg.sdrplay.duo_tuner).to_vec(),
         };
         if !antennas.is_empty() {
-            ui.label("Antenna").on_hover_text("Applies immediately.");
+            ui.label(crate::language_plugin::text("settings.radio.antenna", "Antenna")).on_hover_text(crate::language_plugin::text("settings.radio.applies_immediately", "Applies immediately."));
             let shown = if cfg.sdrplay.antenna.is_empty() {
                 antennas[0].to_string()
             } else {
@@ -7004,14 +6976,14 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
 
         if model.has_rf_notch() {
-            ui.label("FM broadcast notch");
+            ui.label(crate::language_plugin::text("settings.radio.text_7007_e583ce", "FM broadcast notch"));
             let mut on = cfg.sdrplay.rf_notch;
             if ui
-                .checkbox(&mut on, "Enable")
+                .checkbox(&mut on, crate::language_plugin::text("common.enable", "Enable"))
                 .on_hover_text(
-                    "Hardware notch over the 88–108 MHz broadcast band, for \
+                    crate::language_plugin::text("settings.radio.text_7012_28c4ea", "Hardware notch over the 88–108 MHz broadcast band, for \
                      when a local transmitter overloads everything else. \
-                     Applies immediately.",
+                     Applies immediately."),
                 )
                 .changed()
             {
@@ -7026,13 +6998,13 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
 
         if model.has_dab_notch() {
-            ui.label("DAB notch");
+            ui.label(crate::language_plugin::text("settings.radio.dab_notch", "DAB notch"));
             let mut on = cfg.sdrplay.dab_notch;
             if ui
-                .checkbox(&mut on, "Enable")
+                .checkbox(&mut on, crate::language_plugin::text("common.enable", "Enable"))
                 .on_hover_text(
-                    "Hardware notch over the 165–230 MHz DAB band. Applies \
-                     immediately.",
+                    crate::language_plugin::text("settings.radio.text_7034_dfa6f8", "Hardware notch over the 165–230 MHz DAB band. Applies \
+                     immediately."),
                 )
                 .changed()
             {
@@ -7047,12 +7019,12 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
 
         if model.has_hdr() {
-            ui.label("HDR mode");
+            ui.label(crate::language_plugin::text("settings.radio.hdr_mode", "HDR mode"));
             let mut on = cfg.sdrplay.hdr;
             if ui
-                .checkbox(&mut on, "Enable below 2 MHz")
+                .checkbox(&mut on, crate::language_plugin::text("common.enable_below_2_mhz", "Enable below 2 MHz"))
                 .on_hover_text(
-                    "The RSPdx's high-dynamic-range path for LF/MF. Applies \
+                    crate::language_plugin::text("settings.radio.text_7055_b2b2ea", "The RSPdx's high-dynamic-range path for LF/MF. Applies \
                      immediately.\n\nIt does not work yet: on the one RSPdx it has been \
                      tried against, switching it on silences the receiver — at every \
                      centre, filter, port, gain and rate tried. Whatever the mode needs \
@@ -7061,7 +7033,7 @@ pub(in crate::app) fn settings_sdrplay_tab(
                      known: it is not a mode that follows the dial. The path has a fixed \
                      analog filter, built only at the centres listed under the filter \
                      below, so tuning anywhere else could not work even once the rest \
-                     does.",
+                     does."),
                 )
                 .changed()
             {
@@ -7078,15 +7050,12 @@ pub(in crate::app) fn settings_sdrplay_tab(
             // mode that is otherwise off, and a control that does nothing is
             // worse than one that is not there.
             if cfg.sdrplay.hdr {
-                ui.label("HDR filter").on_hover_text(format!(
-                    "The analog filter in front of the HDR path — a different control \
+                ui.label(crate::language_plugin::text("settings.radio.hdr_filter", "HDR filter")).on_hover_text({ let __lp_arg_0 = &(cfg.sdrplay.hdr_bw.centres_label()); crate::language_plugin::format("settings.radio.text_7082_72078a", "The analog filter in front of the HDR path — a different control \
                      from the receiver's own bandwidth. Each setting is built at a \
                      fixed set of centres and can do nothing elsewhere; this one is \
                      built at {}. Applies immediately.\n\nThe path itself does not work \
                      yet — see the switch above — so this chooses a filter for a mode \
-                     that is currently silent.",
-                    cfg.sdrplay.hdr_bw.centres_label(),
-                ));
+                     that is currently silent.", &[format!("{}", __lp_arg_0)]) });
                 let mut bw = cfg.sdrplay.hdr_bw;
                 enum_combo(ui, "sdrplay_hdr_bw", &mut bw, &SdrPlayHdrBw::ALL, SdrPlayHdrBw::label);
                 if bw != cfg.sdrplay.hdr_bw {
@@ -7102,11 +7071,11 @@ pub(in crate::app) fn settings_sdrplay_tab(
         }
 
         if model.has_bias_tee() {
-            ui.label("Bias tee");
+            ui.label(crate::language_plugin::text("settings.radio.bias_tee", "Bias tee"));
             let mut on = cfg.sdrplay.bias_tee;
             if ui
-                .checkbox(&mut on, "Feed ~4.7 V DC up the coax")
-                .on_hover_text("Powers an active antenna or preamp down the coax.")
+                .checkbox(&mut on, crate::language_plugin::text("common.feed_4_7_v_dc_up_the_coax", "Feed ~4.7 V DC up the coax"))
+                .on_hover_text(crate::language_plugin::text("settings.radio.powers_an_active_antenna_or_preamp_down_the_coax", "Powers an active antenna or preamp down the coax."))
                 .changed()
             {
                 cfg.sdrplay.bias_tee = on;
@@ -7132,23 +7101,23 @@ pub(in crate::app) fn settings_sdrplay_tab(
 
         ui.add_space(6.0);
         ui.separator();
-        ui.label(RichText::new("Second tuner").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.radio.second_tuner", "Second tuner")).strong());
         ui.label(
             RichText::new(
-                "An RSPduo is two whole tuners on one board, clocked from one reference. \
+                crate::language_plugin::text("settings.radio.text_7138_c19ba5", "An RSPduo is two whole tuners on one board, clocked from one reference. \
                  Run both and they hear their spans at the same instant from the same \
                  clock — which makes two aerials on them coherent, with a relative phase \
                  set by the feedlines rather than by chance, and lets the pair be combined. \
                  Or leave them apart: the tuners tune separately, so the other one can be a \
-                 second radio on its own band.",
+                 second radio on its own band."),
             )
             .weak(),
         );
-        if crate::chrome::checkbox(ui, &mut cfg.sdrplay.duo.enabled, "Run both tuners")
+        if crate::chrome::checkbox(ui, &mut cfg.sdrplay.duo.enabled, crate::language_plugin::text("common.run_both_tuners", "Run both tuners"))
             .on_hover_text(
-                "Puts the RSPduo in the API's dual-tuner mode, where the ADC is fixed at \
+                crate::language_plugin::text("settings.radio.text_7149_e96cb6", "Puts the RSPduo in the API's dual-tuner mode, where the ADC is fixed at \
                  6 MHz and the widest span is 2 Msps. Takes effect on Apply, because the \
-                 mode is chosen when the device is opened.",
+                 mode is chosen when the device is opened."),
             )
             .changed()
         {
@@ -7164,9 +7133,9 @@ pub(in crate::app) fn settings_sdrplay_tab(
             egui::Grid::new("sdrplay-duo-grid").num_columns(2).spacing([12.0, 6.0]).show(
                 ui,
                 |ui| {
-                    ui.label("Used for").on_hover_text(
-                        "What the other tuner is for. Takes effect on Apply — like running \
-                         both at all, this is chosen when the board is opened.",
+                    ui.label(crate::language_plugin::text("settings.radio.used_for", "Used for")).on_hover_text(
+                        crate::language_plugin::text("settings.radio.text_7168_534083", "What the other tuner is for. Takes effect on Apply — like running \
+                         both at all, this is chosen when the board is opened."),
                     );
                     let mut role = cfg.sdrplay.duo.role;
                     enum_combo(
@@ -7185,13 +7154,13 @@ pub(in crate::app) fn settings_sdrplay_tab(
         if cfg.sdrplay.duo.enabled && cfg.sdrplay.duo.role == SdrPlayDuoRole::SecondRadio {
             ui.label(
                 RichText::new(
-                    "Add a second radio (Settings → Radio → +), give it this same receiver \
+                    crate::language_plugin::text("settings.radio.text_7188_7cfe4e", "Add a second radio (Settings → Radio → +), give it this same receiver \
                      and the RSPduo's other tuner, and set it to run both tuners too — \
                      whichever radio opens the board puts it in dual-tuner mode, so both \
                      have to be expecting it. The two then tune independently: HF in one \
                      tab and VHF in the other, off one board. They share one ADC clock, so \
                      both run at the sample rate whichever radio opened the board asked \
-                     for, and neither can transmit.",
+                     for, and neither can transmit."),
                 )
                 .weak(),
             );
@@ -7202,12 +7171,12 @@ pub(in crate::app) fn settings_sdrplay_tab(
             egui::Grid::new("sdrplay-div-grid").num_columns(2).spacing([12.0, 6.0]).show(
                 ui,
                 |ui| {
-                    ui.label("What to do with it");
+                    ui.label(crate::language_plugin::text("settings.radio.what_to_do_with_it", "What to do with it"));
                     ComboBox::from_id_salt("sdrplay_div_mode")
-                        .selected_text(div.mode.label())
+                        .selected_text(crate::language_plugin::display_label(div.mode.label()))
                         .show_styled(ui, |ui| {
                             for m in DiversityMode::ALL {
-                                if ui.selectable_label(div.mode == m, m.label()).clicked() {
+                                if ui.selectable_label(div.mode == m,crate::language_plugin::display_label(m.label())).clicked() {
                                     div.mode = m;
                                     push_gain(
                                         cmds,
@@ -7219,13 +7188,13 @@ pub(in crate::app) fn settings_sdrplay_tab(
                         });
                     ui.end_row();
 
-                    ui.label("Its LNA state").on_hover_text(
-                        "The second tuner's own front-end attenuation. Set so both aerials \
+                    ui.label(crate::language_plugin::text("settings.radio.its_lna_state", "Its LNA state")).on_hover_text(
+                        crate::language_plugin::text("settings.radio.text_7223_74a304", "The second tuner's own front-end attenuation. Set so both aerials \
                          show about the same noise floor: this is the adjustment everything \
                          else rests on, because combining weights the two branches by their \
                          noise, and a second front end driven into overload hands the filter \
                          a distorted copy of the interference — which cannot be subtracted \
-                         from an undistorted one. Applies immediately.",
+                         from an undistorted one. Applies immediately."),
                     );
                     // Clamped on edit only, for the same reason as the first
                     // tuner's above: the rail is this band's, the value is a
@@ -7235,18 +7204,18 @@ pub(in crate::app) fn settings_sdrplay_tab(
                         Slider::new(&mut div.lna_state, 0..=max_lna)
                             .clamping(egui::SliderClamping::Edits),
                     )
-                    .on_hover_text("0 = max gain")
+                    .on_hover_text(crate::language_plugin::text("settings.radio.text_7238_3ed8fd", "0 = max gain"))
                     .changed()
                     {
                         push_gain(cmds, SdrPlayConfig::AUX_LNA_ELEMENT, -(div.lna_state as f64));
                     }
                     ui.end_row();
 
-                    ui.label("Its IF gain reduction").on_hover_text(
-                        "The second tuner's IF gain, in the RSP's native unit: 20 dB is \
+                    ui.label(crate::language_plugin::text("settings.radio.its_if_gain_reduction", "Its IF gain reduction")).on_hover_text(
+                        crate::language_plugin::text("settings.radio.text_7246_98ec3b", "The second tuner's IF gain, in the RSP's native unit: 20 dB is \
                          maximum gain. Ignored while the AGC is running — and a steady gain \
                          is what the filter wants, so switching the AGC off is worth it for \
-                         a null you intend to hold.",
+                         a null you intend to hold."),
                     );
                     ui.add_enabled_ui(cfg.sdrplay.agc == SdrPlayAgc::Off, |ui| {
                         if crate::chrome::slider(
@@ -7268,22 +7237,22 @@ pub(in crate::app) fn settings_sdrplay_tab(
                     });
                     ui.end_row();
 
-                    ui.label("Filter length");
+                    ui.label(crate::language_plugin::text("settings.radio.filter_length", "Filter length"));
                     ui.horizontal(|ui| {
                         if ui
                             .add(
                                 DragValue::new(&mut div.taps)
                                     .speed(1.0)
                                     .range(1..=DIVERSITY_MAX_TAPS)
-                                    .suffix(" taps"),
+                                    .suffix(crate::language_plugin::text("settings.radio.text_7278_9dbddc", " taps")),
                             )
                             .on_hover_text(
-                                "One tap is a gain and a phase — a null at one frequency \
+                                crate::language_plugin::text("settings.radio.text_7281_e60aaa", "One tap is a gain and a phase — a null at one frequency \
                                  that gets worse either side of it, which is all an analogue \
                                  phaser can do. Each further tap buys one sample period of \
                                  the path difference between the two aerials that the filter \
                                  can equalise, which is what turns that notch into a band \
-                                 quiet all the way across.",
+                                 quiet all the way across."),
                             )
                             .changed()
                         {
@@ -7299,28 +7268,28 @@ pub(in crate::app) fn settings_sdrplay_tab(
                     });
                     ui.end_row();
 
-                    ui.label("Adaptation");
+                    ui.label(crate::language_plugin::text("settings.radio.adaptation", "Adaptation"));
                     ui.horizontal(|ui| {
                         if crate::chrome::slider(
                             ui,
                             Slider::new(&mut div.rate, 0.0..=1.0).show_value(false),
                         )
                         .on_hover_text(
-                            "Slow and steady at the left, converging inside a fraction of a \
+                            crate::language_plugin::text("settings.radio.text_7309_5fb077", "Slow and steady at the left, converging inside a fraction of a \
                              second and visibly hunting at the right. Start fast to find the \
-                             null, then hold it.",
+                             null, then hold it."),
                         )
                         .changed()
                         {
                             push_gain(cmds, SdrPlayConfig::DIV_RATE_ELEMENT, f64::from(div.rate));
                         }
                         if ui
-                            .checkbox(&mut div.frozen, "Hold")
+                            .checkbox(&mut div.frozen, crate::language_plugin::text("common.hold", "Hold"))
                             .on_hover_text(
-                                "Stop the filter moving. Reach for this the moment a null \
+                                crate::language_plugin::text("settings.radio.text_7320_c966ca", "Stop the filter moving. Reach for this the moment a null \
                                  appears: a filter left adapting will re-aim itself at \
                                  whatever becomes loudest, which on a quiet band is the \
-                                 station you are listening to.",
+                                 station you are listening to."),
                             )
                             .changed()
                         {
@@ -7331,8 +7300,8 @@ pub(in crate::app) fn settings_sdrplay_tab(
                             );
                         }
                         if ui
-                            .button("Restart")
-                            .on_hover_text("Zero the filter and find the null again.")
+                            .button(crate::language_plugin::text("settings.radio.restart", "Restart"))
+                            .on_hover_text(crate::language_plugin::text("settings.radio.zero_the_filter_and_find_the_null_again", "Zero the filter and find the null again."))
                             .clicked()
                         {
                             push_gain(cmds, SdrPlayConfig::DIV_RESET_ELEMENT, 1.0);
@@ -7343,12 +7312,12 @@ pub(in crate::app) fn settings_sdrplay_tab(
             );
             ui.label(
                 RichText::new(
-                    "Nothing here can tell a wanted signal from an unwanted one — the filter \
+                    crate::language_plugin::text("settings.radio.text_7346_9a26af", "Nothing here can tell a wanted signal from an unwanted one — the filter \
                      only knows what the two aerials have in common. In Cancel, the second \
                      aerial wants to hear the noise source and as little of the band as \
                      possible, or it will dutifully cancel the station too. In Combine, both \
                      want to hear the same station. How deep the null is going runs to the \
-                     log every few seconds.",
+                     log every few seconds."),
                 )
                 .weak(),
             );
@@ -7360,25 +7329,22 @@ pub(in crate::app) fn settings_sdrplay_tab(
         if cfg.sdrplay.duo.enabled {
             ui.label(
                 RichText::new(
-                    "Not yet verified against an RSPduo: dual-tuner operation here is \
-                     written from SDRplay's API rather than measured on the hardware.",
+                    crate::language_plugin::text("settings.radio.text_7363_adb232", "Not yet verified against an RSPduo: dual-tuner operation here is \
+                     written from SDRplay's API rather than measured on the hardware."),
                 )
                 .color(Color32::from_rgb(220, 170, 70)),
             );
             if !maybe_duo {
                 ui.label(
-                    RichText::new(format!(
-                        "Only an RSPduo has a second tuner, and the receiver selected here \
-                         is an {}, so this will do nothing.",
-                        model.label()
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(model.label()); crate::language_plugin::format("settings.radio.text_7371_598f65", "Only an RSPduo has a second tuner, and the receiver selected here \
+                         is an {}, so this will do nothing.", &[format!("{}", __lp_arg_0)]) })
                     .color(Color32::from_rgb(220, 170, 70)),
                 );
             } else if devices.is_empty() {
                 ui.label(
                     RichText::new(
-                        "No receiver is listed to check this against — press Rescan, or read \
-                         the log for what actually opened.",
+                        crate::language_plugin::text("settings.radio.text_7380_ecf22b", "No receiver is listed to check this against — press Rescan, or read \
+                         the log for what actually opened."),
                     )
                     .weak(),
                 );
@@ -7390,9 +7356,9 @@ pub(in crate::app) fn settings_sdrplay_tab(
         ui.add_space(4.0);
         ui.label(
             RichText::new(
-                "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
+                crate::language_plugin::text("settings.radio.text_7393_630353", "Bias tee is ON. Never connect a transceiver, a grounded antenna, \
                  or a preamp powered from elsewhere while this is enabled — the DC \
-                 goes straight down the feedline.",
+                 goes straight down the feedline."),
             )
             .color(crate::theme::YELLOW()),
         );
@@ -7414,10 +7380,10 @@ pub(in crate::app) fn settings_sdrplay_tab(
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Receive only, 1 kHz–2 GHz. Needs the vendor's SDRplay API service \
+            crate::language_plugin::text("settings.radio.text_7417_0d64af", "Receive only, 1 kHz–2 GHz. Needs the vendor's SDRplay API service \
              (sdrplay.com/api) — the RSPs after the original RSP1 have no open \
              protocol. Device, sample rate, bandwidth and RSPduo tuner take \
-             effect on Apply; everything else applies as you change it.",
+             effect on Apply; everything else applies as you change it."),
         )
         .weak(),
     );
@@ -7451,7 +7417,7 @@ pub(in crate::app) fn settings_lime_tab(
         RFE_ATTEN_STEP_DB, RfeChannel, RfeLink, RfeModeControl, RfePort,
     };
     let Some(cfg) = radio_edit.as_mut() else {
-        ui.label("Waiting for the configuration of the machine the radio is attached to.");
+        ui.label(crate::language_plugin::text("settings.radio.text_7454_7356f5", "Waiting for the configuration of the machine the radio is attached to."));
         return;
     };
 
@@ -7480,7 +7446,7 @@ pub(in crate::app) fn settings_lime_tab(
         .unwrap_or(if cfg.lime.channel > 0 { 2 } else { 1 });
 
     egui::Grid::new("lime-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Board");
+        ui.label(crate::language_plugin::text("settings.radio.board", "Board"));
         probe_only(ui, can_probe, |ui| {
             ui.horizontal(|ui| {
                 let current = devices
@@ -7489,18 +7455,18 @@ pub(in crate::app) fn settings_lime_tab(
                     .map(|d| d.label())
                     .unwrap_or_else(|| {
                         if cfg.lime.device.trim().is_empty() {
-                            "First one found".to_string()
+                            crate::language_plugin::text("boundaries.app.settings.radio.text_7492_d7be47", "First one found").to_string()
                         } else {
-                            format!("{} (not found)", cfg.lime.device)
+                            { let __lp_arg_0 = &(cfg.lime.device); crate::language_plugin::format("boundaries.app.settings.radio.text_7494_45026a", "{} (not found)", &[format!("{}", __lp_arg_0)]) }
                         }
                     });
                 egui::ComboBox::from_id_salt("lime-dev").selected_text(current).show_styled(
                     ui,
                     |ui| {
-                        ui.selectable_value(&mut cfg.lime.device, String::new(), "First one found");
+                        ui.selectable_value(&mut cfg.lime.device, String::new(), crate::language_plugin::text("common.first_one_found_d7be474a", "First one found"));
                         for d in devices {
                             let sel = d.matches(&cfg.lime.device) && !cfg.lime.device.is_empty();
-                            if ui.selectable_label(sel, d.label()).clicked() {
+                            if ui.selectable_label(sel,crate::language_plugin::display_label(d.label())).clicked() {
                                 // Pin by serial where there is one: a device
                                 // string carries the bus address, which changes
                                 // when the cable moves.
@@ -7513,7 +7479,7 @@ pub(in crate::app) fn settings_lime_tab(
                         }
                     },
                 );
-                if ui.button("Rescan").clicked() {
+                if ui.button(crate::language_plugin::text("settings.radio.rescan", "Rescan")).clicked() {
                     *rescan = true;
                 }
             });
@@ -7524,9 +7490,9 @@ pub(in crate::app) fn settings_lime_tab(
         // that has two: on a Mini there is one chain and one set of sockets,
         // and a picker with a single entry is furniture.
         if chains > 1 || cfg.lime.channel > 0 {
-            ui.label("Receive chain");
+            ui.label(crate::language_plugin::text("settings.radio.receive_chain", "Receive chain"));
             ui.horizontal(|ui| {
-                let text = format!("Chain {} (RX{}_*)", cfg.lime.channel + 1, cfg.lime.channel + 1);
+                let text = { let __lp_arg_0 = &(cfg.lime.channel + 1); let __lp_arg_1 = &(cfg.lime.channel + 1); crate::language_plugin::format("boundaries.app.settings.radio.text_7529_578441", "Chain {} (RX{}_*)", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) };
                 egui::ComboBox::from_id_salt("lime-chain").selected_text(text).show_styled(
                     ui,
                     |ui| {
@@ -7534,17 +7500,17 @@ pub(in crate::app) fn settings_lime_tab(
                             ui.selectable_value(
                                 &mut cfg.lime.channel,
                                 c,
-                                format!("Chain {} (RX{}_* / TX{}_*)", c + 1, c + 1, c + 1),
+                                { let __lp_arg_0 = &(c + 1); let __lp_arg_1 = &(c + 1); let __lp_arg_2 = &(c + 1); crate::language_plugin::format("settings.radio.text_7537_babd87", "Chain {} (RX{}_* / TX{}_*)", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) },
                             );
                         }
                     },
                 );
                 ui.label(
                     egui::RichText::new(
-                        "Both chains tune together — they share one synthesiser — but they are \
+                        crate::language_plugin::text("settings.radio.text_7544_db57f4", "Both chains tune together — they share one synthesiser — but they are \
                          separate front ends on separate sockets. Pick the one your aerial is \
                          on, which is the setting to reach for when one chain has had the HF \
-                         matching modification and the other is stock.",
+                         matching modification and the other is stock."),
                     )
                     .weak(),
                 );
@@ -7552,7 +7518,7 @@ pub(in crate::app) fn settings_lime_tab(
             ui.end_row();
         }
 
-        ui.label("Sample rate");
+        ui.label(crate::language_plugin::text("settings.radio.sample_rate", "Sample rate"));
         ui.horizontal(|ui| {
             let text = format!("{:.3} Msps", cfg.lime.sample_rate_hz / 1e6);
             // The Mini's USB link underruns at 1 Msps on transmit (issue #609),
@@ -7564,7 +7530,7 @@ pub(in crate::app) fn settings_lime_tab(
                 .unwrap_or(&LimeConfig::SAMPLE_RATES);
             egui::ComboBox::from_id_salt("lime-rate").selected_text(text).show_styled(ui, |ui| {
                 for &r in rates {
-                    let label = match LimeConfig::rate_note(r) {
+                    let label = match LimeConfig::rate_note(r).map(crate::language_plugin::rate_note_text) {
                         Some(note) => format!("{:.3} Msps — {note}", r / 1e6),
                         None => format!("{:.3} Msps", r / 1e6),
                     };
@@ -7574,7 +7540,7 @@ pub(in crate::app) fn settings_lime_tab(
         });
         ui.end_row();
 
-        ui.label("Receive gain");
+        ui.label(crate::language_plugin::text("settings.radio.receive_gain", "Receive gain"));
         if crate::chrome::slider(
             ui,
             egui::Slider::new(
@@ -7585,8 +7551,8 @@ pub(in crate::app) fn settings_lime_tab(
             .step_by(1.0),
         )
         .on_hover_text(
-            "One combined figure, which LimeSuite distributes across the LNA, the TIA and \
-                 the PGA itself. It takes whole decibels, so anything finer is truncated.",
+            crate::language_plugin::text("settings.radio.text_7581_b7a128", "One combined figure, which LimeSuite distributes across the LNA, the TIA and \
+                 the PGA itself. It takes whole decibels, so anything finer is truncated."),
         )
         .changed()
         {
@@ -7594,17 +7560,17 @@ pub(in crate::app) fn settings_lime_tab(
         }
         ui.end_row();
 
-        ui.label("Receive port");
+        ui.label(crate::language_plugin::text("settings.radio.receive_port", "Receive port"));
         ui.horizontal(|ui| {
             let text = if cfg.lime.antenna_rx.is_empty() {
-                "Automatic".to_string()
+                crate::language_plugin::text("choices.app.settings.radio.text_7593_d461a4", "Automatic").to_string()
             } else {
                 LimeConfig::port_label(cfg.lime.channel, &cfg.lime.antenna_rx, false)
             };
             let before_rx = cfg.lime.antenna_rx.clone();
             let chan = cfg.lime.channel;
             egui::ComboBox::from_id_salt("lime-antrx").selected_text(text).show_styled(ui, |ui| {
-                ui.selectable_value(&mut cfg.lime.antenna_rx, String::new(), "Automatic");
+                ui.selectable_value(&mut cfg.lime.antenna_rx, String::new(), crate::language_plugin::text("common.automatic", "Automatic"));
                 for a in ["LNAH", "LNAL", "LNAW"] {
                     // Named by the socket as well as the chip's port: `LNAL`
                     // is the same word on both chains, and the connector is
@@ -7634,25 +7600,25 @@ pub(in crate::app) fn settings_lime_tab(
             }
             ui.label(
                 egui::RichText::new(
-                    "Automatic follows the frequency: LNAL low, LNAH high — unless a LimeRFE \
+                    crate::language_plugin::text("settings.radio.text_7630_b22c26", "Automatic follows the frequency: LNAL low, LNAH high — unless a LimeRFE \
                      is connected below, which is one cable into one socket, and then it is \
                      LNAW at every frequency. Name the socket yours is wired to if it is not \
-                     that one. Which chain the socket belongs to is the picker above.",
+                     that one. Which chain the socket belongs to is the picker above."),
                 )
                 .weak(),
             );
         });
         ui.end_row();
 
-        ui.label("Analog filter");
+        ui.label(crate::language_plugin::text("settings.radio.analog_filter", "Analog filter"));
         ui.horizontal(|ui| {
             let mut mhz = cfg.lime.lpf_rx_hz / 1e6;
             if ui
                 .add(egui::DragValue::new(&mut mhz).speed(0.1).range(0.0..=130.0).suffix(" MHz"))
                 .on_hover_text(
-                    "0 follows the sample rate. Worth leaving there: a filter narrower than a \
+                    crate::language_plugin::text("settings.radio.text_7646_ab93c5", "0 follows the sample rate. Worth leaving there: a filter narrower than a \
                      quarter of the span silently withdraws the zero-IF LO offset, which puts \
-                     the LO leakage back on top of the signal you are listening to.",
+                     the LO leakage back on top of the signal you are listening to."),
                 )
                 .changed()
             {
@@ -7660,19 +7626,19 @@ pub(in crate::app) fn settings_lime_tab(
                 push_gain(cmds, LimeConfig::LPF_RX_ELEMENT, cfg.lime.lpf_rx_hz);
             }
             if cfg.lime.lpf_rx_hz == 0.0 {
-                ui.label(egui::RichText::new("following the rate").weak());
+                ui.label(egui::RichText::new(crate::language_plugin::text("settings.radio.text_7656_b1847a", "following the rate")).weak());
             }
         });
         ui.end_row();
 
-        ui.label("Corrections");
+        ui.label(crate::language_plugin::text("settings.radio.corrections", "Corrections"));
         ui.horizontal(|ui| {
             if ui
-                .checkbox(&mut cfg.lime.iq_correction, "Host IQ / DC correction")
+                .checkbox(&mut cfg.lime.iq_correction, crate::language_plugin::text("common.host_iq_dc_correction", "Host IQ / DC correction"))
                 .on_hover_text(
-                    "Adaptive image and DC removal on this side, on top of the chip's own \
+                    crate::language_plugin::text("settings.radio.text_7666_dd7a89", "Adaptive image and DC removal on this side, on top of the chip's own \
                      calibration. Turning it off is the one-click way to tell a driver problem \
-                     from a DSP one.",
+                     from a DSP one."),
                 )
                 .changed()
             {
@@ -7682,17 +7648,17 @@ pub(in crate::app) fn settings_lime_tab(
                     f64::from(u8::from(cfg.lime.iq_correction)),
                 );
             }
-            crate::chrome::checkbox(ui, &mut cfg.lime.calibrate, "Calibrate automatically")
+            crate::chrome::checkbox(ui, &mut cfg.lime.calibrate, crate::language_plugin::text("common.calibrate_automatically", "Calibrate automatically"))
                 .on_hover_text(
-                    "Runs the chip's own DC-offset and image calibration when the radio is \
+                    crate::language_plugin::text("settings.radio.text_7680_fbbe50", "Runs the chip's own DC-offset and image calibration when the radio is \
                      opened, and again once the dial has settled on a new band or a different \
                      socket. Those numbers are measured at one frequency and are wrong \
                      elsewhere, which is what a carrier sitting in the middle of the span \
-                     usually is. Costs about a second each time.",
+                     usually is. Costs about a second each time."),
                 );
             if ui
-                .button("Calibrate now")
-                .on_hover_text("Stalls the receiver for the better part of a second.")
+                .button(crate::language_plugin::text("settings.radio.calibrate_now", "Calibrate now"))
+                .on_hover_text(crate::language_plugin::text("settings.radio.text_7688_4a0687", "Stalls the receiver for the better part of a second."))
                 .clicked()
             {
                 push_gain(cmds, LimeConfig::CALIBRATE_ELEMENT, 1.0);
@@ -7705,34 +7671,31 @@ pub(in crate::app) fn settings_lime_tab(
     if chains > 1 || cfg.lime.aux.role != LimeAuxRole::Off {
         ui.add_space(6.0);
         ui.separator();
-        ui.label(egui::RichText::new("Second aerial").strong());
+        ui.label(egui::RichText::new(crate::language_plugin::text("settings.radio.second_aerial", "Second aerial")).strong());
         ui.label(
-            egui::RichText::new(format!(
-                "The board's other receive chain, on the {} sockets. It shares the \
+            egui::RichText::new({ let __lp_arg_0 = &(format_args!("RX{}_*", cfg.lime.aux_channel() + 1)); crate::language_plugin::format("settings.radio.text_7704_37f3d0", "The board's other receive chain, on the {} sockets. It shares the \
                  synthesiser, so it hears the same span at the same instant as the first — \
                  which is what lets it carry a second aerial, or a sample of your own \
-                 transmitter.",
-                format_args!("RX{}_*", cfg.lime.aux_channel() + 1)
-            ))
+                 transmitter.", &[format!("{}", __lp_arg_0)]) })
             .weak(),
         );
         let aux_chan = cfg.lime.aux_channel();
         egui::Grid::new("lime-aux-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-            ui.label("Used for");
+            ui.label(crate::language_plugin::text("settings.radio.used_for", "Used for"));
             egui::ComboBox::from_id_salt("lime-aux-role")
-                .selected_text(cfg.lime.aux.role.label())
+                .selected_text(crate::language_plugin::display_label(cfg.lime.aux.role.label()))
                 .show_styled(ui, |ui| {
                     for r in LimeAuxRole::ALL {
-                        ui.selectable_value(&mut cfg.lime.aux.role, r, r.label());
+                        ui.selectable_value(&mut cfg.lime.aux.role, r,crate::language_plugin::display_label(r.label()));
                     }
                 });
             ui.end_row();
 
             if cfg.lime.aux.role != LimeAuxRole::Off {
-                ui.label("Its socket");
+                ui.label(crate::language_plugin::text("settings.radio.its_socket", "Its socket"));
                 ui.horizontal(|ui| {
                     let text = if cfg.lime.aux.antenna.is_empty() {
-                        "Same as the first".to_string()
+                        crate::language_plugin::text("boundaries.app.settings.radio.text_7728_295a43", "Same as the first").to_string()
                     } else {
                         LimeConfig::port_label(aux_chan, &cfg.lime.aux.antenna, false)
                     };
@@ -7743,7 +7706,7 @@ pub(in crate::app) fn settings_lime_tab(
                             ui.selectable_value(
                                 &mut cfg.lime.aux.antenna,
                                 String::new(),
-                                "Same as the first",
+                                crate::language_plugin::text("settings.radio.text_7739_295a43", "Same as the first"),
                             );
                             for a in ["LNAH", "LNAL", "LNAW"] {
                                 ui.selectable_value(
@@ -7770,7 +7733,7 @@ pub(in crate::app) fn settings_lime_tab(
                 });
                 ui.end_row();
 
-                ui.label("Its gain");
+                ui.label(crate::language_plugin::text("settings.radio.its_gain", "Its gain"));
                 if crate::chrome::slider(
                     ui,
                     egui::Slider::new(
@@ -7781,16 +7744,16 @@ pub(in crate::app) fn settings_lime_tab(
                     .step_by(1.0),
                 )
                 .on_hover_text(if cfg.lime.aux.role == LimeAuxRole::PureSignal {
-                    "Set this LOW. The coupled sample of your own transmitter is a strong \
+                    crate::language_plugin::text("settings.radio.text_7777_0be891", "Set this LOW. The coupled sample of your own transmitter is a strong \
                      signal, and a feedback chain driven into compression measures the \
                      amplifier's curve wrongly — it teaches the correction its own \
-                     distortion. Start at the bottom and use the coupler's attenuator."
+                     distortion. Start at the bottom and use the coupler's attenuator.")
                 } else {
-                    "Set so both aerials show about the same noise floor. This is the \
+                    crate::language_plugin::text("settings.radio.text_7782_9e8fbc", "Set so both aerials show about the same noise floor. This is the \
                      adjustment the whole thing rests on: combining weights the two branches \
                      by their noise, and a second chain driven into compression hands the \
                      filter a distorted copy of the interference — which cannot be subtracted \
-                     from an undistorted one."
+                     from an undistorted one.")
                 })
                 .changed()
                 {
@@ -7800,12 +7763,12 @@ pub(in crate::app) fn settings_lime_tab(
             }
 
             if cfg.lime.aux.role == LimeAuxRole::Diversity {
-                ui.label("What to do with it");
+                ui.label(crate::language_plugin::text("settings.radio.what_to_do_with_it", "What to do with it"));
                 egui::ComboBox::from_id_salt("lime-div-mode")
-                    .selected_text(cfg.lime.aux.mode.label())
+                    .selected_text(crate::language_plugin::display_label(cfg.lime.aux.mode.label()))
                     .show_styled(ui, |ui| {
                         for m in DiversityMode::ALL {
-                            if ui.selectable_label(cfg.lime.aux.mode == m, m.label()).clicked() {
+                            if ui.selectable_label(cfg.lime.aux.mode == m,crate::language_plugin::display_label(m.label())).clicked() {
                                 cfg.lime.aux.mode = m;
                                 push_gain(
                                     cmds,
@@ -7817,21 +7780,21 @@ pub(in crate::app) fn settings_lime_tab(
                     });
                 ui.end_row();
 
-                ui.label("Filter length");
+                ui.label(crate::language_plugin::text("settings.radio.filter_length", "Filter length"));
                 ui.horizontal(|ui| {
                     if ui
                         .add(
                             egui::DragValue::new(&mut cfg.lime.aux.taps)
                                 .speed(1.0)
                                 .range(1..=LimeAuxConfig::MAX_TAPS)
-                                .suffix(" taps"),
+                                .suffix(crate::language_plugin::text("settings.radio.text_7820_9dbddc", " taps")),
                         )
                         .on_hover_text(
-                            "One tap is a gain and a phase — a null at one frequency that gets \
+                            crate::language_plugin::text("settings.radio.text_7823_e60aaa", "One tap is a gain and a phase — a null at one frequency that gets \
                              worse either side of it, which is all an analogue phaser can do. \
                              Each further tap buys one sample period of the path difference \
                              between the two aerials that the filter can equalise, which is \
-                             what turns that notch into a band quiet all the way across.",
+                             what turns that notch into a band quiet all the way across."),
                         )
                         .changed()
                     {
@@ -7847,28 +7810,28 @@ pub(in crate::app) fn settings_lime_tab(
                 });
                 ui.end_row();
 
-                ui.label("Adaptation");
+                ui.label(crate::language_plugin::text("settings.radio.adaptation", "Adaptation"));
                 ui.horizontal(|ui| {
                     if crate::chrome::slider(
                         ui,
                         egui::Slider::new(&mut cfg.lime.aux.rate, 0.0..=1.0).show_value(false),
                     )
                     .on_hover_text(
-                        "Slow and steady at the left, converging inside a fraction of a second \
+                        crate::language_plugin::text("settings.radio.text_7850_5fb077", "Slow and steady at the left, converging inside a fraction of a second \
                          and visibly hunting at the right. Start fast to find the null, then \
-                         hold it.",
+                         hold it."),
                     )
                     .changed()
                     {
                         push_gain(cmds, LimeConfig::DIV_RATE_ELEMENT, f64::from(cfg.lime.aux.rate));
                     }
                     if ui
-                        .checkbox(&mut cfg.lime.aux.frozen, "Hold")
+                        .checkbox(&mut cfg.lime.aux.frozen, crate::language_plugin::text("common.hold", "Hold"))
                         .on_hover_text(
-                            "Stop the filter moving. Reach for this the moment a null appears: \
+                            crate::language_plugin::text("settings.radio.text_7861_c966ca", "Stop the filter moving. Reach for this the moment a null appears: \
                              a filter left adapting will re-aim itself at whatever becomes \
                              loudest, which on a quiet band is the station you are listening \
-                             to.",
+                             to."),
                         )
                         .changed()
                     {
@@ -7879,8 +7842,8 @@ pub(in crate::app) fn settings_lime_tab(
                         );
                     }
                     if ui
-                        .button("Restart")
-                        .on_hover_text("Zero the filter and find the null again.")
+                        .button(crate::language_plugin::text("settings.radio.restart", "Restart"))
+                        .on_hover_text(crate::language_plugin::text("settings.radio.zero_the_filter_and_find_the_null_again", "Zero the filter and find the null again."))
                         .clicked()
                     {
                         push_gain(cmds, LimeConfig::DIV_RESET_ELEMENT, 1.0);
@@ -7890,7 +7853,7 @@ pub(in crate::app) fn settings_lime_tab(
             }
 
             if cfg.lime.aux.role == LimeAuxRole::PureSignal {
-                ui.label("Table steps");
+                ui.label(crate::language_plugin::text("settings.radio.table_steps", "Table steps"));
                 ui.horizontal(|ui| {
                     if ui
                         .add(
@@ -7899,12 +7862,12 @@ pub(in crate::app) fn settings_lime_tab(
                                 .range(LimeAuxConfig::PS_MIN_BINS..=LimeAuxConfig::PS_MAX_BINS),
                         )
                         .on_hover_text(
-                            "How finely the correction follows the amplifier's curve. More \
+                            crate::language_plugin::text("settings.radio.text_7895_8f99f3", "How finely the correction follows the amplifier's curve. More \
                              steps track a sharper knee, but each one has to be learned from \
                              the samples that landed in it — and the top of a speech \
                              amplitude histogram is thin. Thirty-two is enough for the smooth \
                              curve an HF amplifier actually has. Changing it starts the \
-                             correction again.",
+                             correction again."),
                         )
                         .changed()
                     {
@@ -7917,16 +7880,16 @@ pub(in crate::app) fn settings_lime_tab(
                 });
                 ui.end_row();
 
-                ui.label("Adaptation");
+                ui.label(crate::language_plugin::text("settings.radio.adaptation", "Adaptation"));
                 ui.horizontal(|ui| {
                     if crate::chrome::slider(
                         ui,
                         egui::Slider::new(&mut cfg.lime.aux.ps_rate, 0.0..=1.0).show_value(false),
                     )
                     .on_hover_text(
-                        "How hard each block of feedback moves the correction. An \
+                        crate::language_plugin::text("settings.radio.text_7920_2a5551", "How hard each block of feedback moves the correction. An \
                          amplifier's curve does not change, so there is no need to hurry — \
-                         the middle averages several overs' worth of noise out of it.",
+                         the middle averages several overs' worth of noise out of it."),
                     )
                     .changed()
                     {
@@ -7937,11 +7900,11 @@ pub(in crate::app) fn settings_lime_tab(
                         );
                     }
                     if ui
-                        .checkbox(&mut cfg.lime.aux.ps_frozen, "Hold")
+                        .checkbox(&mut cfg.lime.aux.ps_frozen, crate::language_plugin::text("common.hold", "Hold"))
                         .on_hover_text(
-                            "Keep the correction as it is. A curve learned on a clean over is \
+                            crate::language_plugin::text("settings.radio.text_7935_62bc32", "Keep the correction as it is. A curve learned on a clean over is \
                              worth holding, and the amplifier will not have changed by the \
-                             next one.",
+                             next one."),
                         )
                         .changed()
                     {
@@ -7952,8 +7915,8 @@ pub(in crate::app) fn settings_lime_tab(
                         );
                     }
                     if ui
-                        .button("Restart")
-                        .on_hover_text("Forget the correction and learn it again.")
+                        .button(crate::language_plugin::text("settings.radio.restart", "Restart"))
+                        .on_hover_text(crate::language_plugin::text("settings.radio.forget_the_correction_and_learn_it_again", "Forget the correction and learn it again."))
                         .clicked()
                     {
                         push_gain(cmds, LimeConfig::PS_RESET_ELEMENT, 1.0);
@@ -7965,7 +7928,7 @@ pub(in crate::app) fn settings_lime_tab(
         if cfg.lime.aux.role == LimeAuxRole::PureSignal {
             ui.label(
                 egui::RichText::new(
-                    "A directional coupler on the amplifier's output goes into this chain, \
+                    crate::language_plugin::text("settings.radio.text_7961_71bddb", "A directional coupler on the amplifier's output goes into this chain, \
                      and the transmitter compares what came back with what it meant to send \
                      — then sends the inverse of the difference, so what leaves the amplifier \
                      is straight. Twenty-odd decibels less intermodulation on other people's \
@@ -7974,14 +7937,14 @@ pub(in crate::app) fn settings_lime_tab(
                      that is not connected costs nothing; and it can never ask the converter \
                      for more than full scale, so a feedback path reading nonsense cannot \
                      over-drive anything. How it is getting on runs to the log while you \
-                     transmit.",
+                     transmit."),
                 )
                 .weak(),
             );
             if !cfg.lime.tx_enabled {
                 ui.label(
                     egui::RichText::new(
-                        "Transmit is not armed, so there is nothing here to correct.",
+                        crate::language_plugin::text("common.transmit_is_not_armed_so_there_is_nothing_here_to_correct", "Transmit is not armed, so there is nothing here to correct."),
                     )
                     .color(egui::Color32::from_rgb(220, 170, 70)),
                 );
@@ -7990,12 +7953,12 @@ pub(in crate::app) fn settings_lime_tab(
         if cfg.lime.aux.role == LimeAuxRole::Diversity {
             ui.label(
                 egui::RichText::new(
-                    "Nothing here can tell a wanted signal from an unwanted one — the filter \
+                    crate::language_plugin::text("settings.radio.text_7986_9a26af", "Nothing here can tell a wanted signal from an unwanted one — the filter \
                      only knows what the two aerials have in common. In Cancel, the second \
                      aerial wants to hear the noise source and as little of the band as \
                      possible, or it will dutifully cancel the station too. In Combine, both \
                      want to hear the same station. How deep the null is going runs to the \
-                     log every few seconds.",
+                     log every few seconds."),
                 )
                 .weak(),
             );
@@ -8004,14 +7967,14 @@ pub(in crate::app) fn settings_lime_tab(
 
     ui.add_space(6.0);
     ui.separator();
-    ui.label(egui::RichText::new("Transmit").strong());
-    crate::chrome::checkbox(ui, &mut cfg.lime.tx_enabled, "Enabled").on_hover_text(
-        "With this off the interface publishes no transmit channel at all, so nothing can key \
-         the radio.",
+    ui.label(egui::RichText::new(crate::language_plugin::text("settings.radio.transmit", "Transmit")).strong());
+    crate::chrome::checkbox(ui, &mut cfg.lime.tx_enabled, crate::language_plugin::text("common.enabled", "Enabled")).on_hover_text(
+        crate::language_plugin::text("settings.radio.text_8002_c1258f", "With this off the interface publishes no transmit channel at all, so nothing can key \
+         the radio."),
     );
     if cfg.lime.tx_enabled {
         egui::Grid::new("lime-tx-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-            ui.label("Transmit gain");
+            ui.label(crate::language_plugin::text("settings.radio.transmit_gain", "Transmit gain"));
             if crate::chrome::slider(
                 ui,
                 egui::Slider::new(
@@ -8031,23 +7994,23 @@ pub(in crate::app) fn settings_lime_tab(
             }
             ui.end_row();
 
-            ui.label("Transmit port").on_hover_text(
-                "The board's two transmit sockets are two different matching networks, not \
+            ui.label(crate::language_plugin::text("settings.radio.transmit_port", "Transmit port")).on_hover_text(
+                crate::language_plugin::text("settings.radio.text_8028_d0bc38", "The board's two transmit sockets are two different matching networks, not \
                  two jacks onto the same one: BAND1 (TX_1) carries 30 MHz to 1.9 GHz and \
                  BAND2 (TX_2) is the 13 cm port. Keying an amateur band below 23 cm out of \
                  BAND2 puts the over into a matching network that passes almost none of it — \
                  every setting reads correct, the drive is whatever you set, and the power \
-                 meter stays at zero. Leave this on Automatic and it follows the dial.",
+                 meter stays at zero. Leave this on Automatic and it follows the dial."),
             );
             let text = if cfg.lime.antenna_tx.is_empty() {
-                "Automatic".to_string()
+                crate::language_plugin::text("choices.app.settings.radio.text_8036_d461a4", "Automatic").to_string()
             } else {
                 LimeConfig::tx_port_label(cfg.lime.channel, &cfg.lime.antenna_tx)
             };
             let before_tx = cfg.lime.antenna_tx.clone();
             let chan = cfg.lime.channel;
             egui::ComboBox::from_id_salt("lime-anttx").selected_text(text).show_styled(ui, |ui| {
-                ui.selectable_value(&mut cfg.lime.antenna_tx, String::new(), "Automatic");
+                ui.selectable_value(&mut cfg.lime.antenna_tx, String::new(), crate::language_plugin::text("common.automatic", "Automatic"));
                 for a in ["BAND1", "BAND2"] {
                     ui.selectable_value(
                         &mut cfg.lime.antenna_tx,
@@ -8075,20 +8038,17 @@ pub(in crate::app) fn settings_lime_tab(
         // reads downstream as a transmitter that does not work at all.
         if cfg.lime.tx_gain_db < LimeConfig::LOW_DRIVE_DB {
             ui.label(
-                egui::RichText::new(format!(
-                    "Transmit gain is {:.0} dB, at the bottom of its range — a few microwatts \
+                egui::RichText::new({ let __lp_arg_0 = &(cfg.lime.tx_gain_db); crate::language_plugin::format("settings.radio.text_8072_77cffa", "Transmit gain is {:.0} dB, at the bottom of its range — a few microwatts \
                      out of the board, which will read as nothing on a power meter whatever is \
                      downstream of it. That is the default so that an armed transmitter cannot \
-                     surprise you; raise it before you key.",
-                    cfg.lime.tx_gain_db
-                ))
+                     surprise you; raise it before you key.", &[format!("{:.0}", __lp_arg_0)]) })
                 .color(egui::Color32::from_rgb(220, 170, 70)),
             );
         }
         ui.label(
             egui::RichText::new(
-                "A LimeSDR transmits from about 100 kHz to 3.8 GHz with no filtering of its \
-                 own. Use a low-pass filter, an appropriate LimeRFE channel, or a dummy load.",
+                crate::language_plugin::text("settings.radio.text_8083_9c3004", "A LimeSDR transmits from about 100 kHz to 3.8 GHz with no filtering of its \
+                 own. Use a low-pass filter, an appropriate LimeRFE channel, or a dummy load."),
             )
             .color(egui::Color32::from_rgb(220, 170, 70)),
         );
@@ -8096,7 +8056,7 @@ pub(in crate::app) fn settings_lime_tab(
 
     ui.add_space(6.0);
     ui.separator();
-    ui.label(egui::RichText::new("LimeRFE front end").strong());
+    ui.label(egui::RichText::new(crate::language_plugin::text("settings.radio.limerfe_front_end", "LimeRFE front end")).strong());
 
     // Everything below reaches an open board through one setting rather than a
     // control at a time — see `LimeConfig::RFE_SETTING`. Snapshotted here and
@@ -8107,18 +8067,18 @@ pub(in crate::app) fn settings_lime_tab(
     let rfe_before = cfg.lime.rfe.clone();
 
     egui::Grid::new("lime-rfe-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label("Connected by");
+        ui.label(crate::language_plugin::text("settings.radio.connected_by", "Connected by"));
         egui::ComboBox::from_id_salt("lime-rfe-link")
-            .selected_text(cfg.lime.rfe.link.label())
+            .selected_text(crate::language_plugin::display_label(cfg.lime.rfe.link.label()))
             .show_styled(ui, |ui| {
                 for l in RfeLink::ALL {
-                    ui.selectable_value(&mut cfg.lime.rfe.link, l, l.label());
+                    ui.selectable_value(&mut cfg.lime.rfe.link, l,crate::language_plugin::display_label(l.label()));
                 }
             });
         ui.end_row();
 
         if cfg.lime.rfe.link == RfeLink::Serial {
-            ui.label("Serial port");
+            ui.label(crate::language_plugin::text("settings.radio.serial_port", "Serial port"));
             probe_only(ui, can_probe, |ui| {
                 ui.horizontal(|ui| {
                     egui::ComboBox::from_id_salt("lime-rfe-port")
@@ -8134,8 +8094,8 @@ pub(in crate::app) fn settings_lime_tab(
                         });
                     ui.label(
                         egui::RichText::new(
-                            "The LimeRFE's own micro-USB port, not the radio's. 9600 baud, \
-                             fixed by its firmware.",
+                            crate::language_plugin::text("settings.radio.text_8130_16f6f4", "The LimeRFE's own micro-USB port, not the radio's. 9600 baud, \
+                             fixed by its firmware."),
                         )
                         .weak(),
                     );
@@ -8147,56 +8107,56 @@ pub(in crate::app) fn settings_lime_tab(
 
     if cfg.lime.rfe.link != RfeLink::Off {
         egui::Grid::new("lime-rfe-grid2").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-            ui.label("Receive connector");
+            ui.label(crate::language_plugin::text("settings.radio.receive_connector", "Receive connector"));
             egui::ComboBox::from_id_salt("lime-rfe-prx")
-                .selected_text(cfg.lime.rfe.port_rx.label())
+                .selected_text(crate::language_plugin::display_label(cfg.lime.rfe.port_rx.label()))
                 .show_styled(ui, |ui| {
                     for p in RfePort::RX_PORTS {
-                        ui.selectable_value(&mut cfg.lime.rfe.port_rx, p, p.label());
+                        ui.selectable_value(&mut cfg.lime.rfe.port_rx, p,crate::language_plugin::display_label(p.label()));
                     }
                 });
             ui.end_row();
 
-            ui.label("Transmit connector");
+            ui.label(crate::language_plugin::text("settings.radio.transmit_connector", "Transmit connector"));
             egui::ComboBox::from_id_salt("lime-rfe-ptx")
-                .selected_text(cfg.lime.rfe.port_tx.label())
+                .selected_text(crate::language_plugin::display_label(cfg.lime.rfe.port_tx.label()))
                 .show_styled(ui, |ui| {
                     for p in RfePort::TX_PORTS {
-                        ui.selectable_value(&mut cfg.lime.rfe.port_tx, p, p.label());
+                        ui.selectable_value(&mut cfg.lime.rfe.port_tx, p,crate::language_plugin::display_label(p.label()));
                     }
                 });
             ui.end_row();
 
-            ui.label("Band");
+            ui.label(crate::language_plugin::text("settings.radio.band", "Band"));
             ui.horizontal(|ui| {
-                crate::chrome::checkbox(ui, &mut cfg.lime.rfe.follow_band, "Follow the dial")
+                crate::chrome::checkbox(ui, &mut cfg.lime.rfe.follow_band, crate::language_plugin::text("common.follow_the_dial", "Follow the dial"))
                     .on_hover_text(
-                        "Switch the filters to match the operating frequency, before any RF \
-                     appears. Tuning within one band puts nothing on the control link.",
+                        crate::language_plugin::text("settings.radio.text_8167_9b9f6b", "Switch the filters to match the operating frequency, before any RF \
+                     appears. Tuning within one band puts nothing on the control link."),
                     );
                 if !cfg.lime.rfe.follow_band {
                     egui::ComboBox::from_id_salt("lime-rfe-chan")
-                        .selected_text(cfg.lime.rfe.channel.label())
+                        .selected_text(crate::language_plugin::display_label(cfg.lime.rfe.channel.label()))
                         .show_styled(ui, |ui| {
                             for c in RfeChannel::ALL {
-                                ui.selectable_value(&mut cfg.lime.rfe.channel, c, c.label());
+                                ui.selectable_value(&mut cfg.lime.rfe.channel, c,crate::language_plugin::display_label(c.label()));
                             }
                         });
                 }
             });
             ui.end_row();
 
-            ui.label("Relays");
+            ui.label(crate::language_plugin::text("settings.radio.relays", "Relays"));
             egui::ComboBox::from_id_salt("lime-rfe-mode")
-                .selected_text(cfg.lime.rfe.mode.label())
+                .selected_text(crate::language_plugin::display_label(cfg.lime.rfe.mode.label()))
                 .show_styled(ui, |ui| {
                     for m in RfeModeControl::ALL {
-                        ui.selectable_value(&mut cfg.lime.rfe.mode, m, m.label());
+                        ui.selectable_value(&mut cfg.lime.rfe.mode, m,crate::language_plugin::display_label(m.label()));
                     }
                 });
             ui.end_row();
 
-            ui.label("Receive attenuator");
+            ui.label(crate::language_plugin::text("settings.radio.receive_attenuator", "Receive attenuator"));
             let mut steps = cfg.lime.rfe.atten_steps;
             if crate::chrome::slider(
                 ui,
@@ -8209,11 +8169,11 @@ pub(in crate::app) fn settings_lime_tab(
             }
             ui.end_row();
 
-            ui.label("Other");
+            ui.label(crate::language_plugin::text("settings.radio.other", "Other"));
             ui.horizontal(|ui| {
-                crate::chrome::checkbox(ui, &mut cfg.lime.rfe.notch, "Notch filter");
-                ui.checkbox(&mut cfg.lime.rfe.fan, "Fan")
-                    .on_hover_text("Worth having on for any sustained transmitting.");
+                crate::chrome::checkbox(ui, &mut cfg.lime.rfe.notch, crate::language_plugin::text("common.notch_filter", "Notch filter"));
+                ui.checkbox(&mut cfg.lime.rfe.fan, crate::language_plugin::text("common.fan", "Fan"))
+                    .on_hover_text(crate::language_plugin::text("settings.radio.text_8209_dbf89e", "Worth having on for any sustained transmitting."));
             });
             ui.end_row();
         });
@@ -8234,7 +8194,7 @@ pub(in crate::app) fn settings_lime_tab(
         if let Some(refusal) = cfg.lime.rfe.tx_refusal() {
             ui.add_space(4.0);
             ui.label(
-                egui::RichText::new(format!("Transmit is blocked: {refusal}"))
+                egui::RichText::new(crate::language_plugin::format("common.transmit_is_blocked_refusal", "Transmit is blocked: {refusal}", &[format!("{refusal}")]))
                     .color(egui::Color32::from_rgb(220, 170, 70)),
             );
         }
@@ -8269,19 +8229,11 @@ pub(in crate::app) fn settings_lime_tab(
                 ui.add_space(4.0);
                 let mut lines = Vec::new();
                 if !unreachable_rx.is_empty() {
-                    lines.push(format!(
-                        "Receiving on {}, these fall back to the unfiltered wideband path: {}.",
-                        cfg.lime.rfe.port_rx.label(),
-                        unreachable_rx.join(", ")
-                    ));
+                    lines.push({ let __lp_arg_0 = &(cfg.lime.rfe.port_rx.label()); let __lp_arg_1 = &(unreachable_rx.join(", ")); crate::language_plugin::format("boundaries.app.settings.radio.text_8266_20a98f", "Receiving on {}, these fall back to the unfiltered wideband path: {}.", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
                 }
                 if !unreachable_tx.is_empty() {
-                    lines.push(format!(
-                        "Transmitting on {}, these fall back to the wideband path — no band \
-                         amplifier and no filtering: {}.",
-                        cfg.lime.rfe.port_tx.label(),
-                        unreachable_tx.join(", ")
-                    ));
+                    lines.push({ let __lp_arg_0 = &(cfg.lime.rfe.port_tx.label()); let __lp_arg_1 = &(unreachable_tx.join(", ")); crate::language_plugin::format("boundaries.app.settings.radio.text_8273_b6f376", "Transmitting on {}, these fall back to the wideband path — no band \
+                         amplifier and no filtering: {}.", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
                 }
                 ui.label(
                     egui::RichText::new(lines.join("\n"))
@@ -8292,13 +8244,13 @@ pub(in crate::app) fn settings_lime_tab(
         ui.add_space(4.0);
         ui.label(
             egui::RichText::new(
-                "On Automatic the board receives, and is switched to transmit at key-down and \
+                crate::language_plugin::text("settings.radio.text_8288_9430e2", "On Automatic the board receives, and is switched to transmit at key-down and \
                  back at key-up — on either cabling. Its amateur channels have one filter \
                  with a transmit/receive switch either side of it, so a board asked for both \
                  at once puts that switch on the transmitter and stops hearing anything. \
                  The 30 MHz channel is reachable only through J5, which is one connector for \
                  both directions; above it, transmitting from J4 keeps the receive path off \
-                 the connector the amplifier is driving.",
+                 the connector the amplifier is driving."),
             )
             .weak(),
         );
@@ -8320,10 +8272,10 @@ pub(in crate::app) fn settings_lime_tab(
     ui.add_space(6.0);
     ui.horizontal(|ui| {
         if ui
-            .button("Copy diagnostic report")
+            .button(crate::language_plugin::text("settings.radio.copy_diagnostic_report", "Copy diagnostic report"))
             .on_hover_text(
-                "LimeSDR support has not been verified against hardware. This is the last \
-                 session's trace, for an issue report.",
+                crate::language_plugin::text("settings.radio.text_8318_a28008", "LimeSDR support has not been verified against hardware. This is the last \
+                 session's trace, for an issue report."),
             )
             .clicked()
         {
@@ -8352,11 +8304,50 @@ pub(in crate::app) fn settings_lime_tab(
     ui.add_space(4.0);
     ui.label(
         egui::RichText::new(
-            "Gains, filters, corrections, the antenna sockets and every LimeRFE control — its \
+            crate::language_plugin::text("settings.radio.text_8348_cc1d75", "Gains, filters, corrections, the antenna sockets and every LimeRFE control — its \
              connectors, band, relays, attenuator, notch and fan — apply immediately. The \
              board, the receive chain, the sample rate, arming transmit and the LimeRFE's \
-             connection take effect on Apply.",
+             connection take effect on Apply."),
         )
         .weak(),
     );
+}
+
+#[cfg(test)]
+mod localized_device_choice_tests {
+    use super::*;
+    #[test]
+    fn rsp_and_spyserver_selected_faces_draw_with_config_and_commands_unchanged() {
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            for spy in [false,true] {for width in [360.0,600.0,1000.0] {
+                let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+                let mut cfg=Some(sdroxide_types::RadioConfig::default());
+                cfg.as_mut().unwrap().spyserver.fft_enabled=true;cfg.as_mut().unwrap().spyserver.fft_decimation=0;
+                let before=serde_json::to_value(&cfg).unwrap();let mut commands=Vec::new();let mut test=false;
+                let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,1600.0))),..Default::default()},|ui| {
+                    if spy {settings_spyserver_tab(ui,&mut cfg,false,&mut test,&None,false,&mut commands);}else{settings_rtltcp_tab(ui,&mut cfg,&mut commands);}
+                });
+                let drawn:Vec<_>=output.shapes.iter().filter_map(|s|match &s.shape {egui::epaint::Shape::Text(t)=>Some(t.galley.job.text.clone()),_=>None}).collect();output.drop_without_applying_deltas();
+                let wanted:Vec<_>=if spy {vec![if enabled {"整个波段"}else{"whole band"}]}else{vec![if enabled {"输入 A"}else{"Input A"},if enabled {"输入 B"}else{"Input B"},if enabled {"高阻抗"}else{"Hi-Z"}]};
+                for text in wanted {assert!(drawn.iter().any(|s|s==text),"{text}: {drawn:?}");}
+                assert_eq!(serde_json::to_value(&cfg).unwrap(),before);assert!(commands.is_empty());assert!(!test);
+            }}
+        }
+    }
+}
+
+#[cfg(test)]
+mod oc_language_tests25 {
+    use super::*;
+    #[test]
+    fn oc_pin_numbers_and_equal_masks_stay_exact_while_headers_and_tx_connector_switch() {
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(crate::language_plugin::hpsdr_header_display("RX"),if enabled{"接收"}else{"RX"});
+            assert_eq!(crate::language_plugin::hpsdr_header_display("TX"),if enabled{"发射"}else{"TX"});
+            for raw in ["波段","Band","Outputs asserted","upstream changed",""] {assert_eq!(crate::language_plugin::hpsdr_header_display(raw),raw);}
+            assert_eq!(oc_pins(0,0),"—");assert_eq!(oc_pins(5,5),"1, 3");
+            assert_eq!(oc_pins(5,64),if enabled{"1, 3 / 发射 7"}else{"1, 3 / TX 7"});
+            assert_eq!(oc_pins(0,127),if enabled{"— / 发射 1, 2, 3, 4, 5, 6, 7"}else{"— / TX 1, 2, 3, 4, 5, 6, 7"});
+        }
+    }
 }

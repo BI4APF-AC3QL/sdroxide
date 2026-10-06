@@ -55,7 +55,7 @@ pub struct Loaded {
 
 /// Where a [`load_text`] pick is delivered: the file it read, or why it could
 /// not be read. Stays `None` when the operator cancels the dialog.
-pub type LoadInbox = std::sync::Arc<std::sync::Mutex<Option<Result<Loaded, String>>>>;
+pub type LoadInbox = std::sync::Arc<std::sync::Mutex<Option<Result<Loaded, crate::language_plugin::UiNotice>>>>;
 
 /// Open a text file via a native "Open" dialog (off the UI thread) and store
 /// its contents into `inbox` for the UI to pick up next frame. Native opens a
@@ -80,7 +80,7 @@ pub fn load_text(filter_name: &str, exts: &[&str], inbox: LoadInbox) {
             // ASCII — over a code page in one name field.
             let outcome = match std::fs::read(&path) {
                 Ok(bytes) => Ok(decode_text(&bytes)),
-                Err(e) => Err(format!("reading {}: {e}", path.display())),
+                Err(e) => Err(read_failure(&path.display().to_string(), &e.to_string())),
             };
             if let Ok(mut g) = inbox.lock() {
                 *g = Some(outcome);
@@ -240,14 +240,14 @@ pub fn load_text(_filter_name: &str, exts: &[&str], inbox: LoadInbox) {
             if let Ok(mut g) = ok_inbox.lock() {
                 *g = Some(match loaded {
                     Some(l) => Ok(l),
-                    None => Err("the browser could not read that file".into()),
+                    None => Err(browser_read_failure()),
                 });
             }
         });
         let err_inbox = inbox.clone();
         let on_error = Closure::<dyn FnMut()>::new(move || {
             if let Ok(mut g) = err_inbox.lock() {
-                *g = Some(Err("the browser could not read that file".into()));
+                *g = Some(Err(browser_read_failure()));
             }
         });
         reader.set_onload(Some(on_load.as_ref().unchecked_ref()));
@@ -364,5 +364,50 @@ mod tests {
         let read = decode_text(&raw);
         assert_eq!(read.assumed, Some("Windows-1252"));
         assert_eq!(read.text, "<NAME:5>Jörg <QTH:9>Jyväskylä <EOR>");
+    }
+}
+
+/// File-reader-owned failures keep their original diagnostics across worker/UI threads.
+#[cfg_attr(target_arch = "wasm32", allow(dead_code))]
+fn read_failure(path: &str, error: &str) -> crate::language_plugin::UiNotice {
+    crate::language_plugin::UiNotice::new(format!("reading {path}: {error}"),
+        "reading {}: {e}",vec![path.to_owned(),error.to_owned()])
+}
+#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+fn browser_read_failure() -> crate::language_plugin::UiNotice {
+    crate::language_plugin::UiNotice::literal("the browser could not read that file")
+}
+#[cfg(test)]
+mod file_error_language_tests25 {
+    use super::*;
+    #[test]
+    fn worker_inbox_translates_owned_failure_at_display_and_keeps_paths_and_external_errors_raw() {
+        let path="C:\\日志\\{e} reading.txt";let error="access denied: {path}\r\nWindows error 5";
+        let inbox:LoadInbox=Default::default();let worker=inbox.clone();
+        std::thread::spawn(move|| *worker.lock().unwrap()=Some(Err(read_failure(path,error)))).join().unwrap();
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let guard=inbox.lock().unwrap();let Some(Err(notice))=&*guard else{panic!("wrong result")};
+            assert_eq!(notice.display(),if enabled{format!("读取 {path} 时出错：{error}")}else{format!("reading {path}: {error}")});
+            assert_eq!(notice.original(),format!("reading {path}: {error}"));assert_eq!(notice.to_string(),notice.original());
+            assert_eq!(browser_read_failure().display(),if enabled{"浏览器无法读取该文件"}else{"the browser could not read that file"});
+            let external:crate::language_plugin::UiNotice="the browser could not read that file".into();
+            assert_eq!(external.display(),"the browser could not read that file");
+            assert_eq!(crate::language_plugin::UiNotice::literal("changed upstream read error").display(),"changed upstream read error");
+        }
+    }
+    #[test]
+    fn file_payloads_and_encoding_identifiers_remain_independent_of_ui_language() {
+        let mut utf16=vec![0xff,0xfe];utf16.extend("<CALL:5>BI4APF {e} 中文".encode_utf16().flat_map(u16::to_le_bytes));
+        let samples=[b"<CALL:5>W1AW {e}".to_vec(),"中文 {e}".as_bytes().to_vec(),utf16,vec![0xc2,0xeb,0xe0,0xe4,0xe8,0xec,0xe8,0xf0],vec![b'J',0xf6,b'r',b'g']];
+        let baseline:Vec<_>=samples.iter().map(|b|{let l=decode_text(b);(l.text,l.assumed)}).collect();
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            for (bytes,expected) in samples.iter().zip(&baseline) {
+                let result=decode_text(bytes);assert_eq!((&result.text,result.assumed),(&expected.0,expected.1));
+                let inbox:LoadInbox=Default::default();*inbox.lock().unwrap()=Some(Ok(result));
+                let Some(Ok(payload))=inbox.lock().unwrap().take() else{panic!("payload lost")};
+                assert_eq!((payload.text,payload.assumed),expected.clone());
+            }
+        }
     }
 }

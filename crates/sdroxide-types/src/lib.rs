@@ -120,7 +120,7 @@ pub use caps::{DeviceCaps, DeviceSetting, Direction, GainElement, GainUnit, Sett
 pub use chirp::{chirp_csv_to_memories, memories_to_chirp_csv};
 pub use command::Command;
 pub use contacts::FsqContact;
-pub use controller::{AudioDevices, PeerRadio, RadioController, RadioEvent};
+pub use controller::{AudioDevices, RadioEventTextOrigin, PeerRadio, RadioController, RadioEvent};
 pub use digi::{
     ACARS_MESSAGE_MAX, AcarsMessage, AcarsStatus, CONTEST_SERIAL_MAX, ClockHealth, ContestMode,
     CwMacro, CwStatus, Decode, DecodeSort, DigiConfig, DigiStatus, DxpedMode, FOX_MAX_SLOTS,

@@ -52,7 +52,7 @@ impl SdroxideApp {
         // the edge of a phone rather than moving it to the next line.
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 3.0;
-            ui.label(RichText::new("Speed").size(10.5).strong().color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("settings.ui.speech.speed", "Speed")).size(10.5).strong().color(crate::theme::CYAN_DIM()));
             for b in [2.0f32, 3.0, 4.5, 6.0] {
                 let sel = (cfg.fsq_baud - b).abs() < 0.05;
                 let lbl =
@@ -63,12 +63,12 @@ impl SdroxideApp {
                 }
             }
             ui.add_space(8.0);
-            ui.label(RichText::new("Call").size(10.5).strong().color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.fsq.text_66_d6e645", "Call")).size(10.5).strong().color(crate::theme::CYAN_DIM()));
             if crate::chrome::field(
                 ui,
                 egui::TextEdit::singleline(&mut cfg.fsq_call).desired_width(76.0),
             )
-            .on_hover_text("Callsign for directed (FSQCALL) messages; defaults to your callsign")
+            .on_hover_text(crate::language_plugin::text("panels.fsq.text_71_828b12", "Callsign for directed (FSQCALL) messages; defaults to your callsign"))
             .changed()
             {
                 cfg.fsq_call = cfg.fsq_call.to_uppercase();
@@ -192,9 +192,9 @@ impl SdroxideApp {
             self.fsq_params_row(ui, cmds);
             crate::chrome::row_tail(ui, |ui| {
                 if transmitting {
-                    ui.label(RichText::new("● TX").color(crate::theme::ALERT()).strong());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.fsq.text_195_548c99", "● TX")).color(crate::theme::ALERT()).strong());
                 }
-                if crate::chrome::chip(ui, self.fsq_show_contacts, "CONTACTS").clicked() {
+                if crate::chrome::chip(ui, self.fsq_show_contacts, crate::language_plugin::text("panels.fsq.text_197_92c636", "CONTACTS")).clicked() {
                     self.fsq_show_contacts = !self.fsq_show_contacts;
                 }
                 self.digi_squelch_slider(ui, cmds);
@@ -224,7 +224,7 @@ impl SdroxideApp {
                     let images_h = scrollable - heard_h;
 
                     ui.label(
-                        RichText::new("HEARD").size(10.5).strong().color(crate::theme::CYAN_DIM()),
+                        RichText::new(crate::language_plugin::text("panels.fsq.text_227_0e6586", "HEARD")).size(10.5).strong().color(crate::theme::CYAN_DIM()),
                     );
                     egui::ScrollArea::vertical()
                         .id_salt("fsq-heard")
@@ -232,7 +232,7 @@ impl SdroxideApp {
                         .auto_shrink([false, true])
                         .show_themed(ui, |ui| {
                             if heard.is_empty() {
-                                ui.label(RichText::new("— none —").weak());
+                                ui.label(RichText::new(crate::language_plugin::text("common.none", "— none —")).weak());
                             }
                             for h in &heard {
                                 let sel = self.fsq_target.eq_ignore_ascii_case(&h.call);
@@ -245,13 +245,13 @@ impl SdroxideApp {
                             }
                         });
                     ui.add_space(4.0);
-                    if crate::chrome::chip(ui, self.fsq_target.is_empty(), "ALLCALL").clicked() {
+                    if crate::chrome::chip(ui, self.fsq_target.is_empty(), crate::language_plugin::text("panels.fsq.text_248_72548f", "ALLCALL")).clicked() {
                         self.fsq_target.clear();
                     }
                     ui.separator();
                     ui.horizontal(|ui| {
                         ui.label(
-                            RichText::new("IMAGE")
+                            RichText::new(crate::language_plugin::text("panels.fsq.text_254_6b3cf5", "IMAGE"))
                                 .size(10.5)
                                 .strong()
                                 .color(crate::theme::CYAN_DIM()),
@@ -261,14 +261,14 @@ impl SdroxideApp {
                         // and nothing else holds, so clearing it needs no
                         // confirmation and no round trip to the radio.
                         if !self.fsq_rx_images.is_empty()
-                            && crate::chrome::chip(ui, false, RichText::new("CLEAR").size(9.5))
-                                .on_hover_text("Forget the pictures received so far")
+                            && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("common.clear", "CLEAR")).size(9.5))
+                                .on_hover_text(crate::language_plugin::text("panels.fsq.text_265_1d8e4a", "Forget the pictures received so far"))
                                 .clicked()
                         {
                             self.fsq_rx_images.clear();
                         }
                     });
-                    if tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, "Send image…"))
+                    if tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, crate::language_plugin::text("panels.fsq.text_271_8c782f", "Send image…")))
                         .clicked()
                     {
                         pick_image(self.fsq_img_inbox.clone());
@@ -286,9 +286,9 @@ impl SdroxideApp {
                                         .corner_radius(2.0)
                                         .sense(egui::Sense::click()),
                                 )
-                                .on_hover_text("Right-click to remove")
+                                .on_hover_text(crate::language_plugin::text("panels.fsq.text_289_5a4f6b", "Right-click to remove"))
                                 .context_menu(|ui| {
-                                    if ui.button("Remove this picture").clicked() {
+                                    if ui.button(crate::language_plugin::text("panels.fsq.text_291_24aed0", "Remove this picture")).clicked() {
                                         drop_at = Some(i);
                                         ui.close();
                                     }
@@ -328,7 +328,7 @@ impl SdroxideApp {
                                     .stick_to_bottom(true)
                                     .show_themed(ui, |ui| {
                                         if text_rx.is_empty() && messages.is_empty() {
-                                            ui.label(RichText::new("— listening —").weak());
+                                            ui.label(RichText::new(crate::language_plugin::text("panels.fsq.text_331_55e88c", "— listening —")).weak());
                                         }
                                         for m in
                                             messages.iter().filter(|m| m.to_me && !m.to.is_empty())
@@ -367,7 +367,7 @@ impl SdroxideApp {
                             ui,
                             egui::TextEdit::singleline(&mut self.text_tx)
                                 .desired_width((ui.available_width() - 62.0).max(60.0))
-                                .hint_text("Message…"),
+                                .hint_text(crate::language_plugin::text("panels.fsq.text_370_fc7150", "Message…")),
                         );
                         // Return is the same button, so it is shut off with it.
                         let entered = tx_ok
@@ -378,7 +378,7 @@ impl SdroxideApp {
                                 crate::chrome::chip_accent(
                                     ui,
                                     false,
-                                    " SEND ",
+                                    crate::language_plugin::text("controls.app.panels.fsq.text_381_3f326b", " SEND "),
                                     crate::theme::ALERT(),
                                     crate::theme::INK_ON_CYAN(),
                                 )
@@ -400,13 +400,13 @@ impl SdroxideApp {
                     });
                     // Row 2: CQ / ? heard / CLEAR.
                     ui.horizontal(|ui| {
-                        if tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, " CALL CQ "))
+                        if tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, crate::language_plugin::text("panels.fsq.text_403_23d5e1", " CALL CQ ")))
                             .clicked()
                         {
                             cmds.push(Command::DigiCallCq);
                         }
                         if !self.fsq_target.is_empty()
-                            && tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, " ? heard "))
+                            && tx_gated(ui, tx_ok, |ui| crate::chrome::chip(ui, false, crate::language_plugin::text("panels.fsq.text_409_22ae36", " ? heard ")))
                                 .clicked()
                         {
                             let call = if my_call.is_empty() { "NOCALL" } else { &my_call };
@@ -415,7 +415,7 @@ impl SdroxideApp {
                             cmds.push(Command::DigiTxText(full));
                             cmds.push(Command::DigiTxActive(true));
                         }
-                        if crate::chrome::chip(ui, false, " CLEAR ").clicked() {
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("panels.fsq.text_418_386d78", " CLEAR ")).clicked() {
                             self.text_tx.clear();
                             cmds.push(Command::DigiAbortTx);
                         }
@@ -432,7 +432,7 @@ impl SdroxideApp {
         let mut open = self.fsq_show_contacts;
         let mut changed = false;
         let mut set_target: Option<String> = None;
-        egui::Window::new("FSQ Contacts")
+        egui::Window::new(crate::language_plugin::text("panels.fsq.text_435_737ee5", "FSQ Contacts")).id(egui::Id::new("FSQ Contacts"))
             .id(crate::layout::salted_id(ctx, "FSQ Contacts"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -445,10 +445,10 @@ impl SdroxideApp {
                         ui,
                         egui::TextEdit::singleline(&mut self.fsq_new_contact)
                             .desired_width(140.0)
-                            .hint_text("callsign"),
+                            .hint_text(crate::language_plugin::text("panels.fsq.text_448_735ef6", "callsign")),
                     );
                     let can_add = !self.fsq_new_contact.trim().is_empty();
-                    if ui.add_enabled(can_add, egui::Button::new("Add")).clicked() {
+                    if ui.add_enabled(can_add, egui::Button::new(crate::language_plugin::text("panels.fsq.text_451_9fd728", "Add"))).clicked() {
                         let id = self.fsq_contacts.iter().map(|c| c.id).max().unwrap_or(0) + 1;
                         self.fsq_contacts.push(sdroxide_types::FsqContact {
                             id,
@@ -465,14 +465,14 @@ impl SdroxideApp {
                 egui::ScrollArea::vertical().max_height(260.0).show_themed(ui, |ui| {
                     for c in &mut self.fsq_contacts {
                         ui.horizontal(|ui| {
-                            if ui.button("TO").clicked() {
+                            if ui.button(crate::language_plugin::text("panels.fsq.text_468_c3bd7d", "TO")).clicked() {
                                 set_target = Some(c.call.clone());
                             }
                             ui.label(RichText::new(&c.call).monospace().strong());
                             if crate::chrome::field(
                                 ui,
                                 egui::TextEdit::singleline(&mut c.name)
-                                    .hint_text("name")
+                                    .hint_text(crate::language_plugin::text("common.name", "name"))
                                     .desired_width(120.0),
                             )
                             .changed()
@@ -482,7 +482,7 @@ impl SdroxideApp {
                             if crate::chrome::chip_accent(
                                 ui,
                                 false,
-                                "DEL",
+                                crate::language_plugin::text("controls.app.panels.fsq.text_485_9b8949", "DEL"),
                                 crate::theme::PINK(),
                                 crate::theme::INK_ON_CYAN(),
                             )

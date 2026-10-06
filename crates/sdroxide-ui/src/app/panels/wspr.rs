@@ -196,21 +196,21 @@ impl SdroxideApp {
 
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new("RECEPTIONS").size(9.5).strong().color(crate::theme::CYAN_DIM()),
+                RichText::new(crate::language_plugin::text("panels.wspr.text_199_8c0c13", "RECEPTIONS")).size(9.5).strong().color(crate::theme::CYAN_DIM()),
             );
             crate::chrome::row_tail(ui, |ui| {
                 let heard_us = self.wspr_spots.iter().filter(|s| s.is_heard_by_other()).count();
                 let label = if heard_us > 0 {
-                    format!("{} rx · {heard_us} heard us", self.wspr_spots.len() - heard_us)
+                    { let __lp_arg_0 = &(self.wspr_spots.len() - heard_us); crate::language_plugin::format("panels.wspr.dynamic.text_204_df8a61", "{} rx · {heard_us} heard us", &[format!("{}", __lp_arg_0), format!("{heard_us}")]) }
                 } else {
-                    format!("{} rx", self.wspr_spots.len())
+                    { let __lp_arg_0 = &(self.wspr_spots.len()); crate::language_plugin::format("panels.wspr.dynamic.text_206_b4d14f", "{} rx", &[format!("{}", __lp_arg_0)]) }
                 };
                 ui.label(RichText::new(label).size(10.0).color(crate::theme::gray(120)));
                 crate::app::panels::save_text_chip(
                     ui,
                     !self.wspr_spots.is_empty(),
                     "sdroxide-wspr-spots.csv",
-                    "Save the WSPR reception list as CSV",
+                    crate::language_plugin::text("panels.wspr.text_213_a2606e", "Save the WSPR reception list as CSV"),
                     || crate::app::save_text::wspr_spots_csv(&self.wspr_spots),
                 );
             });
@@ -274,7 +274,7 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.label(RichText::new("WSPR").size(11.0).strong().color(crate::theme::CYAN()));
             ui.label(
-                RichText::new("weak-signal propagation beacon")
+                RichText::new(crate::language_plugin::text("panels.wspr.text_277_f75b39", "weak-signal propagation beacon"))
                     .size(10.5)
                     .color(crate::theme::CYAN_DIM()),
             );
@@ -294,15 +294,15 @@ impl SdroxideApp {
                         .color(crate::theme::gray(140)),
                 )
                 .on_hover_text(
-                    "Time left in this two-minute slot. At the end of it the recording goes to \
-                     the decoder and the next transmit decision lands.",
+                    crate::language_plugin::text("panels.wspr.text_297_adfac5", "Time left in this two-minute slot. At the end of it the recording goes to \
+                     the decoder and the next transmit decision lands."),
                 );
                 if transmitting {
                     ui.label(
-                        RichText::new("● TX").size(11.0).strong().color(crate::theme::ALERT()),
+                        RichText::new(crate::language_plugin::text("panels.wspr.text_302_548c99", "● TX")).size(11.0).strong().color(crate::theme::ALERT()),
                     );
                 } else if w.decoding {
-                    ui.label(RichText::new("decoding…").size(10.5).color(crate::theme::YELLOW()));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.wspr.text_305_99a288", "decoding…")).size(10.5).color(crate::theme::YELLOW()));
                 }
             });
         });
@@ -323,37 +323,29 @@ impl SdroxideApp {
 
         crate::chrome::red_panel(ui, |ui| {
             let dial = self.state.rx_freq_hz();
-            row(ui, "Band", &format!("{} · {:.6} MHz", Band::containing(dial).label(), dial / 1e6));
+            row(ui, crate::language_plugin::text("panels.wspr.dynamic.text_326_0bd9ce", "Band"), &format!("{} · {:.6} MHz", Band::containing(dial).label(), dial / 1e6));
             row(
                 ui,
-                "Last slot",
+                crate::language_plugin::text("panels.wspr.dynamic.text_329_cea227", "Last slot"),
                 &if w.decoding {
-                    "decoding…".to_string()
+                    crate::language_plugin::text("panels.wspr.dynamic.text_331_99a288", "decoding…").to_string()
                 } else if w.last_slot_spots == 0 {
-                    "nothing heard".to_string()
+                    crate::language_plugin::text("panels.wspr.dynamic.text_333_77575c", "nothing heard").to_string()
                 } else {
-                    format!(
-                        "{} beacon{}",
-                        w.last_slot_spots,
-                        if w.last_slot_spots == 1 { "" } else { "s" }
-                    )
+                    { let __lp_arg_0 = &(w.last_slot_spots); let __lp_arg_1 = &(crate::language_plugin::plural_suffix("panels.wspr.dynamic.text_336_591997", "{} beacon{}", w.last_slot_spots == 1)); crate::language_plugin::format("panels.wspr.dynamic.text_336_591997", "{} beacon{}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
                 },
             );
             // Whether the *next* slot transmits is decided before it starts, so
             // this is a promise rather than a guess — see the controller's duty
             // cycle.
             let tx_txt = if live.wspr_tx_percent == 0 {
-                "receive only".to_string()
+                crate::language_plugin::text("panels.wspr.dynamic.text_346_4af74f", "receive only").to_string()
             } else if w.tx_next {
-                format!(
-                    "beaconing — {}, {}% duty",
-                    power_label(live.wspr_power_dbm),
-                    live.wspr_tx_percent
-                )
+                { let __lp_arg_0 = &(power_label(live.wspr_power_dbm)); let __lp_arg_1 = &(live.wspr_tx_percent); crate::language_plugin::format("panels.wspr.dynamic.text_349_c9f44e", "beaconing — {}, {}% duty", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
             } else {
-                format!("listening ({}% duty)", live.wspr_tx_percent)
+                { let __lp_arg_0 = &(live.wspr_tx_percent); crate::language_plugin::format("panels.wspr.dynamic.text_354_a53422", "listening ({}% duty)", &[format!("{}", __lp_arg_0)]) }
             };
-            row(ui, "Next slot", &tx_txt);
+            row(ui, crate::language_plugin::text("panels.wspr.dynamic.text_356_a80546", "Next slot"), &tx_txt);
             // The one place the two copies can be seen to differ. A command
             // that did not reach the engine is otherwise invisible: the chips
             // would show the new setting and the beacon would keep to the old.
@@ -361,7 +353,7 @@ impl SdroxideApp {
                 || live.wspr_power_dbm != self.digi_cfg_edit.wspr_power_dbm
             {
                 ui.label(
-                    RichText::new("waiting for the radio to take the change…")
+                    RichText::new(crate::language_plugin::text("panels.wspr.text_364_8ec143", "waiting for the radio to take the change…"))
                         .size(10.0)
                         .color(crate::theme::YELLOW()),
                 );
@@ -369,12 +361,12 @@ impl SdroxideApp {
             if let Some(hz) = w.next_dial_hz {
                 row(
                     ui,
-                    "Hop next",
+                    crate::language_plugin::text("panels.wspr.dynamic.text_372_b61fb4", "Hop next"),
                     &format!("{} · {:.4} MHz", Band::containing(hz).label(), hz / 1e6),
                 );
             }
             if let Some(why) = &w.hop_blocked {
-                ui.label(RichText::new(why).size(10.0).color(crate::theme::YELLOW()));
+                ui.label(RichText::new(crate::language_plugin::wspr_hop_blocked_status(why)).size(10.0).color(crate::theme::YELLOW()));
             }
         });
 
@@ -393,9 +385,9 @@ impl SdroxideApp {
         let tx_ok = self.tx_capable();
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 4.0;
-            ui.label(RichText::new("TRANSMIT").size(9.5).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.wspr.text_396_c7dbcc", "TRANSMIT")).size(9.5).color(crate::theme::CYAN_DIM()));
             let cur = self.digi_cfg_edit.wspr_tx_percent;
-            for (pct, label) in [(0u8, "OFF"), (10, "10%"), (20, "20%"), (33, "33%"), (50, "50%")] {
+            for (pct, label) in [(0u8, crate::language_plugin::text("panels.wspr.dynamic.text_398_38cca6", "OFF")), (10, "10%".to_owned()), (20, "20%".to_owned()), (33, "33%".to_owned()), (50, "50%".to_owned())] {
                 // Off is the resting state and reads as one; anything else puts
                 // a carrier on the air, so it is accented like the other
                 // controls in this program that do.
@@ -417,16 +409,12 @@ impl SdroxideApp {
                 };
                 if resp
                     .on_hover_text(if pct == 0 {
-                        "Receive only.".to_string()
+                        crate::language_plugin::text("panels.wspr.text_420_82bcba", "Receive only.").to_string()
                     } else {
-                        format!(
-                            "Beacon in one two-minute slot out of every {} — {pct}% of them, \
+                        { let __lp_arg_0 = &((100 + pct as u32 / 2) / pct as u32); let __lp_arg_1 = &(power_label(self.digi_cfg_edit.wspr_power_dbm)); crate::language_plugin::format("panels.wspr.text_423_3daea3", "Beacon in one two-minute slot out of every {} — {pct}% of them, \
                              evenly spaced — at {}. Which slot the cycle starts on is drawn from \
                              your callsign, so two stations running this program do not start \
-                             together.",
-                            (100 + pct as u32 / 2) / pct as u32,
-                            power_label(self.digi_cfg_edit.wspr_power_dbm),
-                        )
+                             together.", &[format!("{}", __lp_arg_0), format!("{pct}"), format!("{}", __lp_arg_1)]) }
                     })
                     .clicked()
                     && cur != pct
@@ -448,7 +436,7 @@ impl SdroxideApp {
         ui.add_space(4.0);
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 4.0;
-            ui.label(RichText::new("POWER").size(9.5).color(crate::theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.wspr.text_451_10149a", "POWER")).size(9.5).color(crate::theme::CYAN_DIM()));
             let cur = sdroxide_types::round_power_dbm(self.digi_cfg_edit.wspr_power_dbm);
             let mut chosen = None;
             egui::ComboBox::from_id_salt("wspr-power")
@@ -469,26 +457,26 @@ impl SdroxideApp {
                 cmds.push(Command::SetDigiConfig(self.digi_cfg_edit.clone()));
             }
             ui.label(
-                RichText::new("what you actually radiate").size(9.5).color(crate::theme::gray(110)),
+                RichText::new(crate::language_plugin::text("panels.wspr.text_472_90b105", "what you actually radiate")).size(9.5).color(crate::theme::gray(110)),
             )
             .on_hover_text(
-                "This goes out in the message, and everyone who hears you judges the path by \
+                crate::language_plugin::text("panels.wspr.text_475_87119d", "This goes out in the message, and everyone who hears you judges the path by \
                  it — so an optimistic figure here makes their measurements wrong as well as \
-                 yours.",
+                 yours."),
             );
 
             // Moving inside the 200 Hz window is the WSPR convention, and it is
             // the only other thing about a transmission worth a switch.
             let auto = self.digi_cfg_edit.auto_tx_freq;
-            let resp = crate::chrome::chip(ui, auto, RichText::new("ROAM").size(10.5));
+            let resp = crate::chrome::chip(ui, auto, RichText::new(crate::language_plugin::text("panels.wspr.text_483_fd9b09", "ROAM")).size(10.5));
             if resp.clicked() && self.digi_cfg_seeded {
                 self.digi_cfg_edit.auto_tx_freq = !auto;
                 cmds.push(Command::SetDigiConfig(self.digi_cfg_edit.clone()));
             }
             resp.on_hover_text(
-                "Pick a different offset inside the 200 Hz window for every transmission. \
+                crate::language_plugin::text("panels.wspr.text_489_88fe06", "Pick a different offset inside the 200 Hz window for every transmission. \
                  This is the convention: two hundred hertz shared by everyone only works if \
-                 nobody parks in the middle of it. Off holds where the cursor is.",
+                 nobody parks in the middle of it. Off holds where the cursor is."),
             );
         });
 
@@ -496,38 +484,38 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 4.0;
             let hop = self.digi_cfg_edit.wspr_hop;
-            let resp = crate::chrome::chip(ui, hop, RichText::new("BAND HOP").size(10.5));
+            let resp = crate::chrome::chip(ui, hop, RichText::new(crate::language_plugin::text("panels.wspr.text_499_ccda17", "BAND HOP")).size(10.5));
             if resp.clicked() && self.digi_cfg_seeded {
                 self.digi_cfg_edit.wspr_hop = !hop;
                 cmds.push(Command::SetDigiConfig(self.digi_cfg_edit.clone()));
             }
             resp.on_hover_text(
-                "Move the dial from band to band between slots, so one receiver samples the \
+                crate::language_plugin::text("panels.wspr.text_505_64af84", "Move the dial from band to band between slots, so one receiver samples the \
                  whole spectrum instead of one slice of it. Turning the VFO yourself pauses \
-                 it — press this twice to resume.",
+                 it — press this twice to resume."),
             );
 
             let up = self.net_cfg_edit.wspr.upload;
-            let resp = crate::chrome::chip(ui, up, RichText::new("UPLOAD").size(10.5));
+            let resp = crate::chrome::chip(ui, up, RichText::new(crate::language_plugin::text("panels.wspr.text_511_c8b9ee", "UPLOAD")).size(10.5));
             if resp.clicked() && self.net_cfg_seeded {
                 self.net_cfg_edit.wspr.upload = !up;
                 cmds.push(Command::SetNetworkConfig(self.net_cfg_edit.clone()));
             }
             resp.on_hover_text(
-                "Send what this station decodes to wsprnet.org. Reporting what you hear is \
-                 what makes a WSPR receiver part of the network; it puts nothing on the air.",
+                crate::language_plugin::text("panels.wspr.text_517_40c89a", "Send what this station decodes to wsprnet.org. Reporting what you hear is \
+                 what makes a WSPR receiver part of the network; it puts nothing on the air."),
             );
 
             let dl = self.net_cfg_edit.wspr.download_heard_us;
-            let resp = crate::chrome::chip(ui, dl, RichText::new("WHO HEARD ME").size(10.5));
+            let resp = crate::chrome::chip(ui, dl, RichText::new(crate::language_plugin::text("panels.wspr.text_522_74c6b4", "WHO HEARD ME")).size(10.5));
             if resp.clicked() && self.net_cfg_seeded {
                 self.net_cfg_edit.wspr.download_heard_us = !dl;
                 cmds.push(Command::SetNetworkConfig(self.net_cfg_edit.clone()));
             }
             resp.on_hover_text(
-                "Ask wsprnet.org every few minutes which stations decoded this one. WSPR has \
+                crate::language_plugin::text("panels.wspr.text_528_f1e58a", "Ask wsprnet.org every few minutes which stations decoded this one. WSPR has \
                  no acknowledgement of any kind, so this is the only way a beacon learns \
-                 anything about its own reach.",
+                 anything about its own reach."),
             );
         });
 
@@ -537,7 +525,7 @@ impl SdroxideApp {
             ui.add_space(4.0);
             ui.horizontal_wrapped(|ui| {
                 ui.spacing_mut().item_spacing.x = 3.0;
-                ui.label(RichText::new("BANDS").size(9.5).color(crate::theme::CYAN_DIM()));
+                ui.label(RichText::new(crate::language_plugin::text("panels.wspr.text_540_c41902", "BANDS")).size(9.5).color(crate::theme::CYAN_DIM()));
                 let mut mask = self.digi_cfg_edit.wspr_hop_bands;
                 let mut hit = false;
                 // Only bands with a WSPR dial: the rest have nothing to hop to.
@@ -560,7 +548,7 @@ impl SdroxideApp {
                 }
                 if mask == 0 {
                     ui.label(
-                        RichText::new("none selected — hopping has nowhere to go")
+                        RichText::new(crate::language_plugin::text("panels.wspr.text_563_8cd376", "none selected — hopping has nowhere to go"))
                             .size(9.5)
                             .color(crate::theme::YELLOW()),
                     );
@@ -575,14 +563,14 @@ impl SdroxideApp {
         let grid = self.digi_cfg_edit.my_grid.trim();
         ui.label(
             RichText::new(if call.is_empty() || grid.is_empty() {
-                "Set your callsign and grid on the General tab of Settings before transmitting."
+                crate::language_plugin::text("panels.wspr.text_578_7aab1a", "Set your callsign and grid on the General tab of Settings before transmitting.")
                     .to_string()
             } else {
                 // The locator as it will go out: a six-character one is sent as
                 // its first four, and saying so here is less surprising than
                 // letting the operator find it on a spot page.
                 let sent = sdroxide_types::wspr_grid4(grid).unwrap_or_else(|| grid.to_string());
-                format!("Transmitting as {call} in {sent} — set on the General tab of Settings.")
+                crate::language_plugin::format("panels.wspr.text_585_2f679c", "Transmitting as {call} in {sent} — set on the General tab of Settings.", &[format!("{call}"), format!("{sent}")])
             })
             .size(10.0)
             .color(if call.is_empty() || grid.is_empty() {
@@ -599,7 +587,7 @@ impl SdroxideApp {
             && let Some(why) = &w.tx_blocked
         {
             ui.add_space(4.0);
-            ui.label(RichText::new(why).size(10.0).color(crate::theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::wspr_tx_blocked_status(why)).size(10.0).color(crate::theme::YELLOW()));
         }
     }
 }
@@ -752,12 +740,7 @@ fn wspr_row(ui: &mut egui::Ui, s: &WsprSpot, home: Option<(f64, f64)>, now: i64)
                             .monospace()
                             .color(crate::theme::gray(120)),
                     )
-                    .on_hover_text(format!(
-                        "{:02}:{:02} UTC — {} ago",
-                        t / 3600,
-                        (t % 3600) / 60,
-                        fmt_age(now - s.slot_utc)
-                    ));
+                    .on_hover_text({ let __lp_arg_0 = &(t / 3600); let __lp_arg_1 = &((t % 3600) / 60); let __lp_arg_2 = &(fmt_age(now - s.slot_utc)); crate::language_plugin::format("panels.wspr.text_756_341d67", "{:02}:{:02} UTC — {} ago", &[format!("{:02}", __lp_arg_0), format!("{:02}", __lp_arg_1), format!("{}", __lp_arg_2)]) });
                 });
             });
         });
@@ -778,7 +761,9 @@ fn snr_color(db: i16) -> Color32 {
 }
 
 /// A label/value line in the status card.
-fn row(ui: &mut egui::Ui, label: &str, value: &str) {
+fn row(ui: &mut egui::Ui, label: impl AsRef<str>, value: impl AsRef<str>) {
+    let label = label.as_ref();
+    let value = value.as_ref();
     ui.horizontal(|ui| {
         ui.label(RichText::new(label).size(10.0).color(crate::theme::CYAN_DIM()));
         crate::chrome::row_tail(ui, |ui| {

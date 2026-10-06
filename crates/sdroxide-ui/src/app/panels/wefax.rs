@@ -58,9 +58,9 @@ impl SdroxideApp {
             // for a quarter of an hour and you will almost always have tuned to
             // it after the start tone went by.
             let (face, hint) = if st.receiving {
-                (" ■ STOP ", "End the chart now and save what has arrived")
+                (crate::language_plugin::text("panels.wefax.dynamic.text_61_0d06dd", " ■ STOP "), crate::language_plugin::text("panels.wefax.dynamic.text_61_693dcd", "End the chart now and save what has arrived"))
             } else {
-                (" ● START ", "Start a chart now, without waiting for a start tone")
+                (crate::language_plugin::text("panels.wefax.dynamic.text_63_201a9b", " ● START "), crate::language_plugin::text("panels.wefax.dynamic.text_63_5cfc46", "Start a chart now, without waiting for a start tone"))
             };
             if crate::chrome::chip_accent(
                 ui,
@@ -77,13 +77,13 @@ impl SdroxideApp {
 
             // What the receiver is making of the signal.
             let (text, colour) = if st.phasing {
-                ("phasing…".to_string(), theme::YELLOW())
+                (crate::language_plugin::text("panels.wefax.dynamic.text_80_f40118", "phasing…").to_string(), theme::YELLOW())
             } else if st.receiving {
-                (format!("{} lines", st.lines), theme::GREEN())
+                ({ let __lp_arg_0 = &(st.lines); crate::language_plugin::format("panels.wefax.dynamic.text_82_70ef05", "{} lines", &[format!("{}", __lp_arg_0)]) }, theme::GREEN())
             } else if self.wefax.has_live() {
-                (format!("{} lines held", self.wefax.live_size().1), theme::CYAN_DIM())
+                ({ let __lp_arg_0 = &(self.wefax.live_size().1); crate::language_plugin::format("panels.wefax.dynamic.text_84_869759", "{} lines held", &[format!("{}", __lp_arg_0)]) }, theme::CYAN_DIM())
             } else {
-                ("listening".to_string(), theme::LINE_LIT())
+                (crate::language_plugin::text("panels.wefax.dynamic.text_86_856087", "listening").to_string(), theme::LINE_LIT())
             };
             ui.label(RichText::new(text).color(colour).size(11.0));
 
@@ -98,9 +98,9 @@ impl SdroxideApp {
                     .monospace(),
             )
             .on_hover_text(
-                "Subcarrier offset from 1900 Hz. Tune for roughly zero: the fax carrier is \
+                crate::language_plugin::text("panels.wefax.text_101_01fe5d", "Subcarrier offset from 1900 Hz. Tune for roughly zero: the fax carrier is \
                  1500 Hz black to 2300 Hz white, and a receiver a few hundred hertz off clips \
-                 the picture to solid black or solid white.",
+                 the picture to solid black or solid white."),
             );
             self.digi_squelch_slider(ui, cmds);
         });
@@ -124,7 +124,7 @@ impl SdroxideApp {
             for i in sdroxide_types::WefaxIoc::ALL {
                 let on = self.digi_cfg_edit.wefax_ioc == i;
                 if crate::chrome::chip(ui, on, i.value().to_string())
-                    .on_hover_text(format!("{} pixels per line", i.width()))
+                    .on_hover_text({ let __lp_arg_0 = &(i.width()); crate::language_plugin::format("panels.wefax.text_127_c390a9", "{} pixels per line", &[format!("{}", __lp_arg_0)]) })
                     .clicked()
                     && !on
                 {
@@ -135,11 +135,11 @@ impl SdroxideApp {
 
             ui.add_space(8.0);
             let auto_start = self.digi_cfg_edit.wefax_auto_start;
-            if crate::chrome::chip(ui, auto_start, "AUTO START")
+            if crate::chrome::chip(ui, auto_start, crate::language_plugin::text("panels.wefax.text_138_e1c4b1", "AUTO START"))
                 .on_hover_text(
-                    "Begin a chart when the 300 Hz (IOC 576) or 675 Hz start tone is heard \
+                    crate::language_plugin::text("panels.wefax.text_140_ba67fb", "Begin a chart when the 300 Hz (IOC 576) or 675 Hz start tone is heard \
                      — and end the one in progress and phase the new one when the next \
-                     transmission arrives, whether or not a stop tone came first.",
+                     transmission arrives, whether or not a stop tone came first."),
                 )
                 .clicked()
             {
@@ -147,10 +147,10 @@ impl SdroxideApp {
                 changed = true;
             }
             let auto_stop = self.digi_cfg_edit.wefax_auto_stop;
-            if crate::chrome::chip(ui, auto_stop, "AUTO STOP")
+            if crate::chrome::chip(ui, auto_stop, crate::language_plugin::text("panels.wefax.text_150_9cbf11", "AUTO STOP"))
                 .on_hover_text(
-                    "End it on the 450 Hz stop tone. Turn off to keep recording through a \
-                     station that sends several charts back to back.",
+                    crate::language_plugin::text("panels.wefax.text_152_d1c367", "End it on the 450 Hz stop tone. Turn off to keep recording through a \
+                     station that sends several charts back to back."),
                 )
                 .clicked()
             {
@@ -161,7 +161,7 @@ impl SdroxideApp {
             ui.add_space(8.0);
             // Phase nudge: for a chart whose phasing pulse was missed, which is
             // every chart you tune into halfway through.
-            ui.label(RichText::new("PHASE").color(theme::CYAN_DIM()).size(9.5).strong());
+            ui.label(RichText::new(crate::language_plugin::text("panels.wefax.text_164_c75352", "PHASE")).color(theme::CYAN_DIM()).size(9.5).strong());
             // Labelled with the shift itself rather than with arrows. The
             // media glyphs this used to wear (⏪ ◀ ▶ ⏩) are not in Chakra
             // Petch, and the fallback the browser substitutes measures
@@ -170,7 +170,7 @@ impl SdroxideApp {
             // of a phone. The amount is what the hover text said anyway.
             for (face, px) in [("−100", -100), ("−10", -10), ("+10", 10), ("+100", 100)] {
                 if crate::chrome::chip(ui, false, face)
-                    .on_hover_text(format!("Shift the picture {px} pixels"))
+                    .on_hover_text(crate::language_plugin::format("panels.wefax.text_173_9cbd65", "Shift the picture {px} pixels", &[format!("{px}")]))
                     .clicked()
                 {
                     // The decoder moves the lines still to come; this moves the
@@ -182,7 +182,7 @@ impl SdroxideApp {
             }
 
             ui.add_space(8.0);
-            ui.label(RichText::new("SLANT").color(theme::CYAN_DIM()).size(9.5).strong());
+            ui.label(RichText::new(crate::language_plugin::text("panels.wefax.text_185_5a1a51", "SLANT")).color(theme::CYAN_DIM()).size(9.5).strong());
             let mut ppm = self.digi_cfg_edit.wefax_slant_ppm;
             if ui
                 .add(
@@ -193,9 +193,9 @@ impl SdroxideApp {
                         .fixed_decimals(1),
                 )
                 .on_hover_text(
-                    "Sample-clock trim. If the chart leans to the left, increase this; to the \
+                    crate::language_plugin::text("panels.wefax.text_196_f02a1e", "Sample-clock trim. If the chart leans to the left, increase this; to the \
                      right, decrease it. A sound card a hundred ppm off walks a quarter-hour \
-                     chart most of a line sideways.",
+                     chart most of a line sideways."),
                 )
                 .changed()
             {
@@ -208,15 +208,15 @@ impl SdroxideApp {
             // to finish before being allowed to look at the top of it is the
             // single most irritating thing about receiving fax.
             ui.add_space(8.0);
-            ui.label(RichText::new("VIEW").color(theme::CYAN_DIM()).size(9.5).strong());
+            ui.label(RichText::new(crate::language_plugin::text("panels.wefax.text_211_28baeb", "VIEW")).color(theme::CYAN_DIM()).size(9.5).strong());
             use crate::wefax::Zoom;
             let zoom = self.wefax.zoom;
             for (face, z, hint) in [
-                ("FIT", Zoom::FitWidth, "Scale the chart to the panel width"),
-                ("WHOLE", Zoom::Whole, "Shrink the chart until all of it is in view at once"),
-                ("50%", Zoom::Fixed(0.5), "Half size"),
-                ("1:1", Zoom::Fixed(1.0), "One screen pixel per fax pixel — scroll for detail"),
-                ("2×", Zoom::Fixed(2.0), "Twice size; scroll to move around the chart"),
+                (crate::language_plugin::text("panels.wefax.dynamic.text_215_0d1ed1", "FIT"), Zoom::FitWidth, crate::language_plugin::text("panels.wefax.dynamic.text_215_197949", "Scale the chart to the panel width")),
+                (crate::language_plugin::text("panels.wefax.dynamic.text_216_28c115", "WHOLE"), Zoom::Whole, crate::language_plugin::text("panels.wefax.dynamic.text_216_281bb2", "Shrink the chart until all of it is in view at once")),
+                ("50%".to_owned(), Zoom::Fixed(0.5), crate::language_plugin::text("panels.wefax.dynamic.text_217_500edb", "Half size")),
+                ("1:1".to_owned(), Zoom::Fixed(1.0), crate::language_plugin::text("panels.wefax.dynamic.text_218_60e4ee", "One screen pixel per fax pixel — scroll for detail")),
+                ("2×".to_owned(), Zoom::Fixed(2.0), crate::language_plugin::text("panels.wefax.dynamic.text_219_b1080e", "Twice size; scroll to move around the chart")),
             ] {
                 if crate::chrome::chip(ui, zoom == z, face).on_hover_text(hint).clicked() {
                     self.wefax.zoom = z;
@@ -227,7 +227,7 @@ impl SdroxideApp {
             // rate is not what the station is actually sending — 90 taken for
             // 120 makes it a third too tall — and this pulls it back while the
             // operator works out which rate that is.
-            ui.label(RichText::new("HEIGHT").color(theme::CYAN_DIM()).size(9.5).strong());
+            ui.label(RichText::new(crate::language_plugin::text("panels.wefax.text_230_3054cc", "HEIGHT")).color(theme::CYAN_DIM()).size(9.5).strong());
             let mut aspect = self.wefax.aspect;
             if ui
                 .add(
@@ -238,27 +238,27 @@ impl SdroxideApp {
                         .fixed_decimals(2),
                 )
                 .on_hover_text(
-                    "Stretch the picture vertically. A chart that came out squashed or stretched \
+                    crate::language_plugin::text("panels.wefax.text_241_273140", "Stretch the picture vertically. A chart that came out squashed or stretched \
                      is usually being decoded at the wrong line rate — this makes it readable, \
-                     and the LPM chips fix it properly. Double-click to type a value.",
+                     and the LPM chips fix it properly. Double-click to type a value."),
                 )
                 .changed()
             {
                 self.wefax.aspect = aspect;
             }
             if (aspect - 1.0).abs() > 0.001
-                && crate::chrome::chip(ui, false, "RESET")
-                    .on_hover_text("Back to the picture's own proportions")
+                && crate::chrome::chip(ui, false, crate::language_plugin::text("panels.wefax.text_250_7ef2fa", "RESET"))
+                    .on_hover_text(crate::language_plugin::text("panels.wefax.text_251_67c29b", "Back to the picture's own proportions"))
                     .clicked()
             {
                 self.wefax.aspect = 1.0;
             }
 
             let follow = self.wefax.follow;
-            if crate::chrome::chip(ui, follow, "FOLLOW")
+            if crate::chrome::chip(ui, follow, crate::language_plugin::text("panels.wefax.text_258_20f26e", "FOLLOW"))
                 .on_hover_text(
-                    "Keep the newest lines in view. Scrolling up turns this off so you can read \
-                     what has already arrived; scrolling back to the bottom turns it on again.",
+                    crate::language_plugin::text("panels.wefax.text_260_a5707f", "Keep the newest lines in view. Scrolling up turns this off so you can read \
+                     what has already arrived; scrolling back to the bottom turns it on again."),
                 )
                 .clicked()
             {
@@ -360,8 +360,8 @@ impl SdroxideApp {
                                 ui.centered_and_justified(|ui| {
                                     ui.label(
                                     RichText::new(
-                                        "Tune a fax schedule in USB and wait for a start tone, or \
-                                     press START to begin mid-chart.",
+                                        crate::language_plugin::text("panels.wefax.text_363_a11b41", "Tune a fax schedule in USB and wait for a start tone, or \
+                                     press START to begin mid-chart."),
                                     )
                                     .color(theme::LINE_LIT())
                                     .size(11.5),
@@ -417,7 +417,7 @@ impl SdroxideApp {
         // clipboard when you are about to go and look at it over there.
         let where_ = self.store_where(&dir);
         ui.horizontal(|ui| {
-            ui.label(RichText::new("SAVED").color(theme::CYAN_DIM()).size(9.5).strong());
+            ui.label(RichText::new(crate::language_plugin::text("panels.wefax.text_420_d10036", "SAVED")).color(theme::CYAN_DIM()).size(9.5).strong());
             if self.wefax.total > 0 {
                 ui.label(
                     RichText::new(format!("{}", self.wefax.total))
@@ -426,8 +426,8 @@ impl SdroxideApp {
                 );
             }
             if !dir.is_empty()
-                && crate::chrome::chip(ui, false, RichText::new("PATH").size(9.5))
-                    .on_hover_text(format!("Charts are saved {where_}\n\nClick to copy the path"))
+                && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.wefax.text_429_d4db71", "PATH")).size(9.5))
+                    .on_hover_text(crate::language_plugin::format("panels.wefax.text_430_234df4", "Charts are saved {where_}\n\nClick to copy the path", &[format!("{where_}")]))
                     .clicked()
             {
                 ui.ctx().copy_text(dir.clone());
@@ -437,11 +437,11 @@ impl SdroxideApp {
         if self.wefax.gallery.is_empty() {
             ui.label(
                 RichText::new(if self.wefax.page_pending {
-                    "Reading the radio's charts…".to_string()
+                    crate::language_plugin::text("panels.wefax.text_440_2631e6", "Reading the radio's charts…").to_string()
                 } else if dir.is_empty() {
-                    "Finished charts collect here.".to_string()
+                    crate::language_plugin::text("panels.wefax.text_442_838167", "Finished charts collect here.").to_string()
                 } else {
-                    format!("Finished charts are saved {where_} and collect here.")
+                    crate::language_plugin::format("panels.wefax.text_444_ce99bd", "Finished charts are saved {where_} and collect here.", &[format!("{where_}")])
                 })
                 .color(theme::LINE_LIT())
                 .size(10.0),
@@ -492,7 +492,7 @@ impl SdroxideApp {
                                     // frequency has nothing to say about where
                                     // it came from; its size is at least true.
                                     ui.label(
-                                        RichText::new(m.where_label().unwrap_or_else(|| {
+                                        RichText::new(crate::language_plugin::wefax_where_label(&m).unwrap_or_else(|| {
                                             format!("{} × {}", c.size.0, c.size.1)
                                         }))
                                         .color(theme::CYAN_DIM())
@@ -520,13 +520,7 @@ impl SdroxideApp {
                             egui::StrokeKind::Inside,
                         );
                     }
-                    let resp = resp.on_hover_text(format!(
-                        "{}\n{} × {} pixels\n{}\n\nRight-click to delete",
-                        c.meta.map_or_else(|| c.name.clone(), |m| m.when_full()),
-                        c.size.0,
-                        c.size.1,
-                        c.name
-                    ));
+                    let resp = resp.on_hover_text({ let __lp_arg_0 = &(c.meta.map_or_else(|| c.name.clone(), |m| m.when_full())); let __lp_arg_1 = &(c.size.0); let __lp_arg_2 = &(c.size.1); let __lp_arg_3 = &(c.name); crate::language_plugin::format("panels.wefax.text_524_5e6759", "{}\n{} × {} pixels\n{}\n\nRight-click to delete", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3)]) });
                     if resp.clicked() {
                         open = Some(i);
                     }
@@ -535,7 +529,7 @@ impl SdroxideApp {
                     // target would be pressed by accident.
                     resp.context_menu(|ui| {
                         ui.label(RichText::new(c.title()).color(theme::CYAN_DIM()).size(10.0));
-                        if ui.button("Delete this chart").clicked() {
+                        if ui.button(crate::language_plugin::text("panels.wefax.text_538_5adc4e", "Delete this chart")).clicked() {
                             delete = Some(c.name.clone());
                             ui.close();
                         }
@@ -550,15 +544,15 @@ impl SdroxideApp {
                     // them and this says how many. This client simply stops
                     // holding thumbnails somewhere.
                     ui.label(
-                        RichText::new(format!("{older} older in the store"))
+                        RichText::new(crate::language_plugin::format("panels.wefax.text_553_ac7647", "{older} older in the store", &[format!("{older}")]))
                             .color(theme::LINE_LIT())
                             .size(9.5),
                     );
                 } else if older > 0 {
                     let label = if self.wefax.page_pending {
-                        "loading…".to_string()
+                        crate::language_plugin::text("panels.wefax.dynamic.text_559_fbc6d7", "loading…").to_string()
                     } else {
-                        format!("{older} older — load more")
+                        crate::language_plugin::format("panels.wefax.dynamic.text_561_bb2e33", "{older} older — load more", &[format!("{older}")])
                     };
                     if crate::chrome::chip(ui, false, RichText::new(label).size(9.5)).clicked()
                         && !self.wefax.page_pending
@@ -605,10 +599,10 @@ impl SdroxideApp {
             Some((s, f)) => {
                 format!("{} · {:.1}", s.name.split_whitespace().next().unwrap_or(""), f)
             }
-            None => "STATIONS".to_string(),
+            None => crate::language_plugin::text("panels.wefax.dynamic.text_608_791930", "STATIONS").to_string(),
         };
         let btn = crate::chrome::chip(ui, here.is_some(), RichText::new(face).size(11.0))
-            .on_hover_text("Broadcast radiofax schedules — picking one tunes the dial");
+            .on_hover_text(crate::language_plugin::text("panels.wefax.text_611_cca3f1", "Broadcast radiofax schedules — picking one tunes the dial"));
 
         let mut pick = None;
         let resp = egui::Popup::from_toggle_button_response(&btn)
@@ -619,17 +613,14 @@ impl SdroxideApp {
                 ui.set_max_width(420.0);
                 for s in WEFAX_STATIONS {
                     ui.label(
-                        RichText::new(s.name).color(crate::theme::CYAN_DIM()).size(10.0).strong(),
+                        RichText::new(crate::language_plugin::wefax_station_name(s.name)).color(crate::theme::CYAN_DIM()).size(10.0).strong(),
                     );
                     ui.horizontal_wrapped(|ui| {
                         for &f in s.carriers_khz {
                             let d = WefaxStation::dial_hz(f);
                             let on = (d - dial).abs() < WefaxStation::NEAR_HZ;
                             if crate::chrome::chip(ui, on, format!("{f:.1}"))
-                                .on_hover_text(format!(
-                                    "Published carrier {f:.1} kHz → dial {:.1} kHz USB",
-                                    d / 1000.0
-                                ))
+                                .on_hover_text({ let __lp_arg_0 = &(d / 1000.0); crate::language_plugin::format("panels.wefax.text_630_68b718", "Published carrier {f:.1} kHz → dial {:.1} kHz USB", &[format!("{f:.1}"), format!("{:.1}", __lp_arg_0)]) })
                                 .clicked()
                             {
                                 pick = Some(d);
@@ -640,9 +631,9 @@ impl SdroxideApp {
                 }
                 ui.label(
                     RichText::new(
-                        "Frequencies are the published carrier; the dial goes 1.9 kHz below it, \
+                        crate::language_plugin::text("panels.wefax.text_643_ba0e03", "Frequencies are the published carrier; the dial goes 1.9 kHz below it, \
                          which is done for you. Schedules change and stations close — treat this \
-                         as where to start looking, not a timetable.",
+                         as where to start looking, not a timetable."),
                     )
                     .color(crate::theme::LINE_LIT())
                     .size(10.0),
@@ -692,9 +683,9 @@ impl SdroxideApp {
         // A chart can be stored before the first listing has come back, so the
         // directory is not always known to name.
         let del_hint = if self.wefax.dir.is_empty() {
-            "Delete this chart from the store".to_string()
+            crate::language_plugin::text("panels.wefax.dynamic.text_695_2cefff", "Delete this chart from the store").to_string()
         } else {
-            format!("Delete this chart {}", self.store_where(&self.wefax.dir))
+            { let __lp_arg_0 = &(self.store_where(&self.wefax.dir)); crate::language_plugin::format("panels.wefax.dynamic.text_697_8c8cea", "Delete this chart {}", &[format!("{}", __lp_arg_0)]) }
         };
         let title = chart.title();
         let mut open = true;
@@ -713,19 +704,19 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.horizontal(|ui| {
                     // Newer is up the list, older is down it.
-                    if crate::chrome::chip(ui, false, "◀ NEWER")
-                        .on_hover_text("The chart received after this one")
+                    if crate::chrome::chip(ui, false, crate::language_plugin::text("panels.wefax.text_716_9b7256", "◀ NEWER"))
+                        .on_hover_text(crate::language_plugin::text("panels.wefax.text_717_9b414c", "The chart received after this one"))
                         .clicked()
                     {
                         step = -1;
                     }
                     ui.label(
-                        RichText::new(format!("{} of {n}", i + 1))
+                        RichText::new({ let __lp_arg_0 = &(i + 1); crate::language_plugin::format("panels.wefax.text_723_e084eb", "{} of {n}", &[format!("{}", __lp_arg_0), format!("{n}")]) })
                             .color(crate::theme::CYAN_DIM())
                             .size(10.0),
                     );
-                    if crate::chrome::chip(ui, false, "OLDER ▶")
-                        .on_hover_text("The chart received before this one")
+                    if crate::chrome::chip(ui, false, crate::language_plugin::text("panels.wefax.text_727_341a8a", "OLDER ▶"))
+                        .on_hover_text(crate::language_plugin::text("panels.wefax.text_728_d80263", "The chart received before this one"))
                         .clicked()
                     {
                         step = 1;
@@ -733,19 +724,19 @@ impl SdroxideApp {
                     ui.add_space(8.0);
                     if gone {
                         ui.label(
-                            RichText::new("no longer in the store")
+                            RichText::new(crate::language_plugin::text("panels.wefax.text_736_151908", "no longer in the store"))
                                 .color(crate::theme::YELLOW())
                                 .size(10.0),
                         );
                     } else if !loaded {
                         ui.label(
-                            RichText::new("loading full size…")
+                            RichText::new(crate::language_plugin::text("panels.wefax.text_742_f12b73", "loading full size…"))
                                 .color(crate::theme::CYAN_DIM())
                                 .size(10.0),
                         );
                     } else if savable
-                        && crate::chrome::chip(ui, false, RichText::new("SAVE").size(9.5))
-                            .on_hover_text("Save a copy of this chart on this computer")
+                        && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.wefax.text_747_c210bf", "SAVE")).size(9.5))
+                            .on_hover_text(crate::language_plugin::text("panels.wefax.text_748_7177a3", "Save a copy of this chart on this computer"))
                             .clicked()
                     {
                         save = true;
@@ -756,20 +747,20 @@ impl SdroxideApp {
                         crate::chrome::chip_accent(
                             ui,
                             true,
-                            RichText::new("SURE?").size(9.5),
+                            RichText::new(crate::language_plugin::text("panels.wefax.text_759_e378a8", "SURE?")).size(9.5),
                             crate::theme::PINK(),
                             crate::theme::INK_ON_CYAN(),
                         )
-                        .on_hover_text("Click again to delete this chart for good")
+                        .on_hover_text(crate::language_plugin::text("panels.wefax.text_763_a2b200", "Click again to delete this chart for good"))
                     } else {
-                        crate::chrome::chip(ui, false, RichText::new("DELETE").size(9.5))
+                        crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.wefax.text_765_65daeb", "DELETE")).size(9.5))
                             .on_hover_text(&del_hint)
                     };
                     if del.clicked() {
                         pressed_delete = true;
                     }
                     ui.label(RichText::new(&name).color(crate::theme::LINE_LIT()).size(10.0))
-                        .on_hover_text("The file this chart was saved as");
+                        .on_hover_text(crate::language_plugin::text("panels.wefax.text_772_5310de", "The file this chart was saved as"));
                 });
                 ui.add_space(4.0);
                 egui::ScrollArea::both()

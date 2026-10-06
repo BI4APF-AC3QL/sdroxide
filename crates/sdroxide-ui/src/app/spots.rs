@@ -114,7 +114,7 @@ fn spot_row(ui: &mut egui::Ui, s: &Spot, now_utc: i64, needed: bool) -> egui::Re
                         ui,
                         36.0,
                         egui::Label::new(
-                            RichText::new("NEW").size(10.0).strong().color(crate::theme::GREEN()),
+                            RichText::new(crate::language_plugin::text("window.spots.text_117_a253ff", "NEW")).size(10.0).strong().color(crate::theme::GREEN()),
                         ),
                     );
                 }
@@ -289,7 +289,7 @@ impl SdroxideApp {
             (SpotKind::FreeDv, "FREEDV"),
             (SpotKind::Broadcast, "BC"),
         ];
-        let resp = egui::Window::new("SPOTS")
+        let resp = egui::Window::new(crate::language_plugin::text("window.spots.text_292_4cadfa", "SPOTS")).id(egui::Id::new("SPOTS"))
             .id(crate::layout::salted_id(ctx, "SPOTS"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -300,9 +300,10 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.horizontal(|ui| {
                     for (i, (kind, label)) in labels.iter().enumerate() {
-                        let chip = crate::chrome::chip(ui, self.view.spot_kinds_shown[i], *label);
+                        let chip_label = spot_kind_chip_label(*kind, label);
+                        let chip = crate::chrome::chip(ui, self.view.spot_kinds_shown[i], chip_label);
                         let chip = if *kind == SpotKind::Broadcast {
-                            chip.on_hover_text("Longwave & shortwave broadcast stations on air now")
+                            chip.on_hover_text(crate::language_plugin::text("window.spots.text_305_d484f2", "Longwave & shortwave broadcast stations on air now"))
                         } else {
                             chip
                         };
@@ -310,15 +311,15 @@ impl SdroxideApp {
                             self.view.spot_kinds_shown[i] = !self.view.spot_kinds_shown[i];
                         }
                     }
-                    if crate::chrome::chip(ui, self.spot_in_view_only, "IN VIEW")
-                        .on_hover_text("Only spots inside the panadapter span")
+                    if crate::chrome::chip(ui, self.spot_in_view_only, crate::language_plugin::text("window.spots.text_313_d357d0", "IN VIEW"))
+                        .on_hover_text(crate::language_plugin::text("window.spots.text_314_a35d5a", "Only spots inside the panadapter span"))
                         .clicked()
                     {
                         self.spot_in_view_only = !self.spot_in_view_only;
                     }
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        if crate::chrome::chip(ui, false, "⚙ SETUP")
-                            .on_hover_text("Feeds, lookup & upload settings")
+                        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.spots.text_320_3b3b5d", "⚙ SETUP"))
+                            .on_hover_text(crate::language_plugin::text("window.spots.text_321_b21aaa", "Feeds, lookup & upload settings"))
                             .clicked()
                         {
                             open_setup = true;
@@ -332,11 +333,11 @@ impl SdroxideApp {
                         ui,
                         egui::TextEdit::singleline(&mut self.spot_search)
                             .desired_width(200.0)
-                            .hint_text("call, station, site, frequency")
+                            .hint_text(crate::language_plugin::text("window.spots.text_335_792215", "call, station, site, frequency"))
                             .text_color(crate::theme::TEXT_STRONG()),
                     );
                     if !self.spot_search.trim().is_empty()
-                        && ui.button("✕").on_hover_text("Clear the search").clicked()
+                        && ui.button("✕").on_hover_text(crate::language_plugin::text("window.spots.text_339_155b1a", "Clear the search")).clicked()
                     {
                         self.spot_search.clear();
                     }
@@ -363,8 +364,8 @@ impl SdroxideApp {
                     // every spot held — "3 of 5" when three categories are off
                     // would look like the search had lost the rest.
                     let (text, colour) = match rows.len() {
-                        0 => ("no match".to_string(), crate::theme::ALERT()),
-                        n => (format!("{n} of {}", visible.len()), crate::theme::YELLOW()),
+                        0 => (spot_search_no_match_label().to_string(), crate::theme::ALERT()),
+                        n => (spot_match_count_label(n, visible.len()), crate::theme::YELLOW()),
                     };
                     ui.label(RichText::new(text).color(colour).size(10.0));
                 }
@@ -381,9 +382,9 @@ impl SdroxideApp {
                     if rows.is_empty() {
                         ui.add_space(8.0);
                         let msg = if query.is_empty() {
-                            "no spots — enable a feed in ⚙ SETUP"
+                            crate::language_plugin::text("boundaries.app.spots.text_384_df49de", "no spots — enable a feed in ⚙ SETUP")
                         } else {
-                            "nothing matches the search"
+                            crate::language_plugin::text("boundaries.app.spots.text_386_0a8afc", "nothing matches the search")
                         };
                         ui.label(RichText::new(msg).color(crate::theme::gray(120)));
                     }
@@ -400,6 +401,59 @@ impl SdroxideApp {
         }
         if let Some(s) = clicked {
             self.select_spot(&s, cmds);
+        }
+    }
+}
+
+fn spot_kind_chip_label(kind: SpotKind, source: &str) -> String {
+    if kind == SpotKind::Broadcast {
+        crate::language_plugin::text("window.spots.broadcast_filter", source).to_owned()
+    } else {
+        source.to_owned()
+    }
+}
+
+fn spot_match_count_label(found: usize, total: usize) -> String {
+    crate::language_plugin::format("window.spots.match_count", "{} of {}", &[found.to_string(), total.to_string()])
+}
+
+#[cfg(test)]
+mod spot_filter_language_tests {
+    use super::*;
+
+    #[test]
+    fn broadcast_filter_is_localized_and_protocol_names_stay_stable() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(spot_kind_chip_label(SpotKind::Broadcast, "BC"), if enabled { "广播" } else { "BC" });
+            assert_eq!(spot_kind_chip_label(SpotKind::Pota, "POTA"), "POTA");
+            assert_eq!(spot_kind_chip_label(SpotKind::DxCluster, "DX"), "DX");
+            assert_eq!(spot_match_count_label(3, 5), if enabled { "显示 3 / 5 条" } else { "3 of 5" });
+        }
+    }
+}
+
+fn spot_search_no_match_label() -> String {
+    crate::language_plugin::text("window.spots.search.no_match", "no match")
+}
+#[cfg(test)]
+mod search_language_tests {
+    use super::*;
+    #[test]
+    fn filtered_no_match_face_renders_and_restores_english() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let mut fonts = egui::FontDefinitions::default();
+            crate::language_plugin::add_fonts(&mut fonts);
+            let ctx = egui::Context::default();
+            ctx.set_fonts(fonts);
+            let output = ctx.run_ui(egui::RawInput::default(), |ui| { ui.label(spot_search_no_match_label()); });
+            let rendered: Vec<_> = output.shapes.iter().filter_map(|s| match &s.shape {
+                egui::epaint::Shape::Text(t) => Some(t.galley.job.text.clone()), _ => None,
+            }).collect();
+            output.drop_without_applying_deltas();
+            let expected = if enabled { "没有匹配项" } else { "no match" };
+            assert!(rendered.iter().any(|text| text == expected), "{rendered:?}");
         }
     }
 }

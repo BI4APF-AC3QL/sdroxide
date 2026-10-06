@@ -122,7 +122,7 @@ fn memory_row(
         return;
     }
     ui.horizontal(|ui| {
-        if crate::chrome::chip(ui, false, "RCL").on_hover_text("Recall").clicked() {
+        if crate::chrome::chip(ui, false, crate::language_plugin::text("window.memories_voice.text_125_fede09", "RCL")).on_hover_text(crate::language_plugin::text("window.memories_voice.text_125_71e204", "Recall")).clicked() {
             cmds.push(Command::RecallMemory(m.id));
         }
         // The buttons are placed before the label rather than after it, so that
@@ -134,17 +134,17 @@ fn memory_row(
             if crate::chrome::chip_accent(
                 ui,
                 false,
-                RichText::new("DEL").size(11.0),
+                RichText::new(crate::language_plugin::text("window.memories_voice.text_137_9b8949", "DEL")).size(11.0),
                 crate::theme::PINK(),
                 Color32::WHITE,
             )
-            .on_hover_text("Delete")
+            .on_hover_text(crate::language_plugin::text("common.delete", "Delete"))
             .clicked()
             {
                 cmds.push(Command::DeleteMemory(m.id));
             }
-            if crate::chrome::chip(ui, false, RichText::new("EDT").size(11.0))
-                .on_hover_text("Edit the name, frequency, mode, antenna and repeater setup")
+            if crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("window.memories_voice.text_146_f9f30a", "EDT")).size(11.0))
+                .on_hover_text(crate::language_plugin::text("window.memories_voice.text_147_110491", "Edit the name, frequency, mode, antenna and repeater setup"))
                 .clicked()
             {
                 *edit = Some(MemoryEdit::of(m));
@@ -235,7 +235,7 @@ fn memory_edit_row(
     ui.horizontal_wrapped(|ui| {
         let name = crate::chrome::field(
             ui,
-            egui::TextEdit::singleline(&mut e.name).hint_text("name").desired_width(110.0),
+            egui::TextEdit::singleline(&mut e.name).hint_text(crate::language_plugin::text("common.name", "name")).desired_width(110.0),
         );
         if *focus {
             name.request_focus();
@@ -270,25 +270,25 @@ fn memory_edit_row(
         ui.label(RichText::new("MHz").weak());
         egui::ComboBox::from_id_salt(crate::layout::salted_id(ui.ctx(), "mem-edit-mode"))
             .width(70.0)
-            .selected_text(e.mode.label())
+            .selected_text(crate::language_plugin::display_label(e.mode.label()))
             .show_styled(ui, |ui| {
                 for m in Mode::ALL {
-                    ui.selectable_value(&mut e.mode, m, m.label());
+                    ui.selectable_value(&mut e.mode, m,crate::language_plugin::display_label(m.label()));
                 }
             });
         memory_antenna_picker(ui, e, antennas);
         // The repeater setup folds out rather than always being there: most
         // memories are a name, a dial and a mode, and this is four more rows.
         let has_rpt = e.repeater.is_some_and(|r| r.is_active());
-        if crate::chrome::chip(ui, e.show_repeater || has_rpt, RichText::new("RPT").size(11.0))
-            .on_hover_text("The repeater shift, tone and 1750 Hz burst stored with this channel")
+        if crate::chrome::chip(ui, e.show_repeater || has_rpt, RichText::new(crate::language_plugin::text("window.memories_voice.text_283_c35b52", "RPT")).size(11.0))
+            .on_hover_text(crate::language_plugin::text("window.memories_voice.text_284_22fcdc", "The repeater shift, tone and 1750 Hz burst stored with this channel"))
             .clicked()
         {
             e.show_repeater = !e.show_repeater;
         }
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             if crate::chrome::chip(ui, false, RichText::new("✖").size(11.0))
-                .on_hover_text("Abandon the edit (Escape)")
+                .on_hover_text(crate::language_plugin::text("window.memories_voice.text_291_005359", "Abandon the edit (Escape)"))
                 .clicked()
             {
                 cancel = true;
@@ -301,12 +301,12 @@ fn memory_edit_row(
                 ui,
                 valid,
                 false,
-                "SAVE",
+                crate::language_plugin::text("window.memories_voice.text_304_c210bf", "SAVE"),
                 Some(11.0),
                 crate::theme::GREEN(),
                 crate::theme::INK_ON_BRIGHT(),
             )
-            .on_hover_text("Keep the changes (Enter)")
+            .on_hover_text(crate::language_plugin::text("window.memories_voice.text_309_72fcf9", "Keep the changes (Enter)"))
             .clicked()
             {
                 commit = true;
@@ -355,15 +355,15 @@ fn memory_antenna_picker(ui: &mut egui::Ui, e: &mut MemoryEdit, antennas: &[Stri
         .selected_text(e.antenna.as_deref().unwrap_or("—"))
         .show_styled(ui, |ui| {
             ui.selectable_value(&mut e.antenna, None, "—")
-                .on_hover_text("Recall this channel without moving the antenna");
+                .on_hover_text(crate::language_plugin::text("window.memories_voice.text_358_0cf201", "Recall this channel without moving the antenna"));
             for a in antennas {
                 ui.selectable_value(&mut e.antenna, Some(a.clone()), a);
             }
         })
         .response
         .on_hover_text(
-            "The antenna to switch to when this channel is recalled. — leaves whatever the \
-             radio is already on.",
+            crate::language_plugin::text("window.memories_voice.text_365_7b250d", "The antenna to switch to when this channel is recalled. — leaves whatever the \
+             radio is already on."),
         );
 }
 
@@ -382,9 +382,9 @@ fn memory_antenna_picker(ui: &mut egui::Ui, e: &mut MemoryEdit, antennas: &[Stri
 fn memory_repeater_rows(ui: &mut egui::Ui, e: &mut MemoryEdit) {
     let r = e.repeater.get_or_insert_with(RepeaterState::default);
     ui.horizontal_wrapped(|ui| {
-        ui.label(RichText::new("Shift").weak().size(11.0));
+        ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_385_2e544a", "Shift")).weak().size(11.0));
         for s in Shift::ALL {
-            if crate::chrome::chip(ui, r.shift == s, RichText::new(s.label()).size(11.0)).clicked()
+            if crate::chrome::chip(ui, r.shift == s, RichText::new(crate::language_plugin::repeater_shift_label(s)).size(11.0)).clicked()
             {
                 r.shift = s;
             }
@@ -404,9 +404,9 @@ fn memory_repeater_rows(ui: &mut egui::Ui, e: &mut MemoryEdit) {
         }
     });
     ui.horizontal_wrapped(|ui| {
-        ui.label(RichText::new("Tone").weak().size(11.0));
+        ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_407_c2c8b7", "Tone")).weak().size(11.0));
         for m in ToneMode::ALL {
-            if crate::chrome::chip(ui, r.tone == m, RichText::new(m.label()).size(11.0)).clicked() {
+            if crate::chrome::chip(ui, r.tone == m, RichText::new(crate::language_plugin::repeater_tone_mode_label(m)).size(11.0)).clicked() {
                 r.tone = m;
             }
         }
@@ -438,9 +438,9 @@ fn memory_repeater_rows(ui: &mut egui::Ui, e: &mut MemoryEdit) {
                 if crate::chrome::chip(
                     ui,
                     r.dcs_invert,
-                    RichText::new(if r.dcs_invert { "INVERT" } else { "NORMAL" }).size(11.0),
+                    RichText::new(if r.dcs_invert { crate::language_plugin::text("window.memories_voice.text_441_9a2b24", "INVERT") } else { crate::language_plugin::text("window.memories_voice.text_441_db2cb3", "NORMAL") }).size(11.0),
                 )
-                .on_hover_text("DCS polarity")
+                .on_hover_text(crate::language_plugin::text("window.memories_voice.text_443_4906e3", "DCS polarity"))
                 .clicked()
                 {
                     r.dcs_invert = !r.dcs_invert;
@@ -450,7 +450,7 @@ fn memory_repeater_rows(ui: &mut egui::Ui, e: &mut MemoryEdit) {
     });
     ui.horizontal_wrapped(|ui| {
         if crate::chrome::chip(ui, r.burst_auto, RichText::new("1750 Hz").size(11.0))
-            .on_hover_text("Open every over on the tone burst while this channel is recalled")
+            .on_hover_text(crate::language_plugin::text("window.memories_voice.text_453_74a800", "Open every over on the tone burst while this channel is recalled"))
             .clicked()
         {
             r.burst_auto = !r.burst_auto;
@@ -472,7 +472,7 @@ fn memory_repeater_rows(ui: &mut egui::Ui, e: &mut MemoryEdit) {
 impl SdroxideApp {
     pub(in crate::app) fn memories_window(&mut self, ctx: &egui::Context, cmds: &mut Vec<Command>) {
         let mut open = self.show_memories;
-        let resp = egui::Window::new("Memories")
+        let resp = egui::Window::new(crate::language_plugin::text("window.memories_voice.text_475_e7218b", "Memories")).id(egui::Id::new("Memories"))
             .id(crate::layout::salted_id(ctx, "Memories"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -510,11 +510,11 @@ impl SdroxideApp {
             crate::chrome::field(
                 ui,
                 egui::TextEdit::singleline(&mut self.mem_name)
-                    .hint_text("memory name")
+                    .hint_text(crate::language_plugin::text("window.memories_voice.text_513_57a806", "memory name"))
                     .desired_width(ui.available_width() - 100.0),
             );
             let name_ok = !self.mem_name.trim().is_empty();
-            if ui.add_enabled(name_ok, egui::Button::new("Store")).clicked() {
+            if ui.add_enabled(name_ok, egui::Button::new(crate::language_plugin::text("window.memories_voice.text_517_ee7da9", "Store"))).clicked() {
                 cmds.push(Command::StoreMemory { name: self.mem_name.trim().to_string() });
                 self.mem_name.clear();
             }
@@ -523,11 +523,11 @@ impl SdroxideApp {
             crate::chrome::field(
                 ui,
                 egui::TextEdit::singleline(&mut self.mem_folder_name)
-                    .hint_text("folder name")
+                    .hint_text(crate::language_plugin::text("window.memories_voice.text_526_979445", "folder name"))
                     .desired_width(ui.available_width() - 100.0),
             );
             let name_ok = !self.mem_folder_name.trim().is_empty();
-            if ui.add_enabled(name_ok, egui::Button::new("New folder")).clicked() {
+            if ui.add_enabled(name_ok, egui::Button::new(crate::language_plugin::text("window.memories_voice.text_530_cf28f4", "New folder"))).clicked() {
                 cmds.push(Command::CreateMemoryFolder {
                     name: self.mem_folder_name.trim().to_string(),
                 });
@@ -540,15 +540,15 @@ impl SdroxideApp {
         // operator who wants their local machines in here already has the file
         // (issue #234).
         ui.horizontal(|ui| {
-            if crate::chrome::chip(ui, false, "IMPORT")
+            if crate::chrome::chip(ui, false, crate::language_plugin::text("window.memories_voice.text_543_40bc49", "IMPORT"))
                 .on_hover_text(
-                    "Read a channel list from a CHIRP CSV file (.csv) — a repeater \
+                    crate::language_plugin::text("window.memories_voice.text_545_5e177c", "Read a channel list from a CHIRP CSV file (.csv) — a repeater \
                      directory export, a marine or PMR channel table, or anything \
                      else CHIRP can write.\n\n\
                      Each channel brings its frequency, mode, repeater shift and \
                      CTCSS or DCS tone with it. Channels already on this list — same \
                      frequency, same mode — are skipped, so re-importing an updated \
-                     directory adds what is new rather than doubling what is not.",
+                     directory adds what is new rather than doubling what is not."),
                 )
                 .clicked()
             {
@@ -556,10 +556,10 @@ impl SdroxideApp {
             }
             let have = !self.memories.is_empty();
             ui.add_enabled_ui(have, |ui| {
-                if crate::chrome::chip(ui, false, "EXPORT")
+                if crate::chrome::chip(ui, false, crate::language_plugin::text("window.memories_voice.text_559_6938f8", "EXPORT"))
                     .on_hover_text(
-                        "Write this list out as a CHIRP CSV file, to load into a \
-                         handheld or to keep as a backup.",
+                        crate::language_plugin::text("window.memories_voice.text_561_6742ef", "Write this list out as a CHIRP CSV file, to load into a \
+                         handheld or to keep as a backup."),
                     )
                     .clicked()
                 {
@@ -568,7 +568,7 @@ impl SdroxideApp {
                 }
             });
             ui.label(
-                RichText::new(format!("{} channel", self.memories.len()))
+                RichText::new({ let __lp_arg_0 = &(self.memories.len()); crate::language_plugin::format("window.memories_voice.text_571_40aab4", "{} channel", &[format!("{}", __lp_arg_0)]) })
                     .size(11.0)
                     .color(crate::theme::gray(150)),
             );
@@ -576,10 +576,10 @@ impl SdroxideApp {
         self.memory_sort_bar(ui);
         ui.separator();
         if self.memories.is_empty() && self.mem_folders.is_empty() {
-            ui.label(RichText::new("no memories yet").color(crate::theme::gray(120)));
+            ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_579_2e660b", "no memories yet")).color(crate::theme::gray(120)));
         } else if !self.mem_folders.is_empty() {
             ui.label(
-                RichText::new("drag a memory onto a folder to file it, below them to unfile it")
+                RichText::new(crate::language_plugin::text("window.memories_voice.text_582_fee691", "drag a memory onto a folder to file it, below them to unfile it"))
                     .weak()
                     .size(11.0),
             );
@@ -652,7 +652,7 @@ impl SdroxideApp {
                     }
                 }
                 if !any && egui::DragAndDrop::has_payload_of_type::<DraggedMemory>(ui.ctx()) {
-                    ui.label(RichText::new("drop here to unfile").weak().size(11.0));
+                    ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_655_3ead87", "drop here to unfile")).weak().size(11.0));
                 }
             });
             if let Some(id) = dropped
@@ -676,14 +676,14 @@ impl SdroxideApp {
             (self.ui_settings.memory_sort, self.ui_settings.memory_sort_desc);
         let (mut sort, mut desc) = (was_sort, was_desc);
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("Sort").weak().size(11.0));
+            ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_679_bec690", "Sort")).weak().size(11.0));
             for s in MemorySort::ALL {
                 if crate::chrome::chip(ui, sort == s, RichText::new(s.label()).size(11.0))
                     .on_hover_text(match s {
-                        MemorySort::Stored => "In the order they were stored",
-                        MemorySort::Name => "By name, ignoring case",
-                        MemorySort::Freq => "By frequency",
-                        MemorySort::Band => "By band, then by frequency inside each",
+                        MemorySort::Stored => crate::language_plugin::text("window.memories_voice.text_683_daed1e", "In the order they were stored"),
+                        MemorySort::Name => crate::language_plugin::text("window.memories_voice.text_684_5b941a", "By name, ignoring case"),
+                        MemorySort::Freq => crate::language_plugin::text("window.memories_voice.text_685_60cb1e", "By frequency"),
+                        MemorySort::Band => crate::language_plugin::text("window.memories_voice.text_686_abae5e", "By band, then by frequency inside each"),
                     })
                     .clicked()
                 {
@@ -696,9 +696,9 @@ impl SdroxideApp {
                 RichText::new(if desc { "▼" } else { "▲" }).size(11.0),
             )
             .on_hover_text(if desc {
-                "Descending — click for ascending"
+                crate::language_plugin::text("window.memories_voice.text_699_423f57", "Descending — click for ascending")
             } else {
-                "Ascending — click for descending"
+                crate::language_plugin::text("window.memories_voice.text_701_4cd65e", "Ascending — click for descending")
             })
             .clicked()
             {
@@ -761,17 +761,17 @@ impl SdroxideApp {
                         if crate::chrome::chip_accent(
                             ui,
                             false,
-                            RichText::new("DEL").size(11.0),
+                            RichText::new(crate::language_plugin::text("window.memories_voice.text_764_9b8949", "DEL")).size(11.0),
                             crate::theme::PINK(),
                             Color32::WHITE,
                         )
-                        .on_hover_text("Delete folder — its memories move to the top level")
+                        .on_hover_text(crate::language_plugin::text("window.memories_voice.text_768_8510ff", "Delete folder — its memories move to the top level"))
                         .clicked()
                         {
                             cmds.push(Command::DeleteMemoryFolder(f.id));
                         }
-                        if crate::chrome::chip(ui, false, RichText::new("REN").size(11.0))
-                            .on_hover_text("Rename folder")
+                        if crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("window.memories_voice.text_773_509123", "REN")).size(11.0))
+                            .on_hover_text(crate::language_plugin::text("window.memories_voice.text_774_7249f1", "Rename folder"))
                             .clicked()
                         {
                             self.mem_folder_edit = Some((f.id, f.name.clone()));
@@ -781,7 +781,7 @@ impl SdroxideApp {
                 })
                 .body(|ui| {
                     if count == 0 {
-                        ui.label(RichText::new("empty — drop memories here").weak().size(11.0));
+                        ui.label(RichText::new(crate::language_plugin::text("window.memories_voice.text_784_a6d230", "empty — drop memories here")).weak().size(11.0));
                     }
                     for &i in order {
                         let m = &self.memories[i];
@@ -829,7 +829,7 @@ impl SdroxideApp {
         let tuning = self.state.tx.tune;
         let slots: Vec<sdroxide_types::VoiceSlotInfo> = self.voice.slots.clone();
 
-        let resp = egui::Window::new("Voice keyer")
+        let resp = egui::Window::new(crate::language_plugin::text("window.memories_voice.text_832_e1b161", "Voice keyer")).id(egui::Id::new("Voice keyer"))
             .id(crate::layout::salted_id(ctx, "Voice keyer"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -849,9 +849,9 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.label(
                     RichText::new(
-                        "REC records from your microphone, PLAY lets you listen to what you \
+                        crate::language_plugin::text("window.memories_voice.text_852_82c09f", "REC records from your microphone, PLAY lets you listen to what you \
                          recorded, TX puts it on the air — as does a numpad key, a MIDI pad, \
-                         or rigctld's send_voice_mem.",
+                         or rigctld's send_voice_mem."),
                     )
                     .weak()
                     .size(11.5),
@@ -887,7 +887,7 @@ impl SdroxideApp {
                                 ui,
                                 [190.0, 20.0],
                                 egui::TextEdit::singleline(&mut text)
-                                    .hint_text(format!("Slot {}", i + 1)),
+                                    .hint_text({ let __lp_arg_0 = &(i + 1); crate::language_plugin::format("window.memories_voice.text_890_6a1734", "Slot {}", &[format!("{}", __lp_arg_0)]) }),
                             );
                             if edit.changed() {
                                 self.voice_name_edit = Some((i, text.clone()));
@@ -911,16 +911,16 @@ impl SdroxideApp {
                                     crate::chrome::chip_accent(
                                         ui,
                                         is_rec,
-                                        RichText::new("REC").size(11.5),
+                                        RichText::new(crate::language_plugin::text("window.memories_voice.text_914_50a45e", "REC")).size(11.5),
                                         crate::theme::ALERT(),
                                         Color32::WHITE,
                                     )
                                 })
                                 .inner
                                 .on_hover_text(if is_rec {
-                                    "Stop and store".to_string()
+                                    crate::language_plugin::text("window.memories_voice.text_921_2175c4", "Stop and store").to_string()
                                 } else {
-                                    format!("Record from the microphone (up to {max_len:.0} s)")
+                                    crate::language_plugin::format("window.memories_voice.text_923_b60152", "Record from the microphone (up to {max_len:.0} s)", &[format!("{max_len:.0}")])
                                 });
                             if rec.clicked() {
                                 cmds.push(Command::VoiceRecord(if is_rec {
@@ -943,19 +943,19 @@ impl SdroxideApp {
                                     crate::chrome::chip(
                                         ui,
                                         is_prev,
-                                        RichText::new(if is_prev { "STOP" } else { "PLAY" })
+                                        RichText::new(if is_prev { crate::language_plugin::text("window.memories_voice.text_946_04dedf", "STOP") } else { crate::language_plugin::text("window.memories_voice.text_946_f53a7a", "PLAY") })
                                             .size(11.5),
                                     )
                                 })
                                 .inner
                                 .on_hover_text(if is_prev {
-                                    "Stop listening"
+                                    crate::language_plugin::text("window.memories_voice.text_952_94fa9b", "Stop listening")
                                 } else if slot.is_empty() {
-                                    "Nothing recorded in this slot"
+                                    crate::language_plugin::text("window.memories_voice.text_954_b6a2ed", "Nothing recorded in this slot")
                                 } else if self.state.tx.ptt || tuning {
-                                    "Not while transmitting"
+                                    crate::language_plugin::text("window.memories_voice.text_956_47d972", "Not while transmitting")
                                 } else {
-                                    "Listen to this message — nothing is transmitted"
+                                    crate::language_plugin::text("window.memories_voice.text_958_ea082d", "Listen to this message — nothing is transmitted")
                                 });
                             if prev.clicked() {
                                 cmds.push(if is_prev {
@@ -975,7 +975,7 @@ impl SdroxideApp {
                                     crate::chrome::chip_accent(
                                         ui,
                                         is_play,
-                                        RichText::new(if is_play { "STOP" } else { "TX" })
+                                        RichText::new(if is_play { crate::language_plugin::text("window.memories_voice.text_978_04dedf", "STOP") } else { crate::language_plugin::text("window.memories_voice.text_978_536939", "TX") })
                                             .size(11.5),
                                         crate::theme::ALERT(),
                                         Color32::WHITE,
@@ -983,13 +983,13 @@ impl SdroxideApp {
                                 })
                                 .inner
                                 .on_hover_text(if is_play {
-                                    "Stop transmitting"
+                                    crate::language_plugin::text("window.memories_voice.text_986_ea07b0", "Stop transmitting")
                                 } else if slot.is_empty() {
-                                    "Nothing recorded in this slot"
+                                    crate::language_plugin::text("window.memories_voice.text_988_b6a2ed", "Nothing recorded in this slot")
                                 } else if tuning {
-                                    "TUNE is active — switch it off first"
+                                    crate::language_plugin::text("window.memories_voice.text_990_fceed8", "TUNE is active — switch it off first")
                                 } else {
-                                    "Transmit this message"
+                                    crate::language_plugin::text("window.memories_voice.text_992_4828aa", "Transmit this message")
                                 });
                             if play.clicked() {
                                 cmds.push(if is_play {
@@ -1032,13 +1032,13 @@ impl SdroxideApp {
                                         crate::chrome::chip_accent(
                                             ui,
                                             false,
-                                            RichText::new("DEL").size(11.0),
+                                            RichText::new(crate::language_plugin::text("window.memories_voice.text_1035_9b8949", "DEL")).size(11.0),
                                             crate::theme::PINK(),
                                             Color32::WHITE,
                                         )
                                     })
                                     .inner
-                                    .on_hover_text("Erase this recording")
+                                    .on_hover_text(crate::language_plugin::text("window.memories_voice.text_1041_38d4f3", "Erase this recording"))
                                     .clicked()
                                 {
                                     cmds.push(Command::VoiceClear(i as u8));
@@ -1052,8 +1052,8 @@ impl SdroxideApp {
                     ui.add_space(4.0);
                     ui.label(
                         RichText::new(
-                            "RADE: the message is encoded by the digital-voice codec, \
-                             exactly as a live over would be.",
+                            crate::language_plugin::text("window.memories_voice.text_1055_128796", "RADE: the message is encoded by the digital-voice codec, \
+                             exactly as a live over would be."),
                         )
                         .weak()
                         .size(11.0),

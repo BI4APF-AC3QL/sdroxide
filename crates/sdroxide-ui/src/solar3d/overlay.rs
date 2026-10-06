@@ -206,21 +206,21 @@ fn menu_bar(
             ui.set_max_width(width);
             ui.spacing_mut().item_spacing = egui::vec2(6.0, 6.0);
             ui.horizontal_wrapped(|ui| {
-                let btn = chrome::chip(ui, st.view.auto, "VIEW")
-                    .on_hover_text("Which body the camera orbits, and the animated tour");
+                let btn = chrome::chip(ui, st.view.auto, crate::language_plugin::text("solar.overlay.text_209_28baeb", "VIEW"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_210_f5a1f7", "Which body the camera orbits, and the animated tour"));
                 menu(ui, st, M_VIEW, btn, view_controls);
 
-                let btn = chrome::chip(ui, false, "LAYERS")
-                    .on_hover_text("What is drawn: orbits, clouds, CMEs, labels, QSOs, aurora");
+                let btn = chrome::chip(ui, false, crate::language_plugin::text("solar.overlay.text_213_394772", "LAYERS"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_214_417ae4", "What is drawn: orbits, clouds, CMEs, labels, QSOs, aurora"));
                 menu(ui, st, M_LAYERS, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Layers");
+                    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_216_0bcd66", "Layers"));
                     layer_controls(ui, st);
                 });
 
-                let btn = chrome::chip(ui, false, "SUN")
-                    .on_hover_text("Which SDO channel wraps the Sun, and how old it is");
+                let btn = chrome::chip(ui, false, crate::language_plugin::text("solar.overlay.text_220_d44fa9", "SUN"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_221_e53e11", "Which SDO channel wraps the Sun, and how old it is"));
                 menu(ui, st, M_SUN, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Sun");
+                    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_223_db18f1", "Sun"));
                     sun_controls(ui, st, data, now);
                 });
 
@@ -228,17 +228,17 @@ fn menu_bar(
                 // wider they are already on screen, and a chip that opens a
                 // copy of what is beside it is a chip that does nothing.
                 if phone {
-                    let btn = chrome::chip(ui, false, "WEATHER").on_hover_text(
-                        "The aurora, the propagation numbers and which bands are open",
+                    let btn = chrome::chip(ui, false, crate::language_plugin::text("solar.overlay.text_231_0a2441", "WEATHER")).on_hover_text(
+                        crate::language_plugin::text("solar.overlay.text_232_0e1a02", "The aurora, the propagation numbers and which bands are open"),
                     );
                     menu(ui, st, M_WEATHER, btn, |ui, st| {
-                        chrome::menu_caption(ui, "Space weather");
+                        chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_235_47d32b", "Space weather"));
                         let aurora = aurora_panel(ui, st, data, Place::Inline, sim_now).is_some();
                         let prop = weather_panel(ui, st, data, Place::Inline, sim_now).is_some();
                         let bands = bands_panel(ui, st, Place::Inline).is_some();
                         if !aurora && !prop && !bands {
                             ui.label(
-                                RichText::new("nothing measured yet")
+                                RichText::new(crate::language_plugin::text("solar.overlay.text_241_5f4e5b", "nothing measured yet"))
                                     .color(theme::CYAN_DIM())
                                     .size(10.5),
                             );
@@ -246,32 +246,32 @@ fn menu_bar(
                     });
                 }
 
-                let btn = chrome::chip(ui, false, "SCALE")
-                    .on_hover_text("Body and Moon-orbit exaggeration");
+                let btn = chrome::chip(ui, false, crate::language_plugin::text("solar.overlay.text_249_ea4bee", "SCALE"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_250_d536ff", "Body and Moon-orbit exaggeration"));
                 menu(ui, st, M_SCALE, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Scale");
+                    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_252_f10298", "Scale"));
                     scale_controls(ui, st);
                 });
 
-                let btn = chrome::chip(ui, st.sim_offset_s != 0.0, "TIME")
-                    .on_hover_text("Scrub the whole scene forward and back");
+                let btn = chrome::chip(ui, st.sim_offset_s != 0.0, crate::language_plugin::text("solar.overlay.text_256_588867", "TIME"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_257_f4c503", "Scrub the whole scene forward and back"));
                 menu(ui, st, M_TIME, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Time");
+                    chrome::menu_caption(ui, crate::language_plugin::text("common.time", "Time"));
                     time_controls(ui, st);
                 });
 
-                let btn = chrome::chip(ui, st.lapse_playing, "ACTIVITY")
-                    .on_hover_text("Replay the last hour of decodes on the globe");
+                let btn = chrome::chip(ui, st.lapse_playing, crate::language_plugin::text("solar.overlay.text_263_2d0cb0", "ACTIVITY"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_264_2142cc", "Replay the last hour of decodes on the globe"));
                 menu(ui, st, M_ACTIVITY, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Activity");
+                    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_266_38da15", "Activity"));
                     activity_controls(ui, st);
                 });
 
                 let on = st.layer(layer::PROPAGATION);
-                let btn = chrome::chip(ui, on, "PROP")
-                    .on_hover_text("What the propagation heat map is showing");
+                let btn = chrome::chip(ui, on, crate::language_plugin::text("solar.overlay.text_271_8ccd1e", "PROP"))
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_272_00c783", "What the propagation heat map is showing"));
                 menu(ui, st, M_PROP, btn, |ui, st| {
-                    chrome::menu_caption(ui, "Propagation");
+                    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_274_70723a", "Propagation"));
                     prop_controls(ui, st);
                 });
             });
@@ -283,10 +283,10 @@ fn menu_bar(
 /// laid out the way the system is — the Sun and the Earth–Moon pair first, then
 /// one row per planet with its own moons beside it.
 fn view_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
-    chrome::menu_caption(ui, "View");
-    if chrome::chip_accent(ui, st.view.auto, "▶ AUTO", theme::CYAN(), theme::INK_ON_CYAN())
+    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_286_dcc839", "View"));
+    if chrome::chip_accent(ui, st.view.auto, crate::language_plugin::text("solar.overlay.text_287_5d3afe", "▶ AUTO"), theme::CYAN(), theme::INK_ON_CYAN())
         .on_hover_text(
-            "Fly a spline through a set of framed viewpoints. Any mouse input cancels it.",
+            crate::language_plugin::text("solar.overlay.text_289_286f2d", "Fly a spline through a set of framed viewpoints. Any mouse input cancels it."),
         )
         .clicked()
     {
@@ -298,15 +298,15 @@ fn view_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
 
     let mut chosen = None;
     for (caption, targets) in Focus::groups() {
-        chrome::menu_caption(ui, caption);
+        chrome::menu_caption(ui, crate::language_plugin::solar_group(caption));
         ui.horizontal_wrapped(|ui| {
             for f in targets {
                 // Moons are dimmer, so a row reads as "this planet, and the
                 // things that go round it".
                 let text = if f.is_satellite() {
-                    RichText::new(f.short()).size(11.5).color(theme::CYAN_DIM())
+                    RichText::new(crate::language_plugin::solar_name(f.short())).size(11.5).color(theme::CYAN_DIM())
                 } else {
-                    RichText::new(f.short()).size(13.0)
+                    RichText::new(crate::language_plugin::solar_name(f.short())).size(13.0)
                 };
                 if chrome::chip(ui, st.focus() == f, text).clicked() {
                     chosen = Some(f);
@@ -317,9 +317,9 @@ fn view_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
     ui.add_space(2.0);
     ui.label(
         RichText::new(
-            "Moons ride circular orbits fitted to JPL Horizons: within a degree or two \
+            crate::language_plugin::text("solar.overlay.text_320_020ffe", "Moons ride circular orbits fitted to JPL Horizons: within a degree or two \
              of where they really are, and up to six for Miranda, whose orbit plane \
-             swings too fast for a circle to follow.",
+             swings too fast for a circle to follow."),
         )
         .color(theme::LINE_LIT())
         .size(10.0),
@@ -341,7 +341,7 @@ fn layer_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
             // `layer` is already "any of these bits", so a chip standing for a
             // pair lights when either half is on and clears both when clicked.
             let on = st.layer(bit);
-            if chrome::chip(ui, on, label).on_hover_text(hint).clicked() {
+            if chrome::chip(ui, on, crate::language_plugin::scope_text("solar.overlay.layers.", label)).on_hover_text(crate::language_plugin::scope_text("solar.overlay.layers.", hint)).clicked() {
                 st.set_layers(bit, !on);
                 // Propagation and awards both wash the entire planet, and two
                 // washes at once is neither. Switching one on stands the other
@@ -361,17 +361,17 @@ fn sun_controls(ui: &mut egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, n
     ui.horizontal_wrapped(|ui| {
         let current = SdoChannel::from_u8(st.view.channel);
         for c in SdoChannel::ALL {
-            if chrome::chip(ui, current == c, c.label()).on_hover_text(c.description()).clicked() {
+            if chrome::chip(ui, current == c, crate::language_plugin::scope_text("display.solar.channel.", c.label())).on_hover_text(crate::language_plugin::scope_text("display.solar.channel.", c.description())).clicked() {
                 st.view.channel = c.to_u8();
             }
         }
-        if chrome::chip(ui, false, "↻").on_hover_text("Fetch everything again now").clicked() {
+        if chrome::chip(ui, false, "↻").on_hover_text(crate::language_plugin::text("solar.overlay.text_368_c61c12", "Fetch everything again now")).clicked() {
             st.refresh_requested = true;
         }
-        if chrome::chip(ui, st.view.all_satellites, "ALL SATS")
+        if chrome::chip(ui, st.view.all_satellites, crate::language_plugin::text("solar.overlay.text_371_ce9fc9", "ALL SATS"))
             .on_hover_text(
-                "Show every satellite in the element set, not just the popular ones. \
-                 Orbit rings stay on the curated few — ninety at once is unreadable.",
+                crate::language_plugin::text("solar.overlay.text_373_347545", "Show every satellite in the element set, not just the popular ones. \
+                 Orbit rings stay on the curated few — ninety at once is unreadable."),
             )
             .clicked()
         {
@@ -381,15 +381,15 @@ fn sun_controls(ui: &mut egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, n
         // Say what is actually being shown. Presenting hours-old cached data as
         // if it were current is the one thing this readout must not do.
         let (text, color) = match data {
-            None => ("starting…".to_string(), theme::CYAN_DIM()),
+            None => (crate::language_plugin::text("solar.overlay.dynamic.text_384_407944", "starting…").to_string(), theme::CYAN_DIM()),
             Some(d) => {
                 let s = d.status(Source::Sun);
                 match (s.age_secs(now), &s.last_error) {
-                    (Some(age), None) => (timefmt::age(age), theme::GREEN()),
+                    (Some(age), None) => (crate::language_plugin::solar_age(age), theme::GREEN()),
                     (Some(age), Some(_)) => {
-                        (format!("{} · offline", timefmt::age(age)), theme::YELLOW())
+                        ({ let __lp_arg_0 = &(crate::language_plugin::solar_age(age)); crate::language_plugin::format("solar.overlay.dynamic.text_390_b79dde", "{} · offline", &[format!("{}", __lp_arg_0)]) }, theme::YELLOW())
                     }
-                    (None, Some(_)) => ("offline".to_string(), theme::ALERT()),
+                    (None, Some(_)) => (crate::language_plugin::text("solar.overlay.dynamic.text_392_8e2c7a", "offline").to_string(), theme::ALERT()),
                     (None, None) => ("…".to_string(), theme::CYAN_DIM()),
                 }
             }
@@ -412,30 +412,28 @@ fn scale_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
             egui::DragValue::new(&mut st.view.body_scale)
                 .speed(0.25)
                 .range(1.0..=max_body as f64)
-                .prefix("body ")
+                .prefix(crate::language_plugin::text("solar.overlay.text_415_20d164", "body "))
                 .suffix("×"),
         )
-        .on_hover_text(format!(
-            "Earth/Moon radius exaggeration (max {max_body:.0}× at this moon-orbit scale)"
-        ));
+        .on_hover_text(crate::language_plugin::format("solar.overlay.text_419_55b0c8", "Earth/Moon radius exaggeration (max {max_body:.0}× at this moon-orbit scale)", &[format!("{max_body:.0}")]));
         ui.add(
             egui::DragValue::new(&mut st.view.moon_orbit_scale)
                 .speed(0.1)
                 .range(1.0..=30.0)
-                .prefix("moon orbit ")
+                .prefix(crate::language_plugin::text("solar.overlay.text_425_f524bb", "moon orbit "))
                 .suffix("×"),
         )
-        .on_hover_text("Stretch the Earth→Moon distance so the pair can be seen apart");
+        .on_hover_text(crate::language_plugin::text("solar.overlay.text_428_699fd5", "Stretch the Earth→Moon distance so the pair can be seen apart"));
         ui.add(
             egui::DragValue::new(&mut st.view.sun_scale)
                 .speed(0.1)
                 .range(1.0..=20.0)
-                .prefix("sun ")
+                .prefix(crate::language_plugin::text("solar.overlay.text_433_7ee8bb", "sun "))
                 .suffix("×"),
         )
         .on_hover_text(
-            "Sun radius exaggeration. Leave at 1× to keep the CME geometry readable — \
-             a swollen Sun swallows the base of every cone.",
+            crate::language_plugin::text("solar.overlay.text_437_e5dd3d", "Sun radius exaggeration. Leave at 1× to keep the CME geometry readable — \
+             a swollen Sun swallows the base of every cone."),
         );
         st.view.body_scale = st.view.body_scale.clamp(1.0, max_body);
     });
@@ -460,16 +458,16 @@ fn time_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
     // "+1 mo" that sometimes moved 28 days and sometimes 31.
     const MONTH_S: f64 = 365.2425 / 12.0 * 86_400.0;
     ui.horizontal_wrapped(|ui| {
-        if chrome::chip(ui, st.sim_offset_s == 0.0, "NOW").clicked() {
+        if chrome::chip(ui, st.sim_offset_s == 0.0, crate::language_plugin::text("solar.overlay.text_463_97bfc0", "NOW")).clicked() {
             st.sim_offset_s = 0.0;
         }
         for (label, dt) in [
-            ("−1mo", -MONTH_S),
-            ("−24h", -86400.0),
-            ("−1h", -3600.0),
-            ("+1h", 3600.0),
-            ("+24h", 86400.0),
-            ("+1mo", MONTH_S),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_467_121c53", "−1mo"), -MONTH_S),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_468_2910b1", "−24h"), -86400.0),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_469_b8fe56", "−1h"), -3600.0),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_470_4e9e1f", "+1h"), 3600.0),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_471_679385", "+24h"), 86400.0),
+            (crate::language_plugin::text("solar.overlay.dynamic.text_472_4551a6", "+1mo"), MONTH_S),
         ] {
             if chrome::chip(ui, false, label).clicked() {
                 st.sim_offset_s += dt;
@@ -495,8 +493,8 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
 
     let on = st.layer(layer::PROPAGATION);
     ui.horizontal_wrapped(|ui| {
-        if chrome::chip_accent(ui, on, "SHOW", theme::CYAN(), theme::INK_ON_CYAN())
-            .on_hover_text("Paint the globe by what is getting through")
+        if chrome::chip_accent(ui, on, crate::language_plugin::text("solar.overlay.dynamic.text_498_45ea7f", "SHOW"), theme::CYAN(), theme::INK_ON_CYAN())
+            .on_hover_text(crate::language_plugin::text("solar.overlay.text_499_6acd98", "Paint the globe by what is getting through"))
             .clicked()
         {
             st.view.layers ^= layer::PROPAGATION;
@@ -510,10 +508,10 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
     if !on {
         ui.label(
             RichText::new(
-                "Paints the globe by what is getting through, on each band. Every reception \
+                crate::language_plugin::text("solar.overlay.text_513_8d03cb", "Paints the globe by what is getting through, on each band. Every reception \
                  is placed at the midpoint of its path — where the ionosphere did the work — \
                  rather than at the far station. Built from what this station hears, plus \
-                 the world's skimmers when the Reverse Beacon Network is switched on.",
+                 the world's skimmers when the Reverse Beacon Network is switched on."),
             )
             .size(10.5)
             .weak(),
@@ -521,20 +519,20 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
         return;
     }
 
-    chrome::menu_caption(ui, "Display");
+    chrome::menu_caption(ui, crate::language_plugin::text("settings.ui.display", "Display"));
     ui.horizontal_wrapped(|ui| {
         let combined = st.view.prop_mode != 0;
-        if chrome::chip(ui, combined, "ALL BANDS")
+        if chrome::chip(ui, combined, crate::language_plugin::text("solar.overlay.text_527_1eb5e7", "ALL BANDS"))
             .on_hover_text(
-                "Every band at once, one hue each, mixing where two overlap. The view for \
-                 'what are conditions like' rather than 'is twenty open'.",
+                crate::language_plugin::text("solar.overlay.text_529_72a34e", "Every band at once, one hue each, mixing where two overlap. The view for \
+                 'what are conditions like' rather than 'is twenty open'."),
             )
             .clicked()
         {
             st.view.prop_mode = 1;
         }
-        if chrome::chip(ui, !combined, "ONE BAND")
-            .on_hover_text("One band, cold to hot: blue, green, yellow, red.")
+        if chrome::chip(ui, !combined, crate::language_plugin::text("solar.overlay.text_536_e3ea18", "ONE BAND"))
+            .on_hover_text(crate::language_plugin::text("solar.overlay.text_537_c3f4ed", "One band, cold to hot: blue, green, yellow, red."))
             .clicked()
         {
             st.view.prop_mode = 0;
@@ -543,10 +541,10 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
 
     let live = st.prop.live_bands();
     if st.view.prop_mode == 0 {
-        chrome::menu_caption(ui, "Band");
+        chrome::menu_caption(ui, crate::language_plugin::text("common.band", "Band"));
         ui.horizontal_wrapped(|ui| {
             if live.is_empty() {
-                ui.label(RichText::new("nothing heard yet").size(10.5).weak());
+                ui.label(RichText::new(crate::language_plugin::text("solar.overlay.text_549_63ee8f", "nothing heard yet")).size(10.5).weak());
             }
             for b in &live {
                 let i = sdroxide_types::Band::ALL.iter().position(|x| x == b).unwrap_or(0) as u8;
@@ -565,10 +563,10 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
     } else {
         // The legend, and the only place the colours are named. Only bands with
         // something in them: a key full of dead bands is a key to nothing.
-        chrome::menu_caption(ui, "Bands");
+        chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_568_bf5f54", "Bands"));
         ui.horizontal_wrapped(|ui| {
             if live.is_empty() {
-                ui.label(RichText::new("nothing heard yet").size(10.5).weak());
+                ui.label(RichText::new(crate::language_plugin::text("solar.overlay.text_571_63ee8f", "nothing heard yet")).size(10.5).weak());
             }
             for b in &live {
                 let i = sdroxide_types::Band::ALL.iter().position(|x| x == b).unwrap_or(0) as u8;
@@ -587,31 +585,31 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
         });
     }
 
-    chrome::menu_caption(ui, "Sources");
+    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_590_caf85b", "Sources"));
     ui.horizontal_wrapped(|ui| {
         let mut src = crate::prop_map::PropSources(st.view.prop_sources);
         for s in sdroxide_types::PropSource::ALL {
             if chrome::chip(ui, src.has(s), s.label())
                 .on_hover_text(match s {
                     sdroxide_types::PropSource::Logged => {
-                        "Contacts in the logbook. A path that was open, with no signal report \
+                        crate::language_plugin::text("solar.overlay.text_597_3dac97", "Contacts in the logbook. A path that was open, with no signal report \
                          worth the name — an RST is not an SNR, so these count towards how busy \
-                         a cell is and never towards its margin."
+                         a cell is and never towards its margin.")
                     }
                     sdroxide_types::PropSource::WsprHeardUs => {
-                        "Stations that reported hearing this one, downloaded from WSPRnet. The \
-                         only feedback a transmitting beacon ever gets."
+                        crate::language_plugin::text("solar.overlay.text_602_3901a6", "Stations that reported hearing this one, downloaded from WSPRnet. The \
+                         only feedback a transmitting beacon ever gets.")
                     }
                     sdroxide_types::PropSource::Rbn => {
-                        "Reverse Beacon Network skimmers: what everyone else is hearing, on \
+                        crate::language_plugin::text("solar.overlay.text_606_f9a519", "Reverse Beacon Network skimmers: what everyone else is hearing, on \
                          every band, including the ones this radio is not on. Coarser than \
                          the rest — an RBN line carries no locators, so both ends are placed \
                          at their country's centre, which is close for a small country and \
-                         badly out for a large one. Switch on under Settings → Spots."
+                         badly out for a large one. Switch on under Settings → Spots.")
                     }
                     _ => {
-                        "Decodes this station made. Each is measured against its own mode's \
-                         floor, so a WSPR report and an FT4 one are comparable."
+                        crate::language_plugin::text("solar.overlay.text_613_6796c9", "Decodes this station made. Each is measured against its own mode's \
+                         floor, so a WSPR report and an FT4 one are comparable.")
                     }
                 })
                 .clicked()
@@ -622,19 +620,19 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
         }
     });
 
-    chrome::menu_caption(ui, "Memory");
+    chrome::menu_caption(ui, crate::language_plugin::text("solar.overlay.text_625_c3963a", "Memory"));
     ui.horizontal_wrapped(|ui| {
         ui.add(
             egui::DragValue::new(&mut st.view.prop_halflife_min)
                 .speed(1.0)
                 .range(5.0..=240.0)
-                .prefix("half-life ")
-                .suffix(" min"),
+                .prefix(crate::language_plugin::text("solar.overlay.text_631_c33175", "half-life "))
+                .suffix(crate::language_plugin::text("solar.overlay.dynamic.text_632_2e7573", " min")),
         )
         .on_hover_text(
-            "How long a reception takes to count for half as much. The ionosphere's own \
+            crate::language_plugin::text("solar.overlay.text_635_ca7006", "How long a reception takes to count for half as much. The ionosphere's own \
              memory is short — an opening two hours old should not be arguing with one \
-             from two minutes ago.",
+             from two minutes ago."),
         );
     });
     // The absolute scale behind the colours. Without it the same colour means
@@ -644,11 +642,7 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
         live.iter().filter_map(|b| st.prop.plane(*b)).map(|p| p.peak()).fold(0.0f32, f32::max);
     if peak > 0.0 {
         ui.label(
-            RichText::new(format!(
-                "brightest cell ≈ {peak:.0} paths · {} band{}",
-                live.len(),
-                if live.len() == 1 { "" } else { "s" }
-            ))
+            RichText::new({ let __lp_arg_0 = &(live.len()); let __lp_arg_1 = &(crate::language_plugin::plural_suffix("solar.overlay.text_648_b81794", "brightest cell ≈ {peak:.0} paths · {} band{}", live.len() == 1)); crate::language_plugin::format("solar.overlay.text_648_b81794", "brightest cell ≈ {peak:.0} paths · {} band{}", &[format!("{peak:.0}"), format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
             .size(10.5)
             .weak(),
         );
@@ -658,8 +652,8 @@ fn prop_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
 fn activity_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
     ui.horizontal_wrapped(|ui| {
         let hour = crate::digi_map::HISTORY_S as f64;
-        if chrome::chip(ui, st.lapse_live() && !st.lapse_playing, "LIVE")
-            .on_hover_text("Follow the band as it happens")
+        if chrome::chip(ui, st.lapse_live() && !st.lapse_playing, crate::language_plugin::text("solar.overlay.text_661_35e0d0", "LIVE"))
+            .on_hover_text(crate::language_plugin::text("solar.overlay.text_662_b241f4", "Follow the band as it happens"))
             .clicked()
         {
             st.lapse_playing = false;
@@ -668,11 +662,11 @@ fn activity_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
         if chrome::chip_accent(
             ui,
             st.lapse_playing,
-            if st.lapse_playing { "⏸ REPLAY" } else { "▶ REPLAY" },
+            if st.lapse_playing { crate::language_plugin::text("solar.overlay.text_671_c22e87", "⏸ REPLAY") } else { crate::language_plugin::text("solar.overlay.text_671_630126", "▶ REPLAY") },
             theme::CYAN(),
             theme::INK_ON_CYAN(),
         )
-        .on_hover_text("Replay the last hour of decodes, over and over")
+        .on_hover_text(crate::language_plugin::text("solar.overlay.text_675_8080d4", "Replay the last hour of decodes, over and over"))
         .clicked()
         {
             st.lapse_playing = !st.lapse_playing;
@@ -690,9 +684,9 @@ fn activity_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
             egui::DragValue::new(&mut back_min)
                 .speed(0.5)
                 .range(0.0..=(hour / 60.0))
-                .suffix(" min ago"),
+                .suffix(crate::language_plugin::text("solar.overlay.text_693_c5fad2", " min ago")),
         );
-        if resp.on_hover_text("Where in the last hour the globe is showing").changed() {
+        if resp.on_hover_text(crate::language_plugin::text("solar.overlay.text_695_2ef74c", "Where in the last hour the globe is showing")).changed() {
             st.set_lapse_back(back_min as f64 * 60.0);
             st.lapse_playing = false;
         }
@@ -702,29 +696,29 @@ fn activity_controls(ui: &mut egui::Ui, st: &mut SolarUi) {
             egui::DragValue::new(&mut st.view.lapse_trail_min)
                 .speed(0.25)
                 .range(0.5..=(hour / 60.0))
-                .prefix("trail ")
-                .suffix(" min"),
+                .prefix(crate::language_plugin::text("solar.overlay.text_705_59413e", "trail "))
+                .suffix(crate::language_plugin::text("solar.overlay.dynamic.text_706_2e7573", " min")),
         )
-        .on_hover_text("How long a decode's arc stays on the globe behind the head");
+        .on_hover_text(crate::language_plugin::text("solar.overlay.text_708_5fbc40", "How long a decode's arc stays on the globe behind the head"));
 
         ui.add(
             egui::DragValue::new(&mut st.view.lapse_speed)
                 .speed(1.0)
                 .range(1.0..=600.0)
-                .prefix("speed ")
+                .prefix(crate::language_plugin::text("solar.overlay.text_714_8bbd47", "speed "))
                 .suffix("×"),
         )
-        .on_hover_text("How much faster than real time the replay runs");
+        .on_hover_text(crate::language_plugin::text("solar.overlay.text_717_3d41e0", "How much faster than real time the replay runs"));
 
         let hits = st.digi.history.len();
         let (text, color) = if !st.layer(layer::QSO) {
-            ("QSO layer off".to_string(), theme::YELLOW())
+            (crate::language_plugin::text("solar.overlay.dynamic.text_721_b788c4", "QSO layer off").to_string(), theme::YELLOW())
         } else if hits == 0 {
-            ("no decodes yet".to_string(), theme::CYAN_DIM())
+            (crate::language_plugin::text("solar.overlay.dynamic.text_723_59b20c", "no decodes yet").to_string(), theme::CYAN_DIM())
         } else if st.lapse_live() {
-            (format!("{hits} in the hour"), theme::GREEN())
+            (crate::language_plugin::format("solar.overlay.dynamic.text_725_678daa", "{hits} in the hour", &[format!("{hits}")]), theme::GREEN())
         } else {
-            (format!("−{:.0} min", st.lapse_back_s / 60.0), theme::CYAN())
+            ({ let __lp_arg_0 = &(st.lapse_back_s / 60.0); crate::language_plugin::format("solar.overlay.dynamic.text_727_416f91", "−{:.0} min", &[format!("{:.0}", __lp_arg_0)]) }, theme::CYAN())
         };
         ui.label(RichText::new(text).color(color).size(10.5));
     });
@@ -872,7 +866,7 @@ fn scene(ui: &mut egui::Ui, st: &mut SolarUi, data: Option<&SolarData>) {
         ui.painter().text(
             rect.right_top() + egui::vec2(-12.0, 12.0),
             egui::Align2::RIGHT_TOP,
-            "QTH not set — enter your grid square in Settings",
+            crate::language_plugin::text("solar.overlay.dynamic.text_875_b49f98", "QTH not set — enter your grid square in Settings"),
             egui::FontId::proportional(12.5),
             theme::scope().warn,
         );
@@ -1070,7 +1064,7 @@ fn qso_card(
     }];
     // A fixed-width label column, which is what makes a monospace card line up
     // without laying out two galleys per row and measuring between them.
-    let mut row = |label: &str, value: String| {
+    let mut row = |label: String, value: String| {
         lines.push(CardLine {
             text: format!("{label:<5}{value}"),
             font: font.clone(),
@@ -1082,10 +1076,10 @@ fn qso_card(
         (m, "") => m.to_string(),
         (m, b) => format!("{m} · {b}"),
     };
-    row("MODE", mode);
+    row(crate::language_plugin::text("solar.overlay.dynamic.text_1085_ac6c84", "MODE"), mode);
     if let Some(km) = info.distance_km {
         row(
-            "PATH",
+            crate::language_plugin::text("solar.overlay.dynamic.text_1088_d4db71", "PATH"),
             match info.bearing_deg {
                 Some(b) => format!("{km:.0} km · {b:.0}°"),
                 None => format!("{km:.0} km"),
@@ -1093,25 +1087,25 @@ fn qso_card(
         );
     }
     if let Some(started) = info.started_utc {
-        row("TIME", elapsed_hms((crate::time::now_unix() - started).max(0)));
+        row(crate::language_plugin::text("solar.overlay.dynamic.text_1096_588867", "TIME"), elapsed_hms((crate::time::now_unix() - started).max(0)));
     }
     // The two halves of the exchange, and then the live number. `SENT` and
     // `RCVD` are what the contact settled on; `SIG` is what they are doing
     // right now, which keeps moving after the reports are agreed.
     if let Some(r) = info.rpt_sent {
-        row("SENT", format!("{r:+} dB"));
+        row(crate::language_plugin::text("solar.overlay.dynamic.text_1102_608dbf", "SENT"), format!("{r:+} dB"));
     }
     if let Some(r) = info.rpt_rcvd {
-        row("RCVD", format!("{r:+} dB"));
+        row(crate::language_plugin::text("solar.overlay.dynamic.text_1105_5d8ca2", "RCVD"), format!("{r:+} dB"));
     }
     if let Some(s) = info.snr_db {
-        row("SIG", format!("{s:+} dB"));
+        row(crate::language_plugin::text("solar.overlay.dynamic.text_1108_cc7109", "SIG"), format!("{s:+} dB"));
     }
     if let Some(g) = &info.grid {
-        row("GRID", g.clone());
+        row(crate::language_plugin::text("solar.overlay.dynamic.text_1111_e7404b", "GRID"), g.clone());
     }
     if let Some(e) = info.entity {
-        row("DXCC", e.to_string());
+        row("DXCC".to_owned(), crate::language_plugin::entity_name(e));
     }
 
     // Lay the whole card out at its finished size before typing a character of
@@ -1287,7 +1281,7 @@ fn pick_bodies(
     ui.painter().text(
         pos + egui::vec2(0.0, -r - 4.0),
         egui::Align2::CENTER_BOTTOM,
-        pick.focus.short(),
+        crate::language_plugin::solar_name(pick.focus.short()),
         egui::FontId::proportional(11.0),
         theme::CYAN(),
     );
@@ -1319,7 +1313,8 @@ fn reframe(st: &mut SolarUi, sim_now: f64) {
 /// crossing — so it is computed once per selection and refreshed only as it
 /// ages out, never per frame.
 fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_now: f64) {
-    use sdroxide_solar::{PassSearch, satellites::compass};
+    use sdroxide_solar::PassSearch;
+    use crate::language_plugin::compass;
 
     let Some(id) = st.selected_sat else { return };
     let Some(d) = data else { return };
@@ -1352,7 +1347,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
     let Some(cache) = &st.sat_passes else { return };
 
     let mut open = true;
-    egui::Window::new(format!("{}  ·  PASSES FROM {}", cache.name, st.qth_grid))
+    egui::Window::new({ let __lp_arg_0 = &(cache.name); let __lp_arg_1 = &(st.qth_grid); crate::language_plugin::format("solar.overlay.text_1355_8dfa71", "{}  ·  PASSES FROM {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
         .id(egui::Id::new("solar-passes"))
         .open(&mut open)
         .collapsible(false)
@@ -1362,10 +1357,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
         .show(ui.ctx(), |ui| {
             crate::chrome::window_body_bg(ui);
             ui.label(
-                RichText::new(format!(
-                    "elements {} old · SGP4",
-                    timefmt::age(sat.element_age_s(sim_now) as i64)
-                ))
+                RichText::new({ let __lp_arg_0 = &(crate::language_plugin::solar_age(sat.element_age_s(sim_now) as i64)); crate::language_plugin::format("solar.overlay.text_1366_e43ee3", "elements {} old · SGP4", &[format!("{}", __lp_arg_0)]) })
                 .color(theme::CYAN_DIM())
                 .size(10.0),
             );
@@ -1374,21 +1366,18 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
             match &cache.result {
                 PassSearch::AlwaysVisible { elevation, azimuth } => {
                     ui.label(
-                        RichText::new("Geostationary — always above your horizon.")
+                        RichText::new(crate::language_plugin::text("solar.overlay.text_1377_48668f", "Geostationary — always above your horizon."))
                             .color(theme::GREEN())
                             .size(12.5),
                     );
                     ui.label(
-                        RichText::new(format!(
-                            "Point at {azimuth:.0}° ({}), elevation {elevation:.0}°.",
-                            compass(*azimuth)
-                        ))
+                        RichText::new({ let __lp_arg_0 = &(compass(*azimuth)); crate::language_plugin::format("solar.overlay.text_1383_7c7a50", "Point at {azimuth:.0}° ({}), elevation {elevation:.0}°.", &[format!("{azimuth:.0}"), format!("{}", __lp_arg_0), format!("{elevation:.0}")]) })
                         .color(theme::TEXT()),
                     );
                 }
                 PassSearch::NeverVisible => {
                     ui.label(
-                        RichText::new("No passes in the next 48 hours from your QTH.")
+                        RichText::new(crate::language_plugin::text("solar.overlay.text_1391_85f622", "No passes in the next 48 hours from your QTH."))
                             .color(theme::YELLOW()),
                     );
                 }
@@ -1396,7 +1385,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                     egui::Grid::new("solar-pass-grid").num_columns(6).spacing([14.0, 3.0]).show(
                         ui,
                         |ui| {
-                            for h in ["START", "END", "DUR", "AOS", "LOS", "MAX EL"] {
+                            for h in [crate::language_plugin::text("solar.overlay.dynamic.text_1399_39f17e", "START"), crate::language_plugin::text("solar.overlay.dynamic.text_1399_b891f9", "END"), crate::language_plugin::text("solar.overlay.dynamic.text_1399_3c4296", "DUR"), crate::language_plugin::text("solar.overlay.dynamic.text_1399_f7c066", "AOS"), crate::language_plugin::text("solar.overlay.dynamic.text_1399_c8967d", "LOS"), crate::language_plugin::text("solar.overlay.dynamic.text_1399_e337be", "MAX EL")] {
                                 ui.label(
                                     RichText::new(h).color(theme::CYAN_DIM()).size(9.5).strong(),
                                 );
@@ -1416,7 +1405,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                                 ui.label(RichText::new(timefmt::ymd_hm(p.rise_unix)).color(color));
                                 ui.label(RichText::new(hhmm(p.set_unix)).color(color));
                                 ui.label(
-                                    RichText::new(format!("{} min", p.duration_s() / 60))
+                                    RichText::new({ let __lp_arg_0 = &(p.duration_s() / 60); crate::language_plugin::format("solar.overlay.text_1419_e823f8", "{} min", &[format!("{}", __lp_arg_0)]) })
                                         .color(color),
                                 );
                                 ui.label(
@@ -1436,7 +1425,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                                     .color(color),
                                 );
                                 ui.label(
-                                    RichText::new(format!("{:.0}°  {}", p.max_el, p.quality()))
+                                    RichText::new(format!("{:.0}°  {}", p.max_el, crate::language_plugin::scope_text("display.solar.pass_quality.", p.quality())))
                                         .color(match p.max_el {
                                             e if e >= 30.0 => theme::GREEN(),
                                             e if e >= 15.0 => theme::TEXT(),
@@ -1449,7 +1438,7 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                     );
                     ui.add_space(4.0);
                     ui.label(
-                        RichText::new("AOS/LOS are azimuths at the horizon. Times are UTC.")
+                        RichText::new(crate::language_plugin::text("solar.overlay.text_1452_b7e662", "AOS/LOS are azimuths at the horizon. Times are UTC."))
                             .color(theme::LINE_LIT())
                             .size(10.0),
                     );
@@ -1466,11 +1455,11 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                     if chrome::chip_accent(
                         ui,
                         true,
-                        egui::RichText::new(" ● LOCKED — UNLOCK ").strong(),
+                        egui::RichText::new(crate::language_plugin::text("solar.overlay.text_1469_7f927b", " ● LOCKED — UNLOCK ")).strong(),
                         theme::GREEN(),
                         theme::INK_ON_CYAN(),
                     )
-                    .on_hover_text("Release the satellite lock")
+                    .on_hover_text(crate::language_plugin::text("solar.overlay.text_1473_1da197", "Release the satellite lock"))
                     .clicked()
                     {
                         st.unlock_requested = true;
@@ -1478,13 +1467,13 @@ fn pass_window(ui: &egui::Ui, st: &mut SolarUi, data: Option<&SolarData>, sim_no
                 } else if chrome::chip_accent(
                     ui,
                     false,
-                    egui::RichText::new(" LOCK ON ").strong(),
+                    egui::RichText::new(crate::language_plugin::text("solar.overlay.text_1481_82a522", " LOCK ON ")).strong(),
                     theme::GREEN(),
                     theme::INK_ON_CYAN(),
                 )
                 .on_hover_text(
-                    "Track this satellite in the main window: Doppler-corrected RX and TX, \
-                     transponder-mapped uplink, rotator steering",
+                    crate::language_plugin::text("solar.overlay.text_1486_d5f95c", "Track this satellite in the main window: Doppler-corrected RX and TX, \
+                     transponder-mapped uplink, rotator steering"),
                 )
                 .clicked()
                 {
@@ -1519,7 +1508,7 @@ fn freq_table(
     let Some(freqs) = freqs.filter(|f| f.usable_links().next().is_some()) else {
         ui.add_space(6.0);
         ui.label(
-            RichText::new("No frequencies on file for this one — add them in Settings ▸ TLE.")
+            RichText::new(crate::language_plugin::text("solar.overlay.text_1522_fbb098", "No frequencies on file for this one — add them in Settings ▸ TLE."))
                 .color(theme::LINE_LIT())
                 .size(10.0),
         );
@@ -1529,14 +1518,14 @@ fn freq_table(
     ui.add_space(8.0);
     ui.separator();
     ui.add_space(4.0);
-    let heading = if mine { "FREQUENCIES  ·  YOURS" } else { "FREQUENCIES" };
+    let heading = if mine { crate::language_plugin::text("solar.overlay.dynamic.text_1532_69a25d", "FREQUENCIES  ·  YOURS") } else { crate::language_plugin::text("solar.overlay.dynamic.text_1532_63e717", "FREQUENCIES") };
     ui.label(RichText::new(heading).color(theme::CYAN_DIM()).size(9.5).strong());
     // The published designator can differ from what the element set calls it;
     // showing it means a table entry keyed to the wrong catalogue number is
     // visible rather than quietly presenting the wrong satellite's frequencies.
     if !freqs.name.trim().is_empty() && !freqs.name.eq_ignore_ascii_case(tracked_name) {
         ui.label(
-            RichText::new(format!("published as {}", freqs.name))
+            RichText::new({ let __lp_arg_0 = &(freqs.name); crate::language_plugin::format("solar.overlay.text_1539_453bd6", "published as {}", &[format!("{}", __lp_arg_0)]) })
                 .color(theme::LINE_LIT())
                 .size(10.0),
         );
@@ -1544,18 +1533,18 @@ fn freq_table(
     ui.add_space(2.0);
 
     egui::Grid::new("solar-freq-grid").num_columns(4).spacing([14.0, 3.0]).show(ui, |ui| {
-        for h in ["LINK", "DOWNLINK (MHz)", "UPLINK (MHz)", "MODE"] {
+        for h in [crate::language_plugin::text("solar.overlay.dynamic.text_1547_e26ef1", "LINK"), crate::language_plugin::text("solar.overlay.dynamic.text_1547_d5abb6", "DOWNLINK (MHz)"), crate::language_plugin::text("solar.overlay.dynamic.text_1547_6026f4", "UPLINK (MHz)"), crate::language_plugin::text("solar.overlay.dynamic.text_1547_ac6c84", "MODE")] {
             ui.label(RichText::new(h).color(theme::CYAN_DIM()).size(9.5).strong());
         }
         ui.end_row();
         for l in freqs.links.iter().filter(|l| !l.is_empty()) {
-            let mut label = RichText::new(&l.label).color(theme::TEXT());
+            let mut label = RichText::new(crate::language_plugin::satellite_link_label(l, mine)).color(theme::TEXT());
             if !l.note.is_empty() {
                 label = label.color(theme::TEXT_STRONG());
             }
             let resp = ui.label(label);
             if !l.note.is_empty() {
-                resp.on_hover_text(&l.note);
+                resp.on_hover_text(crate::language_plugin::satellite_link_note(l, mine));
             }
             // The downlink is what gets tuned first, so it leads.
             ui.label(
@@ -1566,7 +1555,7 @@ fn freq_table(
                 RichText::new(l.uplink.map_or_else(|| "—".into(), |b| b.to_string()))
                     .color(theme::YELLOW()),
             );
-            ui.label(RichText::new(&l.mode).color(theme::TEXT()));
+            ui.label(RichText::new(crate::language_plugin::satellite_link_mode(l, mine)).color(theme::TEXT()));
             ui.end_row();
         }
     });
@@ -1575,12 +1564,12 @@ fn freq_table(
     // they go on screen rather than only in a tooltip.
     for l in freqs.links.iter().filter(|l| !l.note.is_empty() && !l.is_empty()) {
         ui.label(
-            RichText::new(format!("{} — {}", l.label, l.note)).color(theme::LINE_LIT()).size(10.0),
+            RichText::new(format!("{} — {}", crate::language_plugin::satellite_link_label(l, mine), crate::language_plugin::satellite_link_note(l, mine))).color(theme::LINE_LIT()).size(10.0),
         );
     }
     ui.add_space(2.0);
     ui.label(
-        RichText::new("Doppler shifts these by a few kHz across a LEO pass.")
+        RichText::new(crate::language_plugin::text("solar.overlay.text_1583_ee4580", "Doppler shifts these by a few kHz across a LEO pass."))
             .color(theme::LINE_LIT())
             .size(10.0),
     );
@@ -1601,7 +1590,6 @@ fn hhmm(unix: i64) -> String {
 /// question about the wall clock in the shack, and doing that subtraction in
 /// your head is how a pass gets missed.
 fn clock(ui: &egui::Ui, rect: egui::Rect, sim_now: f64, scrubbed: bool) -> Option<egui::Rect> {
-    use super::dotmatrix;
 
     let hms = |unix: i64| {
         let (_, _, _, h, m, s) = sdroxide_types::utc_ymd_hms(unix);
@@ -1617,13 +1605,14 @@ fn clock(ui: &egui::Ui, rect: egui::Rect, sim_now: f64, scrubbed: bool) -> Optio
     // and the panel's own paddings scale with the dots, so the whole box grows
     // and shrinks as one piece.
     let pitch = (rect.width() * 0.004_25).clamp(1.3, 3.5);
-    let size = dotmatrix::size(&text, pitch);
+    let size = clock_label_size(ui.painter(), &text, pitch);
     let local_pitch = pitch * 0.58;
-    let local_size = dotmatrix::size(&local_text, local_pitch);
+    let mut local_size = clock_label_size(ui.painter(), &local_text, local_pitch);
     let label_pitch = pitch * 0.42;
-    let label = if scrubbed { "-- SIM" } else { "UTC" };
-    let label_size = dotmatrix::size(label, label_pitch);
-    let local_label_size = dotmatrix::size("LOC", label_pitch);
+    let label = if scrubbed { crate::language_plugin::text("solar.overlay.dynamic.text_1624_a2cda5", "-- SIM") } else { "UTC".to_owned() };
+    let label_size = clock_label_size(ui.painter(), &label, label_pitch);
+    let local_label_size = clock_label_size(ui.painter(), &crate::language_plugin::text("solar.overlay.dynamic.text_1626_093cba", "LOC"), label_pitch);
+    local_size.y = local_size.y.max(local_label_size.y);
 
     // Both labels share one column to the right of the digits, so UTC and LOC
     // line up however wide the two readouts come out.
@@ -1656,17 +1645,17 @@ fn clock(ui: &egui::Ui, rect: egui::Rect, sim_now: f64, scrubbed: bool) -> Optio
     let origin = panel.min + pad;
     let p = ui.painter();
     // Each label sits on the bottom row of the digits it names.
-    dotmatrix::draw(p, origin, &text, pitch, on, off);
-    dotmatrix::draw(
+    clock_label_draw(p, origin, &text, pitch, on, off);
+    clock_label_draw(
         p,
         origin + egui::vec2(label_x, size.y - label_size.y),
-        label,
+        &label,
         label_pitch,
         on.gamma_multiply(0.6),
         egui::Color32::TRANSPARENT,
     );
     let local_y = size.y + row_gap;
-    dotmatrix::draw(
+    clock_label_draw(
         p,
         origin + egui::vec2(0.0, local_y),
         &local_text,
@@ -1674,10 +1663,10 @@ fn clock(ui: &egui::Ui, rect: egui::Rect, sim_now: f64, scrubbed: bool) -> Optio
         on.gamma_multiply(0.72),
         off,
     );
-    dotmatrix::draw(
+    clock_label_draw(
         p,
         origin + egui::vec2(label_x, local_y + local_size.y - local_label_size.y),
-        "LOC",
+        &crate::language_plugin::text("solar.overlay.dynamic.text_1680_093cba", "LOC"),
         label_pitch,
         on.gamma_multiply(0.6),
         egui::Color32::TRANSPARENT,
@@ -1709,8 +1698,8 @@ fn date_readout(ui: &egui::Ui, st: &SolarUi, rect: egui::Rect, sim_now: f64) -> 
     // The scrubbed instant, like the clock: two readouts of "now" that disagreed
     // would read as one of them being broken.
     let rows = [
-        ("UTC", timefmt::dmy(utc)),
-        ("LOC", timefmt::dmy(utc + crate::time::local_offset_seconds())),
+        ("UTC".to_owned(), crate::language_plugin::solar_calendar(utc)),
+        (crate::language_plugin::text("solar.overlay.dynamic.text_1713_093cba", "LOC"), crate::language_plugin::solar_calendar(utc + crate::time::local_offset_seconds())),
     ];
 
     let font = egui::FontId::proportional(11.5);
@@ -1721,7 +1710,7 @@ fn date_readout(ui: &egui::Ui, st: &SolarUi, rect: egui::Rect, sim_now: f64) -> 
         .iter()
         .map(|(label, date)| {
             (
-                p.layout_no_wrap((*label).into(), label_font.clone(), theme::CYAN_DIM()),
+                p.layout_no_wrap(label.clone(), label_font.clone(), theme::CYAN_DIM()),
                 p.layout_no_wrap(date.clone(), font.clone(), on),
             )
         })
@@ -1822,9 +1811,9 @@ fn find_box(
     let mut open: Option<u64> = None;
     let mut go: Option<Focus> = None;
     let hint = match (sats, bodies) {
-        (true, true) => "satellite, planet or comet",
-        (true, false) => "satellite",
-        _ => "planet, asteroid or comet",
+        (true, true) => crate::language_plugin::text("solar.overlay.dynamic.text_1825_bbc248", "satellite, planet or comet"),
+        (true, false) => crate::language_plugin::text("solar.overlay.dynamic.text_1826_dc4b4e", "satellite"),
+        _ => crate::language_plugin::text("solar.overlay.dynamic.text_1827_3bd1c8", "planet, asteroid or comet"),
     };
 
     egui::Area::new(egui::Id::new("solar-find"))
@@ -1866,27 +1855,24 @@ fn find_box(
                             }
                         }
                         if !query.is_empty()
-                            && ui.button("×").on_hover_text("Clear the search").clicked()
+                            && ui.button("×").on_hover_text(crate::language_plugin::text("solar.overlay.text_1869_155b1a", "Clear the search")).clicked()
                         {
                             clear = true;
                         }
                     });
                     if !query.is_empty() {
                         let (text, colour) = match (sat_hits, body_hits.len()) {
-                            (0, 0) => ("no match".to_string(), theme::ALERT()),
+                            (0, 0) => (crate::language_plugin::text("solar.overlay.dynamic.text_1876_9bc94a", "no match").to_string(), theme::ALERT()),
                             // Named outright when there is exactly one, because
                             // "1 of 40" is a worse answer than "Apophis".
                             (0, 1) => (
-                                format!(
-                                    "{} — ↵ to fly there",
-                                    sdroxide_solar::smallbody::BODIES[body_hits[0]].designation
-                                ),
+                                { let __lp_arg_0 = &(sdroxide_solar::smallbody::BODIES[body_hits[0]].designation); crate::language_plugin::format("solar.overlay.dynamic.text_1881_6ed3c8", "{} — ↵ to fly there", &[format!("{}", __lp_arg_0)]) },
                                 theme::YELLOW(),
                             ),
-                            (s, 0) => (format!("{s} of {sat_total} tracked"), theme::YELLOW()),
-                            (0, b) => (format!("{b} of {body_total} bodies"), theme::YELLOW()),
+                            (s, 0) => (crate::language_plugin::format("solar.overlay.dynamic.text_1886_9fa117", "{s} of {sat_total} tracked", &[format!("{s}"), format!("{sat_total}")]), theme::YELLOW()),
+                            (0, b) => (crate::language_plugin::format("solar.overlay.dynamic.text_1887_70eee6", "{b} of {body_total} bodies", &[format!("{b}"), format!("{body_total}")]), theme::YELLOW()),
                             (s, b) => (
-                                format!("{s} of {sat_total} tracked · {b} of {body_total} bodies"),
+                                crate::language_plugin::format("solar.overlay.dynamic.text_1889_0345e6", "{s} of {sat_total} tracked · {b} of {body_total} bodies", &[format!("{s}"), format!("{sat_total}"), format!("{b}"), format!("{body_total}")]),
                                 theme::YELLOW(),
                             ),
                         };
@@ -1933,7 +1919,7 @@ fn weather_panel(
                     _ => theme::YELLOW(),
                 },
             )),
-            None => rows.push(("MUF".into(), "no sounder".into(), theme::LINE_LIT())),
+            None => rows.push(("MUF".into(), crate::language_plugin::text("solar.overlay.dynamic.text_1936_27d9c7", "no sounder").into(), theme::LINE_LIT())),
         }
         // What this station has actually heard get through, near the QTH.
         //
@@ -1945,7 +1931,7 @@ fn weather_panel(
         // where they disagree the disagreement is the useful part.
         if let Some(m) = st.prop.muf_at(lat, lon) {
             rows.push((
-                "HEARD ≥".into(),
+                crate::language_plugin::text("solar.overlay.dynamic.text_1948_726dda", "HEARD ≥").into(),
                 format!("≥ {:.1} MHz", m.floor_mhz),
                 match m.floor_mhz {
                     f if f >= 24.0 => theme::GREEN(),
@@ -1976,7 +1962,7 @@ fn weather_panel(
     }
     if let Some(x) = &w.xray {
         rows.push((
-            "X-ray".into(),
+            crate::language_plugin::text("solar.overlay.dynamic.text_1979_e0ab46", "X-ray").into(),
             x.class.clone(),
             if x.causes_hf_absorption() { theme::PINK() } else { theme::CYAN_DIM() },
         ));
@@ -2013,7 +1999,7 @@ fn weather_panel(
     if let Some(m) = &sounder {
         notes.push(
             (*p.layout_no_wrap(
-                format!("{} · {:.0} km", m.confidence(), m.nearest_km),
+                format!("{} · {:.0} km", crate::language_plugin::scope_text("display.solar.confidence.", m.confidence()), m.nearest_km),
                 small.clone(),
                 theme::LINE_LIT(),
             ))
@@ -2023,7 +2009,7 @@ fn weather_panel(
     if let Some(o) = &observed {
         notes.push(
             (*p.layout_no_wrap(
-                format!("{} on {}", o.confidence(), o.band.label()),
+                { let __lp_arg_0 = &(crate::language_plugin::scope_text("display.solar.confidence.", o.confidence())); let __lp_arg_1 = &(o.band.label()); crate::language_plugin::format("solar.overlay.dynamic.text_2026_ccf138", "{} on {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
                 small.clone(),
                 theme::LINE_LIT(),
             ))
@@ -2037,7 +2023,7 @@ fn weather_panel(
         if sounder.as_ref().is_some_and(|m| o.floor_mhz > m.muf_mhz + 1.0) {
             notes.push(
                 (*p.layout_no_wrap(
-                    "observed above the sounder — better than modelled".into(),
+                    crate::language_plugin::text("solar.overlay.dynamic.text_2040_011b68", "observed above the sounder — better than modelled").into(),
                     small.clone(),
                     theme::GREEN(),
                 ))
@@ -2115,13 +2101,13 @@ fn aurora_panel(
             _ => theme::GREEN(),
         };
         rows.push((
-            "power N/S".into(),
+            crate::language_plugin::text("solar.overlay.dynamic.text_2118_8c39ef", "power N/S").into(),
             format!("{:.0} / {:.0} GW", power.north_gw, power.south_gw),
             color,
         ));
         rows.push((
-            "activity".into(),
-            format!("{} · HPI {}", HemisphericPower::words(worst), HemisphericPower::index(worst)),
+            crate::language_plugin::text("solar.overlay.dynamic.text_2123_065186", "activity").into(),
+            format!("{} · HPI {}", crate::language_plugin::scope_text("display.solar.activity.", HemisphericPower::words(worst)), HemisphericPower::index(worst)),
             color,
         ));
     }
@@ -2138,7 +2124,7 @@ fn aurora_panel(
         let (n, s) = (edge(true), edge(false));
         if n.is_some() || s.is_some() {
             let show = |e: Option<String>| e.unwrap_or_else(|| "—".into());
-            rows.push(("edge N/S".into(), format!("{} / {}", show(n), show(s)), theme::CYAN()));
+            rows.push((crate::language_plugin::text("solar.overlay.dynamic.text_2141_8b42c7", "edge N/S").into(), format!("{} / {}", show(n), show(s)), theme::CYAN()));
         }
         if let Some((lat, lon)) = st.qth {
             let pct = oval.probability(lat, lon);
@@ -2157,17 +2143,17 @@ fn aurora_panel(
     if let Some(p) = peak {
         let in_h = (p.unix - now).max(0) as f64 / 3600.0;
         rows.push((
-            "Kp peak 24 h".into(),
+            crate::language_plugin::text("solar.overlay.dynamic.text_2160_6bd1e6", "Kp peak 24 h").into(),
             if in_h < 1.5 {
-                format!("{:.1} now", p.kp)
+                { let __lp_arg_0 = &(p.kp); crate::language_plugin::format("solar.overlay.dynamic.text_2162_c714e1", "{:.1} now", &[format!("{:.1}", __lp_arg_0)]) }
             } else {
-                format!("{:.1} in {in_h:.0} h", p.kp)
+                { let __lp_arg_0 = &(p.kp); crate::language_plugin::format("solar.overlay.dynamic.text_2164_279d45", "{:.1} in {in_h:.0} h", &[format!("{:.1}", __lp_arg_0), format!("{in_h:.0}")]) }
             },
             kp_color(p.kp),
         ));
         rows.push((
-            "viewline".into(),
-            format!("{:.0}° geomag", aurora::viewline_geomagnetic_lat(p.kp)),
+            crate::language_plugin::text("solar.overlay.dynamic.text_2169_2ca8e4", "viewline").into(),
+            { let __lp_arg_0 = &(aurora::viewline_geomagnetic_lat(p.kp)); crate::language_plugin::format("solar.overlay.dynamic.text_2170_129c86", "{:.0}° geomag", &[format!("{:.0}", __lp_arg_0)]) },
             kp_color(p.kp),
         ));
     }
@@ -2213,13 +2199,13 @@ fn aurora_panel(
     let footer = d.aurora.as_ref().map(|o| {
         let age = (now - o.observed_unix).max(0);
         p.layout_no_wrap(
-            format!("valid {} · {} old", timefmt::ymd_hm(o.forecast_unix), timefmt::age(age)),
+            { let __lp_arg_0 = &(timefmt::ymd_hm(o.forecast_unix)); let __lp_arg_1 = &(crate::language_plugin::solar_age(age)); crate::language_plugin::format("solar.overlay.dynamic.text_2216_cf2538", "valid {} · {} old", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) },
             small.clone(),
             theme::LINE_LIT(),
         )
     });
 
-    let title = p.layout_no_wrap("AURORA".into(), small.clone(), theme::CYAN_DIM());
+    let title = p.layout_no_wrap(crate::language_plugin::text("solar.overlay.dynamic.text_2222_1e28b2", "AURORA").into(), small.clone(), theme::CYAN_DIM());
     let pad = 10.0;
     let strip_w =
         if series.is_empty() { 0.0 } else { series.len() as f32 * (BAR_W + BAR_GAP) - BAR_GAP };
@@ -2314,7 +2300,7 @@ fn aurora_panel(
             p.text(
                 egui::pos2(panel.left() + pad + strip_w / 2.0, base + 2.0),
                 egui::Align2::CENTER_TOP,
-                "observed | forecast",
+                crate::language_plugin::text("solar.overlay.dynamic.text_2317_03b9db", "observed | forecast"),
                 small.clone(),
                 theme::LINE_LIT(),
             );
@@ -2408,13 +2394,10 @@ fn bands_panel(ui: &mut egui::Ui, st: &SolarUi, place: Place) -> Option<egui::Re
     let val_w = laid.iter().map(|(_, v, ..)| v.size().x).fold(0.0f32, f32::max);
     let row_h = laid.iter().map(|(_, v, ..)| v.size().y + 3.0).fold(BAR_H + 5.0, f32::max);
 
-    let title = p.layout_no_wrap("BANDS OPEN".into(), small.clone(), theme::CYAN_DIM());
+    let title = p.layout_no_wrap(crate::language_plugin::text("solar.overlay.dynamic.text_2411_32f4cc", "BANDS OPEN").into(), small.clone(), theme::CYAN_DIM());
     let notes = [
-        format!("full bar = {} of the world", pct(scale)),
-        format!(
-            "where this station's own paths went · {:.0} min memory",
-            st.prop.halflife_s / 60.0
-        ),
+        { let __lp_arg_0 = &(pct(scale)); crate::language_plugin::format("solar.overlay.dynamic.text_2413_a1b1ac", "full bar = {} of the world", &[format!("{}", __lp_arg_0)]) },
+        { let __lp_arg_0 = &(st.prop.halflife_s / 60.0); crate::language_plugin::format("solar.overlay.dynamic.text_2415_a07afb", "where this station's own paths went · {:.0} min memory", &[format!("{:.0}", __lp_arg_0)]) },
     ]
     .map(|t| p.layout_no_wrap(t, small.clone(), theme::LINE_LIT()));
 
@@ -2492,9 +2475,9 @@ fn award_panel(ui: &egui::Ui, st: &SolarUi, rect: egui::Rect, bottom: f32) {
     }
     let (missing, worked, confirmed) = sdroxide_types::coverage_counts(&st.awards);
     let rows = [
-        ("missing", missing, egui::Color32::from_rgb(0xff, 0x5a, 0x28)),
-        ("worked", worked, theme::YELLOW()),
-        ("confirmed", confirmed, theme::GREEN()),
+        (crate::language_plugin::text("solar.overlay.dynamic.text_2495_ffa635", "missing"), missing, egui::Color32::from_rgb(0xff, 0x5a, 0x28)),
+        (crate::language_plugin::text("solar.overlay.dynamic.text_2496_ba0f95", "worked"), worked, theme::YELLOW()),
+        (crate::language_plugin::text("solar.overlay.dynamic.text_2497_959991", "confirmed"), confirmed, theme::GREEN()),
     ];
 
     let p = ui.painter();
@@ -2504,7 +2487,7 @@ fn award_panel(ui: &egui::Ui, st: &SolarUi, rect: egui::Rect, bottom: f32) {
         .iter()
         .map(|(label, n, _)| p.layout_no_wrap(format!("{label}  {n}"), font.clone(), theme::TEXT()))
         .collect();
-    let title = p.layout_no_wrap("DXCC COVERAGE".into(), cap, theme::CYAN_DIM());
+    let title = p.layout_no_wrap(crate::language_plugin::text("solar.overlay.dynamic.text_2507_cb1005", "DXCC COVERAGE").into(), cap, theme::CYAN_DIM());
 
     const SWATCH: f32 = 9.0;
     let w = galleys.iter().map(|g| g.size().x).fold(title.size().x, f32::max) + SWATCH + 26.0;
@@ -2546,17 +2529,13 @@ fn clouds_note(ui: &egui::Ui, st: &SolarUi, data: Option<&SolarData>, rect: egui
     }
     let Some(field) = data.and_then(|d| d.clouds.as_ref()) else { return };
 
-    let channels = if field.has_visible { "IR+VIS" } else { "IR only" };
+    let channels = if field.has_visible { crate::language_plugin::text("solar.overlay.dynamic.text_2549_35ceb8", "IR+VIS") } else { crate::language_plugin::text("solar.overlay.dynamic.text_2549_48eebe", "IR only") };
     let storms = match field.cells.len() {
-        0 => "no deep convection".to_string(),
-        1 => "1 storm".to_string(),
-        n => format!("{n} storms"),
+        0 => crate::language_plugin::text("solar.overlay.dynamic.text_2551_371d34", "no deep convection").to_string(),
+        1 => crate::language_plugin::text("solar.overlay.dynamic.text_2552_777001", "1 storm").to_string(),
+        n => crate::language_plugin::format("solar.overlay.dynamic.text_2553_72f4a5", "{n} storms", &[format!("{n}")]),
     };
-    let text = format!(
-        "CLOUDS  {}  ·  {} old  ·  {channels}  ·  {storms}  ·  lightning simulated",
-        timefmt::ymd_hm(field.frame_unix),
-        timefmt::age((now - field.frame_unix).max(0)),
-    );
+    let text = { let __lp_arg_0 = &(timefmt::ymd_hm(field.frame_unix)); let __lp_arg_1 = &(crate::language_plugin::solar_age((now - field.frame_unix).max(0))); crate::language_plugin::format("solar.overlay.dynamic.text_2556_f28786", "CLOUDS  {}  ·  {} old  ·  {channels}  ·  {storms}  ·  lightning simulated", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{channels}"), format!("{storms}")]) };
 
     let p = ui.painter();
     let galley = p.layout_no_wrap(text, egui::FontId::proportional(10.5), theme::scope().line);
@@ -2591,17 +2570,13 @@ fn impact_banner(ui: &egui::Ui, data: Option<&SolarData>, rect: egui::Rect, now:
 
     let hours = (hit.eta_unix - now) as f64 / 3600.0;
     let when = if hours >= 0.0 {
-        format!("ETA {} (+{hours:.0} h)", timefmt::ymd_hm(hit.eta_unix))
+        { let __lp_arg_0 = &(timefmt::ymd_hm(hit.eta_unix)); crate::language_plugin::format("solar.overlay.dynamic.text_2594_5d0b83", "ETA {} (+{hours:.0} h)", &[format!("{}", __lp_arg_0), format!("{hours:.0}")]) }
     } else {
-        format!("arrival was {} ({:.0} h ago)", timefmt::ymd_hm(hit.eta_unix), -hours)
+        { let __lp_arg_0 = &(timefmt::ymd_hm(hit.eta_unix)); let __lp_arg_1 = &(-hours); crate::language_plugin::format("solar.overlay.dynamic.text_2596_221ca7", "arrival was {} ({:.0} h ago)", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) }
     };
-    let glancing = if hit.directness(a.half_angle_deg) < 0.35 { " · glancing" } else { "" };
-    let estimated = if a.estimated { " · direction estimated" } else { "" };
-    let text = format!(
-        "EARTH-DIRECTED CME  {}  ·  {:.0} km/s  ·  {when}{glancing}{estimated}",
-        timefmt::ymd_hm(a.t21_5_unix),
-        a.speed_km_s,
-    );
+    let glancing = if hit.directness(a.half_angle_deg) < 0.35 { crate::language_plugin::text("solar.overlay.dynamic.text_2598_85096d", " · glancing") } else { String::new() };
+    let estimated = if a.estimated { crate::language_plugin::text("solar.overlay.dynamic.text_2599_34e51b", " · direction estimated") } else { String::new() };
+    let text = { let __lp_arg_0 = &(timefmt::ymd_hm(a.t21_5_unix)); let __lp_arg_1 = &(a.speed_km_s); crate::language_plugin::format("solar.overlay.dynamic.text_2601_5ed73c", "EARTH-DIRECTED CME  {}  ·  {:.0} km/s  ·  {when}{glancing}{estimated}", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1), format!("{when}"), format!("{glancing}"), format!("{estimated}")]) };
 
     // Hazard-striped tabs at both ends, the same mark the manual uses on every
     // section header. A CME arrival is the one thing in this window that wants
@@ -2823,5 +2798,46 @@ mod tests {
         assert_eq!(elapsed_hms(3599), "59:59");
         assert_eq!(elapsed_hms(3600), "1:00:00");
         assert_eq!(elapsed_hms(3661), "1:01:01");
+    }
+}
+
+// Localized clock captions use the bundled text font for Unicode.
+fn clock_label_size(p: &egui::Painter, text: &str, pitch: f32) -> egui::Vec2 {
+    if text.is_ascii() { return super::dotmatrix::size(text, pitch); }
+    p.layout_no_wrap(text.to_owned(), egui::FontId::proportional((7.0 * pitch).max(9.0)), egui::Color32::WHITE).size()
+}
+
+fn clock_label_draw(p: &egui::Painter, origin: egui::Pos2, text: &str, pitch: f32, on: egui::Color32, off: egui::Color32) -> egui::Rect {
+    if text.is_ascii() { return super::dotmatrix::draw(p, origin, text, pitch, on, off); }
+    let galley = p.layout_no_wrap(text.to_owned(), egui::FontId::proportional((7.0 * pitch).max(9.0)), on);
+    let rect = egui::Rect::from_min_size(origin, galley.size());
+    p.galley(origin, galley, on);
+    rect
+}
+
+#[cfg(test)]
+mod localized_clock_tests {
+    use super::*;
+
+    #[test]
+    fn chinese_clock_captions_produce_text_shapes_and_matching_bounds() {
+        let ctx = egui::Context::default();
+        let mut fonts = egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        ctx.set_fonts(fonts);
+        let mut out = ctx.run_ui(egui::RawInput::default(), |ui| {
+                for text in ["本地", "-- 模拟"] {
+                    let size = clock_label_size(ui.painter(), text, 1.2);
+                    let drawn = clock_label_draw(ui.painter(), egui::pos2(10.0,10.0), text, 1.2, egui::Color32::WHITE, egui::Color32::TRANSPARENT);
+                    assert_eq!(drawn.size(), size);
+                    assert!(size.x > 0.0 && size.y >= 9.0);
+                }
+                assert_eq!(clock_label_size(ui.painter(), "UTC", 1.2), super::super::dotmatrix::size("UTC", 1.2));
+        });
+        let captions: Vec<_> = out.shapes.iter().filter_map(|shape| {
+            if let egui::Shape::Text(text) = &shape.shape { Some(text.galley.job.text.as_str()) } else { None }
+        }).collect();
+        assert!(captions.contains(&"本地") && captions.contains(&"-- 模拟"));
+        out.textures_delta.clear();
     }
 }

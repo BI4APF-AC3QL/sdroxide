@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "sdroxide.language.zh-CN",
+  "kind": "language-pack",
+  "name": "SDRoxide 简体中文语言包",
+  "locale": "zh-CN",
+  "version": "0.2.2-preview",
+  "upstream": {
+    "repository": "dividebysandwich/sdroxide",
+    "version": "1.6.9",
+    "commit": "591d21d0b1bcddfcc7aaab8146141c953727e616"
+  },
+  "requires_host_api": "sdroxide-language-pack/1",
+  "catalog": "translations.zh-CN.json",
+  "fonts": [
+    {
+      "file": "fonts/NotoSansSC.ttf",
+      "license": "fonts/OFL.txt"
+    }
+  ],
+  "help": "manual.zh-CN.json",
+  "completeness": "complete",
+  "loadable_by_stock_sdroxide": false,
+  "executable_code": false
+}

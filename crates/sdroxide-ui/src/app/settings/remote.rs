@@ -30,16 +30,16 @@ pub(in crate::app) fn settings_remote_tab(
     cfg: &mut RemoteServer,
     connect: &mut bool,
     can_connect: bool,
-    status: Option<&Result<String, String>>,
+    status: Option<&Result<crate::language_plugin::UiNotice, crate::language_plugin::UiNotice>>,
 ) {
-    ui.label(RichText::new("Connect to a server").size(14.0).strong().color(crate::theme::CYAN()));
+    ui.label(RichText::new(crate::language_plugin::text("settings.remote.connect_to_a_server", "Connect to a server")).size(14.0).strong().color(crate::theme::CYAN()));
     ui.add_space(4.0);
     ui.label(
         RichText::new(
-            "Drive an sdroxide running somewhere else — the shack machine, a remote site — over \
+            crate::language_plugin::text("settings.remote.drive_an_sdroxide_running_somewhere_else_the_shack_machine", "Drive an sdroxide running somewhere else — the shack machine, a remote site — over \
              the network. Start it there with --server, and enter its address here. The radio, \
              the decoders and the logbook stay on that machine; this screen gets the waterfall \
-             and the audio, and its speakers and microphone are the ones you use.",
+             and the audio, and its speakers and microphone are the ones you use."),
         )
         .weak(),
     );
@@ -51,28 +51,28 @@ pub(in crate::app) fn settings_remote_tab(
     let typed_url = cfg.host.contains("://");
     let mut entered = false;
     egui::Grid::new("remote-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
-        ui.label(RichText::new("Address").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.remote.address", "Address")).strong());
         let addr = crate::chrome::field(
             ui,
             egui::TextEdit::singleline(&mut cfg.host)
                 .desired_width(240.0)
-                .hint_text("host name or IP"),
+                .hint_text(crate::language_plugin::text("settings.remote.host_name_or_ip", "host name or IP")),
         );
         let addr = addr.on_hover_text(
-            "The machine running sdroxide --server: a host name, an IPv4 or IPv6 address, or a \
+            crate::language_plugin::text("settings.remote.the_machine_running_sdroxide_server_a_host_name_an", "The machine running sdroxide --server: a host name, an IPv4 or IPv6 address, or a \
              complete ws:// (or wss://) URL if the server sits behind a reverse proxy — a URL is \
-             used exactly as typed and ignores the port and the switch below.",
+             used exactly as typed and ignores the port and the switch below."),
         );
         // Enter in the address box is the same as pressing CONNECT: an address
         // box is a thing one types into and presses return on.
         entered = addr.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
         ui.end_row();
 
-        ui.label(RichText::new("Port").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.remote.port", "Port")).strong());
         ui.add_enabled_ui(!typed_url, |ui| {
             ui.add(egui::DragValue::new(&mut cfg.port).range(1..=65535)).on_hover_text(
-                "The port that server listens on — server_port in its config.toml. 4950 unless \
-                 it was given --port.",
+                crate::language_plugin::text("settings.remote.the_port_that_server_listens_on_server_port_in", "The port that server listens on — server_port in its config.toml. 4950 unless \
+                 it was given --port."),
             );
         });
         ui.end_row();
@@ -83,13 +83,13 @@ pub(in crate::app) fn settings_remote_tab(
         // they could, a station behind an HTTPS proxy on 443 was reachable only
         // by typing the whole URL out, which then took the port box with it
         // (issue #360).
-        ui.label(RichText::new("Secure").strong());
+        ui.label(RichText::new(crate::language_plugin::text("settings.remote.secure", "Secure")).strong());
         ui.add_enabled_ui(!typed_url, |ui| {
             ui.checkbox(&mut cfg.tls, "wss:// (TLS)").on_hover_text(
-                "Tick this where the server sits behind something that terminates HTTPS for it — \
+                crate::language_plugin::text("settings.remote.tick_this_where_the_server_sits_behind_something_that", "Tick this where the server sits behind something that terminates HTTPS for it — \
                  a reverse proxy on port 443, which is the usual way a station is reached across \
                  the open internet. sdroxide's own server speaks plain ws:// and does not want \
-                 this.",
+                 this."),
             );
         });
         ui.end_row();
@@ -102,13 +102,13 @@ pub(in crate::app) fn settings_remote_tab(
             crate::chrome::chip_accent(
                 ui,
                 false,
-                RichText::new(" CONNECT ").strong(),
+                RichText::new(crate::language_plugin::text("settings.remote.connect", " CONNECT ")).strong(),
                 crate::theme::GREEN(),
                 crate::theme::INK_ON_CYAN(),
             )
         });
         if ready
-            && (button.inner.on_hover_text("Open this station as a radio tab of its own").clicked()
+            && (button.inner.on_hover_text(crate::language_plugin::text("settings.remote.open_this_station_as_a_radio_tab_of_its", "Open this station as a radio tab of its own")).clicked()
                 || entered)
         {
             *connect = true;
@@ -121,7 +121,7 @@ pub(in crate::app) fn settings_remote_tab(
     if !can_connect {
         ui.add_space(4.0);
         ui.label(
-            RichText::new("This client cannot hold a second connection.")
+            RichText::new(crate::language_plugin::text("settings.remote.this_client_cannot_hold_a_second_connection", "This client cannot hold a second connection."))
                 .color(crate::theme::ALERT()),
         );
     }
@@ -129,11 +129,11 @@ pub(in crate::app) fn settings_remote_tab(
     match status {
         Some(Ok(msg)) => {
             ui.add_space(6.0);
-            ui.label(RichText::new(msg).color(crate::theme::GREEN()));
+            ui.label(RichText::new(msg.display()).color(crate::theme::GREEN()));
         }
         Some(Err(e)) => {
             ui.add_space(6.0);
-            ui.add(egui::Label::new(RichText::new(e).color(crate::theme::ALERT())).wrap());
+            ui.add(egui::Label::new(RichText::new(e.display()).color(crate::theme::ALERT())).wrap());
         }
         None => {}
     }
@@ -143,14 +143,36 @@ pub(in crate::app) fn settings_remote_tab(
     ui.add_space(6.0);
     ui.label(
         RichText::new(
-            "The station appears as a tab beside the radios already open here, and the tab strip \
+            crate::language_plugin::text("settings.remote.the_station_appears_as_a_tab_beside_the_radios", "The station appears as a tab beside the radios already open here, and the tab strip \
              at the top of the window switches between them (⊞ puts two side by side). Close it \
              from the roster at the top of the Radio tab — that hangs up; nothing on the server \
              is changed.\n\nIf the server asks for a username and password, its sign-in screen \
              comes up in the new tab. A plain ws:// link carries none of this encrypted, so \
              across the open internet either put it through a VPN or an SSH tunnel, or terminate \
-             HTTPS in front of the server and tick Secure above.",
+             HTTPS in front of the server and tick Secure above."),
         )
         .weak(),
     );
+}
+
+#[cfg(test)]
+mod language_remote_notice_tests {
+ use super::*;
+ use crate::language_plugin::UiNotice;
+ #[test]
+ fn remote_settings_redraw_cached_notices_without_connecting_or_changing_configuration() {
+  let address="wss://station.example/{id}";
+  let status:Result<UiNotice,UiNotice>=Ok(UiNotice::new(format!("Dialling {address}…"),"Dialling {}…",vec![address.into()]));
+  let original=status.clone();
+  for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+   for width in [360.0,600.0,1000.0] {
+    let ctx=egui::Context::default();let mut fonts=egui::FontDefinitions::default();crate::language_plugin::add_fonts(&mut fonts);ctx.set_fonts(fonts);
+    let mut cfg=RemoteServer::default();let before=serde_json::to_value(&cfg).unwrap();let mut connect=false;
+    let output=ctx.run_ui(egui::RawInput{screen_rect:Some(egui::Rect::from_min_size(egui::Pos2::ZERO,egui::vec2(width,1200.0))),..Default::default()},|ui|settings_remote_tab(ui,&mut cfg,&mut connect,true,Some(&status)));
+    let texts:Vec<_>=output.shapes.iter().filter_map(|s|if let egui::epaint::Shape::Text(t)=&s.shape {Some(t.galley.job.text.clone())}else{None}).collect();
+    let expected=if enabled {format!("正在连接 {address}…")} else {format!("Dialling {address}…")};assert!(texts.contains(&expected),"{texts:?}");
+    assert!(!connect);assert_eq!(serde_json::to_value(&cfg).unwrap(),before);assert_eq!(status,original);output.drop_without_applying_deltas();
+   }
+  }
+ }
 }

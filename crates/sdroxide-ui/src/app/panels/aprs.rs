@@ -36,7 +36,7 @@ impl SdroxideApp {
         let st: Option<AprsStatus> =
             self.digi_status.as_ref().and_then(|s| s.aprs.as_ref().map(|a| (**a).clone()));
         let Some(st) = st else {
-            ui.label(RichText::new("starting the APRS modem…").weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_39_4e5988", "starting the APRS modem…")).weak());
             return;
         };
         let tx_ok = self.tx_capable();
@@ -117,7 +117,7 @@ impl SdroxideApp {
             // its content cannot ripple into every pane below it either.
             ui.set_min_height(22.0);
             ui.label(RichText::new("APRS").size(11.0).strong().color(theme::CYAN()));
-            ui.label(RichText::new("1200 baud").weak().size(10.5));
+            ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_120_a6af61", "1200 baud")).weak().size(10.5));
             self.digi_freq_chip(ui, cmds);
             aprs_level_bar(ui, st.level, st.dcd);
             aprs_channel_slot(ui, st);
@@ -126,17 +126,17 @@ impl SdroxideApp {
             // changes only when the operator changes a setting — so it needs
             // no slot of its own.
             if !have_call {
-                ui.label(RichText::new("no callsign").strong().size(10.5).color(theme::ALERT()))
+                ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_129_c8ded9", "no callsign")).strong().size(10.5).color(theme::ALERT()))
                     .on_hover_text(
-                        "Nothing will be transmitted — no beacon, no message, not even an \
+                        crate::language_plugin::text("panels.aprs.text_131_2dd102", "Nothing will be transmitted — no beacon, no message, not even an \
                          acknowledgement — until this station has a callsign. Set one under \
-                         Settings → General, or an APRS-specific one with its SSID under SETUP.",
+                         Settings → General, or an APRS-specific one with its SSID under SETUP."),
                     );
             } else if !have_pos {
-                ui.label(RichText::new("no position").size(10.5).color(theme::YELLOW()))
+                ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_136_c445c2", "no position")).size(10.5).color(theme::YELLOW()))
                     .on_hover_text(
-                        "A beacon needs somewhere to report. Fill in your locator under \
-                         Settings → General, or give coordinates under SETUP.",
+                        crate::language_plugin::text("panels.aprs.text_138_138923", "A beacon needs somewhere to report. Fill in your locator under \
+                         Settings → General, or give coordinates under SETUP."),
                     );
             }
 
@@ -146,9 +146,9 @@ impl SdroxideApp {
                 if crate::chrome::chip(
                     ui,
                     self.show_digi_settings,
-                    RichText::new("SETUP").size(9.5),
+                    RichText::new(crate::language_plugin::text("panels.aprs.text_149_7175b0", "SETUP")).size(9.5),
                 )
-                .on_hover_text("Callsign, symbol, digipeater path, position and beacon")
+                .on_hover_text(crate::language_plugin::text("panels.aprs.text_151_37c3b7", "Callsign, symbol, digipeater path, position and beacon"))
                 .clicked()
                 {
                     self.show_digi_settings = !self.show_digi_settings;
@@ -172,14 +172,14 @@ impl SdroxideApp {
                             .range(0..=120)
                             .speed(0.25)
                             .custom_formatter(|n, _| {
-                                if n < 1.0 { "off".into() } else { format!("{n:.0} min") }
+                                if n < 1.0 { crate::language_plugin::text("panel23.app_panels_aprs.text_175_b4dc66", "off").into() } else { crate::language_plugin::format("panel23.app_panels_aprs.text_175_c06541", "{n:.0} min", &[format!("{n:.0}")]) }
                             }),
                     )
                     .on_hover_text(
-                        "How often to beacon your position, unattended. `off` — the default — \
+                        crate::language_plugin::text("panels.aprs.text_179_b61f44", "How often to beacon your position, unattended. `off` — the default — \
                          never beacons: selecting a mode must not put a station on the air. \
                          Thirty minutes is the convention for a fixed station, oftener for a \
-                         moving one, and every beacon is somebody else's channel time.",
+                         moving one, and every beacon is somebody else's channel time."),
                     );
                 if resp.changed() && cfg.aprs_beacon_minutes != before {
                     let cfg = cfg.clone();
@@ -189,17 +189,17 @@ impl SdroxideApp {
                     crate::chrome::chip_accent(
                         ui,
                         false,
-                        RichText::new(" BEACON ").strong(),
+                        RichText::new(crate::language_plugin::text("panels.aprs.text_192_3c5ef8", " BEACON ")).strong(),
                         theme::GREEN(),
                         theme::INK_ON_CYAN(),
                     )
                     .on_hover_text(if !have_call {
-                        "This station has no callsign — see the warning to the left."
+                        crate::language_plugin::text("panels.aprs.text_197_50b09c", "This station has no callsign — see the warning to the left.")
                     } else if !have_pos {
-                        "This station has no position to report — see the warning to the left."
+                        crate::language_plugin::text("panels.aprs.text_199_be21ee", "This station has no position to report — see the warning to the left.")
                     } else {
-                        "Send one position report now, without waiting for the interval. It \
-                         waits for the channel to be clear like everything else."
+                        crate::language_plugin::text("panels.aprs.text_201_18373f", "Send one position report now, without waiting for the interval. It \
+                         waits for the channel to be clear like everything else.")
                     })
                 })
                 .clicked()
@@ -228,11 +228,11 @@ impl SdroxideApp {
         tx_ok: bool,
     ) {
         ui.horizontal(|ui| {
-            ui.label(RichText::new("STATIONS").size(10.5).strong().color(theme::CYAN_DIM()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_231_791930", "STATIONS")).size(10.5).strong().color(theme::CYAN_DIM()));
             crate::chrome::row_tail(ui, |ui| {
                 ui.add(
                     egui::TextEdit::singleline(&mut self.aprs_filter)
-                        .hint_text("filter")
+                        .hint_text(crate::language_plugin::text("panels.aprs.text_235_dfc337", "filter"))
                         .desired_width(74.0),
                 );
             });
@@ -271,7 +271,7 @@ impl SdroxideApp {
             .auto_shrink([false, false])
             .show_themed(ui, |ui| {
                 if rows.is_empty() {
-                    ui.label(RichText::new("nothing heard yet").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_274_63ee8f", "nothing heard yet")).weak());
                 }
                 for (i, s) in rows.iter().enumerate() {
                     if let Some(name) = self.aprs_row(ui, s, st, now, selected.as_deref(), i) {
@@ -405,9 +405,9 @@ impl SdroxideApp {
         let hit = ui.interact(rect, ui.id().with(("aprs-row", i)), egui::Sense::click());
         let hit = hit.on_hover_ui(|ui| {
             ui.label(RichText::new(&s.name).monospace().strong().color(theme::YELLOW()));
-            ui.label(RichText::new(s.symbol.kind().label()).size(10.5));
+            ui.label(RichText::new(crate::language_plugin::aprs_symbol_display(s.symbol.kind())).size(10.5));
             if s.entry == AprsEntryKind::Object && !s.reported_by.is_empty() {
-                ui.label(RichText::new(format!("object from {}", s.reported_by)).size(10.0).weak());
+                ui.label(RichText::new({ let __lp_arg_0 = &(s.reported_by); crate::language_plugin::format("panels.aprs.text_410_b8271f", "object from {}", &[format!("{}", __lp_arg_0)]) }).size(10.0).weak());
             }
             if !s.comment.is_empty() {
                 ui.label(RichText::new(&s.comment).size(10.5));
@@ -418,11 +418,11 @@ impl SdroxideApp {
             }
             ui.label(
                 RichText::new(if s.direct {
-                    "heard direct".to_string()
+                    crate::language_plugin::text("panels.aprs.text_421_9aa9a3", "heard direct").to_string()
                 } else if s.via.is_empty() {
                     String::new()
                 } else {
-                    format!("via {}", s.via.join(","))
+                    { let __lp_arg_0 = &(s.via.join(",")); crate::language_plugin::format("panels.aprs.text_425_45c128", "via {}", &[format!("{}", __lp_arg_0)]) }
                 })
                 .size(10.0)
                 .weak(),
@@ -446,17 +446,17 @@ impl SdroxideApp {
         egui::ScrollArea::vertical().id_salt("aprs-card").max_height(h).show_themed(ui, |ui| {
             ui.horizontal_wrapped(|ui| {
                 ui.label(RichText::new(&s.name).monospace().strong().color(theme::YELLOW()));
-                ui.label(RichText::new(s.symbol.kind().label()).size(10.0).weak());
+                ui.label(RichText::new(crate::language_plugin::aprs_symbol_display(s.symbol.kind())).size(10.0).weak());
                 ui.label(RichText::new(s.symbol.text()).size(9.5).monospace().weak())
-                    .on_hover_text("The two characters the station sent to say what it is");
+                    .on_hover_text(crate::language_plugin::text("panels.aprs.text_451_58efab", "The two characters the station sent to say what it is"));
                 if s.killed {
-                    ui.label(RichText::new("KILLED").size(9.5).color(theme::ALERT()))
-                        .on_hover_text("The station that put this object here has cancelled it");
+                    ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_453_78ab57", "KILLED")).size(9.5).color(theme::ALERT()))
+                        .on_hover_text(crate::language_plugin::text("panels.aprs.text_454_742e0e", "The station that put this object here has cancelled it"));
                 }
             });
             if s.entry == AprsEntryKind::Object && !s.reported_by.is_empty() {
                 ui.label(
-                    RichText::new(format!("object reported by {}", s.reported_by))
+                    RichText::new({ let __lp_arg_0 = &(s.reported_by); crate::language_plugin::format("panels.aprs.text_459_b57451", "object reported by {}", &[format!("{}", __lp_arg_0)]) })
                         .size(10.0)
                         .weak(),
                 );
@@ -473,13 +473,13 @@ impl SdroxideApp {
                 );
                 if q.ambiguity > 0 {
                     ui.label(
-                        RichText::new(format!("± {} digit(s) blanked", q.ambiguity))
+                        RichText::new({ let __lp_arg_0 = &(q.ambiguity); crate::language_plugin::format("panels.aprs.text_476_6275a1", "± {} digit(s) blanked", &[format!("{}", __lp_arg_0)]) })
                             .size(9.5)
                             .weak(),
                     )
                     .on_hover_text(
-                        "The sender deliberately reported a square rather than a point. The \
-                         map draws the square.",
+                        crate::language_plugin::text("panels.aprs.text_481_652d57", "The sender deliberately reported a square rather than a point. The \
+                         map draws the square."),
                     );
                 }
                 if let Some(me) = st.my_pos {
@@ -509,58 +509,54 @@ impl SdroxideApp {
                     bits.push(format!("{t:.1} °C"));
                 }
                 if let (Some(d), Some(v)) = (w.wind_dir_deg, w.wind_speed_ms) {
-                    bits.push(format!("wind {d:03}° {v:.1} m/s"));
+                    bits.push(crate::language_plugin::format("panel.aprs.text_512_4e7510", "wind {d:03}° {v:.1} m/s", &[format!("{d:03}"), format!("{v:.1}")]));
                 }
                 if let Some(g) = w.wind_gust_ms {
-                    bits.push(format!("gust {g:.1}"));
+                    bits.push(crate::language_plugin::format("panel.aprs.text_515_c8d88c", "gust {g:.1}", &[format!("{g:.1}")]));
                 }
                 if let Some(hu) = w.humidity_pct {
-                    bits.push(format!("{hu}% RH"));
+                    bits.push(crate::language_plugin::format("panel.aprs.text_518_56f7ba", "{hu}% RH", &[format!("{hu}")]));
                 }
                 if let Some(p) = w.pressure_hpa {
                     bits.push(format!("{p:.1} hPa"));
                 }
                 if let Some(r) = w.rain_1h_mm {
-                    bits.push(format!("rain {r:.1} mm/h"));
+                    bits.push(crate::language_plugin::format("panel.aprs.text_524_adec59", "rain {r:.1} mm/h", &[format!("{r:.1}")]));
                 }
                 ui.label(RichText::new(bits.join("   ")).size(10.0).color(theme::CYAN_DIM()));
             }
             ui.horizontal_wrapped(|ui| {
                 ui.label(
-                    RichText::new(format!(
-                        "{} frame(s), last {} ago",
-                        s.packets,
-                        fmt_age(now - s.last_heard)
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(s.packets); let __lp_arg_1 = &(fmt_age(now - s.last_heard)); crate::language_plugin::format("panels.aprs.text_531_0f48e5", "{} frame(s), last {} ago", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                     .size(9.5)
                     .weak(),
                 );
             });
             if !s.via.is_empty() {
                 ui.label(
-                    RichText::new(format!("via {}", s.via.join(","))).size(9.5).monospace().weak(),
+                    RichText::new({ let __lp_arg_0 = &(s.via.join(",")); crate::language_plugin::format("panels.aprs.text_541_45c128", "via {}", &[format!("{}", __lp_arg_0)]) }).size(9.5).monospace().weak(),
                 )
                 .on_hover_text(
-                    "The digipeaters the last frame came through. A `*` marks one that \
-                         actually repeated it.",
+                    crate::language_plugin::text("panels.aprs.text_544_c5c85d", "The digipeaters the last frame came through. A `*` marks one that \
+                         actually repeated it."),
                 );
             }
             ui.add_space(3.0);
             ui.horizontal(|ui| {
                 if s.entry == AprsEntryKind::Station
                     && tx_gated(ui, tx_ok, |ui| {
-                        crate::chrome::chip(ui, false, RichText::new(" MESSAGE ").size(10.0))
-                            .on_hover_text("Address the message box to this station")
+                        crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.aprs.text_552_b8bcbf", " MESSAGE ")).size(10.0))
+                            .on_hover_text(crate::language_plugin::text("panels.aprs.text_553_1b8ae0", "Address the message box to this station"))
                     })
                     .clicked()
                 {
                     self.aprs_target = name.clone();
                 }
                 if s.pos.is_some()
-                    && crate::chrome::chip(ui, false, RichText::new(" CENTER ").size(10.0))
+                    && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.aprs.text_560_bb97bf", " CENTER ")).size(10.0))
                         .on_hover_text(
-                            "Put this station in the middle of the map. Double-click the map \
-                             to hand the view back to the automatic fit.",
+                            crate::language_plugin::text("panels.aprs.text_562_f1a3f9", "Put this station in the middle of the map. Double-click the map \
+                             to hand the view back to the automatic fit."),
                         )
                         .clicked()
                     && let Some(q) = s.pos
@@ -601,7 +597,7 @@ impl SdroxideApp {
         let have_call = !me.is_empty();
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new(if self.aprs_show_traffic { "CHANNEL" } else { "MESSAGES" })
+                RichText::new(if self.aprs_show_traffic { crate::language_plugin::text("panels.aprs.text_604_597c11", "CHANNEL") } else { crate::language_plugin::text("panels.aprs.text_604_2b1427", "MESSAGES") })
                     .size(10.5)
                     .strong()
                     .color(theme::CYAN_DIM()),
@@ -612,27 +608,27 @@ impl SdroxideApp {
             // keep a constant width (see `aprs_header`).
             if self.aprs_show_traffic {
                 if st.bad_frames > 0 {
-                    ui.label(RichText::new(format!("{} bad", st.bad_frames)).size(9.5).weak())
+                    ui.label(RichText::new({ let __lp_arg_0 = &(st.bad_frames); crate::language_plugin::format("panels.aprs.text_615_efb07e", "{} bad", &[format!("{}", __lp_arg_0)]) }).size(9.5).weak())
                         .on_hover_text(
-                            "Frames that arrived and failed their check sequence — a collision, \
+                            crate::language_plugin::text("panels.aprs.text_617_13b38d", "Frames that arrived and failed their check sequence — a collision, \
                              a fade, or a signal too weak to read. A count rising with nothing \
                              decoding means the modem *is* hearing the channel: check the level \
-                             meter, and open the radio's squelch.",
+                             meter, and open the radio's squelch."),
                         );
                 }
                 if st.non_aprs > 0 {
-                    ui.label(RichText::new(format!("{} other", st.non_aprs)).size(9.5).weak())
+                    ui.label(RichText::new({ let __lp_arg_0 = &(st.non_aprs); crate::language_plugin::format("panels.aprs.text_624_b9faba", "{} other", &[format!("{}", __lp_arg_0)]) }).size(9.5).weak())
                         .on_hover_text(
-                            "Frames read cleanly off the channel that were not APRS — somebody \
-                             else's packet session, or a format this build does not decode.",
+                            crate::language_plugin::text("panels.aprs.text_626_06c2d1", "Frames read cleanly off the channel that were not APRS — somebody \
+                             else's packet session, or a format this build does not decode."),
                         );
                 }
             }
             crate::chrome::row_tail(ui, |ui| {
-                if crate::chrome::chip(ui, self.aprs_show_traffic, RichText::new("RAW").size(9.5))
+                if crate::chrome::chip(ui, self.aprs_show_traffic, RichText::new(crate::language_plugin::text("panels.aprs.text_632_ac0562", "RAW")).size(9.5))
                     .on_hover_text(
-                        "Every frame on the channel, as it arrived — other people's traffic \
-                         included, and anything the decoder could not read.",
+                        crate::language_plugin::text("panels.aprs.text_634_e3de39", "Every frame on the channel, as it arrived — other people's traffic \
+                         included, and anything the decoder could not read."),
                     )
                     .clicked()
                 {
@@ -655,7 +651,7 @@ impl SdroxideApp {
             .show_themed(ui, |ui| {
                 if self.aprs_show_traffic {
                     if st.traffic.is_empty() {
-                        ui.label(RichText::new("nothing on the channel yet").weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_658_84553f", "nothing on the channel yet")).weak());
                     }
                     for t in &st.traffic {
                         let via = if t.via.is_empty() {
@@ -679,7 +675,7 @@ impl SdroxideApp {
                     return;
                 }
                 if st.messages.is_empty() {
-                    ui.label(RichText::new("No messages.").weak().size(10.5));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.aprs.text_682_4b2f61", "No messages.")).weak().size(10.5));
                 }
                 for m in &st.messages {
                     let ours = m.from.eq_ignore_ascii_case(&me) && !me.is_empty();
@@ -706,41 +702,41 @@ impl SdroxideApp {
                             // something to leave to a font fallback.
                             let (face, colour, tip) = match m.state {
                                 AprsMsgState::Queued => {
-                                    ("…".to_string(), theme::gray(150), "waiting for the channel")
+                                    ("…".to_string(), theme::gray(150), crate::language_plugin::text("panel.aprs.text_709_b126a7", "waiting for the channel"))
                                 }
                                 AprsMsgState::Sent if m.tries > 1 => (
-                                    format!("sent ×{}", m.tries),
+                                    { let __lp_arg_0 = &(m.tries); crate::language_plugin::format("panel.aprs.text_712_215e3b", "sent ×{}", &[format!("{}", __lp_arg_0)]) },
                                     theme::CYAN_DIM(),
-                                    "sent and retried, still waiting to be acknowledged",
+                                    crate::language_plugin::text("panel.aprs.text_714_481121", "sent and retried, still waiting to be acknowledged"),
                                 ),
                                 AprsMsgState::Sent => (
-                                    "sent".to_string(),
+                                    crate::language_plugin::text("panel.aprs.text_717_7afbb3", "sent").to_string(),
                                     theme::CYAN_DIM(),
-                                    "on the air, waiting to be acknowledged",
+                                    crate::language_plugin::text("panel.aprs.text_719_78859f", "on the air, waiting to be acknowledged"),
                                 ),
                                 AprsMsgState::Acked => (
-                                    "ack".to_string(),
+                                    crate::language_plugin::text("panel.aprs.text_722_64a379", "ack").to_string(),
                                     theme::GREEN(),
-                                    "acknowledged by the far end",
+                                    crate::language_plugin::text("panel.aprs.text_724_7213d8", "acknowledged by the far end"),
                                 ),
                                 AprsMsgState::Rejected => (
-                                    "rejected".to_string(),
+                                    crate::language_plugin::text("panel.aprs.text_727_20cd93", "rejected").to_string(),
                                     theme::ALERT(),
-                                    "refused by the far end — not retried",
+                                    crate::language_plugin::text("panel.aprs.text_729_f8a3b8", "refused by the far end — not retried"),
                                 ),
                                 AprsMsgState::Failed => (
-                                    "no ack".to_string(),
+                                    crate::language_plugin::text("panel.aprs.text_732_5727dd", "no ack").to_string(),
                                     theme::ALERT(),
-                                    "no answer after every retry",
+                                    crate::language_plugin::text("panel.aprs.text_734_61037e", "no answer after every retry"),
                                 ),
-                                AprsMsgState::Received => (String::new(), theme::gray(150), ""),
+                                AprsMsgState::Received => (String::new(), theme::gray(150), String::new()),
                             };
                             if !face.is_empty() {
                                 ui.label(RichText::new(face).size(9.5).color(colour))
                                     .on_hover_text(tip);
                             }
                         } else if !m.id.is_empty()
-                            && crate::chrome::chip(ui, false, RichText::new("reply").size(9.0))
+                            && crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.aprs.text_743_5782b1", "reply")).size(9.0))
                                 .clicked()
                         {
                             self.aprs_target = m.from.clone();
@@ -755,7 +751,7 @@ impl SdroxideApp {
             ui.spacing_mut().item_spacing.x = 4.0;
             let to = ui.add(
                 egui::TextEdit::singleline(&mut self.aprs_target)
-                    .hint_text("to")
+                    .hint_text(crate::language_plugin::text("panels.aprs.text_758_663ea1", "to"))
                     .desired_width(78.0)
                     .font(egui::TextStyle::Monospace),
             );
@@ -765,7 +761,7 @@ impl SdroxideApp {
             let room = (ui.available_width() - 56.0).max(60.0);
             let text = ui.add(
                 egui::TextEdit::singleline(&mut self.aprs_draft)
-                    .hint_text("message")
+                    .hint_text(crate::language_plugin::text("panels.aprs.text_768_ab530a", "message"))
                     .desired_width(room)
                     .char_limit(MSG_MAX),
             );
@@ -777,18 +773,18 @@ impl SdroxideApp {
                 crate::chrome::chip_accent(
                     ui,
                     false,
-                    RichText::new(" SEND ").size(10.0).strong(),
+                    RichText::new(crate::language_plugin::text("panels.aprs.text_780_3f326b", " SEND ")).size(10.0).strong(),
                     theme::GREEN(),
                     theme::INK_ON_CYAN(),
                 )
                 .on_hover_text(if !have_call {
-                    "This station has no callsign, so nothing can be transmitted. Set one under \
-                     Settings → General, or an APRS-specific one with its SSID under SETUP."
+                    crate::language_plugin::text("panels.aprs.text_785_dc733e", "This station has no callsign, so nothing can be transmitted. Set one under \
+                     Settings → General, or an APRS-specific one with its SSID under SETUP.")
                 } else if !ready {
-                    "Needs a station to address and something to say."
+                    crate::language_plugin::text("panels.aprs.text_788_1da13f", "Needs a station to address and something to say.")
                 } else {
-                    "Send it, and keep retrying until the far end acknowledges. Messages are \
-                     the one thing on this channel that is answered."
+                    crate::language_plugin::text("panels.aprs.text_790_37ae08", "Send it, and keep retrying until the far end acknowledges. Messages are \
+                     the one thing on this channel that is answered.")
                 })
             })
             .clicked()
@@ -832,14 +828,14 @@ fn paint_segments(ui: &egui::Ui, rect: egui::Rect, segs: &[(String, egui::Color3
 /// the channel is busy or clear — see [`SdroxideApp::aprs_header`].
 fn aprs_channel_slot(ui: &mut egui::Ui, st: &AprsStatus) {
     let (rect, resp) = ui.allocate_exact_size(egui::vec2(86.0, 15.0), egui::Sense::hover());
-    let mut segs = vec![(format!("{} stn", st.stations.len()), theme::CYAN_DIM())];
+    let mut segs = vec![({ let __lp_arg_0 = &(st.stations.len()); crate::language_plugin::format("panel.aprs.text_835_b61d1e", "{} stn", &[format!("{}", __lp_arg_0)]) }, theme::CYAN_DIM())];
     if st.dcd {
-        segs.push(("BUSY".to_string(), theme::ALERT()));
+        segs.push((crate::language_plugin::text("panel.aprs.text_837_4b2f12", "BUSY").to_string(), theme::ALERT()));
     }
     paint_segments(ui, rect, &segs);
     resp.on_hover_text(
-        "Stations heard and still inside the window set in APRS Setup, and whether another \
-         station is on the channel right now. Nothing will key while it is busy.",
+        crate::language_plugin::text("panels.aprs.text_841_8dc9ba", "Stations heard and still inside the window set in APRS Setup, and whether another \
+         station is on the channel right now. Nothing will key while it is busy."),
     );
 }
 
@@ -850,16 +846,16 @@ fn aprs_tx_slot(ui: &mut egui::Ui, st: &AprsStatus, transmitting: bool) {
     let (rect, resp) = ui.allocate_exact_size(egui::vec2(58.0, 15.0), egui::Sense::hover());
     let mut segs = Vec::new();
     if transmitting {
-        segs.push(("● TX".to_string(), theme::ALERT()));
+        segs.push((crate::language_plugin::text("panel.aprs.text_853_548c99", "● TX").to_string(), theme::ALERT()));
     } else if st.tx_queue > 0 {
-        segs.push((format!("{} queued", st.tx_queue), theme::YELLOW()));
+        segs.push(({ let __lp_arg_0 = &(st.tx_queue); crate::language_plugin::format("panel.aprs.text_855_fc10ab", "{} queued", &[format!("{}", __lp_arg_0)]) }, theme::YELLOW()));
     } else if let Some(secs) = st.next_beacon_s {
         segs.push((format!("{}:{:02}", secs / 60, secs % 60), theme::CYAN_DIM()));
     }
     paint_segments(ui, rect, &segs);
     resp.on_hover_text(
-        "The over in progress, the frames waiting for the channel to clear, or the time until \
-         the next scheduled beacon.",
+        crate::language_plugin::text("panels.aprs.text_861_ed6c45", "The over in progress, the frames waiting for the channel to clear, or the time until \
+         the next scheduled beacon."),
     );
 }
 
@@ -890,8 +886,8 @@ fn aprs_level_bar(ui: &mut egui::Ui, level: f32, dcd: bool) {
     p.rect_filled(fill, 2.0, col);
     p.rect_stroke(rect, 2.0, egui::Stroke::new(1.0, theme::gray(60)), egui::StrokeKind::Inside);
     resp.on_hover_text(
-        "Audio reaching the modem. Flat means nothing is arriving at all — check that the \
+        crate::language_plugin::text("panels.aprs.text_893_694082", "Audio reaching the modem. Flat means nothing is arriving at all — check that the \
          radio's data output is the one sdroxide is listening to. It lights up green while \
-         the modem hears a carrier.",
+         the modem hears a carrier."),
     );
 }

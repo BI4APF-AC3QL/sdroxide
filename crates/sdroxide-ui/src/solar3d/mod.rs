@@ -285,7 +285,7 @@ impl Solar3d {
         // which is where the size and place come from. Every later frame leaves
         // the geometry alone, so a live resize is not fought by our own request.
         let mut builder = egui::ViewportBuilder::default()
-            .with_title("sdroxide — solar system")
+            .with_title(solar_window_title())
             .with_min_inner_size([520.0, 340.0])
             .with_clamp_size_to_monitor_size(true);
         if ctx.cumulative_pass_nr_for(vid) == 0 {
@@ -495,6 +495,22 @@ mod tests {
             let seed = sdroxide_types::Solar3dWindow { size: [900.0, 600.0], pos: Some(at) };
             let (_, pos) = solar3d_geometry(screen, Some(seed));
             assert_eq!(pos, Some(egui::Pos2::from(at)), "moved off the monitor it was left on");
+        }
+    }
+}
+
+
+fn solar_window_title() -> String {
+    crate::language_plugin::text("window.solar.title", "sdroxide — solar system")
+}
+
+#[cfg(test)]
+mod solar_window_language_tests {
+    #[test]
+    fn native_window_title_switches_to_chinese_and_restores_english() {
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(super::solar_window_title(), if enabled { "sdroxide — 太阳系" } else { "sdroxide — solar system" });
         }
     }
 }

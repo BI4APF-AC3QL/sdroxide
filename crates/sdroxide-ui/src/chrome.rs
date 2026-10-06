@@ -580,7 +580,8 @@ fn popup_body<R>(
 
 /// A section caption inside a menu popup — the same small cyan label the
 /// module boxes wear, so a menu reads as the box it replaced.
-pub fn menu_caption(ui: &mut Ui, text: &str) {
+pub fn menu_caption(ui: &mut Ui, text: impl AsRef<str>) {
+    let text = text.as_ref();
     ui.label(RichText::new(text.to_uppercase()).color(theme::CYAN_DIM()).size(9.5).strong());
 }
 
@@ -594,7 +595,8 @@ pub fn menu_caption(ui: &mut Ui, text: &str) {
 /// pinned as both the minimum and the maximum for the reason [`angled_frame`]
 /// gives: a `Frame` auto-sizes by measuring its content with unbounded width,
 /// and a `horizontal_wrapped` row measured that way never wraps.
-pub fn menu_group<R>(ui: &mut Ui, title: &str, width: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
+pub fn menu_group<R>(ui: &mut Ui, title: impl AsRef<str>, width: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
+    let title = title.as_ref();
     egui::Frame::new()
         .fill(theme::ROW_BG())
         .stroke(Stroke::new(1.0, theme::LINE()))
@@ -1648,7 +1650,8 @@ pub fn chip_hold_sized(
 /// than any phone it opened on. Reserving the chip's own size up front puts the
 /// wrap decision back where the layout can make it, and the child then fits
 /// exactly inside what was reserved.
-pub fn chip_enabled(ui: &mut Ui, enabled: bool, selected: bool, label: &str) -> Response {
+pub fn chip_enabled(ui: &mut Ui, enabled: bool, selected: bool, label: impl AsRef<str>) -> Response {
+    let label = label.as_ref();
     let size = vec2(chip_width(ui, label, None), chip_height(ui, None));
     ui.allocate_ui(size, |ui| ui.add_enabled_ui(enabled, |ui| chip(ui, selected, label)).inner)
         .inner
@@ -1664,11 +1667,12 @@ pub fn chip_accent_enabled(
     ui: &mut Ui,
     enabled: bool,
     selected: bool,
-    label: &str,
+    label: impl AsRef<str>,
     size: Option<f32>,
     fill: Color32,
     ink: Color32,
 ) -> Response {
+    let label = label.as_ref();
     let exact = vec2(chip_width(ui, label, size), chip_height(ui, size));
     let text = match size {
         Some(pt) => RichText::new(label).size(pt),
@@ -2429,7 +2433,7 @@ mod tests {
                     egui::Slider::new(&mut v, 0.0..=1.0).show_value(true).custom_formatter(pct),
                 );
             }
-            ui.label("Mic");
+            ui.label(crate::language_plugin::text("topbar.mic", "Mic"));
             let mut mic = 0.5f32;
             slider(ui, egui::Slider::new(&mut mic, 0.0..=1.0).show_value(false));
         });

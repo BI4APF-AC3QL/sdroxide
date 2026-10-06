@@ -52,13 +52,13 @@ pub(super) fn acars_header(
                 .desired_width(70.0)
                 .fill(theme::CYAN_DIM()),
         )
-        .on_hover_text("Audio in the decoder's passband.");
+        .on_hover_text(crate::language_plugin::text("panels.acars.text_55_8faec6", "Audio in the decoder's passband."));
         ui.label(
-            RichText::new(format!("{} frames · {} bad", st.frames, st.bad))
+            RichText::new({ let __lp_arg_0 = &(st.frames); let __lp_arg_1 = &(st.bad); crate::language_plugin::format("panels.acars.text_57_cbf891", "{} frames · {} bad", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                 .size(10.0)
                 .color(if st.bad > 0 { theme::YELLOW() } else { theme::CYAN_DIM() }),
         )
-        .on_hover_text("Blocks that framed, and blocks whose check sequence failed.");
+        .on_hover_text(crate::language_plugin::text("panels.acars.text_61_d99f5c", "Blocks that framed, and blocks whose check sequence failed."));
         super::clear_rx_chip_at(ui, cmds, true);
         super::save_rx_chip_for(ui, status);
     });
@@ -73,17 +73,17 @@ impl SdroxideApp {
     ) {
         let st: Option<AcarsStatus> = self.digi_status.as_ref().and_then(|s| s.acars.clone());
         let Some(st) = st else {
-            ui.label(RichText::new("starting the ACARS receiver…").weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.acars.text_76_e258da", "starting the ACARS receiver…")).weak());
             return;
         };
 
         acars_header(ui, &st, self.digi_status.as_ref(), cmds);
 
         ui.horizontal_wrapped(|ui| {
-            ui.label(RichText::new("CHANNEL").size(10.0).weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.acars.text_83_597c11", "CHANNEL")).size(10.0).weak());
             for (hz, label) in CHANNELS {
                 if crate::chrome::chip(ui, false, RichText::new(*label).size(10.0))
-                    .on_hover_text("Tune the dial here.")
+                    .on_hover_text(crate::language_plugin::text("panels.acars.text_86_f37c02", "Tune the dial here."))
                     .clicked()
                 {
                     cmds.push(Command::SetVfo { vfo: Vfo::A, hz: *hz as f64 });
@@ -100,8 +100,8 @@ impl SdroxideApp {
                 if st.messages.is_empty() {
                     ui.label(
                         RichText::new(
-                            "Nothing yet. ACARS is quiet between aircraft — leave it on a \
-                             channel and wait for a burst.",
+                            crate::language_plugin::text("panels.acars.text_103_5609f5", "Nothing yet. ACARS is quiet between aircraft — leave it on a \
+                             channel and wait for a burst."),
                         )
                         .weak(),
                     );
@@ -120,7 +120,7 @@ impl SdroxideApp {
                             RichText::new(&m.address).monospace().strong().color(theme::CYAN()),
                         );
                         if !m.mode.is_empty() {
-                            ui.label(RichText::new(format!("mode {}", m.mode)).size(9.5).weak());
+                            ui.label(RichText::new({ let __lp_arg_0 = &(m.mode); crate::language_plugin::format("panels.acars.text_123_95ed2e", "mode {}", &[format!("{}", __lp_arg_0)]) }).size(9.5).weak());
                         }
                         if !m.label.is_empty() {
                             ui.label(RichText::new(&m.label).monospace().size(10.0).weak());
@@ -133,15 +133,15 @@ impl SdroxideApp {
                         }
                         if !m.crc_ok {
                             ui.label(
-                                RichText::new("check failed").size(9.5).color(theme::YELLOW()),
+                                RichText::new(crate::language_plugin::text("panels.acars.text_136_b0282e", "check failed")).size(9.5).color(theme::YELLOW()),
                             )
                             .on_hover_text(
-                                "The block-check sequence did not match — text may be wrong.",
+                                crate::language_plugin::text("panels.acars.text_139_98313a", "The block-check sequence did not match — text may be wrong."),
                             );
                         }
                     });
                     if m.text.trim().is_empty() {
-                        ui.label(RichText::new("(no text)").size(10.0).weak());
+                        ui.label(RichText::new(crate::language_plugin::text("panels.acars.text_144_8b9863", "(no text)")).size(10.0).weak());
                     } else {
                         // Unwrapped: an ACARS message is columns and line
                         // breaks as the sender wrote them.

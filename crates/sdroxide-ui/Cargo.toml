@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+sdroxide-language-pack = { path = "../sdroxide-language-pack" }
+serde_json.workspace = true
 sdroxide-types.workspace = true
 # The build stamp, for the three places that say which build this is: the
 # About box, the "you are running X" line on the update banner, and the

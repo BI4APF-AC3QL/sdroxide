@@ -401,6 +401,16 @@ pub struct AudioDevices {
     pub selected_input: Option<String>,
 }
 
+/// Locally known producer of the last event's UI text. Never serialized.
+/// External engine, server and WebSocket error strings have no origin marker.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RadioEventTextOrigin {
+    ServerBusy,
+    ProtocolDecode,
+    SocketClosed,
+    SilentMic,
+}
+
 /// The seam that lets the same UI run against an in-process radio engine
 /// (native GUI) or a WebSocket session (WASM remote client).
 pub trait RadioController {
@@ -408,6 +418,10 @@ pub trait RadioController {
 
     /// Non-blocking; the UI drains this each frame until `None`.
     fn poll_event(&mut self) -> Option<RadioEvent>;
+
+    /// Display provenance of the event just returned by poll_event, if locally known.
+    /// Read immediately after ConnectionLost or Notice; event and protocol bytes stay unchanged.
+    fn event_text_origin(&self) -> Option<RadioEventTextOrigin> { None }
 
     /// Microphone audio, 48 kHz mono. The local implementation is a no-op
     /// because cpal feeds the engine directly.

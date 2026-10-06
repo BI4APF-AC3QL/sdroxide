@@ -237,7 +237,7 @@ pub fn show(
         p.text(
             rect.center(),
             Align2::CENTER_CENTER,
-            "no aircraft located yet",
+            crate::language_plugin::text("map.hfdl.painter.text_240_857bbe", "no aircraft located yet"),
             FontId::proportional(11.0),
             alpha(map.station, 160.0),
         );
@@ -364,8 +364,8 @@ pub fn show(
         if let Some(snr) = a.snr_db {
             tip.push_str(&format!("\n{snr:.0} dB"));
         }
-        tip.push_str(&format!("\n{} fix{}", a.fixes, if a.fixes == 1 { "" } else { "es" }));
-        tip.push_str(&format!("\nheard {} ago", fmt_age(now - a.last_at)));
+        tip.push_str(&{ let __lp_arg_0 = &(a.fixes); let __lp_arg_1 = &(crate::language_plugin::plural_suffix_with("map.hfdl.text_367_d2b285", "\n{} fix{}", a.fixes == 1, "es")); crate::language_plugin::format("map.hfdl.text_367_d2b285", "\n{} fix{}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
+        tip.push_str(&{ let __lp_arg_0 = &(fmt_age(now - a.last_at)); crate::language_plugin::format("map.hfdl.text_368_db971c", "\nheard {} ago", &[format!("{}", __lp_arg_0)]) });
         if let Some((hlat, hlon)) = home {
             let km = sdroxide_types::distance_km((hlat, hlon), (a.lat, a.lon));
             let bear = sdroxide_types::bearing_deg((hlat, hlon), (a.lat, a.lon));
@@ -389,11 +389,11 @@ pub fn show(
 fn fmt_age(secs: i64) -> String {
     let s = secs.max(0);
     if s < 90 {
-        format!("{s} s")
+        crate::language_plugin::format("map.hfdl.text_392_d2916a", "{s} s", &[format!("{s}")])
     } else if s < 5400 {
-        format!("{} min", s / 60)
+        { let __lp_arg_0 = &(s / 60); crate::language_plugin::format("map.hfdl.text_394_e823f8", "{} min", &[format!("{}", __lp_arg_0)]) }
     } else {
-        format!("{} h", s / 3600)
+        { let __lp_arg_0 = &(s / 3600); crate::language_plugin::format("map.hfdl.text_396_4d631f", "{} h", &[format!("{}", __lp_arg_0)]) }
     }
 }
 

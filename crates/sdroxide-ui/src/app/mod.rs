@@ -43,6 +43,9 @@ pub(in crate::app) mod settings;
 pub(in crate::app) mod solar;
 pub(in crate::app) mod spectrum;
 pub(in crate::app) mod speech;
+pub(crate) use speech::SpeechStatus;
+pub(crate) use alerts::AlertStatus;
+
 pub(in crate::app) mod spots;
 pub(in crate::app) mod top_bar;
 pub(crate) mod util;
@@ -98,7 +101,7 @@ pub(in crate::app) const RETRY_MAX_S: f64 = 30.0;
 /// and naming the receiver there would be the wrong answer to "why can't I
 /// press this". `tx_ok` is [`SdroxideApp::tx_capable`] at the call site.
 pub(in crate::app) fn rx_only_hint(resp: egui::Response, tx_ok: bool) -> egui::Response {
-    if tx_ok { resp } else { resp.on_disabled_hover_text(RX_ONLY_HINT) }
+    if tx_ok { resp } else { resp.on_disabled_hover_text(crate::language_plugin::text("app.text_81_93b6a9", RX_ONLY_HINT)) }
 }
 
 /// Draw a control that puts this station on the air: as `add` draws it on a
@@ -139,7 +142,7 @@ pub struct SdroxideApp {
     peaks: spectrum_view::PeakHold,
     /// UI-side smoothing for the spectrum *line* (waterfall stays un-averaged).
     spec_smooth: spectrum_view::SpectrumSmooth,
-    error: Option<String>,
+    error: Option<crate::language_plugin::UiNotice>,
     /// When to redial the connection that produced [`Self::error`], and how
     /// long the wait before the one after that.
     ///
@@ -160,7 +163,7 @@ pub struct SdroxideApp {
     retry_backoff: f64,
     /// Persistent, non-fatal operator notice (e.g. radio audio input
     /// unavailable / mono card selected for IQ). Shown as a warning banner.
-    radio_notice: Option<String>,
+    radio_notice: Option<crate::language_plugin::UiNotice>,
     /// A newer release published on sdroxide.com — the version string
     /// itself. Set at most once, when the startup check lands; drawn in the
     /// notice banner's clothes above the panadapter, with a Dismiss that also
@@ -922,7 +925,7 @@ pub struct SdroxideApp {
     grid_tracker: crate::app::grid_tracker::GridTracker,
     awards_band: String,
     /// Cached award tally, keyed by (log length, band filter).
-    awards_cache: Option<(usize, String, sdroxide_types::Awards)>,
+    awards_cache: Option<(usize, String, sdroxide_types::Awards, std::collections::BTreeSet<&'static str>)>,
     /// The same tally placed on the globe for the 3D view's award layer, keyed
     /// the same way. Shared rather than copied: it is three hundred entities
     /// and the window republishes it every frame.
@@ -1024,7 +1027,7 @@ pub struct SdroxideApp {
     /// shell has it, then whatever came back. Shown on that tab, because a
     /// connection that failed to open leaves no tab of its own to say so.
     #[cfg(not(target_arch = "wasm32"))]
-    remote_status: Option<Result<String, String>>,
+    remote_status: Option<Result<crate::language_plugin::UiNotice, crate::language_plugin::UiNotice>>,
     // ── Multi-radio (see `crate::multi::MultiApp`) ──
     /// Whether this instance is the focused tab. Always true in a single-radio
     /// session. Gates the announcer and the window title: a background radio
@@ -1135,7 +1138,7 @@ pub(crate) fn radio_name(roster: &[RadioChip], id: u32) -> String {
     roster
         .iter()
         .find(|c| c.id == id)
-        .map_or_else(|| format!("radio {}", id + 1), |c| c.display_name().to_string())
+        .map_or_else(|| crate::language_plugin::radio_fallback(id), |c| c.display_name().to_string())
 }
 
 /// A radio-management action requested from inside a tab (the settings
@@ -1239,6 +1242,7 @@ impl SdroxideApp {
         // The look and the font sizes must be selected before `theme::apply`
         // reads them, or the first frame flashes the default theme at the
         // default scale.
+        crate::language_plugin::initialize(storage);
         let ui_settings = load_ui_settings(storage);
         crate::theme::set_look(
             ui_settings.theme,
@@ -1661,7 +1665,7 @@ impl SdroxideApp {
             if let Some(c) = &self.caps {
                 ctx.send_viewport_cmd(egui::ViewportCommand::Title(format!(
                     "sdroxide — {}",
-                    c.label
+                    crate::language_plugin::radio_label(&c.label)
                 )));
             }
         } else {
@@ -1972,7 +1976,7 @@ impl SdroxideApp {
         if let Err(e) = self.ctrl.reconnect() {
             // Threw before the socket was even opened, so nothing is going to
             // report this one asynchronously — line the next attempt up here.
-            self.error = Some(e);
+            self.error = Some(e.into());
             self.arm_retry(now);
         }
     }
@@ -2045,7 +2049,7 @@ impl SdroxideApp {
     ///
     /// Native only, like the Remote tab itself.
     #[cfg(not(target_arch = "wasm32"))]
-    pub(crate) fn set_remote_status(&mut self, status: Result<String, String>) {
+    pub(crate) fn set_remote_status(&mut self, status: Result<crate::language_plugin::UiNotice, crate::language_plugin::UiNotice>) {
         self.remote_status = Some(status);
     }
 
@@ -2058,8 +2062,8 @@ impl SdroxideApp {
     /// Put a message in this tab's dismissable notice banner. The shell uses
     /// it for failures that have no strip to appear in (adding a radio while
     /// the main window's tab area is hidden).
-    pub(crate) fn show_notice(&mut self, text: String) {
-        self.radio_notice = Some(text);
+    pub(crate) fn show_notice(&mut self, text: impl Into<crate::language_plugin::UiNotice>) {
+        self.radio_notice = Some(text.into());
     }
 
     /// Whether this radio has a transmitter at all.
@@ -2196,5 +2200,28 @@ mod tests {
     fn a_control_in_a_disabled_ui_cannot_be_clicked() {
         assert!(press_chip(true), "the same press has to work when the radio can transmit");
         assert!(!press_chip(false), "a greyed transmit control took a click");
+    }
+}
+
+
+#[cfg(test)]
+mod radio_name_language_tests {
+    use super::radio_name;
+    #[test]
+    fn unnamed_radio_fallback_translates_and_restores_english() {
+        let mut fonts=eframe::egui::FontDefinitions::default();
+        crate::language_plugin::add_fonts(&mut fonts);
+        let ctx=eframe::egui::Context::default(); ctx.set_fonts(fonts);
+        for enabled in [true,false,true,false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let name=radio_name(&[],0);
+            assert_eq!(name,if enabled { "电台 1" } else { "radio 1" });
+            let output=ctx.run_ui(eframe::egui::RawInput::default(),|ui|{ui.label(&name);});
+            let rendered:Vec<_>=output.shapes.iter().filter_map(|shape|match &shape.shape {
+                eframe::egui::epaint::Shape::Text(text)=>Some(text.galley.job.text.clone()),_=>None,
+            }).collect();
+            output.drop_without_applying_deltas();
+            assert!(rendered.iter().any(|text|text==&name),"{rendered:?}");
+        }
     }
 }

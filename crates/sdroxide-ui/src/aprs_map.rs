@@ -309,20 +309,7 @@ pub fn show(
     let mut clicked = None;
     if let Some(i) = hover {
         let s = &stations[i];
-        let age = now - s.last_heard;
-        let mut tip = format!("{}\n{}", s.name, s.symbol.kind().label());
-        if s.entry == AprsEntryKind::Object {
-            tip.push_str(&format!("\nobject from {}", s.reported_by));
-        }
-        if !s.comment.is_empty() {
-            tip.push('\n');
-            tip.push_str(&s.comment);
-        }
-        if let (Some(h), Some(q)) = (home, s.pos) {
-            let km = sdroxide_types::distance_km((h.lat, h.lon), (q.lat, q.lon));
-            tip.push_str(&format!("\n{km:.0} km"));
-        }
-        tip.push_str(&format!("\nheard {} ago", crate::app::util::fmt_age(age)));
+        let tip = station_tooltip(s, home, now);
         resp.clone().on_hover_text(tip);
         if resp.clicked() {
             clicked = Some(s.name.clone());
@@ -336,7 +323,7 @@ pub fn show(
         p.text(
             rect.right_bottom() + vec2(-6.0, -4.0),
             Align2::RIGHT_BOTTOM,
-            "double-click to reframe",
+            crate::language_plugin::text("map.aprs.painter.text_339_a7c70e", "double-click to reframe"),
             FontId::proportional(9.0),
             alpha(Color32::WHITE, 110.0),
         );
@@ -372,5 +359,49 @@ mod tests {
     fn an_empty_map_shows_the_world() {
         let (_, _, span) = target_view(None, &[], 0.5);
         assert_eq!(span, 360.0);
+    }
+}
+
+/// Pure display of a received station; source data and map interaction remain unchanged.
+fn station_tooltip(s: &AprsStation, home: Option<AprsPosition>, now: i64) -> String {
+    let age = now - s.last_heard;
+    let mut tip = format!("{}\n{}", s.name, crate::language_plugin::aprs_symbol_display(s.symbol.kind()));
+    if s.entry == AprsEntryKind::Object {
+        tip.push_str(&crate::language_plugin::aprs_object_origin_display(&s.reported_by));
+    }
+    if !s.comment.is_empty() {
+        tip.push('\n');
+        tip.push_str(&s.comment);
+    }
+    if let (Some(h), Some(q)) = (home, s.pos) {
+        let km = sdroxide_types::distance_km((h.lat, h.lon), (q.lat, q.lon));
+        tip.push_str(&format!("\n{km:.0} km"));
+    }
+    tip.push_str(&crate::language_plugin::format("map.aprs.text_325_db971c", "\nheard {} ago", &[crate::app::util::fmt_age(age)]));
+    tip
+}
+
+#[cfg(test)]
+mod map_language28_tests {
+    use super::*;
+    #[test]
+    fn actual_station_tooltip_translates_prose_and_preserves_all_received_data() {
+        let station = AprsStation {name: "home station {obj}".into(), reported_by: "car-1".into(),
+            entry: AprsEntryKind::Object, symbol: sdroxide_types::AprsSymbol::default(),
+            pos: Some(AprsPosition {lat: 31.23, lon: 121.47, ambiguity: 0}),
+            track: vec![], course_deg: None, speed_kn: None, altitude_m: None,
+            comment: "car / home station / 中文备注".into(), status: "status".into(), weather: None,
+            last_heard: 100, packets: 7, via: vec!["WIDE1-1".into()], direct: false, killed: false};
+        let snapshot = serde_json::to_string(&station).unwrap();
+        for enabled in [true, false, true, false] {
+            crate::language_plugin::test_pack_enabled(enabled);
+            let tip = station_tooltip(&station, station.pos, 130);
+            assert!(tip.starts_with("home station {obj}\n"));
+            assert!(tip.contains("car / home station / 中文备注"));
+            assert!(tip.contains("\n0 km\n"));
+            if enabled { assert!(tip.contains("\n家庭台站\n来自 car-1 的对象\n")); }
+            else { assert_eq!(tip, "home station {obj}\nhome station\nobject from car-1\ncar / home station / 中文备注\n0 km\nheard 30s ago"); }
+            assert_eq!(serde_json::to_string(&station).unwrap(), snapshot);
+        }
     }
 }

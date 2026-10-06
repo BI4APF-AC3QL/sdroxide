@@ -507,11 +507,7 @@ impl SstvUi {
         // socket only to have it refused at the far end is a poor experience,
         // and it keeps a huge upload clear of the WebSocket's frame limit.
         if bytes.len() > IMAGE_UPLOAD_MAX {
-            self.pick_error = Some(format!(
-                "That picture is {} MB — the limit is {} MB.",
-                bytes.len() / 1_048_576,
-                IMAGE_UPLOAD_MAX / 1_048_576,
-            ));
+            self.pick_error = Some({ let __lp_arg_0 = &(bytes.len() / 1_048_576); let __lp_arg_1 = &(IMAGE_UPLOAD_MAX / 1_048_576); crate::language_plugin::format("panels.sstv.dynamic.text_511_41cba4", "That picture is {} MB — the limit is {} MB.", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
             return;
         }
         self.pick_error = None;
@@ -553,7 +549,7 @@ fn rifp_chunk_map(ui: &mut egui::Ui, session: &sdroxide_types::RifpSession) {
         egui::Stroke::new(1.0, crate::theme::gray(60)),
         egui::StrokeKind::Inside,
     );
-    resp.on_hover_text("Chunks received (lit) and still missing (dark)");
+    resp.on_hover_text(crate::language_plugin::text("panels.sstv.text_556_99ae17", "Chunks received (lit) and still missing (dark)"));
 }
 
 fn sstv_level_bar(ui: &mut egui::Ui, level: f32) {
@@ -719,9 +715,9 @@ impl SdroxideApp {
                                 );
                                 self.digi_freq_chip(ui, cmds);
                                 let auto_label = if self.sstv.auto {
-                                    format!("Auto ({})", self.sstv.tx_mode.label())
+                                    { let __lp_arg_0 = &(self.sstv.tx_mode.label()); crate::language_plugin::format("panels.sstv.dynamic.text_722_ac88e5", "Auto ({})", &[format!("{}", __lp_arg_0)]) }
                                 } else {
-                                    "Auto".to_string()
+                                    crate::language_plugin::text("panels.sstv.dynamic.text_724_028624", "Auto").to_string()
                                 };
                                 if crate::chrome::chip(ui, self.sstv.auto, &auto_label).clicked() {
                                     self.sstv.auto = true;
@@ -743,18 +739,18 @@ impl SdroxideApp {
 
                             // Signal meter + activity, and the TX-slant trim.
                             ui.horizontal_wrapped(|ui| {
-                                ui.label(RichText::new("Signal").size(10.0).weak());
+                                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_746_1e9806", "Signal")).size(10.0).weak());
                                 sstv_level_bar(ui, signal);
                                 if tx_active {
                                     ui.label(
-                                        RichText::new(format!("● TX {:.0}%", progress * 100.0))
+                                        RichText::new({ let __lp_arg_0 = &(progress * 100.0); crate::language_plugin::format("panels.sstv.text_750_f60f68", "● TX {:.0}%", &[format!("{:.0}", __lp_arg_0)]) })
                                             .size(11.0)
                                             .strong()
                                             .color(crate::theme::ALERT()),
                                     );
                                 } else if st.rx_active {
                                     ui.label(
-                                        RichText::new(format!("● RX {:.0}%", st.progress * 100.0))
+                                        RichText::new({ let __lp_arg_0 = &(st.progress * 100.0); crate::language_plugin::format("panels.sstv.text_757_1732c6", "● RX {:.0}%", &[format!("{:.0}", __lp_arg_0)]) })
                                             .size(11.0)
                                             .strong()
                                             .color(crate::theme::GREEN()),
@@ -766,24 +762,24 @@ impl SdroxideApp {
                                     // signal and the receiver looks broken
                                     // (issue #421).
                                     ui.label(
-                                        RichText::new(format!("{bad} — not decoded"))
+                                        RichText::new(crate::language_plugin::format("panels.sstv.text_769_c54545", "{bad} — not decoded", &[format!("{bad}")]))
                                             .size(10.5)
                                             .strong()
                                             .color(crate::theme::ALERT()),
                                     )
                                     .on_hover_text(
-                                        "A station is sending in a mode sdroxide does not have. \
+                                        crate::language_plugin::text("panels.sstv.text_775_c04252", "A station is sending in a mode sdroxide does not have. \
                                          The signal and the tuning are fine — there is simply no \
-                                         decoder for this one. Nothing to fix at your end.",
+                                         decoder for this one. Nothing to fix at your end."),
                                     );
                                 } else if let Some(m) = st.detected {
                                     ui.label(
-                                        RichText::new(format!("last: {}", m.label()))
+                                        RichText::new({ let __lp_arg_0 = &(m.label()); crate::language_plugin::format("panels.sstv.text_781_270cbc", "last: {}", &[format!("{}", __lp_arg_0)]) })
                                             .size(10.0)
                                             .weak(),
                                     );
                                 } else {
-                                    ui.label(RichText::new("listening…").size(10.0).weak());
+                                    ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_786_84b218", "listening…")).size(10.0).weak());
                                 }
 
                                 // Issue #397. A receiver that has locked on is
@@ -803,9 +799,9 @@ impl SdroxideApp {
                                 // here as well as in the decoder — leaving the
                                 // abandoned frame on screen would say the
                                 // button had not worked.
-                                if crate::chrome::chip(ui, false, "Restart RX")
+                                if crate::chrome::chip(ui, false, crate::language_plugin::text("panels.sstv.text_806_8f8226", "Restart RX"))
                                     .on_hover_text(
-                                        "Abandon the picture being received and listen for the                                          next header. For a transmission that started decoding                                          in the wrong mode — the receiver is otherwise committed                                          until that mode runs out.",
+                                        crate::language_plugin::text("panels.sstv.text_808_84e852", "Abandon the picture being received and listen for the                                          next header. For a transmission that started decoding                                          in the wrong mode — the receiver is otherwise committed                                          until that mode runs out."),
                                     )
                                     .clicked()
                                 {
@@ -823,21 +819,21 @@ impl SdroxideApp {
                                 if let Some(id) = st.rx_id.as_deref() {
                                     ui.add_space(8.0);
                                     ui.label(
-                                        RichText::new(format!("ID {id}"))
+                                        RichText::new(crate::language_plugin::format("panels.sstv.rx_id_label", "ID {id}", &[id.to_owned()]))
                                             .size(11.0)
                                             .strong()
                                             .color(crate::theme::CYAN_DIM()),
                                     )
                                     .on_hover_text(
-                                        "The callsign the last station sent as an FSK ID after \
-                                         its picture.",
+                                        crate::language_plugin::text("panels.sstv.text_832_73b168", "The callsign the last station sent as an FSK ID after \
+                                         its picture."),
                                     );
                                 }
 
                                 ui.add_space(12.0);
                                 ui.separator();
-                                ui.label(RichText::new("TX slant").size(10.0).weak()).on_hover_text(
-                                    "Transmit clock trim (ppm) to remove slant on the far-end decoder",
+                                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_839_f10786", "TX slant")).size(10.0).weak()).on_hover_text(
+                                    crate::language_plugin::text("panels.sstv.text_840_ced603", "Transmit clock trim (ppm) to remove slant on the far-end decoder"),
                                 );
                                 ui.add_enabled_ui(self.digi_cfg_seeded, |ui| {
                                     ui.spacing_mut().slider_width = 130.0;
@@ -853,7 +849,7 @@ impl SdroxideApp {
                                     }
                                     if ui
                                         .small_button("0")
-                                        .on_hover_text("Reset to 0 ppm")
+                                        .on_hover_text(crate::language_plugin::text("panels.sstv.text_856_aad8e4", "Reset to 0 ppm"))
                                         .clicked()
                                     {
                                         self.digi_cfg_edit.sstv_tx_ppm = 0.0;
@@ -870,13 +866,13 @@ impl SdroxideApp {
                                     if crate::chrome::checkbox(
                                         ui,
                                         &mut self.digi_cfg_edit.sstv_fsk_id,
-                                        "FSK ID",
+                                        crate::language_plugin::text("panels.sstv.fsk_id_label", "FSK ID"),
                                     )
                                     .on_hover_text(
-                                        "Send your callsign in tones after each picture — the \
+                                        crate::language_plugin::text("panels.sstv.text_876_a29325", "Send your callsign in tones after each picture — the \
                                          identification SSTV repeaters and other programs read. \
                                          Adds about 2.5 seconds, and sends nothing at all until \
-                                         you have set a callsign.",
+                                         you have set a callsign."),
                                     )
                                     .changed()
                                     {
@@ -890,7 +886,7 @@ impl SdroxideApp {
                                     // kind of per-station trim as the slant
                                     // beside it, and the operator who needs it
                                     // finds out by transmitting.
-                                    ui.label(RichText::new("TX lead").size(10.0).weak());
+                                    ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_893_a96821", "TX lead")).size(10.0).weak());
                                     if ui
                                         .add(
                                             egui::DragValue::new(
@@ -901,11 +897,11 @@ impl SdroxideApp {
                                             .suffix(" ms"),
                                         )
                                         .on_hover_text(
-                                            "Silence sent after keying and before the picture's \
+                                            crate::language_plugin::text("panels.sstv.text_904_2f7ba8", "Silence sent after keying and before the picture's \
                                              leader and VIS code. A decoder that misses any of \
                                              that header shows no picture at all, so this covers \
                                              the gap between asking a rig for PTT and it really \
-                                             being on the air. 0 for an SDR that keys instantly.",
+                                             being on the air. 0 for an SDR that keys instantly."),
                                         )
                                         .changed()
                                     {
@@ -936,7 +932,7 @@ impl SdroxideApp {
                     };
                     ui.with_layout(lay, |ui| {
                         // LIVE: the picture currently decoding, shown large.
-                        sstv_section(ui, "LIVE", egui::vec2(live_w, row_h), |ui| {
+                        sstv_section(ui, crate::language_plugin::text("panels.sstv.dynamic.text_939_35e0d0", "LIVE"), egui::vec2(live_w, row_h), |ui| {
                             ui.centered_and_justified(|ui| {
                                 if let Some(tex) = &self.sstv.rx_tex {
                                     ui.add(
@@ -948,11 +944,11 @@ impl SdroxideApp {
                                     let msg = if rifp {
                                         // RIFP only paints live from the raw
                                         // raster; anything else appears whole.
-                                        "waiting for a picture…"
+                                        crate::language_plugin::text("panels.sstv.dynamic.text_951_ae2897", "waiting for a picture…")
                                     } else if signal > 0.0008 {
-                                        "waiting for a signal…"
+                                        crate::language_plugin::text("panels.sstv.dynamic.text_953_23c4aa", "waiting for a signal…")
                                     } else {
-                                        "no / low audio"
+                                        crate::language_plugin::text("panels.sstv.dynamic.text_955_32f884", "no / low audio")
                                     };
                                     ui.label(RichText::new(msg).size(11.0).weak());
                                 }
@@ -974,17 +970,14 @@ impl SdroxideApp {
                         // pictures, thumbnailed by the engine out of its own
                         // store — so it is the same gallery here, on a browser
                         // tab, and on a client dialled in from anywhere else.
-                        sstv_section(ui, "RECEIVED", egui::vec2(gallery_w, row_h), |ui| {
+                        sstv_section(ui, crate::language_plugin::text("panels.sstv.dynamic.text_977_a65d0f", "RECEIVED"), egui::vec2(gallery_w, row_h), |ui| {
                             if self.sstv.received.is_empty() {
                                 let msg = if self.sstv.page_pending {
-                                    "Reading the radio's pictures…".to_string()
+                                    crate::language_plugin::text("panels.sstv.dynamic.text_980_0265d3", "Reading the radio's pictures…").to_string()
                                 } else if self.sstv.dir.is_empty() {
-                                    "Decoded pictures collect here.".to_string()
+                                    crate::language_plugin::text("panels.sstv.dynamic.text_982_ae3e1b", "Decoded pictures collect here.").to_string()
                                 } else {
-                                    format!(
-                                        "Decoded pictures are saved {} and collect here.",
-                                        self.store_where(&self.sstv.dir),
-                                    )
+                                    { let __lp_arg_0 = &(self.store_where(&self.sstv.dir)); crate::language_plugin::format("panels.sstv.dynamic.text_985_6ff6d2", "Decoded pictures are saved {} and collect here.", &[format!("{}", __lp_arg_0)]) }
                                 };
                                 ui.label(RichText::new(msg).size(11.0).weak());
                                 return;
@@ -1008,7 +1001,7 @@ impl SdroxideApp {
                                                         .sense(egui::Sense::click()),
                                                 )
                                                 .on_hover_text(
-                                                    "Click to enlarge · right-click to delete",
+                                                    crate::language_plugin::text("panels.sstv.text_1011_c565a0", "Click to enlarge · right-click to delete"),
                                                 );
                                             if resp.clicked() {
                                                 enlarge = Some(i);
@@ -1025,7 +1018,7 @@ impl SdroxideApp {
                                                         .size(10.0)
                                                         .weak(),
                                                 );
-                                                if ui.button("Delete this picture").clicked() {
+                                                if ui.button(crate::language_plugin::text("panels.sstv.text_1028_350486", "Delete this picture")).clicked() {
                                                     delete = Some(r.entry.name.clone());
                                                     ui.close();
                                                 }
@@ -1039,16 +1032,16 @@ impl SdroxideApp {
                                     if older > 0 && self.sstv.received.len() >= GALLERY_MAX {
                                         ui.add_space(4.0);
                                         ui.label(
-                                            RichText::new(format!("{older} older in the store"))
+                                            RichText::new(crate::language_plugin::format("panels.sstv.text_1042_ac7647", "{older} older in the store", &[format!("{older}")]))
                                                 .size(9.5)
                                                 .weak(),
                                         );
                                     } else if older > 0 {
                                         ui.add_space(4.0);
                                         let label = if self.sstv.page_pending {
-                                            "loading…".to_string()
+                                            crate::language_plugin::text("panels.sstv.dynamic.text_1049_fbc6d7", "loading…").to_string()
                                         } else {
-                                            format!("{older} older — load more")
+                                            crate::language_plugin::format("panels.sstv.dynamic.text_1051_bb2e33", "{older} older — load more", &[format!("{older}")])
                                         };
                                         if crate::chrome::chip(ui, false, label).clicked()
                                             && !self.sstv.page_pending
@@ -1078,7 +1071,7 @@ impl SdroxideApp {
             // ── RIGHT: transmit compositor, full height ──
             if pane.is_none_or(|p| p != 0) {
             ui.allocate_ui(egui::vec2(tx_w, full_h), |ui| {
-                sstv_section(ui, "TRANSMIT", egui::vec2(tx_w, full_h), |ui| {
+                sstv_section(ui, crate::language_plugin::text("panels.sstv.dynamic.text_1081_c7dbcc", "TRANSMIT"), egui::vec2(tx_w, full_h), |ui| {
                     // The compositor is a fixed stack — the five slots, the
                     // load buttons, the preview, the message box and the
                     // transmit controls — and none of it can be dropped
@@ -1154,7 +1147,7 @@ impl SdroxideApp {
                                     if sel { crate::theme::CYAN() } else { crate::theme::gray(170) },
                                 );
                                 let resp = resp.on_hover_text(
-                                    "Click to edit this slot's message · double-click to load an image",
+                                    crate::language_plugin::text("panels.sstv.text_1157_5724e0", "Click to edit this slot's message · double-click to load an image"),
                                 );
                                 if resp.double_clicked() {
                                     self.sstv.pick_target = Some(i);
@@ -1179,24 +1172,24 @@ impl SdroxideApp {
                         ui.horizontal(|ui| {
                             let sel = self.sstv.selected_slot;
                             let has_img = self.sstv.presets.slot(sel).has_picture();
-                            let label = if has_img { "Change image…" } else { "Load image…" };
+                            let label = if has_img { crate::language_plugin::text("panels.sstv.dynamic.text_1182_e895c4", "Change image…") } else { crate::language_plugin::text("panels.sstv.dynamic.text_1182_ec0f9b", "Load image…") };
                             if crate::chrome::chip(ui, false, label).clicked() {
                                 self.sstv.pick_target = Some(sel);
                                 pick_image(self.sstv.inbox.clone());
                             }
                             if has_img
-                                && crate::chrome::chip(ui, false, "Clear")
-                                    .on_hover_text("Empty this slot's picture (the message stays)")
+                                && crate::chrome::chip(ui, false, crate::language_plugin::text("common.clear_83b12c22", "Clear"))
+                                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_1189_744524", "Empty this slot's picture (the message stays)"))
                                     .clicked()
                             {
                                 cmds.push(Command::ImageClearSlot(sel as u8));
                             }
                             // The banner belongs to the station, not to the slot:
                             // one editor, reached from whichever slot is in front.
-                            if crate::chrome::chip(ui, self.sstv.banner_open, "Banner…")
+                            if crate::chrome::chip(ui, self.sstv.banner_open, crate::language_plugin::text("panels.sstv.text_1196_c8010e", "Banner…"))
                                 .on_hover_text(
-                                    "What is printed across the top of every picture this station \
-                                     sends",
+                                    crate::language_plugin::text("panels.sstv.text_1198_5ec374", "What is printed across the top of every picture this station \
+                                     sends"),
                                 )
                                 .clicked()
                             {
@@ -1232,9 +1225,9 @@ impl SdroxideApp {
                                             self.sstv.presets.slot(self.sstv.selected_slot).has_picture();
                                         ui.label(
                                             RichText::new(if waiting {
-                                                "Fetching this slot's picture…"
+                                                crate::language_plugin::text("panels.sstv.text_1235_a8bfe5", "Fetching this slot's picture…")
                                             } else {
-                                                "Load an image into this slot →"
+                                                crate::language_plugin::text("panels.sstv.text_1237_7ca14e", "Load an image into this slot →")
                                             })
                                             .size(11.0)
                                             .weak(),
@@ -1256,7 +1249,7 @@ impl SdroxideApp {
                             .push_id(sel, |ui| {
                                 crate::chrome::field_sized(ui, egui::vec2(inner_w, msg_h),
                                     egui::TextEdit::multiline(&mut buf)
-                                        .hint_text("Drawn on this slot's image"),
+                                        .hint_text(crate::language_plugin::text("panels.sstv.text_1259_95b3fd", "Drawn on this slot's image")),
                                 )
                             })
                             .inner;
@@ -1299,7 +1292,7 @@ impl SdroxideApp {
                                         crate::chrome::chip_accent(
                                             ui,
                                             can_tx,
-                                            RichText::new("   TX   ").size(16.0).strong(),
+                                            RichText::new(crate::language_plugin::text("panels.sstv.text_1302_800154", "   TX   ")).size(16.0).strong(),
                                             crate::theme::ALERT(),
                                             Color32::WHITE,
                                         ),
@@ -1331,7 +1324,7 @@ impl SdroxideApp {
                                     crate::chrome::chip(
                                         ui,
                                         false,
-                                        RichText::new(" ABORT TX ").size(15.0).strong(),
+                                        RichText::new(crate::language_plugin::text("panels.sstv.text_1334_86953b", " ABORT TX ")).size(15.0).strong(),
                                     )
                                 })
                                 .inner;
@@ -1387,14 +1380,14 @@ impl SdroxideApp {
                 // A picture can be stored before the first listing has come
                 // back, so the directory is not always known to name.
                 let del_hint = if self.sstv.dir.is_empty() {
-                    "Delete this picture from the store".to_string()
+                    crate::language_plugin::text("panels.sstv.dynamic.text_1390_afa0b2", "Delete this picture from the store").to_string()
                 } else {
-                    format!("Delete this picture {}", self.store_where(&self.sstv.dir))
+                    { let __lp_arg_0 = &(self.store_where(&self.sstv.dir)); crate::language_plugin::format("panels.sstv.dynamic.text_1392_3f326f", "Delete this picture {}", &[format!("{}", __lp_arg_0)]) }
                 };
                 let r = &self.sstv.received[idx];
                 let savable = self.sstv.full_png.as_ref().is_some_and(|(n, _)| *n == r.entry.name);
                 let armed = self.sstv.confirm_delete.as_deref() == Some(&r.entry.name);
-                egui::Window::new("Received image")
+                egui::Window::new(crate::language_plugin::text("panels.sstv.text_1397_f3f29b", "Received image")).id(egui::Id::new("Received image"))
                     .id(crate::layout::salted_id(&ctx, "Received image"))
                     .open(&mut open)
                     .collapsible(false)
@@ -1419,15 +1412,15 @@ impl SdroxideApp {
                         ui.horizontal(|ui| {
                             if self.sstv.full_gone {
                                 ui.label(
-                                    RichText::new("no longer in the store")
+                                    RichText::new(crate::language_plugin::text("panels.sstv.text_1422_151908", "no longer in the store"))
                                         .size(10.0)
                                         .color(crate::theme::YELLOW()),
                                 );
                             } else if r.full.is_none() {
-                                ui.label(RichText::new("loading full size…").size(10.0).weak());
+                                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1427_f12b73", "loading full size…")).size(10.0).weak());
                             } else if savable
-                                && crate::chrome::chip(ui, false, "Save picture…")
-                                    .on_hover_text("Save a copy on this computer")
+                                && crate::chrome::chip(ui, false, crate::language_plugin::text("panels.sstv.text_1429_bb1ed3", "Save picture…"))
+                                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_1430_a45430", "Save a copy on this computer"))
                                     .clicked()
                             {
                                 save = true;
@@ -1439,13 +1432,13 @@ impl SdroxideApp {
                                 crate::chrome::chip_accent(
                                     ui,
                                     true,
-                                    "Delete — sure?",
+                                    crate::language_plugin::text("panels.sstv.dynamic.text_1442_f9c635", "Delete — sure?"),
                                     crate::theme::PINK(),
                                     crate::theme::INK_ON_CYAN(),
                                 )
-                                .on_hover_text("Click again to delete it for good")
+                                .on_hover_text(crate::language_plugin::text("panels.sstv.text_1446_ce3415", "Click again to delete it for good"))
                             } else {
-                                crate::chrome::chip(ui, false, "Delete…").on_hover_text(&del_hint)
+                                crate::chrome::chip(ui, false, crate::language_plugin::text("panels.sstv.text_1448_9ce78f", "Delete…")).on_hover_text(&del_hint)
                             };
                             if del.clicked() {
                                 pressed_delete = true;
@@ -1463,22 +1456,10 @@ impl SdroxideApp {
                         // carried; SSTV knows none of that, and says nothing.
                         if let Some(m) = &r.entry.rifp {
                             ui.add_space(4.0);
-                            let from = m.sender.as_deref().unwrap_or("unidentified");
+                            let from = crate::language_plugin::rifp_sender_display(m.sender.as_deref());
                             ui.label(
-                                RichText::new(format!(
-                                    "{from} · {} · {}×{} {}-bit · {} / {} · {} octets in {} chunks \
-                                     ({} first pass) · session {}",
-                                    m.filename,
-                                    m.width,
-                                    m.height,
-                                    m.bits_per_pixel,
-                                    m.media_type,
-                                    m.content_encoding,
-                                    m.encoded_size,
-                                    m.chunk_count,
-                                    m.chunks_first_pass,
-                                    m.session,
-                                ))
+                                RichText::new({ let __lp_arg_0 = &(m.filename); let __lp_arg_1 = &(m.width); let __lp_arg_2 = &(m.height); let __lp_arg_3 = &(m.bits_per_pixel); let __lp_arg_4 = &(m.media_type); let __lp_arg_5 = &(m.content_encoding); let __lp_arg_6 = &(m.encoded_size); let __lp_arg_7 = &(m.chunk_count); let __lp_arg_8 = &(m.chunks_first_pass); let __lp_arg_9 = &(m.session); crate::language_plugin::format("panels.sstv.text_1469_076439", "{from} · {} · {}×{} {}-bit · {} / {} · {} octets in {} chunks \
+                                     ({} first pass) · session {}", &[format!("{from}"), format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{}", __lp_arg_4), format!("{}", __lp_arg_5), format!("{}", __lp_arg_6), format!("{}", __lp_arg_7), format!("{}", __lp_arg_8), format!("{}", __lp_arg_9)]) })
                                 .size(10.5)
                                 .weak(),
                             );
@@ -1529,7 +1510,7 @@ impl SdroxideApp {
         let seeded = self.digi_cfg_seeded;
         let mut open = true;
         let mut changed = false;
-        egui::Window::new("Image banner")
+        egui::Window::new(crate::language_plugin::text("panels.sstv.text_1532_a7c09b", "Image banner")).id(egui::Id::new("Image banner"))
             .id(crate::layout::salted_id(ctx, "Image banner"))
             .open(&mut open)
             .collapsible(false)
@@ -1540,8 +1521,8 @@ impl SdroxideApp {
                 crate::chrome::window_body_bg(ui);
                 ui.label(
                     RichText::new(
-                        "Drawn into every picture this station transmits, over the slot's own \
-                         message.",
+                        crate::language_plugin::text("panels.sstv.text_1543_a203b8", "Drawn into every picture this station transmits, over the slot's own \
+                         message."),
                     )
                     .size(10.5)
                     .weak(),
@@ -1549,7 +1530,7 @@ impl SdroxideApp {
                 ui.add_space(6.0);
                 let cfg = &mut self.digi_cfg_edit;
                 ui.add_enabled_ui(seeded, |ui| {
-                    if crate::chrome::checkbox(ui, &mut cfg.sstv_banner, "Draw the banner")
+                    if crate::chrome::checkbox(ui, &mut cfg.sstv_banner, crate::language_plugin::text("panels.sstv.text_1552_3ff8ef", "Draw the banner"))
                         .changed()
                     {
                         changed = true;
@@ -1559,12 +1540,12 @@ impl SdroxideApp {
                         // The placeholder list is the whole documentation for
                         // these two fields, so it hangs off both of them.
                         let hint: String = std::iter::once(
-                            "Substituted when the picture is composed:".to_string(),
+                            crate::language_plugin::text("panels.sstv.dynamic.text_1562_50c3b7", "Substituted when the picture is composed:").to_string(),
                         )
                         .chain(
                             crate::sstv::BANNER_PLACEHOLDERS
                                 .iter()
-                                .map(|(k, what)| format!("  {k} — {what}")),
+                                .map(|(k, what)| format!("  {k} — {}", crate::language_plugin::sstv_placeholder_help(k, what))),
                         )
                         .collect::<Vec<_>>()
                         .join("\n");
@@ -1572,7 +1553,7 @@ impl SdroxideApp {
                             .num_columns(2)
                             .spacing([10.0, 7.0])
                             .show(ui, |ui| {
-                                ui.label("Top left");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1575_a0eda5", "Top left"));
                                 let resp = crate::chrome::field(
                                     ui,
                                     egui::TextEdit::singleline(&mut cfg.sstv_banner_left)
@@ -1591,7 +1572,7 @@ impl SdroxideApp {
                                 }
                                 ui.end_row();
 
-                                ui.label("Top right");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1594_d83cbe", "Top right"));
                                 let resp = crate::chrome::field(
                                     ui,
                                     egui::TextEdit::singleline(&mut cfg.sstv_banner_right)
@@ -1604,35 +1585,35 @@ impl SdroxideApp {
                                 }
                                 ui.end_row();
 
-                                ui.label("Colours");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1607_88f202", "Colours"));
                                 ui.horizontal(|ui| {
                                     changed |= ui
                                         .color_edit_button_srgb(&mut cfg.sstv_banner_fill)
                                         .on_hover_text(
-                                            "The strip, at its top edge — it fades to black, or \
-                                             to the gradient colour below it",
+                                            crate::language_plugin::text("panels.sstv.text_1612_930cd9", "The strip, at its top edge — it fades to black, or \
+                                             to the gradient colour below it"),
                                         )
                                         .changed();
-                                    ui.label(RichText::new("strip").size(10.5).weak());
+                                    ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1616_d60384", "strip")).size(10.5).weak());
                                     ui.add_space(8.0);
                                     changed |= ui
                                         .color_edit_button_srgb(&mut cfg.sstv_banner_ink)
-                                        .on_hover_text("Both texts")
+                                        .on_hover_text(crate::language_plugin::text("panels.sstv.text_1620_802824", "Both texts"))
                                         .changed();
-                                    ui.label(RichText::new("text").size(10.5).weak());
+                                    ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1622_982d9e", "text")).size(10.5).weak());
                                 });
                                 ui.end_row();
 
-                                ui.label("Gradient");
+                                ui.label(crate::language_plugin::text("settings.ui.gradient", "Gradient"));
                                 ui.horizontal(|ui| {
                                     changed |= crate::chrome::checkbox(
                                         ui,
                                         &mut cfg.sstv_style.banner_gradient,
-                                        "fade to",
+                                        crate::language_plugin::text("panels.sstv.text_1631_96551c", "fade to"),
                                     )
                                     .on_hover_text(
-                                        "Fade the strip from its top colour to a second one \
-                                         instead of to black.",
+                                        crate::language_plugin::text("panels.sstv.text_1634_b478d4", "Fade the strip from its top colour to a second one \
+                                         instead of to black."),
                                     )
                                     .changed();
                                     ui.add_enabled_ui(cfg.sstv_style.banner_gradient, |ui| {
@@ -1645,16 +1626,16 @@ impl SdroxideApp {
                                 });
                                 ui.end_row();
 
-                                ui.label("Text outline");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1648_f2944a", "Text outline"));
                                 ui.horizontal(|ui| {
                                     changed |= crate::chrome::checkbox(
                                         ui,
                                         &mut cfg.sstv_style.banner_outline,
-                                        "in",
+                                        crate::language_plugin::text("panels.sstv.text_1653_582967", "in"),
                                     )
                                     .on_hover_text(
-                                        "Draw an outline around the banner text, so it stays \
-                                         readable over a busy or light strip.",
+                                        crate::language_plugin::text("panels.sstv.text_1656_337daf", "Draw an outline around the banner text, so it stays \
+                                         readable over a busy or light strip."),
                                     )
                                     .changed();
                                     ui.add_enabled_ui(cfg.sstv_style.banner_outline, |ui| {
@@ -1667,16 +1648,16 @@ impl SdroxideApp {
                                 });
                                 ui.end_row();
 
-                                ui.label("Text gradient");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1670_1b542d", "Text gradient"));
                                 ui.horizontal(|ui| {
                                     changed |= crate::chrome::checkbox(
                                         ui,
                                         &mut cfg.sstv_style.banner_ink_gradient,
-                                        "fade to",
+                                        crate::language_plugin::text("panels.sstv.text_1675_96551c", "fade to"),
                                     )
                                     .on_hover_text(
-                                        "Fade the banner text from its colour to a second one \
-                                         across the width of the picture.",
+                                        crate::language_plugin::text("panels.sstv.text_1678_e4354a", "Fade the banner text from its colour to a second one \
+                                         across the width of the picture."),
                                     )
                                     .changed();
                                     ui.add_enabled_ui(
@@ -1693,31 +1674,31 @@ impl SdroxideApp {
                                 });
                                 ui.end_row();
 
-                                ui.label("Rainbow text");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1696_1da566", "Rainbow text"));
                                 changed |= crate::chrome::checkbox(
                                     ui,
                                     &mut cfg.sstv_style.rainbow_text,
-                                    "all text, overriding the colours above",
+                                    crate::language_plugin::text("panels.sstv.text_1700_d56634", "all text, overriding the colours above"),
                                 )
                                 .on_hover_text(
-                                    "Draw every text in the picture — banner and message — as a \
-                                     horizontal rainbow, ignoring the colours above.",
+                                    crate::language_plugin::text("panels.sstv.text_1703_68c79b", "Draw every text in the picture — banner and message — as a \
+                                     horizontal rainbow, ignoring the colours above."),
                                 )
                                 .changed();
                                 ui.end_row();
 
-                                ui.label("Message");
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1709_2f7766", "Message"));
                                 ui.horizontal(|ui| {
                                     changed |= ui
                                         .color_edit_button_srgb(&mut cfg.sstv_style.message_ink)
-                                        .on_hover_text("The slot message's text colour")
+                                        .on_hover_text(crate::language_plugin::text("panels.sstv.text_1713_858779", "The slot message's text colour"))
                                         .changed();
-                                    ui.label(RichText::new("text").size(10.5).weak());
+                                    ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1715_982d9e", "text")).size(10.5).weak());
                                     ui.add_space(8.0);
                                     changed |= crate::chrome::checkbox(
                                         ui,
                                         &mut cfg.sstv_style.message_outline,
-                                        "outline in",
+                                        crate::language_plugin::text("panels.sstv.text_1720_6d975a", "outline in"),
                                     )
                                     .changed();
                                     ui.add_enabled_ui(cfg.sstv_style.message_outline, |ui| {
@@ -1730,17 +1711,17 @@ impl SdroxideApp {
                                 });
                                 ui.end_row();
 
-                                ui.label("Height").on_hover_text(
-                                    "How tall the strip is, in pixels of the transmitted \
+                                ui.label(crate::language_plugin::text("panels.sstv.text_1733_bfe2ec", "Height")).on_hover_text(
+                                    crate::language_plugin::text("panels.sstv.text_1734_924984", "How tall the strip is, in pixels of the transmitted \
                                      picture. The text is sized from it — an SSTV frame is only \
                                      320 pixels wide, so a taller banner is what makes it \
-                                     readable on the far end.",
+                                     readable on the far end."),
                                 );
                                 ui.spacing_mut().slider_width = 180.0;
                                 let resp = crate::chrome::slider(
                                     ui,
                                     egui::Slider::new(&mut cfg.sstv_banner_height, 8..=64)
-                                        .suffix(" px"),
+                                        .suffix(crate::language_plugin::text("panels.sstv.text_1743_bc913f", " px")),
                                 );
                                 changed |=
                                     resp.drag_stopped() || (resp.changed() && !resp.dragged());
@@ -1749,9 +1730,9 @@ impl SdroxideApp {
                     });
                     ui.add_space(6.0);
                     if ui
-                        .button("Reset")
+                        .button(crate::language_plugin::text("common.reset", "Reset"))
                         .on_hover_text(
-                            "Back to the callsign on the left and the version on the right",
+                            crate::language_plugin::text("panels.sstv.text_1754_2b6a55", "Back to the callsign on the left and the version on the right"),
                         )
                         .clicked()
                     {
@@ -1768,7 +1749,7 @@ impl SdroxideApp {
                     if !seeded {
                         ui.label(
                             RichText::new(
-                                "Waiting for the station's digital-mode settings to load…",
+                                crate::language_plugin::text("panels.sstv.text_1771_ad3b10", "Waiting for the station's digital-mode settings to load…"),
                             )
                             .size(10.0)
                             .weak(),
@@ -1799,13 +1780,7 @@ impl SdroxideApp {
                 for p in RifpProfile::ALL {
                     let active = self.digi_cfg_edit.rifp_profile == p;
                     if crate::chrome::chip(ui, active, p.label())
-                        .on_hover_text(format!(
-                            "{} — {:.0} baud CPFSK, ±{:.0} Hz, {:.0} kHz occupied bandwidth",
-                            p.name(),
-                            p.symbol_rate(),
-                            p.deviation_hz(),
-                            p.bandwidth_hz() / 1000.0,
-                        ))
+                        .on_hover_text({ let __lp_arg_0 = &(p.name()); let __lp_arg_1 = &(p.symbol_rate()); let __lp_arg_2 = &(p.deviation_hz()); let __lp_arg_3 = &(p.bandwidth_hz() / 1000.0); crate::language_plugin::format("panels.sstv.text_1803_fbb99e", "{} — {:.0} baud CPFSK, ±{:.0} Hz, {:.0} kHz occupied bandwidth", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1), format!("{:.0}", __lp_arg_2), format!("{:.0}", __lp_arg_3)]) })
                         .clicked()
                         && !active
                     {
@@ -1814,7 +1789,7 @@ impl SdroxideApp {
                     }
                 }
                 ui.separator();
-                ui.label(RichText::new("Size").size(10.0).weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1817_1af851", "Size")).size(10.0).weak());
                 for s in RifpSize::ALL {
                     let active = self.digi_cfg_edit.rifp_size == s;
                     if crate::chrome::chip(ui, active, s.label()).clicked() && !active {
@@ -1834,38 +1809,26 @@ impl SdroxideApp {
             let profile = self.digi_cfg_edit.rifp_profile;
             if profile.fits_at(dial) {
                 ui.label(
-                    RichText::new(format!(
-                        "{} · ~{:.0} kHz occupied · dial is the channel centre",
-                        profile.name(),
-                        profile.bandwidth_hz() / 1000.0,
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(profile.name()); let __lp_arg_1 = &(profile.bandwidth_hz() / 1000.0); crate::language_plugin::format("panels.sstv.text_1838_45aee5", "{} · ~{:.0} kHz occupied · dial is the channel centre", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) })
                     .size(10.5)
                     .weak(),
                 );
             } else {
                 ui.label(
-                    RichText::new(format!(
-                        "⚠ {} occupies ~{:.0} kHz — too wide for a narrow-band segment",
-                        profile.name(),
-                        profile.bandwidth_hz() / 1000.0,
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(profile.name()); let __lp_arg_1 = &(profile.bandwidth_hz() / 1000.0); crate::language_plugin::format("panels.sstv.text_1848_0670fa", "⚠ {} occupies ~{:.0} kHz — too wide for a narrow-band segment", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) })
                     .size(10.5)
                     .strong()
                     .color(crate::theme::ALERT()),
                 )
-                .on_hover_text(format!(
-                    "RIFP assigns no frequency, and sdroxide will transmit it wherever you tune. \
+                .on_hover_text({ let __lp_arg_0 = &(profile.bandwidth_hz() / 1000.0); let __lp_arg_1 = &(profile.wide_segments_text()); crate::language_plugin::format("panels.sstv.text_1857_c66ecb", "RIFP assigns no frequency, and sdroxide will transmit it wherever you tune. \
                      A {:.0} kHz channel only fits where wideband or FM operation is allowed — \
                      {} — and not in a narrow-band segment, least of all on HF. Even inside those \
                      your own licence conditions may be narrower. You are the operator; check \
-                     your own rules.",
-                    profile.bandwidth_hz() / 1000.0,
-                    profile.wide_segments_text(),
-                ));
+                     your own rules.", &[format!("{:.0}", __lp_arg_0), format!("{}", __lp_arg_1)]) });
             }
             if (dial - sdroxide_types::RIFP_CALLING_HZ).abs() > 1.0
                 && crate::chrome::chip(ui, false, "433.920")
-                    .on_hover_text("The calling frequency the draft names")
+                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_1868_10f72d", "The calling frequency the draft names"))
                     .clicked()
             {
                 cmds.push(Command::SetVfo {
@@ -1879,15 +1842,15 @@ impl SdroxideApp {
         // Encoding and depth: what the picture is turned into before framing.
         ui.horizontal_wrapped(|ui| {
             ui.add_enabled_ui(seeded, |ui| {
-                ui.label(RichText::new("Encode").size(10.0).weak()).on_hover_text(
-                    "How the picture is encoded into the object RIFP carries. Auto tries each and \
-                 sends the smallest.",
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1882_23389a", "Encode")).size(10.0).weak()).on_hover_text(
+                    crate::language_plugin::text("panels.sstv.text_1883_90a431", "How the picture is encoded into the object RIFP carries. Auto tries each and \
+                 sends the smallest."),
                 );
                 for e in RifpEncoding::TX_MENU {
                     let active = self.digi_cfg_edit.rifp_encoding == e;
                     let hover = match e.manifest_pair() {
                         Some((mt, ce)) => format!("{mt} / {ce}"),
-                        None => "Try every encoding, send the smallest (never lossy)".into(),
+                        None => crate::language_plugin::text("panels.sstv.dynamic.text_1890_290408", "Try every encoding, send the smallest (never lossy)").into(),
                     };
                     if crate::chrome::chip(ui, active, e.label()).on_hover_text(hover).clicked()
                         && !active
@@ -1897,9 +1860,9 @@ impl SdroxideApp {
                     }
                 }
                 ui.separator();
-                ui.label(RichText::new("Gray").size(10.0).weak()).on_hover_text(
-                "Grayscale depth. RIFP's raster is grayscale by definition — colour has no place \
-                 in its manifest.",
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1900_0d5add", "Gray")).size(10.0).weak()).on_hover_text(
+                crate::language_plugin::text("panels.sstv.text_1901_b56f27", "Grayscale depth. RIFP's raster is grayscale by definition — colour has no place \
+                 in its manifest."),
             );
                 for bits in [1u8, 2, 4, 8] {
                     let active = self.digi_cfg_edit.rifp_bits_per_pixel == bits;
@@ -1909,8 +1872,8 @@ impl SdroxideApp {
                     }
                 }
                 let mut dither = self.digi_cfg_edit.rifp_dither;
-                if crate::chrome::chip(ui, dither, "Dither")
-                    .on_hover_text("Diffuse quantisation error — worth it below 8 bits")
+                if crate::chrome::chip(ui, dither, crate::language_plugin::text("common.dither", "Dither"))
+                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_1913_47225f", "Diffuse quantisation error — worth it below 8 bits"))
                     .clicked()
                 {
                     dither = !dither;
@@ -1926,15 +1889,15 @@ impl SdroxideApp {
         // Distinct from the slot message, which is drawn into the picture.
         ui.horizontal(|ui| {
             ui.add_enabled_ui(seeded, |ui| {
-                ui.label(RichText::new("Caption").size(10.0).weak()).on_hover_text(
-                    "Sent in the manifest as the content hint, and shown under the picture by \
-                     receivers. Travels as text — it is not drawn into the image.",
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1929_87d296", "Caption")).size(10.0).weak()).on_hover_text(
+                    crate::language_plugin::text("panels.sstv.text_1930_45bede", "Sent in the manifest as the content hint, and shown under the picture by \
+                     receivers. Travels as text — it is not drawn into the image."),
                 );
                 let resp = crate::chrome::field(
                     ui,
                     egui::TextEdit::singleline(&mut self.digi_cfg_edit.rifp_content_hint)
                         .desired_width(f32::INFINITY)
-                        .hint_text("What this picture is"),
+                        .hint_text(crate::language_plugin::text("panels.sstv.text_1937_89ccfe", "What this picture is")),
                 );
                 // On focus loss rather than per keystroke: this is persisted
                 // engine-side, and a config write per character is absurd.
@@ -1949,9 +1912,9 @@ impl SdroxideApp {
         // recovery there is.
         ui.horizontal_wrapped(|ui| {
             ui.add_enabled_ui(seeded, |ui| {
-                ui.label(RichText::new("Repeat data").size(10.0).weak()).on_hover_text(
-                    "Send every data frame this many times. RIFP is one-way with no repair \
-                     requests, so this is the only recovery a receiver gets.",
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1952_48b4ef", "Repeat data")).size(10.0).weak()).on_hover_text(
+                    crate::language_plugin::text("panels.sstv.text_1953_724391", "Send every data frame this many times. RIFP is one-way with no repair \
+                     requests, so this is the only recovery a receiver gets."),
                 );
                 ui.spacing_mut().slider_width = 90.0;
                 changed |= crate::chrome::slider(
@@ -1959,8 +1922,8 @@ impl SdroxideApp {
                     egui::Slider::new(&mut self.digi_cfg_edit.rifp_data_repeats, 1..=4),
                 )
                 .drag_stopped();
-                ui.label(RichText::new("Chunk").size(10.0).weak())
-                    .on_hover_text("Payload octets per data frame (the profile recommends 192)");
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_1962_1617de", "Chunk")).size(10.0).weak())
+                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_1963_cba185", "Payload octets per data frame (the profile recommends 192)"));
                 changed |= crate::chrome::slider(
                     ui,
                     egui::Slider::new(&mut self.digi_cfg_edit.rifp_chunk_size, 32..=1024)
@@ -1971,10 +1934,7 @@ impl SdroxideApp {
             ui.separator();
             if st.tx_active {
                 ui.label(
-                    RichText::new(format!(
-                        "● TX frame {}/{} · {} s left",
-                        st.tx_frame, st.tx_frames, st.tx_remaining_s
-                    ))
+                    RichText::new({ let __lp_arg_0 = &(st.tx_frame); let __lp_arg_1 = &(st.tx_frames); let __lp_arg_2 = &(st.tx_remaining_s); crate::language_plugin::format("panels.sstv.text_1975_d4f003", "● TX frame {}/{} · {} s left", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) })
                     .size(11.0)
                     .strong()
                     .color(crate::theme::ALERT()),
@@ -1982,7 +1942,7 @@ impl SdroxideApp {
             }
             if let Some(enc) = st.tx_encoding {
                 ui.label(
-                    RichText::new(format!("sent as {} · {} octets", enc.label(), st.tx_bytes))
+                    RichText::new({ let __lp_arg_0 = &(enc.label()); let __lp_arg_1 = &(st.tx_bytes); crate::language_plugin::format("panels.sstv.text_1985_13952a", "sent as {} · {} octets", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) })
                         .size(10.0)
                         .weak(),
                 );
@@ -1993,16 +1953,13 @@ impl SdroxideApp {
         // Counters and the sessions being reassembled.
         ui.horizontal_wrapped(|ui| {
             ui.label(
-                RichText::new(format!(
-                    "frames {} · bad {} · pictures {}",
-                    st.rx_frames, st.rx_bad_frames, st.rx_objects
-                ))
+                RichText::new({ let __lp_arg_0 = &(st.rx_frames); let __lp_arg_1 = &(st.rx_bad_frames); let __lp_arg_2 = &(st.rx_objects); crate::language_plugin::format("panels.sstv.text_1997_dd7a6d", "frames {} · bad {} · pictures {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) })
                 .size(10.0)
                 .weak(),
             )
-            .on_hover_text("Valid frames, frames that failed CRC, and complete verified pictures");
+            .on_hover_text(crate::language_plugin::text("panels.sstv.text_2003_ded168", "Valid frames, frames that failed CRC, and complete verified pictures"));
             if st.sessions.is_empty() {
-                ui.label(RichText::new("no transfer in progress").size(10.0).weak());
+                ui.label(RichText::new(crate::language_plugin::text("panels.sstv.text_2005_c80bde", "no transfer in progress")).size(10.0).weak());
             }
             for s in &st.sessions {
                 ui.separator();
@@ -2016,17 +1973,14 @@ impl SdroxideApp {
                     if s.have_manifest { crate::theme::GREEN() } else { crate::theme::YELLOW() };
                 ui.label(RichText::new(label).size(10.5).strong().color(colour)).on_hover_text(
                     if s.have_manifest {
-                        format!("session {} · idle {} s", s.session, s.idle_s)
+                        { let __lp_arg_0 = &(s.session); let __lp_arg_1 = &(s.idle_s); crate::language_plugin::format("panels.sstv.text_2019_217476", "session {} · idle {} s", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
                     } else {
-                        format!(
-                            "session {} · chunks held, still waiting for the manifest · idle {} s",
-                            s.session, s.idle_s
-                        )
+                        { let __lp_arg_0 = &(s.session); let __lp_arg_1 = &(s.idle_s); crate::language_plugin::format("panels.sstv.text_2022_537303", "session {} · chunks held, still waiting for the manifest · idle {} s", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
                     },
                 );
                 rifp_chunk_map(ui, s);
                 if crate::chrome::chip(ui, false, "✕")
-                    .on_hover_text("Forget this incomplete transfer")
+                    .on_hover_text(crate::language_plugin::text("panels.sstv.text_2029_47f024", "Forget this incomplete transfer"))
                     .clicked()
                 {
                     cmds.push(Command::RifpDropSession(s.session.clone()));
@@ -2034,7 +1988,7 @@ impl SdroxideApp {
             }
         });
         if let Some(err) = &st.last_error {
-            ui.label(RichText::new(err).size(10.0).color(crate::theme::YELLOW()));
+            ui.label(RichText::new(crate::language_plugin::rifp_error_status(err)).size(10.0).color(crate::theme::YELLOW()));
         }
         if changed && seeded {
             cmds.push(Command::SetDigiConfig(self.digi_cfg_edit.clone()));
@@ -2048,9 +2002,9 @@ impl SdroxideApp {
     /// difference between a useful hint and a wrong one.
     pub(in crate::app) fn store_where(&self, dir: &str) -> String {
         if self.ctrl.engine_is_remote() {
-            format!("on the radio, in {dir}")
+            crate::language_plugin::format("panels.sstv.dynamic.text_2051_6b3bbe", "on the radio, in {dir}", &[format!("{dir}")])
         } else {
-            format!("in {dir}")
+            crate::language_plugin::format("panels.sstv.dynamic.text_2053_30e51f", "in {dir}", &[format!("{dir}")])
         }
     }
 }

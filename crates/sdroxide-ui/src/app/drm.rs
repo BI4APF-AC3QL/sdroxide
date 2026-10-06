@@ -130,14 +130,14 @@ impl SdroxideApp {
         let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
 
         let Some(d) = self.drm.clone() else {
-            ui.label(dim("waiting for the receiver…"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_133_128cfd", "waiting for the receiver…")));
             return cmds;
         };
 
         if self.state.rx[0].mode != Mode::Drm {
             ui.label(dim(
-                "Not in DRM. Set the mode to DRM on a digital shortwave broadcast — the \
-                 dial goes on the channel centre, not on a sideband.",
+                &crate::language_plugin::text("window.drm.text_139_bda0d4", "Not in DRM. Set the mode to DRM on a digital shortwave broadcast — the \
+                 dial goes on the channel centre, not on a sideband."),
             ));
             ui.add_space(6.0);
         }
@@ -147,8 +147,8 @@ impl SdroxideApp {
 
         if !d.locked {
             ui.label(dim(
-                "No DRM signal locked. The decoder needs a few seconds on a clean carrier: \
-                 DRM interleaves over 400 ms or 2 s before any of it can be read.",
+                &crate::language_plugin::text("window.drm.text_150_bb8e4e", "No DRM signal locked. The decoder needs a few seconds on a clean carrier: \
+                 DRM interleaves over 400 ms or 2 s before any of it can be read."),
             ));
             return cmds;
         }
@@ -159,12 +159,12 @@ impl SdroxideApp {
         // station named there cannot be heard.
         if d.service.codec.is_some() && !d.service.codec_supported {
             ui.label(dim(
-                "This station's audio codec is not decoding here. xHE-AAC needs libfdk-aac \
+                &crate::language_plugin::text("window.drm.text_162_a9c430", "This station's audio codec is not decoding here. xHE-AAC needs libfdk-aac \
                  on the system — it cannot be built in, because its licence and this \
                  program's are incompatible. Install it (Debian/Ubuntu: libfdk-aac2, \
                  Arch: libfdk-aac, macOS: brew install fdk-aac, Windows: libfdk-aac-2.dll \
                  beside sdroxide.exe) and restart. Everything else on this screen is \
-                 decoding normally.",
+                 decoding normally."),
             ));
             ui.add_space(8.0);
         }
@@ -189,10 +189,10 @@ impl SdroxideApp {
     fn drm_quality_history(&self, ui: &mut egui::Ui) {
         let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
         ui.horizontal(|ui| {
-            ui.label(dim("QUALITY"));
-            ui.label(RichText::new("SNR").size(9.0).color(Color32::from_rgb(90, 190, 230)));
-            ui.label(RichText::new("MER").size(9.0).color(Color32::from_rgb(150, 210, 120)));
-            ui.label(dim("last minute"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_192_272776", "QUALITY")));
+            ui.label(RichText::new(crate::language_plugin::text("window.drm.snr_label", "SNR")).size(9.0).color(Color32::from_rgb(90, 190, 230)));
+            ui.label(RichText::new(crate::language_plugin::text("window.drm.mer_label", "MER")).size(9.0).color(Color32::from_rgb(150, 210, 120)));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_195_503737", "last minute")));
         });
 
         let (rect, _) =
@@ -207,7 +207,7 @@ impl SdroxideApp {
             p.text(
                 rect.center(),
                 egui::Align2::CENTER_CENTER,
-                "waiting for a locked signal",
+                crate::language_plugin::text("window.drm.text_210_052eb4", "waiting for a locked signal"),
                 egui::FontId::proportional(10.0),
                 dim_ink(),
             );
@@ -265,17 +265,17 @@ impl SdroxideApp {
         // Where the row stops is the diagnosis, and this is the one stage that
         // can stop for a reason the chain itself does not show.
         let audio_hover = if d.service.codec.is_some() && !d.service.codec_supported {
-            "Audio frames decoding — but this station's codec cannot be decoded here"
+            crate::language_plugin::text("window.drm.text_268_9b42e9", "Audio frames decoding — but this station's codec cannot be decoded here")
         } else {
-            "Audio frames decoding"
+            crate::language_plugin::text("window.drm.text_270_6d8b28", "Audio frames decoding")
         };
         let stages = [
-            ("IO", d.io, "Samples reaching the decoder"),
-            ("TIME", d.time_sync, "Symbol timing recovered"),
-            ("FRAME", d.frame_sync, "Transmission frames found"),
-            ("FAC", d.fac, "Fast Access Channel — what the transmission is"),
-            ("SDC", d.sdc, "Service Description Channel — what the services are"),
-            ("AUDIO", d.audio, audio_hover),
+            ("IO".to_owned(), d.io, crate::language_plugin::text("window.drm.text_273_84ce25", "Samples reaching the decoder")),
+            (crate::language_plugin::text("window.drm.text_274_588867", "TIME"), d.time_sync, crate::language_plugin::text("window.drm.text_274_6eaa0e", "Symbol timing recovered")),
+            (crate::language_plugin::text("window.drm.text_275_c0fcf1", "FRAME"), d.frame_sync, crate::language_plugin::text("window.drm.text_275_72a6cf", "Transmission frames found")),
+            ("FAC".to_owned(), d.fac, crate::language_plugin::text("window.drm.text_276_85ee3a", "Fast Access Channel — what the transmission is")),
+            ("SDC".to_owned(), d.sdc, crate::language_plugin::text("window.drm.text_277_e1d2dc", "Service Description Channel — what the services are")),
+            (crate::language_plugin::text("window.drm.text_278_859e89", "AUDIO"), d.audio, audio_hover),
         ];
         ui.horizontal_wrapped(|ui| {
             for (label, state, hover) in stages {
@@ -313,7 +313,7 @@ impl SdroxideApp {
         let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
 
         ui.horizontal(|ui| {
-            ui.label(dim("CONSTELLATION"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_316_8863c3", "CONSTELLATION")));
             for ch in DrmChannel::ALL {
                 if crate::chrome::chip(ui, self.drm_channel == ch, ch.label())
                     .on_hover_text(ch.describes())
@@ -342,7 +342,7 @@ impl SdroxideApp {
             p.text(
                 rect.center(),
                 egui::Align2::CENTER_CENTER,
-                "waiting for decoded symbols",
+                crate::language_plugin::text("window.drm.text_345_248c48", "waiting for decoded symbols"),
                 egui::FontId::proportional(10.0),
                 dim_ink(),
             );
@@ -352,7 +352,7 @@ impl SdroxideApp {
             p.text(
                 rect.center(),
                 egui::Align2::CENTER_CENTER,
-                format!("{} not decoding", c.channel.label()),
+                { let __lp_arg_0 = &(c.channel.label()); crate::language_plugin::format("window.drm.text_355_a14713", "{} not decoding", &[format!("{}", __lp_arg_0)]) },
                 egui::FontId::proportional(10.0),
                 dim_ink(),
             );
@@ -419,11 +419,7 @@ impl SdroxideApp {
         }
         p.add(egui::Shape::mesh(mesh));
 
-        ui.label(dim(&format!(
-            "{} symbols \u{00b7} {}",
-            c.len(),
-            if c.channel == DrmChannel::Msc { "sampled across the frame" } else { "whole frame" }
-        )));
+        ui.label(dim(&{ let __lp_arg_0 = &(c.len()); let __lp_arg_1 = &(if c.channel == DrmChannel::Msc { crate::language_plugin::text("window.drm.text_425_72985f", "sampled across the frame") } else { crate::language_plugin::text("window.drm.text_425_b4d622", "whole frame") }); crate::language_plugin::format("window.drm.text_423_18b8b3", "{} symbols \u{00b7} {}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }));
     }
 
     fn drm_signal(&self, ui: &mut egui::Ui, d: &DrmStatus) {
@@ -431,47 +427,47 @@ impl SdroxideApp {
         let val = |s: String| RichText::new(s).size(11.0);
 
         egui::Grid::new("drm-signal").num_columns(4).spacing([14.0, 3.0]).show(ui, |ui| {
-            ui.label(dim("SNR"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.snr_label", "SNR")));
             ui.label(val(format!("{:.1} dB", d.snr_db)));
-            ui.label(dim("MER"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.mer_label", "MER")));
             ui.label(val(format!("{:.1} dB", d.wmer_db)));
             ui.end_row();
 
-            ui.label(dim("MODE"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_440_ac6c84", "MODE")));
             ui.label(val(format!(
                 "{} / {}",
                 d.robustness.map(|r| r.label()).unwrap_or("?"),
                 d.bandwidth_khz.map(|b| format!("{b} kHz")).unwrap_or_else(|| "?".into()),
             )))
             .on_hover_text(
-                "Robustness mode and channel width. A is for a ground-wave path and \
+                crate::language_plugin::text("window.drm.text_447_3d1c20", "Robustness mode and channel width. A is for a ground-wave path and \
                  carries the most; D is for a badly scattered sky-wave one and carries \
-                 the least.",
+                 the least."),
             );
-            ui.label(dim("INTERLEAVE"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_451_e0345f", "INTERLEAVE")));
             ui.label(val(if d.interleaver_long { "2 s".into() } else { "400 ms".into() }))
                 .on_hover_text(
-                    "How far the transmission spreads each frame in time. Long rides out \
-                     deeper fades and takes correspondingly longer to acquire.",
+                    crate::language_plugin::text("window.drm.text_454_7586f4", "How far the transmission spreads each frame in time. Long rides out \
+                     deeper fades and takes correspondingly longer to acquire."),
                 );
             ui.end_row();
 
-            ui.label(dim("PROTECTION"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_459_e3364b", "PROTECTION")));
             ui.label(val(format!("B {} / A {}", d.protection_b, d.protection_a)));
-            ui.label(dim("OFFSET"));
+            ui.label(dim(&crate::language_plugin::text("window.drm.text_461_82047f", "OFFSET")));
             ui.label(val(format!("{:+.0} Hz", d.sample_offset_hz))).on_hover_text(
-                "Residual sample-clock error against the transmitter. Large and steady \
-                 means the receiver's reference is off, not the broadcast.",
+                crate::language_plugin::text("window.drm.text_463_d89c9c", "Residual sample-clock error against the transmitter. Large and steady \
+                 means the receiver's reference is off, not the broadcast."),
             );
             ui.end_row();
 
             if let Some(dop) = d.doppler_hz {
-                ui.label(dim("DOPPLER"));
+                ui.label(dim(&crate::language_plugin::text("window.drm.text_469_791bca", "DOPPLER")));
                 ui.label(val(format!("{dop:.1} Hz")));
-                ui.label(dim("DELAY"));
+                ui.label(dim(&crate::language_plugin::text("window.drm.text_471_85135a", "DELAY")));
                 ui.label(val(format!("{:.1} ms", d.delay_ms))).on_hover_text(
-                    "Doppler and delay spread of the path — how fast it is moving and how \
-                     far apart its echoes arrive.",
+                    crate::language_plugin::text("window.drm.text_473_f69fd5", "Doppler and delay spread of the path — how fast it is moving and how \
+                     far apart its echoes arrive."),
                 );
                 ui.end_row();
             }
@@ -496,13 +492,13 @@ impl SdroxideApp {
             line.push(if d.service.codec_supported {
                 c.label().to_string()
             } else {
-                format!("{} — not decodable", c.label())
+                { let __lp_arg_0 = &(c.label()); crate::language_plugin::format("window.drm.text_499_1dacfe", "{} — not decodable", &[format!("{}", __lp_arg_0)]) }
             });
         }
         if d.service.bitrate_kbps > 0.0 {
             line.push(format!("{:.1} kbps", d.service.bitrate_kbps));
         }
-        line.push(if d.service.stereo { "stereo".into() } else { "mono".into() });
+        line.push(if d.service.stereo { crate::language_plugin::text("window.drm.text_505_b526ae", "stereo").into() } else { crate::language_plugin::text("window.drm.text_505_d7de34", "mono").into() });
         if !line.is_empty() {
             ui.label(dim(&line.join(" \u{00b7} ")));
         }
@@ -511,11 +507,11 @@ impl SdroxideApp {
         if d.audio_services > 1 {
             ui.add_space(4.0);
             ui.horizontal(|ui| {
-                ui.label(dim("SERVICE"));
+                ui.label(dim(&crate::language_plugin::text("window.drm.text_514_6f3c60", "SERVICE")));
                 for i in 0..d.audio_services {
                     let on = i == d.current_service;
                     if crate::chrome::chip(ui, on, (i + 1).to_string())
-                        .on_hover_text("Decode this service of the multiplex")
+                        .on_hover_text(crate::language_plugin::text("window.drm.text_518_2a089a", "Decode this service of the multiplex"))
                         .clicked()
                         && !on
                     {
@@ -537,10 +533,7 @@ impl SdroxideApp {
 
         if let Some(t) = d.time {
             ui.add_space(6.0);
-            ui.label(dim(&format!(
-                "broadcaster's clock  {:04}-{:02}-{:02} {:02}:{:02} UTC",
-                t.year, t.month, t.day, t.hour, t.minute
-            )));
+            ui.label(dim(&{ let __lp_arg_0 = &(t.year); let __lp_arg_1 = &(t.month); let __lp_arg_2 = &(t.day); let __lp_arg_3 = &(t.hour); let __lp_arg_4 = &(t.minute); crate::language_plugin::format("window.drm.text_541_63df4a", "broadcaster's clock  {:04}-{:02}-{:02} {:02}:{:02} UTC", &[format!("{:04}", __lp_arg_0), format!("{:02}", __lp_arg_1), format!("{:02}", __lp_arg_2), format!("{:02}", __lp_arg_3), format!("{:02}", __lp_arg_4)]) }));
         }
     }
 }

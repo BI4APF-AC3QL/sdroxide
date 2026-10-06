@@ -487,3 +487,22 @@ mod tests {
         assert_eq!(text, "direction\tfrom\tto\ttext\nall\tW1ABC\tALLCALL\thello\n");
     }
 }
+
+#[cfg(test)]
+mod localized_export_retention_tests {
+    use super::*;
+    #[test]
+    fn interface_language_never_changes_export_schema_status_codes_or_decoded_text() {
+        let mut cw=DigiStatus::idle(sdroxide_types::DigiConfig::default());cw.mode=sdroxide_types::Mode::Cw;cw.text_rx="CQ DE Voice: {v}\r\n中文原文".into();
+        let mut fsq=DigiStatus::idle(sdroxide_types::DigiConfig::default());fsq.mode=sdroxide_types::Mode::Fsq;
+        fsq.fsq_messages=vec![sdroxide_types::FsqMsg{from:"REC".into(),to:"ALLCALL".into(),text:"Input A\t中文\n{raw}".into(),to_me:false}];
+        let cw_before=digi_log(&cw).unwrap();let fsq_before=digi_log(&fsq).unwrap();
+        assert_eq!(cw_before,("sdroxide-cw-rx.txt".into(),cw.text_rx.clone()));
+        assert_eq!(fsq_before,("sdroxide-fsq-log.txt".into(),"direction\tfrom\tto\ttext\nall\tREC\tALLCALL\tInput A 中文 {raw}\n".into()));
+        for enabled in [true,false,true,false] {crate::language_plugin::test_pack_enabled(enabled);
+            assert_eq!(digi_log(&cw).unwrap(),cw_before);assert_eq!(digi_log(&fsq).unwrap(),fsq_before);
+            assert_eq!(csv("中文,REC\r\n{raw}"),"\"中文,REC\r\n{raw}\"");
+            assert_eq!(tsv("Input A\tREC\n{raw}"),"Input A REC {raw}");
+        }
+    }
+}

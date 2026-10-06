@@ -62,9 +62,9 @@ pub(in crate::app) fn macro_row(
         // nothing for a chip on the panel to send.
         for (i, m) in macros.iter().enumerate().filter(|(_, m)| !m.text.trim().is_empty()) {
             let hint = if i < 9 {
-                format!("F{}: sends “{}”", i + 2, m.text.trim())
+                { let __lp_arg_0 = &(i + 2); let __lp_arg_1 = &(m.text.trim()); crate::language_plugin::format("shell.app_panels_macros.text_65_a5cd03", "F{}: sends “{}”", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
             } else {
-                format!("Sends “{}”", m.text.trim())
+                { let __lp_arg_0 = &(m.text.trim()); crate::language_plugin::format("shell.app_panels_macros.text_67_f5bf8f", "Sends “{}”", &[format!("{}", __lp_arg_0)]) }
             };
             if tx_gated(ui, tx_ok, |ui| {
                 crate::chrome::chip(ui, false, m.chip_label()).on_hover_text(&hint)
@@ -102,12 +102,13 @@ pub(in crate::app) fn macro_row(
 /// anything was edited, so the caller can persist its own config.
 pub(in crate::app) fn macro_window(
     ctx: &egui::Context,
-    title: &str,
+    title: impl AsRef<str>,
     id: &str,
     example: &str,
     open: &mut bool,
     macros: &mut Vec<CwMacro>,
 ) -> bool {
+    let title = title.as_ref();
     if !*open {
         return false;
     }
@@ -129,8 +130,8 @@ pub(in crate::app) fn macro_window(
             ui.set_min_width(crate::layout::window_w(ctx, 520.0));
             ui.label(
                 RichText::new(
-                    "Each button sends its whole text in one go. F2–F10 press the first \
-                     nine, so long as nothing on screen has the keyboard.",
+                    crate::language_plugin::text("panels.macros.text_132_5c5900", "Each button sends its whole text in one go. F2–F10 press the first \
+                     nine, so long as nothing on screen has the keyboard."),
                 )
                 .size(10.5)
                 .color(crate::theme::gray(150)),
@@ -139,9 +140,9 @@ pub(in crate::app) fn macro_window(
             egui::Grid::new(format!("{id}-grid")).num_columns(4).spacing([6.0, 4.0]).show(
                 ui,
                 |ui| {
-                    ui.label(RichText::new("key").size(10.0).color(crate::theme::gray(140)));
-                    ui.label(RichText::new("button").size(10.0).color(crate::theme::gray(140)));
-                    ui.label(RichText::new("sends").size(10.0).color(crate::theme::gray(140)));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.macros.text_142_2c70e1", "key")).size(10.0).color(crate::theme::gray(140)));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.macros.text_143_c3e2d7", "button")).size(10.0).color(crate::theme::gray(140)));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.macros.text_144_c626da", "sends")).size(10.0).color(crate::theme::gray(140)));
                     ui.label("");
                     ui.end_row();
                     for (i, m) in macros.iter_mut().enumerate() {
@@ -161,7 +162,7 @@ pub(in crate::app) fn macro_window(
                         changed |= crate::chrome::field_sized(
                             ui,
                             [80.0, 22.0],
-                            egui::TextEdit::singleline(&mut m.label).hint_text("label"),
+                            egui::TextEdit::singleline(&mut m.label).hint_text(crate::language_plugin::text("panels.macros.text_164_1aca80", "label")),
                         )
                         .changed();
                         changed |= crate::chrome::field_sized(
@@ -171,7 +172,7 @@ pub(in crate::app) fn macro_window(
                         )
                         .changed();
                         if crate::chrome::chip(ui, false, "×")
-                            .on_hover_text("Remove this button")
+                            .on_hover_text(crate::language_plugin::text("panels.macros.text_174_9c0695", "Remove this button"))
                             .clicked()
                         {
                             remove = Some(i);
@@ -184,15 +185,15 @@ pub(in crate::app) fn macro_window(
             ui.horizontal(|ui| {
                 let full = macros.len() >= CwMacro::MAX;
                 if ui
-                    .add_enabled(!full, egui::Button::new("ADD"))
-                    .on_disabled_hover_text(format!("{} is the most", CwMacro::MAX))
+                    .add_enabled(!full, egui::Button::new(crate::language_plugin::text("panels.macros.text_187_0ecba1", "ADD")))
+                    .on_disabled_hover_text({ let __lp_arg_0 = &(CwMacro::MAX); crate::language_plugin::format("panels.macros.text_188_20d30f", "{} is the most", &[format!("{}", __lp_arg_0)]) })
                     .clicked()
                 {
                     macros.push(CwMacro::default());
                     changed = true;
                 }
                 ui.label(
-                    RichText::new("{MYCALL} and {MYGRID} are filled in as the message goes out.")
+                    RichText::new(crate::language_plugin::text("panels.macros.text_195_ceee08", "{MYCALL} and {MYGRID} are filled in as the message goes out."))
                         .size(10.5)
                         .color(crate::theme::gray(140)),
                 );

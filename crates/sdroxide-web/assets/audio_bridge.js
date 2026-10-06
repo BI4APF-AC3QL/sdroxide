@@ -39,6 +39,9 @@
                 "border-bottom:1px solid #7a5000;cursor:pointer;" +
                 // The page disables selection; this text is worth copying.
                 "-webkit-user-select:text;user-select:text";
+            bar.id = "sdroxide-audio-context-warning";
+            bar.setAttribute("data-sdroxide-source", "No audio: {} is not a secure origin, so this browser withholds audio playback and microphone access. Use HTTPS or an SSH tunnel to localhost. (Click to dismiss.)");
+            bar.setAttribute("data-sdroxide-origin", location.protocol + "//" + location.host);
             bar.textContent =
                 "No audio: " + location.protocol + "//" + location.host +
                 " is not a secure origin, so this browser withholds audio playback " +

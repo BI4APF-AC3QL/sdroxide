@@ -375,7 +375,7 @@ pub fn show(
             tip.push_str(&format!("  {}", a.hex()));
         }
         if let Some(cat) = &a.category {
-            tip.push_str(&format!("\n{cat}"));
+            tip.push_str(&format!("\n{}", crate::language_plugin::adsb_label(cat)));
         }
         tip.push_str(&format!("\n{} ft   {} kt", a.altitude_ft.unwrap_or(0), a.fmt_speed()));
         if let Some(vr) = a.vertical_rate_fpm.filter(|v| v.abs() > 100) {
@@ -387,7 +387,7 @@ pub fn show(
             tip.push_str(&format!("\n{km:.0} km   {bear:.0}°"));
         }
         if let Some(e) = &a.emergency {
-            tip.push_str(&format!("\n{e}"));
+            tip.push_str(&format!("\n{}", crate::language_plugin::adsb_label(e)));
         }
         resp.clone().on_hover_text(tip);
         if resp.clicked() {
@@ -402,7 +402,7 @@ pub fn show(
         p.text(
             rect.right_bottom() + vec2(-6.0, -4.0),
             Align2::RIGHT_BOTTOM,
-            "double-click to reframe",
+            crate::language_plugin::text("map.adsb.painter.text_405_a7c70e", "double-click to reframe"),
             FontId::proportional(9.0),
             alpha(Color32::WHITE, 110.0),
         );

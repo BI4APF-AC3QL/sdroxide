@@ -32,6 +32,10 @@ fn dim_ink() -> Color32 {
     crate::theme::gray(110)
 }
 
+fn dim(s: impl AsRef<str>) -> RichText {
+    RichText::new(s.as_ref()).size(9.5).color(dim_ink())
+}
+
 impl SdroxideApp {
     /// Fold a snapshot from the engine into the window's state.
     ///
@@ -75,7 +79,7 @@ impl SdroxideApp {
             return;
         }
         let mut open = self.show_rds;
-        let resp = egui::Window::new("RDS")
+        let resp = egui::Window::new(crate::language_plugin::text("window.rds.text_78_147238", "RDS")).id(egui::Id::new("RDS"))
             .id(crate::layout::salted_id(ctx, "RDS"))
             .open(&mut open)
             .frame(crate::chrome::window_frame())
@@ -99,7 +103,7 @@ impl SdroxideApp {
         let chosen = self.view.rds_standard;
 
         crate::chrome::tab_bar(ui, |ui, bar| {
-            for (tab, label) in [(RdsTab::Station, "STATION"), (RdsTab::Diagnostics, "DIAGNOSTICS")]
+            for (tab, label) in [(RdsTab::Station, crate::language_plugin::text("window.rds.text_102_817708", "STATION")), (RdsTab::Diagnostics, crate::language_plugin::text("window.rds.text_102_c34dc2", "DIAGNOSTICS"))]
             {
                 if bar.tab(ui, self.rds_tab == tab, label).clicked() {
                     self.rds_tab = tab;
@@ -112,23 +116,23 @@ impl SdroxideApp {
             // codes are already here, so this re-labels everything at once.
             egui::ComboBox::from_id_salt("rds-standard")
                 .selected_text(if chosen == RdsStandard::Auto {
-                    format!("Auto ({})", standard.label())
+                    { let __lp_arg_0 = &(crate::language_plugin::rds_label(standard.label())); crate::language_plugin::format("window.rds.text_115_ac88e5", "Auto ({})", &[format!("{}", __lp_arg_0)]) }
                 } else {
-                    chosen.label().to_string()
+                    crate::language_plugin::rds_label(chosen.label())
                 })
                 .show_styled(ui, |ui| {
                     for s in RdsStandard::ALL {
-                        ui.selectable_value(&mut self.view.rds_standard, s, s.label());
+                        ui.selectable_value(&mut self.view.rds_standard, s, crate::language_plugin::rds_label(s.label()));
                     }
                 })
                 .response
                 .on_hover_text(
-                    "Which programme-type table to read this station against. RDS is used \
+                    crate::language_plugin::text("window.rds.text_126_14c106", "Which programme-type table to read this station against. RDS is used \
                      everywhere outside North America; RBDS adds the call sign a US station's \
                      identity code spells out. Auto follows the extended country code the \
                      station sends, and until one arrives it will not spell out a call sign — \
                      the identity ranges it would read are shared with nine countries' RDS \
-                     codes, so select RBDS to name a station that sends no country code.",
+                     codes, so select RBDS to name a station that sends no country code."),
                 );
         });
         // No separator: the strip's own baseline is the line between the tabs
@@ -145,18 +149,17 @@ impl SdroxideApp {
     /// `chosen` is what the operator actually selected, and is only consulted
     /// about the call sign — see [`RdsStandard::names_from_pi`].
     fn rds_station(&mut self, ui: &mut egui::Ui, standard: RdsStandard, chosen: RdsStandard) {
-        let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
         let Some(d) = self.rds.as_ref() else {
-            ui.label(dim("waiting for the receiver…"));
+            ui.label(dim(crate::language_plugin::text("window.rds.text_150_128cfd", "waiting for the receiver…")));
             return;
         };
 
         if !d.sync && d.is_empty() {
             ui.label(dim(if self.state.rx[0].mode == sdroxide_types::Mode::Wfm {
-                "No RDS on this station. Not every transmitter carries it, and a weak \
-                 one may carry it without it arriving."
+                crate::language_plugin::text("window.rds.text_156_e7e079", "No RDS on this station. Not every transmitter carries it, and a weak \
+                 one may carry it without it arriving.")
             } else {
-                "RDS is only carried on WFM broadcast stations."
+                crate::language_plugin::text("window.rds.text_159_190263", "RDS is only carried on WFM broadcast stations.")
             }));
             return;
         }
@@ -166,8 +169,8 @@ impl SdroxideApp {
             let title = d.title(chosen).unwrap_or_else(|| "—".to_string());
             ui.label(RichText::new(title).size(22.0).strong());
             if !d.sync {
-                ui.label(RichText::new("HOLDING").size(9.5).color(crate::theme::ALERT()))
-                    .on_hover_text("Block sync has dropped — this is the last station read.");
+                ui.label(RichText::new(crate::language_plugin::text("window.rds.text_169_495879", "HOLDING")).size(9.5).color(crate::theme::ALERT()))
+                    .on_hover_text(crate::language_plugin::text("window.rds.text_170_83db8a", "Block sync has dropped — this is the last station read."));
             }
         });
 
@@ -187,7 +190,7 @@ impl SdroxideApp {
             egui::Grid::new("rds_grid").num_columns(2).spacing([14.0, 4.0]).striped(true).show(
                 ui,
                 |ui| {
-                    let row = |ui: &mut egui::Ui, k: &str, v: String| {
+                    let row = |ui: &mut egui::Ui, k: String, v: String| {
                         ui.label(dim(k));
                         ui.label(RichText::new(v).size(11.0));
                         ui.end_row();
@@ -198,41 +201,41 @@ impl SdroxideApp {
                         if let Some(call) = d.call_sign(chosen) {
                             v = format!("{pi:04X}  ({call})");
                         }
-                        row(ui, "IDENTITY", v);
+                        row(ui, crate::language_plugin::text("window.rds.text_201_82ec80", "IDENTITY"), v);
                     }
                     if let Some(pty) = d.pty {
-                        row(ui, "PROGRAMME", format!("{}  ({pty})", pty_name(pty, standard)));
+                        row(ui, crate::language_plugin::text("window.rds.text_204_e299e2", "PROGRAMME"), format!("{}  ({pty})", crate::language_plugin::rds_label(pty_name(pty, standard))));
                     }
                     if let Some(n) = d.ptyn.as_ref().filter(|n| !n.is_empty()) {
-                        row(ui, "DESCRIBED AS", n.clone());
+                        row(ui, crate::language_plugin::text("window.rds.text_207_939a2e", "DESCRIBED AS"), n.clone());
                     }
                     if let Some(m) = d.music {
-                        row(ui, "CONTENT", if m { "Music" } else { "Speech" }.to_string());
+                        row(ui, crate::language_plugin::text("window.rds.text_210_65f23e", "CONTENT"), if m { crate::language_plugin::text("window.rds.text_210_6eb00b", "Music") } else { crate::language_plugin::text("window.rds.text_210_3565fc", "Speech") }.to_string());
                     }
                     row(
                         ui,
-                        "TRAFFIC",
+                        crate::language_plugin::text("window.rds.text_214_204639", "TRAFFIC"),
                         match (d.tp, d.ta) {
-                            (_, true) => "announcement on air now".to_string(),
-                            (true, false) => "carried by this station".to_string(),
-                            (false, false) => "not carried".to_string(),
+                            (_, true) => crate::language_plugin::text("window.rds.text_216_c3746a", "announcement on air now").to_string(),
+                            (true, false) => crate::language_plugin::text("window.rds.text_217_ea4e42", "carried by this station").to_string(),
+                            (false, false) => crate::language_plugin::text("window.rds.text_218_9f8521", "not carried").to_string(),
                         },
                     );
                     if let Some(rt) = d.radiotext.as_ref().filter(|t| !t.is_empty()) {
-                        ui.label(dim("RADIO TEXT"));
+                        ui.label(dim(crate::language_plugin::text("window.rds.text_222_7a753b", "RADIO TEXT")));
                         ui.label(RichText::new(rt.clone()).size(11.0));
                         ui.end_row();
                     }
                     if let Some(c) = d.clock {
-                        row(ui, "STATION CLOCK", c.label());
+                        row(ui, crate::language_plugin::text("window.rds.text_227_b0810b", "STATION CLOCK"), c.label());
                     }
                     if let Some(ecc) = d.ecc {
-                        row(ui, "COUNTRY CODE", format!("{ecc:02X}"));
+                        row(ui, crate::language_plugin::text("window.rds.text_230_e3b435", "COUNTRY CODE"), format!("{ecc:02X}"));
                     }
                     if !d.af.is_empty() {
                         let list: Vec<String> =
                             d.af.iter().map(|hz| format!("{:.1}", *hz as f64 / 1e6)).collect();
-                        ui.label(dim("ALSO ON"));
+                        ui.label(dim(crate::language_plugin::text("window.rds.text_235_3afc66", "ALSO ON")));
                         ui.label(RichText::new(format!("{} MHz", list.join(", "))).size(11.0));
                         ui.end_row();
                     }
@@ -243,11 +246,11 @@ impl SdroxideApp {
             let extra = d.rt_plus.as_ref().map(|r| r.other.clone()).unwrap_or_default();
             if !extra.is_empty() {
                 ui.add_space(8.0);
-                ui.label(dim("ALSO TAGGED"));
+                ui.label(dim(crate::language_plugin::text("window.rds.text_246_640cfc", "ALSO TAGGED")));
                 for (class, text) in extra {
                     let name = rt_plus_class(class)
-                        .map(str::to_string)
-                        .unwrap_or_else(|| format!("type {class}"));
+                        .map(crate::language_plugin::rds_label)
+                        .unwrap_or_else(|| crate::language_plugin::format("window.rds.text_250_eed507", "type {class}", &[format!("{class}")]));
                     ui.label(RichText::new(format!("{name}: {text}")).size(10.5));
                 }
             }
@@ -255,32 +258,28 @@ impl SdroxideApp {
     }
 
     fn rds_diagnostics(&mut self, ui: &mut egui::Ui) {
-        let dim = |s: &str| RichText::new(s).size(9.5).color(dim_ink());
         let Some(d) = self.rds.as_ref() else {
-            ui.label(dim("waiting for the receiver…"));
+            ui.label(dim(crate::language_plugin::text("window.rds.text_260_128cfd", "waiting for the receiver…")));
             return;
         };
         let stats = d.stats;
 
         ui.horizontal(|ui| {
             let (label, colour) = if d.sync {
-                ("SYNC", crate::theme::CYAN_DIM())
+                (crate::language_plugin::text("window.rds.text_267_7dcad6", "SYNC"), crate::theme::CYAN_DIM())
             } else {
-                ("NO SYNC", crate::theme::ALERT())
+                (crate::language_plugin::text("window.rds.text_269_621cf7", "NO SYNC"), crate::theme::ALERT())
             };
             ui.label(RichText::new(label).size(11.0).strong().color(colour));
-            ui.label(dim(&format!("· {} groups", stats.groups)));
+            ui.label(dim(&{ let __lp_arg_0 = &(stats.groups); crate::language_plugin::format("window.rds.text_272_1af17e", "· {} groups", &[format!("{}", __lp_arg_0)]) }));
             let ber = stats.block_error_rate();
-            ui.label(dim(&format!("· {:.1} % of blocks in error", ber * 100.0))).on_hover_text(
-                "Blocks that failed their check, plus those the error corrector had to \
+            ui.label(dim(&{ let __lp_arg_0 = &(ber * 100.0); crate::language_plugin::format("window.rds.text_274_a857c0", "· {:.1} % of blocks in error", &[format!("{:.1}", __lp_arg_0)]) })).on_hover_text(
+                crate::language_plugin::text("window.rds.text_275_b7dacf", "Blocks that failed their check, plus those the error corrector had to \
                      repair. Corrections count as errors on purpose: a rising figure is the \
-                     first sign a station is about to stop decoding.",
+                     first sign a station is about to stop decoding."),
             );
         });
-        ui.label(dim(&format!(
-            "{} clean · {} corrected · {} lost",
-            stats.blocks_ok, stats.blocks_corrected, stats.blocks_bad
-        )));
+        ui.label(dim(&{ let __lp_arg_0 = &(stats.blocks_ok); let __lp_arg_1 = &(stats.blocks_corrected); let __lp_arg_2 = &(stats.blocks_bad); crate::language_plugin::format("window.rds.text_281_d078f8", "{} clean · {} corrected · {} lost", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2)]) }));
 
         // The cause, when it is this one. A block error rate is a symptom, and
         // the symptom on its own sends the operator hunting for a better aerial
@@ -292,17 +291,17 @@ impl SdroxideApp {
         if self.meters.is_some_and(|m| m.adc_overloaded()) {
             ui.add_space(4.0);
             ui.label(
-                RichText::new("FRONT END OVERLOADING")
+                RichText::new(crate::language_plugin::text("window.rds.text_295_0ae503", "FRONT END OVERLOADING"))
                     .size(10.5)
                     .strong()
                     .color(crate::theme::ALERT()),
             )
             .on_hover_text(
-                "The converter is clipping, which puts distortion right across the \
+                crate::language_plugin::text("window.rds.text_301_150a26", "The converter is clipping, which puts distortion right across the \
                  multiplex — including on the 57 kHz data subcarrier. Turn the RF gain \
                  down, or switch in an attenuator: RDS goes about a decibel before \
                  anything is audible, so a station that sounds perfect can still be far \
-                 too strong for its data to survive.",
+                 too strong for its data to survive."),
             );
         }
         ui.add_space(6.0);
@@ -317,7 +316,7 @@ impl SdroxideApp {
             .filter(|&(_, &n)| n > 0)
             .map(|(i, n)| format!("{}{}×{}", i / 2, if i % 2 == 0 { 'A' } else { 'B' }, n))
             .collect();
-        ui.label(dim("GROUP TYPES"));
+        ui.label(dim(crate::language_plugin::text("window.rds.text_320_9f5583", "GROUP TYPES")));
         ui.label(
             RichText::new(if seen.is_empty() { "—".to_string() } else { seen.join("  ") })
                 .size(10.5)
@@ -325,13 +324,13 @@ impl SdroxideApp {
         );
         ui.add_space(6.0);
 
-        ui.label(dim("RECENT GROUPS — newest last"));
+        ui.label(dim(crate::language_plugin::text("window.rds.text_328_ffb520", "RECENT GROUPS — newest last")));
         egui::ScrollArea::vertical().id_salt("rds-log").stick_to_bottom(true).show(ui, |ui| {
             for g in &self.rds_log {
                 ui.label(rds_log_line(g));
             }
             if self.rds_log.is_empty() {
-                ui.label(dim("nothing decoded yet"));
+                ui.label(dim(crate::language_plugin::text("window.rds.text_334_480cd8", "nothing decoded yet")));
             }
         });
     }
@@ -364,4 +363,19 @@ fn rds_log_line(g: &RdsGroupLog) -> RichText {
         crate::theme::ALERT()
     };
     RichText::new(s).size(10.0).monospace().color(colour)
+}
+
+#[cfg(test)]
+mod language_tests {
+    use super::*;
+    #[test]
+    fn raw_group_log_preserves_hex_loss_and_correction_markers() {
+        let group = RdsGroupLog {
+            blocks: [0xABCD, 0x2A3B, 0x1234, 0x4567], valid: 0b1011, corrected: 0b0010,
+        };
+        crate::language_plugin::test_manual_enabled(true);
+        assert_eq!(rds_log_line(&group).text(), "ABCD 2A3B*···· 4567  2B");
+        crate::language_plugin::test_manual_enabled(false);
+        assert_eq!(rds_log_line(&group).text(), "ABCD 2A3B*···· 4567  2B");
+    }
 }

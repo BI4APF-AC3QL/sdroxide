@@ -74,11 +74,11 @@ impl SdroxideApp {
         let now = now_unix();
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new("RECEPTIONS").size(9.5).strong().color(crate::theme::CYAN_DIM()),
+                RichText::new(crate::language_plugin::text("panels.pi4.text_77_8c0c13", "RECEPTIONS")).size(9.5).strong().color(crate::theme::CYAN_DIM()),
             );
             crate::chrome::row_tail(ui, |ui| {
                 ui.label(
-                    RichText::new(format!("{} rx", self.pi4_spots.len()))
+                    RichText::new({ let __lp_arg_0 = &(self.pi4_spots.len()); crate::language_plugin::format("panels.pi4.text_81_b4d14f", "{} rx", &[format!("{}", __lp_arg_0)]) })
                         .size(10.0)
                         .color(crate::theme::gray(120)),
                 );
@@ -86,7 +86,7 @@ impl SdroxideApp {
                     ui,
                     !self.pi4_spots.is_empty(),
                     "sdroxide-pi4-spots.csv",
-                    "Save the PI4 reception list as CSV",
+                    crate::language_plugin::text("panels.pi4.text_89_ed32b9", "Save the PI4 reception list as CSV"),
                     || crate::app::save_text::pi4_spots_csv(&self.pi4_spots),
                 );
             });
@@ -115,7 +115,7 @@ impl SdroxideApp {
         ui.horizontal_wrapped(|ui| {
             ui.label(RichText::new("PI4").size(11.0).strong().color(crate::theme::CYAN()));
             ui.label(
-                RichText::new("Next Generation Beacon").size(10.5).color(crate::theme::CYAN_DIM()),
+                RichText::new(crate::language_plugin::text("panels.pi4.text_118_5fc461", "Next Generation Beacon")).size(10.5).color(crate::theme::CYAN_DIM()),
             );
             crate::chrome::row_tail(ui, |ui| {
                 let left = (timing.slot_s - into_slot).max(0.0).round() as i64;
@@ -129,11 +129,11 @@ impl SdroxideApp {
                         .color(crate::theme::gray(140)),
                 )
                 .on_hover_text(
-                    "Time left in this one-minute beacon cycle. The PI4 message is searched for \
-                     once the window has had time to fill past where it would end.",
+                    crate::language_plugin::text("panels.pi4.text_132_5aad43", "Time left in this one-minute beacon cycle. The PI4 message is searched for \
+                     once the window has had time to fill past where it would end."),
                 );
                 if p.decoding {
-                    ui.label(RichText::new("decoding…").size(10.5).color(crate::theme::YELLOW()));
+                    ui.label(RichText::new(crate::language_plugin::text("panels.pi4.text_136_99a288", "decoding…")).size(10.5).color(crate::theme::YELLOW()));
                 }
             });
         });
@@ -148,20 +148,16 @@ impl SdroxideApp {
 
         crate::chrome::red_panel(ui, |ui| {
             let dial = self.state.rx_freq_hz();
-            row(ui, "Band", &format!("{:.6} MHz", dial / 1e6));
+            row(ui, crate::language_plugin::text("panels.pi4.dynamic.text_151_0bd9ce", "Band"), &format!("{:.6} MHz", dial / 1e6));
             row(
                 ui,
-                "Last cycle",
+                crate::language_plugin::text("panels.pi4.dynamic.text_154_6a4521", "Last cycle"),
                 &if p.decoding {
-                    "decoding…".to_string()
+                    crate::language_plugin::text("panels.pi4.dynamic.text_156_99a288", "decoding…").to_string()
                 } else if p.last_slot_spots == 0 {
-                    "nothing heard".to_string()
+                    crate::language_plugin::text("panels.pi4.dynamic.text_158_77575c", "nothing heard").to_string()
                 } else {
-                    format!(
-                        "{} beacon{}",
-                        p.last_slot_spots,
-                        if p.last_slot_spots == 1 { "" } else { "s" }
-                    )
+                    { let __lp_arg_0 = &(p.last_slot_spots); let __lp_arg_1 = &(crate::language_plugin::plural_suffix("panels.pi4.dynamic.text_161_591997", "{} beacon{}", p.last_slot_spots == 1)); crate::language_plugin::format("panels.pi4.dynamic.text_161_591997", "{} beacon{}", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1)]) }
                 },
             );
         });
@@ -169,9 +165,9 @@ impl SdroxideApp {
         ui.add_space(8.0);
         ui.label(
             RichText::new(
-                "Receive only. Tune so the beacon's CW identification sits at 800 Hz audio — the \
+                crate::language_plugin::text("panels.pi4.text_172_a85a6f", "Receive only. Tune so the beacon's CW identification sits at 800 Hz audio — the \
                  network's own convention — and the four PI4 tones fall where this decoder \
-                 searches for them by default.",
+                 searches for them by default."),
             )
             .size(9.5)
             .color(crate::theme::gray(120)),
@@ -245,12 +241,7 @@ fn pi4_row(ui: &mut egui::Ui, s: &Pi4Spot, now: i64) {
                             .monospace()
                             .color(crate::theme::gray(120)),
                     )
-                    .on_hover_text(format!(
-                        "{:02}:{:02} UTC — {} ago",
-                        t / 3600,
-                        (t % 3600) / 60,
-                        fmt_age(now - s.slot_utc)
-                    ));
+                    .on_hover_text({ let __lp_arg_0 = &(t / 3600); let __lp_arg_1 = &((t % 3600) / 60); let __lp_arg_2 = &(fmt_age(now - s.slot_utc)); crate::language_plugin::format("panels.pi4.text_249_341d67", "{:02}:{:02} UTC — {} ago", &[format!("{:02}", __lp_arg_0), format!("{:02}", __lp_arg_1), format!("{}", __lp_arg_2)]) });
                 });
             });
         });
@@ -272,7 +263,9 @@ fn fit_color(fit: f32) -> Color32 {
 /// A label/value line in the status card — see
 /// [`crate::app::panels::wspr::row`], which this copies rather than shares:
 /// `wspr.rs`'s is private to that module.
-fn row(ui: &mut egui::Ui, label: &str, value: &str) {
+fn row(ui: &mut egui::Ui, label: impl AsRef<str>, value: impl AsRef<str>) {
+    let label = label.as_ref();
+    let value = value.as_ref();
     ui.horizontal(|ui| {
         ui.label(RichText::new(label).size(10.0).color(crate::theme::CYAN_DIM()));
         crate::chrome::row_tail(ui, |ui| {

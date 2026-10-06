@@ -32,19 +32,19 @@ pub(super) fn packet_monitor_header(
 ) -> bool {
     let mut setup = false;
     ui.horizontal_wrapped(|ui| {
-        ui.label(RichText::new("MONITOR").strong().color(theme::CYAN()));
-        ui.label(RichText::new(format!("{} baud", st.baud.label())).weak());
+        ui.label(RichText::new(crate::language_plugin::text("panels.packet.text_35_90a94c", "MONITOR")).strong().color(theme::CYAN()));
+        ui.label(RichText::new({ let __lp_arg_0 = &(st.baud.label()); crate::language_plugin::format("panels.packet.text_36_5bc388", "{} baud", &[format!("{}", __lp_arg_0)]) }).weak());
         // Channel busy and bad frames are the two numbers that explain a
         // link that is not working: one says somebody else is talking, the
         // other says the path is marginal.
         if st.dcd {
-            ui.label(RichText::new("BUSY").strong().color(theme::ALERT()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.packet.text_41_4b2f12", "BUSY")).strong().color(theme::ALERT()));
         }
         if st.bad_frames > 0 {
-            ui.label(RichText::new(format!("{} bad", st.bad_frames)).weak().color(theme::ALERT()))
+            ui.label(RichText::new({ let __lp_arg_0 = &(st.bad_frames); crate::language_plugin::format("panels.packet.text_44_efb07e", "{} bad", &[format!("{}", __lp_arg_0)]) }).weak().color(theme::ALERT()))
                 .on_hover_text(
-                    "Frames that arrived but failed their check sequence — a collision, a fade, \
-                     or a signal too weak to read.",
+                    crate::language_plugin::text("panels.packet.text_46_f02129", "Frames that arrived but failed their check sequence — a collision, a fade, \
+                     or a signal too weak to read."),
                 );
         }
         crate::chrome::row_tail(ui, |ui| {
@@ -56,10 +56,10 @@ pub(super) fn packet_monitor_header(
             // chip existed nothing anywhere opened it: an operator told to
             // "set a station callsign in the packet settings first" had
             // nowhere to go and look (issue #159).
-            if crate::chrome::chip(ui, setup_open, RichText::new("⚙ SETUP").size(9.5))
+            if crate::chrome::chip(ui, setup_open, RichText::new(crate::language_plugin::text("panels.packet.text_59_3b3b5d", "⚙ SETUP")).size(9.5))
                 .on_hover_text(
-                    "Station callsign, speed, TX delay, the digipeater path, the beacon and the \
-                     KISS server",
+                    crate::language_plugin::text("panels.packet.text_61_6e79f3", "Station callsign, speed, TX delay, the digipeater path, the beacon and the \
+                     KISS server"),
                 )
                 .clicked()
             {
@@ -79,7 +79,7 @@ impl SdroxideApp {
     ) {
         let st: Option<PacketStatus> = self.digi_status.as_ref().and_then(|s| s.packet.clone());
         let Some(st) = st else {
-            ui.label(RichText::new("starting the packet modem…").weak());
+            ui.label(RichText::new(crate::language_plugin::text("panels.packet.text_82_c5d7df", "starting the packet modem…")).weak());
             return;
         };
         // Monitoring the channel is worth doing on a receiver; announcing
@@ -130,7 +130,7 @@ impl SdroxideApp {
             .stick_to_bottom(true)
             .show(ui, |ui| {
                 if st.heard.is_empty() {
-                    ui.label(RichText::new("nothing heard yet").weak());
+                    ui.label(RichText::new(crate::language_plugin::text("panels.packet.text_133_63ee8f", "nothing heard yet")).weak());
                 }
                 for h in &st.heard {
                     let via = if h.via.is_empty() {
@@ -184,53 +184,53 @@ impl SdroxideApp {
 
         // ── status row ────────────────────────────────────────────────────
         ui.horizontal(|ui| {
-            ui.label(RichText::new("TERMINAL").strong().color(theme::CYAN()));
+            ui.label(RichText::new(crate::language_plugin::text("panels.packet.text_187_d0cda4", "TERMINAL")).strong().color(theme::CYAN()));
             let (label, colour) = if connected {
-                (" CONNECTED ", theme::GREEN())
+                (crate::language_plugin::text("panel23.app_panels_packet.text_189_897c84", " CONNECTED "), theme::GREEN())
             } else if working {
-                (" CALLING ", theme::YELLOW())
+                (crate::language_plugin::text("panel23.app_panels_packet.text_191_903573", " CALLING "), theme::YELLOW())
             } else {
-                (" IDLE ", theme::CYAN_DIM())
+                (crate::language_plugin::text("panel23.app_panels_packet.text_193_1389ad", " IDLE "), theme::CYAN_DIM())
             };
             ui.label(RichText::new(label).strong().color(colour))
-                .on_hover_text(format!("The link layer is in {}", link.state));
+                .on_hover_text({ let __lp_arg_0 = &(crate::language_plugin::packet_state_display(&link)); crate::language_plugin::format("panels.packet.text_196_7ae1ac", "The link layer is in {}", &[format!("{}", __lp_arg_0)]) });
             if let Some(peer) = &link.peer
                 && (connected || working)
             {
                 let via = if link.via.is_empty() {
                     String::new()
                 } else {
-                    format!(" via {}", link.via.join(","))
+                    { let __lp_arg_0 = &(link.via.join(",")); crate::language_plugin::format("panels.packet.route.text_203_4f2a18", " via {}", &[format!("{}", __lp_arg_0)]) }
                 };
                 ui.label(RichText::new(format!("{peer}{via}")).monospace());
             }
             if link.ext {
                 ui.label(RichText::new("mod-128").weak())
-                    .on_hover_text("Extended sequence numbers — a window of up to 127 frames.");
+                    .on_hover_text(crate::language_plugin::text("panels.packet.text_209_3fae75", "Extended sequence numbers — a window of up to 127 frames."));
             }
             // The two numbers that explain a session that has gone quiet.
             if link.unacked > 0 {
-                ui.label(RichText::new(format!("{} unacked", link.unacked)).weak())
-                    .on_hover_text("Frames sent and not yet acknowledged by the far end.");
+                ui.label(RichText::new({ let __lp_arg_0 = &(link.unacked); crate::language_plugin::format("panels.packet.text_213_86314b", "{} unacked", &[format!("{}", __lp_arg_0)]) }).weak())
+                    .on_hover_text(crate::language_plugin::text("panels.packet.text_214_987e44", "Frames sent and not yet acknowledged by the far end."));
             }
             if link.retries > 0 {
                 ui.label(
-                    RichText::new(format!("retry {}", link.retries)).weak().color(theme::ALERT()),
+                    RichText::new({ let __lp_arg_0 = &(link.retries); crate::language_plugin::format("panels.packet.text_218_e49d75", "retry {}", &[format!("{}", __lp_arg_0)]) }).weak().color(theme::ALERT()),
                 )
                 .on_hover_text(
-                    "Retries against this link's limit. A count climbing while the unacknowledged \
-                     frames stay put is what a fading path looks like from this side.",
+                    crate::language_plugin::text("panels.packet.text_221_9d0ae0", "Retries against this link's limit. A count climbing while the unacknowledged \
+                     frames stay put is what a fading path looks like from this side."),
                 );
             }
         });
 
         if busy {
             ui.label(
-                RichText::new("The MAIL window is using the link.").weak().color(theme::YELLOW()),
+                RichText::new(crate::language_plugin::text("panels.packet.text_229_97badb", "The MAIL window is using the link.")).weak().color(theme::YELLOW()),
             )
             .on_hover_text(
-                "One radio, one channel, one link. A Winlink session and this terminal are two \
-                 ways to use it, and whichever asks first gets it.",
+                crate::language_plugin::text("panels.packet.text_232_f05912", "One radio, one channel, one link. A Winlink session and this terminal are two \
+                 ways to use it, and whichever asks first gets it."),
             );
         }
 
@@ -248,7 +248,7 @@ impl SdroxideApp {
                     ui,
                     egui::TextEdit::singleline(&mut self.packet_target)
                         .desired_width(84.0)
-                        .hint_text("callsign"),
+                        .hint_text(crate::language_plugin::text("panels.packet.text_251_735ef6", "callsign")),
                 );
                 if resp.changed() {
                     self.packet_target = self.packet_target.to_uppercase();
@@ -258,12 +258,12 @@ impl SdroxideApp {
                     ui,
                     egui::TextEdit::singleline(&mut self.packet_via)
                         .desired_width(120.0)
-                        .hint_text("via"),
+                        .hint_text(crate::language_plugin::text("panels.packet.text_261_4d327a", "via")),
                 )
                 .on_hover_text(
-                    "Digipeaters, nearest first, separated by commas — OE3XLR-1,OE3XMS-1. Leave \
+                    crate::language_plugin::text("panels.packet.text_264_c164db", "Digipeaters, nearest first, separated by commas — OE3XLR-1,OE3XMS-1. Leave \
                      it empty for a station you can hear directly, or to use the default path \
-                     from the packet settings.",
+                     from the packet settings."),
                 );
                 if resp.changed() {
                     self.packet_via = self.packet_via.to_uppercase();
@@ -277,13 +277,13 @@ impl SdroxideApp {
                     crate::chrome::chip_accent(
                         ui,
                         false,
-                        RichText::new(" DISCONNECT ").strong(),
+                        RichText::new(crate::language_plugin::text("panels.packet.text_280_0cbcc9", " DISCONNECT ")).strong(),
                         theme::ALERT(),
                         theme::INK_ON_CYAN(),
                     )
                     .on_hover_text(
-                        "Hang up properly, and wait for the far end to agree. Changing mode \
-                         instead ends the session without telling anybody.",
+                        crate::language_plugin::text("panels.packet.text_285_c11ce3", "Hang up properly, and wait for the far end to agree. Changing mode \
+                         instead ends the session without telling anybody."),
                     )
                 })
                 .clicked()
@@ -294,19 +294,19 @@ impl SdroxideApp {
                 crate::chrome::chip_accent(
                     ui,
                     false,
-                    RichText::new(" CONNECT ").strong(),
+                    RichText::new(crate::language_plugin::text("settings.remote.connect", " CONNECT ")).strong(),
                     theme::GREEN(),
                     theme::INK_ON_CYAN(),
                 )
                 .on_hover_text(if busy {
-                    "The MAIL window has the link. Finish or stop that session first."
+                    crate::language_plugin::text("panels.packet.text_302_169857", "The MAIL window has the link. Finish or stop that session first.")
                 } else if !have_call {
-                    "This station has no callsign yet — set one under SETUP, above the monitor \
-                     pane. Nothing transmits until it is set."
+                    crate::language_plugin::text("panels.packet.text_304_7386af", "This station has no callsign yet — set one under SETUP, above the monitor \
+                     pane. Nothing transmits until it is set.")
                 } else if ready {
-                    "Call this station in connected mode — a node, a BBS, or another operator."
+                    crate::language_plugin::text("panels.packet.text_307_42052f", "Call this station in connected mode — a node, a BBS, or another operator.")
                 } else {
-                    "Needs a callsign to call."
+                    crate::language_plugin::text("panels.packet.text_309_21a03f", "Needs a callsign to call.")
                 })
             })
             .clicked()
@@ -315,10 +315,10 @@ impl SdroxideApp {
             }
 
             crate::chrome::row_tail(ui, |ui| {
-                if crate::chrome::chip(ui, false, RichText::new(" CLEAR ").size(10.5))
+                if crate::chrome::chip(ui, false, RichText::new(crate::language_plugin::text("panels.packet.text_318_386d78", " CLEAR ")).size(10.5))
                     .on_hover_text(
-                        "Empty the transcript. The link is untouched — a connected station stays \
-                         connected.",
+                        crate::language_plugin::text("panels.packet.text_320_f01d68", "Empty the transcript. The link is untouched — a connected station stays \
+                         connected."),
                     )
                     .clicked()
                 {
@@ -352,8 +352,8 @@ impl SdroxideApp {
                 if st.term.is_empty() && st.term_partial.is_empty() {
                     ui.label(
                         RichText::new(
-                            "Not connected. Type a callsign above and press CONNECT to call a \
-                             node or a BBS.",
+                            crate::language_plugin::text("panels.packet.text_355_7f8a72", "Not connected. Type a callsign above and press CONNECT to call a \
+                             node or a BBS."),
                         )
                         .weak(),
                     );
@@ -383,7 +383,7 @@ impl SdroxideApp {
                 let resp = ui.add(
                     egui::TextEdit::singleline(&mut self.packet_draft)
                         .desired_width(room)
-                        .hint_text(if connected { "type here" } else { "not connected" }),
+                        .hint_text(if connected { crate::language_plugin::text("panels.packet.text_386_440634", "type here") } else { crate::language_plugin::text("panels.packet.text_386_98b102", "not connected") }),
                 );
                 if resp.has_focus() {
                     self.packet_recall(ui, &resp);
@@ -394,11 +394,11 @@ impl SdroxideApp {
                 crate::chrome::chip_accent(
                     ui,
                     false,
-                    RichText::new(" SEND ").size(10.0).strong(),
+                    RichText::new(crate::language_plugin::text("panels.packet.text_397_3f326b", " SEND ")).size(10.0).strong(),
                     theme::GREEN(),
                     theme::INK_ON_CYAN(),
                 )
-                .on_hover_text("Send the line. A node or a BBS reads one line at a time.")
+                .on_hover_text(crate::language_plugin::text("panels.packet.text_401_643648", "Send the line. A node or a BBS reads one line at a time."))
             })
             .clicked()
             {
