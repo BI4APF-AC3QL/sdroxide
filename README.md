@@ -1,6 +1,6 @@
 ## 简体中文语言插件（社区预览版）
 
-[中文使用说明](README.zh-CN.md) · [下载最新预览版（语言包 ZIP 和 Windows 安装／恢复 EXE）](https://github.com/BI4APF-AC3QL/sdroxide/releases/latest)
+[中文使用说明](README.zh-CN.md) · [下载最新预览版（语言包 ZIP 和 Windows 安装／恢复 EXE）](https://github.com/BI4APF-AC3QL/sdroxide/releases/tag/v0.2.2-preview)
 
 这是面向 SDRoxide 的第三方简体中文插件与配套宿主，不属于 SDRoxide 官方发布。请先阅读中文说明中的版本适配、安装与恢复步骤。
 

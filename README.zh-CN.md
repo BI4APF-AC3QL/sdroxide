@@ -1,12 +1,12 @@
 # SDRoxide 简体中文语言插件使用说明（Windows）
 
-> **GitHub 下载**：请前往[最新预览版 Release](https://github.com/BI4APF-AC3QL/sdroxide/releases/latest)下载完整语言包 ZIP 或一键安装／恢复 EXE。项目是第三方社区汉化，非 SDRoxide 官方版本。
+> **GitHub 下载**：请前往[最新预览版 Release](https://github.com/BI4APF-AC3QL/sdroxide/releases/tag/v0.2.2-preview)下载完整语言包 ZIP 或一键安装／恢复 EXE。项目是第三方社区汉化，非 SDRoxide 官方版本。
 
 > SDRoxide 是一款面向业余无线电爱好者的 SDR 收发软件。本帖介绍的是第三方简体中文语言插件预览包的安装、切换和恢复方式。它不是 SDRoxide 官方发布，也不代表上游项目的支持或背书。
 >
 > **版本基线**：汉化插件 `0.2.2-preview`，适配上游 SDRoxide `1.6.9`。
 >
-> **附件请上传**：`SDRoxide-zh-CN-package-20261006-145929.zip`（完整发布包）与 `SDRoxide-简体中文一键安装与恢复-20261006-150019.exe`（独立安装／恢复工具）。建议读者下载后解压 ZIP，再运行其中的切换器；如需直接运行预览版，也可使用包内 `sdroxide-zh-CN.exe`。
+> **附件请上传**：`SDRoxide-zh-CN-package-20261006-145929.zip`（完整发布包）与 `SDRoxide-zh-CN-Installer-Restore-20261006.exe`（独立安装／恢复工具）。建议读者下载后解压 ZIP，再运行其中的切换器；如需直接运行预览版，也可使用包内 `sdroxide-zh-CN.exe`。
 
 ## 一、语言插件是什么
 
@@ -67,4 +67,4 @@
 
 ---
 
-**版本文件名**：`SDRoxide-zh-CN-package-20261006-145929.zip`；独立安装／恢复工具：`SDRoxide-简体中文一键安装与恢复-20261006-150019.exe`。
+**版本文件名**：`SDRoxide-zh-CN-package-20261006-145929.zip`；独立安装／恢复工具：`SDRoxide-zh-CN-Installer-Restore-20261006.exe`。
