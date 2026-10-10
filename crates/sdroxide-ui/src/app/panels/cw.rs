@@ -389,12 +389,21 @@ impl SdroxideApp {
         // key each of them that has the mode on — and put the key back down on
         // a radio the frame after losing focus had lifted it.
         let straight_chords = self.input.cw_straight_chords();
+        // A MIDI note bound to the straight key (#625). Unlike a keyboard key
+        // it cannot be a typist's, so its first press engages the mode itself,
+        // as the KEY chip below would.
+        let midi_down = self.input.cw_straight_midi_held();
+        if midi_down && !self.cw_straight && tx_ok && hand_key_ok && self.focused {
+            cmds.push(Command::DigiAbortTx);
+            cmds.push(Command::CwStraight(true));
+            self.cw_straight = true;
+        }
         if self.cw_straight && tx_ok && self.focused {
             // The key is the operator's only when nothing on screen holds the
             // keyboard: a caret in some other field is a typist, not a keyer.
             let free =
                 !ui.memory(|m| m.focused().is_some()) && !ui.ctx().egui_wants_keyboard_input();
-            let down = free && ui.input(|i| straight_key_held(i, &straight_chords));
+            let down = midi_down || (free && ui.input(|i| straight_key_held(i, &straight_chords)));
             if down != self.cw_key_down {
                 self.cw_key_down = down;
                 cmds.push(Command::CwKey(down));

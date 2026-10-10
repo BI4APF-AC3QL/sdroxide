@@ -601,7 +601,7 @@ pub fn config_dir() -> Result<PathBuf, ConfigError> {
 ///
 /// Only the files that describe *a radio* are scoped: `radio.json`,
 /// `session.json`, `scanner.json`, `modeprofiles.json`, `tciserver.json`, `rigctld.json`,
-/// `wsjtx.json`. Everything the operator shares across radios — memories,
+/// `wsjtx.json`, `wspr.json`. Everything the operator shares across radios — memories,
 /// band stacks, the logbook, `config.toml` — stays on the root free functions.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Store {
@@ -772,6 +772,54 @@ impl Store {
         profiles: &sdroxide_types::ModeProfiles,
     ) -> Result<(), ConfigError> {
         self.save("modeprofiles.json", profiles)
+    }
+
+    /// The operator's digital-mode config as this radio runs it: the shared
+    /// `digi.json` with this radio's own WSPR beacon settings laid over it
+    /// (issue #615).
+    ///
+    /// A radio that has never saved its own gets the shared file's — radio 0,
+    /// whose settings those are on an installation that predates the split —
+    /// except that any other radio starts with its beacon off. Transmitting
+    /// because a radio was added is not something the operator asked for.
+    pub fn load_digi_config(&self) -> sdroxide_types::DigiConfig {
+        let mut cfg = load_digi_config();
+        match self.load_wspr_config() {
+            Some(w) => w.apply_to(&mut cfg),
+            None if self.radio_id() != 0 => cfg.wspr_tx_percent = 0,
+            None => {}
+        }
+        cfg
+    }
+
+    /// Save `cfg` as this radio's: its WSPR beacon settings to its own
+    /// `wspr.json`, the rest to the shared `digi.json`.
+    ///
+    /// Radio 0 also leaves its WSPR settings in `digi.json`, where an older
+    /// build reads them. Any other radio writes the shared file with the WSPR
+    /// settings it already holds, so radio 0 — which may still be reading them
+    /// from there — is not handed another radio's beacon.
+    pub fn save_digi_config(&self, cfg: &sdroxide_types::DigiConfig) -> Result<(), ConfigError> {
+        let own = sdroxide_types::WsprRadio::of(cfg);
+        if self.radio_id() == 0 {
+            save_digi_config(cfg)?;
+        } else {
+            let mut shared = cfg.clone();
+            sdroxide_types::WsprRadio::of(&load_digi_config()).apply_to(&mut shared);
+            save_digi_config(&shared)?;
+        }
+        self.save("wspr.json", &own)
+    }
+
+    /// This radio's WSPR beacon settings, or `None` where it has never saved
+    /// any. An unreadable file is quarantined and reads as the defaults —
+    /// beacon off — rather than as absent.
+    pub fn load_wspr_config(&self) -> Option<sdroxide_types::WsprRadio> {
+        let dir = self.dir().ok()?;
+        match read_config_text(&dir, "wspr.json") {
+            FileText::Missing => None,
+            _ => Some(self.load("wspr.json")),
+        }
     }
 
     pub fn load_scanner_config(&self) -> sdroxide_types::ScannerConfig {

@@ -5891,8 +5891,8 @@ window.satellite.custom.text_729_022120,DOWNLINK,下行,window.satellite.custom,
 window.satellite.custom.text_735_c7db17,DOPPLER RX,接收多普勒频移,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:735
 window.satellite.custom.text_740_9a569e,UPLINK,上行,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:740
 window.satellite.custom.text_744_b76e68,DOPPLER TX,发射多普勒频移,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:744
-window.satellite.custom.text_759_c0e934,Pass until {} UTC · max {:.0}°,本次过境至 {} UTC 结束 · 最高仰角 {:.0}°,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:759
-window.satellite.custom.text_771_672b13,Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°,下次过境 {} UTC（{}）· 升起方位 {:.0}° {} · 最高仰角 {:.0}°,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:771
+window.satellite.custom.text_759_c0e934,Pass until {} · max {:.0}°,本次过境至 {} 结束 · 最高仰角 {:.0}°,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:759
+window.satellite.custom.text_771_672b13,Next pass {} {} ({}) · rises {:.0}° {} · max {:.0}°,下次过境 {} {}（{}）· 升起方位 {:.0}° {} · 最高仰角 {:.0}°,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:771
 window.satellite.custom.text_780_6dd841,No pass inside the next 48 hours from your QTH.,从您的台站位置看，未来 48 小时内没有过境。,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:780
 window.satellite.custom.text_981_4c6d1a,SATELLITE,卫星,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:981
 window.satellite.custom.text_983_2f9acb,PASS,过境,window.satellite.custom,adapter-generated,crates/sdroxide-ui/src/app/sat.rs:983
@@ -6164,3 +6164,6 @@ Deep — the checkpointed multi-pass: the most decodes, and ~1.2 s on a busy slo
 深度：带检查点的多轮解码；解码量最多，繁忙时隙约需 1.2 秒。",panels.setup,translated-upstream-591d21d,crates/sdroxide-ui/src/app/panels/setup.rs:762
 panels.adsb.mode_s,1090 MHz Mode S,1090 MHz S 模式,panels.adsb,adapter-generated-reviewed,crates/sdroxide-ui/src/app/panels/adsb.rs:126
 settings.net.freedv_reporter_title,FreeDV Reporter,FreeDV 通联上报,settings.net,adapter-generated-reviewed,crates/sdroxide-ui/src/app/settings/net.rs:76
+display.satellite.link.iss_sstv_70cm,SSTV 70 cm,SSTV（70 厘米）,display.satellite.link,shared-ui-label-resource,
+display.satellite.link.iss_sstv_2m,SSTV 2 m,SSTV（2 米）,display.satellite.link,shared-ui-label-resource,
+display.satellite.mode.sstv_fm_pd120,SSTV FM / PD120,SSTV FM／PD120（慢扫描电视）,display.satellite.mode,shared-ui-label-resource,

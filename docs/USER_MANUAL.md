@@ -1980,6 +1980,12 @@ key** action in Settings → Controls ([6.4.1](#641-keyboard)), so you can put i
 on any key you like. A space bar's travel is long for keying, and a key with a
 shorter throw is easier to send a decent fist on.
 
+**A MIDI key.** The same action can be bound to a MIDI note — the key-down
+note of a keyer or paddle interface — in Settings → Controls
+([6.4.3](#643-midi-controller)). The note keys while it is on, whatever button
+mode the binding has, and its first press switches **KEY** on by itself. Bind
+the key note, not **PTT**: PTT in CW transmits a steady carrier.
+
 - The first press keys the transmitter; there is no need to press **TX**. Between
   elements the transmitter holds the frequency the way **TX** does, and releases
   itself once the key has been up for as long as **IDLE** says.
@@ -2134,10 +2140,14 @@ working it. Either tab carries a dot while its own work is running, and the
 subscription, anything you pasted into the TLE tab
 ([6.10](#610-tle-satellites-and-their-frequencies)), and the curated set — with
 a search box and, once your grid locator is set, live elevation and the next
-pass for each. Pick one and its published links appear: transponders,
+pass for each. Pass times are worked out in UTC and shown in UTC with your
+own local time beside them (`13:08 UTC (14:08 local)`). Pick one and its
+published links appear: transponders,
 repeaters, beacons, each with its passbands and mode, inverting transponders
 marked `inv`. **TUNE** just sets the dial and mode to the link, nothing more.
-**LOCK ON** is the mode itself.
+**LOCK ON** is the mode itself. An SSTV link — the ISS lists both its 70 cm
+(437.550 MHz) and 2 m (145.800 MHz) SSTV downlinks — tunes and locks in
+**SSTV FM**, so the picture is decoded with the Doppler corrected.
 
 **What a lock does.** The engine — not the screen — propagates the orbit with
 SGP4 a few times a second and:
@@ -4771,6 +4781,11 @@ Everything is in the `STATUS` pane; WSPR has no separate setup dialog.
 - **ROAM** picks a different offset inside the 200 Hz window for every
   transmission. On by default: two hundred hertz shared by everyone only works
   if nobody parks in the middle of it.
+
+**TRANSMIT**, **POWER** and the band-hop settings belong to the radio they are
+set on. With several radios open, each beacons — or doesn't — on its own say:
+switching one on leaves the others as they were, and a radio added later starts
+with its beacon off.
 
 Your **callsign and grid come from the General tab of Settings** — the same
 identity the rest of the program reports under. The panel says which it is

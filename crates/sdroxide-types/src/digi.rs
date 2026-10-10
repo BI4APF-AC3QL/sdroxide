@@ -2219,6 +2219,56 @@ fn wspr_default_hop_bands() -> u16 {
         .fold(0u16, |m, b| m | (1 << b.wire_index()))
 }
 
+/// The WSPR beacon settings that belong to one radio rather than the station.
+///
+/// The rest of [`DigiConfig`] is the operator's — callsign, grid, macros — and
+/// is shared by every radio. These say what *this* transmitter does: whether it
+/// beacons, at what power, and over which bands. Shared, setting radio 1's
+/// duty to 33 % started radio 2 beaconing too (issue #615), so each radio keeps
+/// its own copy, laid over the shared file when the config is loaded.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WsprRadio {
+    /// [`DigiConfig::wspr_tx_percent`].
+    #[serde(default)]
+    pub tx_percent: u8,
+    /// [`DigiConfig::wspr_power_dbm`].
+    #[serde(default = "wspr_default_power")]
+    pub power_dbm: i16,
+    /// [`DigiConfig::wspr_hop`].
+    #[serde(default)]
+    pub hop: bool,
+    /// [`DigiConfig::wspr_hop_bands`].
+    #[serde(default = "wspr_default_hop_bands")]
+    pub hop_bands: u16,
+}
+
+/// Beacon off, as a fresh [`DigiConfig`] has it.
+impl Default for WsprRadio {
+    fn default() -> Self {
+        WsprRadio::of(&DigiConfig::default())
+    }
+}
+
+impl WsprRadio {
+    /// This radio's settings, as `cfg` holds them.
+    pub fn of(cfg: &DigiConfig) -> Self {
+        WsprRadio {
+            tx_percent: cfg.wspr_tx_percent,
+            power_dbm: cfg.wspr_power_dbm,
+            hop: cfg.wspr_hop,
+            hop_bands: cfg.wspr_hop_bands,
+        }
+    }
+
+    /// Lay these over `cfg`, leaving everything that is not WSPR's alone.
+    pub fn apply_to(self, cfg: &mut DigiConfig) {
+        cfg.wspr_tx_percent = self.tx_percent;
+        cfg.wspr_power_dbm = self.power_dbm;
+        cfg.wspr_hop = self.hop;
+        cfg.wspr_hop_bands = self.hop_bands;
+    }
+}
+
 /// Default for [`DigiConfig::sstv_banner_left`] — the operator's own callsign,
 /// which is what the banner was hard-wired to print before it could be edited.
 fn sstv_default_banner_left() -> String {

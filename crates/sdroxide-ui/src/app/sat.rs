@@ -305,6 +305,18 @@ fn hhmm(unix: i64) -> String {
     format!("{h:02}:{mi:02}")
 }
 
+/// `13:08 UTC (14:08 local)` — a pass time in both zones. Pass times are UTC,
+/// and read as local they are wrong by the operator's offset (#635), so the
+/// local clock goes beside it wherever the two differ.
+fn utc_and_local(unix: i64) -> String {
+    let offset = crate::time::local_offset_at(unix);
+    if offset == 0 {
+        format!("{} UTC", hhmm(unix))
+    } else {
+        format!("{} UTC ({} local)", hhmm(unix), hhmm(unix + offset))
+    }
+}
+
 /// Paint the pass profile: elevation up the side, the clock and the compass
 /// along the bottom, and a marker down the arc at the satellite's present
 /// position.
@@ -523,10 +535,14 @@ fn pass_diagram(ui: &mut egui::Ui, curve: &PassCurve, now: i64, height: f32) {
 }
 
 /// The mode a link's published emission maps onto. Satellite SSB convention
-/// is USB on the downlink, whatever the band.
+/// is USB on the downlink, whatever the band. An SSTV downlink is FM on V/UHF,
+/// and tuning it as plain NFM would leave the picture undecoded (#622).
 fn mode_for_link(l: &sdroxide_types::SatLink) -> Mode {
     let m = l.mode.to_ascii_uppercase();
-    if m.contains("FM") || m.contains("APT") {
+    let sstv = m.contains("SSTV") || l.label.to_ascii_uppercase().contains("SSTV");
+    if sstv && m.contains("FM") {
+        Mode::SstvFm
+    } else if m.contains("FM") || m.contains("APT") {
         Mode::Nfm
     } else if m.contains("SSB") || m.contains("BPSK") || m.contains("GMSK") || m.contains("AX.25") {
         Mode::Usb
@@ -752,15 +768,12 @@ impl SdroxideApp {
             (_, true) => {
                 if let Some(p) = &t.next_pass {
                     if (p.rise_unix..=p.set_unix).contains(&now) {
-                        ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_solar::timefmt::ymd_hm(p.set_unix)
-                                .split(' ')
-                                .nth(1)
-                                .unwrap_or("").to_owned()); let __lp_arg_1 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_759_c0e934", "Pass until {} UTC · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) }));
+                        ui.label(dim(&{ let __lp_arg_0 = &(utc_and_local(p.set_unix)); let __lp_arg_1 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_759_c0e934", "Pass until {} · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{:.0}", __lp_arg_1)]) }));
                     }
                 }
             }
             (Some(p), false) => {
-                ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_solar::timefmt::ymd_hm(p.rise_unix)); let __lp_arg_1 = &(in_words(p.rise_unix - now)); let __lp_arg_2 = &(p.rise_az); let __lp_arg_3 = &(compass(p.rise_az)); let __lp_arg_4 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_771_672b13", "Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{:.0}", __lp_arg_2), format!("{}", __lp_arg_3), format!("{:.0}", __lp_arg_4)]) }));
+                ui.label(dim(&{ let __lp_arg_0 = &(sdroxide_solar::timefmt::ymd(p.rise_unix)); let __lp_arg_1 = &(utc_and_local(p.rise_unix)); let __lp_arg_2 = &(in_words(p.rise_unix - now)); let __lp_arg_3 = &(p.rise_az); let __lp_arg_4 = &(compass(p.rise_az)); let __lp_arg_5 = &(p.max_el); crate::language_plugin::format("window.satellite.custom.text_771_672b13", "Next pass {} {} ({}) · rises {:.0}° {} · max {:.0}°", &[format!("{}", __lp_arg_0), format!("{}", __lp_arg_1), format!("{}", __lp_arg_2), format!("{:.0}", __lp_arg_3), format!("{}", __lp_arg_4), format!("{:.0}", __lp_arg_5)]) }));
             }
             (None, false) => {
                 ui.label(dim(&crate::language_plugin::text("window.satellite.custom.text_780_6dd841", "No pass inside the next 48 hours from your QTH.")));
@@ -1208,6 +1221,18 @@ impl SdroxideApp {
 #[cfg(test)]
 mod language_countdown_tests {
     use super::*;
+
+    #[test]
+    fn sstv_satellite_links_select_sstv_fm_mode() {
+        use sdroxide_types::{Passband, SatLink};
+        let sstv = SatLink::down("SSTV 70 cm", "SSTV FM / PD120", Passband::at(437.550));
+        assert_eq!(mode_for_link(&sstv), Mode::SstvFm);
+        let own = SatLink::down("SSTV", "FM", Passband::at(145.800));
+        assert_eq!(mode_for_link(&own), Mode::SstvFm);
+        let voice = SatLink::down("FM voice", "FM", Passband::at(145.800));
+        assert_eq!(mode_for_link(&voice), Mode::Nfm);
+    }
+
     #[test]
     fn countdown_boundaries_round_as_before_and_switch_back_to_exact_english() {
         for enabled in [true,false,true,false] {
@@ -1227,9 +1252,9 @@ mod language_countdown_tests {
             let seconds=3900;
             assert_eq!(crate::language_plugin::solar_age(seconds),if enabled {"65 分钟"} else {"65 min"});
             let (key,entry)=serde_json::from_str::<serde_json::Value>(include_str!("../../../../plugins/zh-CN/translations.zh-CN.json")).unwrap()["entries"]
-                .as_object().unwrap().iter().find(|(_,entry)|entry["source"]=="Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°").map(|(k,e)|(k.clone(),e.clone())).unwrap();
-            let text=crate::language_plugin::format(&key,entry["source"].as_str().unwrap(),&["2026-10-04 12:34".into(),in_words(seconds),"123".into(),"SE".into(),"67".into()]);
-            for raw in ["2026-10-04 12:34","123°","SE","67°"] {assert!(text.contains(raw));}
+                .as_object().unwrap().iter().find(|(_,entry)|entry["source"]=="Next pass {} {} ({}) · rises {:.0}° {} · max {:.0}°").map(|(k,e)|(k.clone(),e.clone())).unwrap();
+            let text=crate::language_plugin::format(&key,entry["source"].as_str().unwrap(),&["2026-10-04".into(),"12:34 UTC (20:34 local)".into(),in_words(seconds),"123".into(),"SE".into(),"67".into()]);
+            for raw in ["2026-10-04","12:34 UTC (20:34 local)","123°","SE","67°"] {assert!(text.contains(raw));}
             assert_eq!(text.contains("下次过境"),enabled);
         }
     }

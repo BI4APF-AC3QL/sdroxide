@@ -275,6 +275,12 @@ pub struct RemoteController {
     /// Re-announced *within* a session as well, whenever the station's roster
     /// changes: by this client, by another one, or at the station itself.
     peers: Option<(u32, Vec<sdroxide_proto::RadioInfo>)>,
+    /// The `me` of the last roster heard, kept across reconnects where
+    /// `peers` is not. A reconnecting tab dials the same address and so reaches
+    /// the same radio; until the fresh roster lands it still has to answer to
+    /// that radio's canonical URL, or the shell sees the radio as unopened in
+    /// the gap and dials a second session to it (#646).
+    last_me: Option<u32>,
     /// Whether that station takes roster edits from here, as it said with the
     /// roster ([`RadioController::station_roster_editable`]).
     peers_editable: bool,
@@ -325,6 +331,15 @@ fn window_elapsed(now: f64, sent: f64, window: f64) -> bool {
 /// connection is already on: everything up to the endpoint, then the radio's
 /// own. Keeps whatever the operator typed — the scheme, a port, a reverse
 /// proxy's path prefix — and changes only which radio is being asked for.
+/// The address a session answers to: its radio's canonical `/ws/<id>` once
+/// the far end has said which radio it is, else whatever was dialled.
+fn canonical_url(dialled: &str, me: Option<u32>) -> String {
+    match me {
+        Some(me) => radio_url(dialled, me),
+        None => dialled.to_owned(),
+    }
+}
+
 fn radio_url(connected_to: &str, id: u32) -> String {
     let base = match connected_to.rfind("/ws") {
         Some(i) => &connected_to[..i],
@@ -370,6 +385,7 @@ impl RemoteController {
             probe_answers: VecDeque::new(),
             muted: false,
             peers: None,
+            last_me: None,
             peers_editable: false,
         })
     }
@@ -577,6 +593,7 @@ impl RemoteController {
             // other radios in tabs of their own.
             ServerMsg::Radios { me, radios, editable } => {
                 self.peers = Some((me, radios));
+                self.last_me = Some(me);
                 self.peers_editable = editable;
             }
         }
@@ -840,10 +857,8 @@ impl RadioController for RemoteController {
         // that a session dialled at `/ws` and the same radio offered by a
         // sibling as `/ws/0` are recognised as one and the same. Before that,
         // whatever was dialled — it is all there is to go on.
-        Some(match self.peers.as_ref() {
-            Some((me, _)) => radio_url(&self.url, *me),
-            None => self.url.clone(),
-        })
+        let me = self.peers.as_ref().map(|(me, _)| *me);
+        Some(canonical_url(&self.url, me.or(self.last_me)))
     }
 
     fn auth_phase(&self) -> AuthPhase {
@@ -882,6 +897,7 @@ impl RadioController for RemoteController {
         self.mic_seq = 0;
         // ...and the roster, which the new session announces afresh: the
         // station may have gained or lost a radio while the link was down.
+        // `last_me` stays: it is what keeps `peer_url` canonical in the gap.
         self.peers = None;
         self.peers_editable = false;
         // The interface configuration is per-session too: the new socket may
@@ -965,6 +981,14 @@ mod tests {
         // A host that begins with the endpoint's own letters must not be
         // mistaken for it.
         assert_eq!(radio_url("ws://wsserver:4950/ws", 1), "ws://wsserver:4950/ws/1");
+    }
+
+    /// A reconnecting tab keeps answering to its radio's canonical URL.
+    #[test]
+    fn a_reconnecting_tab_keeps_its_canonical_address() {
+        let dialled = "ws://192.168.1.10:4950/ws";
+        assert_eq!(canonical_url(dialled, None), dialled);
+        assert_eq!(canonical_url(dialled, Some(0)), "ws://192.168.1.10:4950/ws/0");
     }
 
     /// The first-frame `SetSpectrumCfg` that the capture from the bug report

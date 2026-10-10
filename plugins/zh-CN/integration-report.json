@@ -24424,5 +24424,23 @@
     "file": "crates/sdroxide-ui/src/app/settings/net.rs",
     "line": 75,
     "status": "adapter-generated"
+  },
+  {
+    "key": "display.satellite.link.iss_sstv_70cm",
+    "file": "crates/sdroxide-solar/src/satfreq.rs",
+    "line": 0,
+    "status": "shared-ui-label-resource"
+  },
+  {
+    "key": "display.satellite.link.iss_sstv_2m",
+    "file": "crates/sdroxide-solar/src/satfreq.rs",
+    "line": 0,
+    "status": "shared-ui-label-resource"
+  },
+  {
+    "key": "display.satellite.mode.sstv_fm_pd120",
+    "file": "crates/sdroxide-solar/src/satfreq.rs",
+    "line": 0,
+    "status": "shared-ui-label-resource"
   }
 ]

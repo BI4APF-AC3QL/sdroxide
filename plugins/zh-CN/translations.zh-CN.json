@@ -60756,8 +60756,8 @@
       "status": "adapter-generated"
     },
     "window.satellite.custom.text_759_c0e934": {
-      "source": "Pass until {} UTC · max {:.0}°",
-      "translation": "本次过境至 {} UTC 结束 · 最高仰角 {:.0}°",
+      "source": "Pass until {} · max {:.0}°",
+      "translation": "本次过境至 {} 结束 · 最高仰角 {:.0}°",
       "source_refs": [
         {
           "file": "crates/sdroxide-ui/src/app/sat.rs",
@@ -60772,8 +60772,8 @@
       "status": "adapter-generated"
     },
     "window.satellite.custom.text_771_672b13": {
-      "source": "Next pass {} UTC ({}) · rises {:.0}° {} · max {:.0}°",
-      "translation": "下次过境 {} UTC（{}）· 升起方位 {:.0}° {} · 最高仰角 {:.0}°",
+      "source": "Next pass {} {} ({}) · rises {:.0}° {} · max {:.0}°",
+      "translation": "下次过境 {} {}（{}）· 升起方位 {:.0}° {} · 最高仰角 {:.0}°",
       "source_refs": [
         {
           "file": "crates/sdroxide-ui/src/app/sat.rs",
@@ -60781,6 +60781,7 @@
         }
       ],
       "parameters": [
+        "",
         "",
         "",
         ":.0",
@@ -64784,6 +64785,30 @@
           "line": 76
         }
       ]
+    },
+    "display.satellite.link.iss_sstv_70cm": {
+      "source": "SSTV 70 cm",
+      "translation": "SSTV（70 厘米）",
+      "source_refs": [],
+      "parameters": [],
+      "module": "display.satellite.link",
+      "status": "shared-ui-label-resource"
+    },
+    "display.satellite.link.iss_sstv_2m": {
+      "source": "SSTV 2 m",
+      "translation": "SSTV（2 米）",
+      "source_refs": [],
+      "parameters": [],
+      "module": "display.satellite.link",
+      "status": "shared-ui-label-resource"
+    },
+    "display.satellite.mode.sstv_fm_pd120": {
+      "source": "SSTV FM / PD120",
+      "translation": "SSTV FM／PD120（慢扫描电视）",
+      "source_refs": [],
+      "parameters": [],
+      "module": "display.satellite.mode",
+      "status": "shared-ui-label-resource"
     }
   }
 }

@@ -404,7 +404,8 @@ pub(crate) fn apply_action(
         // The CW straight key is read held by the CW panel, not dispatched
         // here: it is a held state with its own focus rules, and the panel is
         // the only place that knows whether the mode is armed. The binding
-        // table is what makes the key selectable.
+        // table is what makes the key selectable — a keyboard chord, or a MIDI
+        // note through `cw_straight_midi_held`.
         CwStraight => {}
         // The engine decides whether this can transmit: an empty slot, a
         // digital mode other than RADE, or TUNE in progress all make it a
@@ -560,6 +561,15 @@ impl InputRuntime {
             .filter(|b| b.enabled && b.action == Action::CwStraight && !b.chord.is_empty())
             .map(|b| b.chord.clone())
             .collect()
+    }
+
+    /// Whether a MIDI note bound to [`Action::CwStraight`] is down. The CW
+    /// panel keys from this beside the keyboard chords: a keyer or paddle
+    /// interface sending notes is a straight key like any other (#625).
+    pub(crate) fn cw_straight_midi_held(&self) -> bool {
+        self.held
+            .iter()
+            .any(|h| h.action == Action::CwStraight && matches!(h.src, HeldSource::Midi(_)))
     }
 
     /// Throw away any queued MIDI events. A radio tab that is not focused
@@ -858,7 +868,11 @@ impl InputRuntime {
 
         for (ix, down) in buttons {
             let Some(b) = self.cfg.midi.bindings.get(ix) else { continue };
-            let (action, mode) = (b.action, b.button_mode);
+            // A straight key is down while held and nothing else, whatever
+            // the binding says: a toggled key would hold the carrier on.
+            let mode =
+                if b.action == Action::CwStraight { ButtonMode::Momentary } else { b.button_mode };
+            let action = b.action;
             let src = HeldSource::Midi(ix);
             if down {
                 self.press(src, action, mode, now);

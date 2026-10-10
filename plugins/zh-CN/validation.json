@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-06T14:57:21.4276873+08:00",
+  "generated_at": "2026-10-10T21:03:38+08:00",
   "completeness": "complete",
-  "catalog_entries": 5345,
-  "catalog_sha256": "6855501f11dd35198336b9e7eddec5020021a9f8ad7dc506cfb5e2e0954167ca",
+  "catalog_entries": 5348,
+  "catalog_sha256": "09f5fdae390c9b165e75a85e87e53bce18c6e050a352235942b920af448e3017",
   "direct_display_adapters": 3862,
   "unresolved_generated_adapters": 0,
   "placeholders": "passed; catalog format descriptors validated by language-pack tests",
@@ -170,14 +170,14 @@
   "helper_display_adapters": 48,
   "manual_source_coverage": {
     "source_characters": 986429,
-    "translated_fragments": 244,
+    "translated_fragments": 248,
     "uncovered_source_characters": 0,
-    "structure_checks": "heading hierarchy, code fences and link targets preserved by assembler"
+    "structure_checks": "heading hierarchy, code fences and link targets preserved by assembler; 4 upstream additions translated in the current manual"
   },
   "constant_display_adapters": 126,
-  "latest_windows_executable": {
+  "previous_windows_executable": {
     "sha256": "28efea0caad3f3d383c8da10d10043c514147f3e17217d70cd502d6c37b87996",
-    "scope": "Current 0.2.2-preview Windows embedded release with 5,345 catalog entries and complete translation metadata.",
+    "scope": "Previous 0.2.2-preview Windows embedded release; not rebuilt against upstream 9addfec or the 0.2.3-preview catalog.",
     "bytes": 278833004,
     "path": "C:\\Users\\zql\\Documents\\Codex\\2026-10-02\\sdroxide-dividebysandwich-sdroxide-i18n-ui-windows\\work\\target\\x86_64-pc-windows-gnu\\release\\sdroxide.exe",
     "version_output": "sdroxide 1.6.9-zhCN.0.2.2-preview",
@@ -1872,12 +1872,12 @@
   },
   "manual_review_coverage": {
     "report": "outputs/SDRoxide_手册逐片段审校覆盖.json",
-    "drafts": 244,
+    "drafts": 248,
     "current_hash_matched_reviews": 244,
     "mention_only": 0,
-    "without_review_record": 0,
+    "without_review_record": 4,
     "latest_batch": 108,
-    "scope": "Current-hash review-record inventory, not proof of complete semantic accuracy."
+    "scope": "244 prior fragments have matching review records; 4 additions for upstream 9addfec are translated but do not yet have separate review records."
   },
   "current_source_ui_audit": {
     "report": "outputs/SDRoxide_当前UI直接显示未命中审计.json",
@@ -1887,7 +1887,7 @@
       "compact menu chips RX/DISP/SYS -> 接收/显示/系统"
     ],
     "catalog_source_matches": 3935,
-    "catalog_entries": 5345,
+    "catalog_entries": 5348,
     "human_translation_review_required": 0,
     "direct_display_occurrences": 4459,
     "retained_product_and_hardware_names": 6,
@@ -1905,10 +1905,28 @@
     "translated_source_characters": 987045,
     "status": "passed",
     "translated_fragments": 244,
-    "scope": "Source coverage and heuristic prose screening prove translation completeness; runtime visual layout review remains separate.",
+    "scope": "Historical coverage audit at 591d21d; the four help additions through 9addfec are translated in the current manual resource, while new semantic review and runtime visual review remain separate.",
     "english_prose_candidates": 0,
     "upstream_commit": "591d21d0b1bcddfcc7aaab8146141c953727e616",
     "prose_paragraphs_checked": 2481,
     "missing_source_ranges": 0
+  },
+  "upstream_sync": {
+    "upstream_repository": "dividebysandwich/sdroxide",
+    "upstream_branch": "main",
+    "upstream_commit": "9addfec60f0679a63f14c027d277978f0260ffbb",
+    "verified_at_utc": "2026-10-10T13:03:38Z",
+    "tests": {
+      "sdroxide-ui": "801 passed; 4 shader tests passed",
+      "satellite_sstv_and_local_time": "passed, including placeholder/fallback coverage",
+      "sdroxide-config_wsper_per_radio": "1 passed",
+      "sdroxide-icomnet": "49 unit + 18 loopback + 1 doctest passed",
+      "sdroxide-types": "497 passed"
+    },
+    "not_run_or_blocked": {
+      "sdroxide-radio": "blocked: SoapySDR/PothosSDR native dependency not installed in this Windows environment",
+      "rustfmt": "unavailable: rustfmt component is not installed",
+      "physical_radio_tx_or_ptt": "not performed"
+    }
   }
 }

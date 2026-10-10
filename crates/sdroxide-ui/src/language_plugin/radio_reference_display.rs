@@ -105,7 +105,7 @@ mod tests {
                     let before=link.clone();let serialized=serde_json::to_string(link).unwrap();
                     assert_eq!(satellite_link_label(link,false)==link.label,!enabled||matches!(link.label.as_str(),"SSTV"|"APT"));
                     assert_eq!(satellite_link_note(link,false)==link.note,!enabled||link.note.is_empty());
-                    assert_eq!(satellite_link_mode(link,false)==link.mode,!enabled||link.mode!="SSB/CW/digital");
+                    assert_eq!(satellite_link_mode(link,false)==link.mode,!enabled||!matches!(link.mode.as_str(),"SSB/CW/digital"|"SSTV FM / PD120"));
                     let decorated=satellite_link_mode_with_inversion(link,false);
                     assert_eq!(decorated.ends_with("反相"),enabled&&link.inverting);
                     if !enabled {assert_eq!(decorated,if link.inverting {format!("{} · inv",link.mode)} else {link.mode.clone()});}

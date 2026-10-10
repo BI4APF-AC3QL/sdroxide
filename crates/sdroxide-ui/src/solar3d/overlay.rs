@@ -1575,10 +1575,11 @@ fn freq_table(
     );
 }
 
-/// `HH:MM` — the date is already on the start column.
+/// `HH:MMZ` — the date is already on the start column. Marked UTC like the
+/// start column, so the end is not read as a local time (#635).
 fn hhmm(unix: i64) -> String {
     let (_, _, _, h, m, _) = sdroxide_types::utc_ymd_hms(unix);
-    format!("{h:02}:{m:02}")
+    format!("{h:02}:{m:02}Z")
 }
 
 /// A dot-matrix UTC clock in the top-left corner, with the same instant in the

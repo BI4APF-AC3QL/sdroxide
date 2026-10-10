@@ -4,11 +4,11 @@
   "kind": "language-pack",
   "name": "SDRoxide 简体中文语言包",
   "locale": "zh-CN",
-  "version": "0.2.2-preview",
+  "version": "0.2.3-preview",
   "upstream": {
     "repository": "dividebysandwich/sdroxide",
     "version": "1.6.9",
-    "commit": "591d21d0b1bcddfcc7aaab8146141c953727e616"
+    "commit": "9addfec60f0679a63f14c027d277978f0260ffbb"
   },
   "requires_host_api": "sdroxide-language-pack/1",
   "catalog": "translations.zh-CN.json",

@@ -417,10 +417,8 @@ impl SdroxideApp {
             order.reverse();
         }
 
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs() as i64)
-            .unwrap_or(0);
+        // Not `SystemTime::now()`: that panics in the browser build (#601).
+        let now = crate::time::now_unix();
 
         // Staged out of the closure: it borrows `self` and cannot also push a
         // tune command through `cmds`.

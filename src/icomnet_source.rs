@@ -732,7 +732,12 @@ impl IcomNetSource {
             self.send(civ::read_freq_frame(self.civ_addr));
             self.send(civ::read_mode_frame(self.civ_addr));
             if self.transmitting {
+                // All three TX meters, as the serial CI-V path polls them: ALC
+                // is what the operator sets the drive by, and with only SWR
+                // asked for the ALC bar read SDRoxide's own level (#600).
                 self.send(civ::read_swr_frame(self.civ_addr));
+                self.send(civ::read_alc_frame(self.civ_addr));
+                self.send(civ::read_po_frame(self.civ_addr));
             } else {
                 self.send(civ::read_smeter_frame(self.civ_addr));
             }
@@ -851,8 +856,16 @@ impl IcomNetSource {
                 if let Some(dbm) = civ::parse_smeter_reply(&reply.data) {
                     self.last_signal = Some((Instant::now(), dbm));
                 }
+                // One meter per reply, so each updates its own field and
+                // leaves the others' last readings standing.
                 if let Some(swr) = civ::parse_swr_reply(&reply.data) {
-                    self.last_telem = Some(TxTelemetry { swr: Some(swr), ..Default::default() });
+                    self.last_telem.get_or_insert_with(TxTelemetry::default).swr = Some(swr);
+                }
+                if let Some(alc) = civ::parse_alc_reply(&reply.data) {
+                    self.last_telem.get_or_insert_with(TxTelemetry::default).alc = Some(alc);
+                }
+                if let Some(po) = civ::parse_po_reply(&reply.data) {
+                    self.last_telem.get_or_insert_with(TxTelemetry::default).po = Some(po);
                 }
             }
             // A Set-mode menu item, answering one of the reads `configure`
@@ -2158,6 +2171,23 @@ mod tests {
         wait_for("PTT on", || ptt(1));
         src.tx_end().unwrap();
         wait_for("PTT off", || ptt(0));
+    }
+
+    /// Issue #600: while transmitting, the rig's own ALC and power meters are
+    /// read and reported beside SWR, not only SWR.
+    #[test]
+    fn transmitting_reads_the_alc_and_power_meters() {
+        let sim = Sim::start(SimOptions { scope: false, ..Default::default() }).unwrap();
+        let mut src = IcomNetSource::open(&cfg(&sim)).expect("open");
+        src.tx_begin(14_074_000.0, 48_000.0).unwrap();
+        wait_for("all three TX meters", || {
+            src.tx_telemetry().is_some_and(|t| t.swr.is_some() && t.alc.is_some() && t.po.is_some())
+        });
+        let t = src.tx_telemetry().unwrap();
+        assert!((t.alc.unwrap() - 128.0 / 255.0).abs() < 1e-3, "ALC {:?}", t.alc);
+        assert_eq!(t.po, Some(1.0));
+        assert_eq!(t.swr, Some(1.0));
+        src.tx_end().unwrap();
     }
 
     #[test]

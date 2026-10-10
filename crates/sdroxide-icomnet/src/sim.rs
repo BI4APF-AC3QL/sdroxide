@@ -656,6 +656,10 @@ impl SimRadio {
                 Some(0x02) => Some(reply(vec![0x15, 0x02, 0x01, 0x20])),
                 // SWR, bottom of scale.
                 Some(0x12) => Some(reply(vec![0x15, 0x12, 0x00, 0x00])),
+                // ALC, half of 255.
+                Some(0x13) => Some(reply(vec![0x15, 0x13, 0x01, 0x28])),
+                // Power output, full scale.
+                Some(0x11) => Some(reply(vec![0x15, 0x11, 0x02, 0x13])),
                 _ => None,
             },
             // The Set-mode menu, `1A 05 <hi> <lo> [value]`. A bare item number

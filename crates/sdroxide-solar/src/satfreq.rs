@@ -64,7 +64,12 @@ fn build() -> Vec<SatFreqs> {
             vec![
                 duplex("FM voice", "FM", P::at(145.200), P::at(145.800))
                     .note("uplink 144.490 in ITU regions 2 and 3"),
-                down("SSTV", "FM / PD120", P::at(145.800)).note("event-driven; check ARISS"),
+                // ARISS has run its SSTV events on 70 cm since 2026 (#622); the
+                // 2 m channel is kept for the older ones.
+                down("SSTV 70 cm", "SSTV FM / PD120", P::at(437.550))
+                    .note("event-driven; check ARISS"),
+                down("SSTV 2 m", "SSTV FM / PD120", P::at(145.800))
+                    .note("event-driven; check ARISS"),
                 duplex("APRS digipeater", "AX.25 1k2 AFSK", P::at(145.825), P::at(145.825))
                     .note("simplex; path ARISS"),
                 duplex("Cross-band repeater", "FM", P::at(145.990), P::at(437.800))
@@ -298,6 +303,7 @@ mod tests {
 
         let iss = builtin_for(25544).expect("ISS in the table");
         assert!(iss.links.iter().any(|l| l.downlink == Some(Passband::at(145.800))));
+        assert!(iss.links.iter().any(|l| l.downlink == Some(Passband::at(437.550))));
         assert!(iss.links.iter().any(|l| l.label.contains("APRS")));
 
         let so50 = builtin_for(27607).expect("SO-50 in the table");
