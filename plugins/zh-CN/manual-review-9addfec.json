@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "locale": "zh-CN",
+  "upstream_commit": "9addfec60f0679a63f14c027d277978f0260ffbb",
+  "source_manual_sha256": "b48a12c60a889c247a3f6b54eba99ef4115a3d975e777e141a6a3a9a42eaa7be",
+  "translated_manual_resource_sha256": "b9b8437cf53542267a840101995ac4ad837df5ae235be9e2da45589dadc437f5",
+  "review_method": "逐项对照上游新增原文与当前中文手册，核对功能条件、射频/时间数值、设置范围及安全含义",
+  "records": [
+    {
+      "section": "CW straight key / MIDI controller",
+      "source_claims": [
+        "MIDI 音符按住期间作为直键键控",
+        "首次按下自动启用 KEY",
+        "应绑定电键音符而非 PTT，CW 下 PTT 会持续发射载波"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "MIDI 输入事件、按住行为和首次自动启用均保留",
+        "明确提示不要绑定 PTT，并保留连续载波风险"
+      ]
+    },
+    {
+      "section": "Satellite pass-time display",
+      "source_claims": [
+        "过境时刻以 UTC 计算",
+        "同时显示 UTC 与操作者本地时间",
+        "保留 13:08 UTC (14:08 local) 示例"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "UTC 与本地时区含义对应",
+        "时间示例字符原样保留"
+      ]
+    },
+    {
+      "section": "ISS SSTV satellite links",
+      "source_claims": [
+        "ISS 70 cm 下行 437.550 MHz",
+        "ISS 2 m 下行 145.800 MHz",
+        "TUNE/LOCK 使用 SSTV FM 并进行多普勒校正"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "两频率与波段换算准确",
+        "SSTV FM 和多普勒校正条件完整"
+      ]
+    },
+    {
+      "section": "WSPR per-radio settings",
+      "source_claims": [
+        "TRANSMIT、POWER、band-hop 参数属于各自电台",
+        "切换一台的参数不影响其他电台",
+        "新添加电台默认关闭发射信标"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "独立配置范围与状态隔离完整",
+        "新电台默认关闭含义准确"
+      ]
+    }
+  ],
+  "limitations": "文本与资源哈希可复核；本审校不连接实机，也不执行发射或 PTT 测试。"
+}

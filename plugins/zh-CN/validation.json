@@ -1873,11 +1873,15 @@
   "manual_review_coverage": {
     "report": "outputs/SDRoxide_手册逐片段审校覆盖.json",
     "drafts": 248,
-    "current_hash_matched_reviews": 244,
+    "current_hash_matched_reviews": 248,
     "mention_only": 0,
-    "without_review_record": 4,
-    "latest_batch": 108,
-    "scope": "244 prior fragments have matching review records; 4 additions for upstream 9addfec are translated but do not yet have separate review records."
+    "without_review_record": 0,
+    "latest_batch": 109,
+    "scope": "244 previously reviewed fragments plus 4 additions from upstream 9addfec; all 248 translated source fragments now have current review records.",
+    "latest_batch_report": "plugins/zh-CN/manual-review-9addfec.json",
+    "review_resource_sha256": "b9b8437cf53542267a840101995ac4ad837df5ae235be9e2da45589dadc437f5",
+    "source_manual_sha256": "b48a12c60a889c247a3f6b54eba99ef4115a3d975e777e141a6a3a9a42eaa7be",
+    "last_reviewed_at_utc": "2026-10-11T17:06:04Z"
   },
   "current_source_ui_audit": {
     "report": "outputs/SDRoxide_当前UI直接显示未命中审计.json",
@@ -1895,7 +1899,27 @@
     "retained_dynamic_or_measurement_templates": 106,
     "retained_protocol_identifiers_and_units": 185,
     "rust_ui_files": 130,
-    "current_retained_candidate_occurrences": 297
+    "current_retained_candidate_occurrences": 297,
+    "incremental_upstream_review": {
+      "upstream_commit": "9addfec60f0679a63f14c027d277978f0260ffbb",
+      "reviewed_against": "591d21d0b1bcddfcc7aaab8146141c953727e616",
+      "changed_ui_files": [
+        "crates/sdroxide-ui/src/app/ism.rs",
+        "crates/sdroxide-ui/src/app/panels/cw.rs",
+        "crates/sdroxide-ui/src/app/sat.rs",
+        "crates/sdroxide-ui/src/input.rs",
+        "crates/sdroxide-ui/src/remote.rs",
+        "crates/sdroxide-ui/src/solar3d/overlay.rs",
+        "crates/sdroxide-ui/src/time.rs"
+      ],
+      "catalog_checked_literals": [
+        "Pass until {} · max {:.0}°",
+        "Next pass {} {} ({}) · rises {:.0}° {} · max {:.0}°"
+      ],
+      "result": "The two changed satellite captions resolve to Chinese catalog entries; other upstream UI code changes in this delta introduce no additional visible English label candidates.",
+      "tests": "cargo test -p sdroxide-ui: 801 passed; 4 shader tests passed; satellite fallback/countdown focused tests: 4 passed",
+      "receive_boundary": "No physical receiver, transmission or PTT operation."
+    }
   },
   "manual_translation": {
     "report": "outputs/SDRoxide_中文手册全量翻译审计.json",
