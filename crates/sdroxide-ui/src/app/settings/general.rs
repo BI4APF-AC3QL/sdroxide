@@ -493,6 +493,7 @@ impl SdroxideApp {
         &self,
         ui: &mut egui::Ui,
         audio_pick: &mut Option<(bool, Option<String>)>,
+        routing_pick: &mut Option<sdroxide_types::AudioRouting>,
     ) {
         let Some(devs) = &self.audio_devices else {
             return;
@@ -503,6 +504,24 @@ impl SdroxideApp {
             device_combo(ui, "u-out", &devs.outputs, &devs.selected_output, |n| {
                 *audio_pick = Some((true, n))
             });
+            ui.end_row();
+            // Which channel(s) the received audio reaches (#654). Applied live,
+            // so an operator hearing on one side only is a pick, not a restart.
+            ui.label(crate::language_plugin::text("settings.general.channels", "Channels"));
+            let mut selected = devs.routing;
+            ComboBox::from_id_salt("u-routing")
+                .width(300.0)
+                .selected_text(crate::language_plugin::display_label(selected.label()))
+                .show_styled(ui, |ui| {
+                    for r in sdroxide_types::AudioRouting::ALL {
+                        ui.selectable_value(&mut selected, r, crate::language_plugin::display_label(r.label()));
+                    }
+                })
+                .response
+                .on_hover_text(crate::language_plugin::text("settings.general.audio_routing_hint", "Which speaker channel(s) the received audio reaches. Left or right puts everything, mixed to mono, on that side only."));
+            if selected != devs.routing {
+                *routing_pick = Some(selected);
+            }
             ui.end_row();
             ui.label(crate::language_plugin::text("settings.general.input", "Input"));
             device_combo(ui, "u-in", &devs.inputs, &devs.selected_input, |n| {

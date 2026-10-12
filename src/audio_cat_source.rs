@@ -200,7 +200,11 @@ impl AudioCatSource {
         };
 
         // TX playback is best-effort: a missing device just means no TX audio.
-        let out = match sdroxide_audio::start_output(audio_out, 48_000) {
+        let out = match sdroxide_audio::start_output(
+            audio_out,
+            48_000,
+            sdroxide_types::AudioRouting::Both,
+        ) {
             Ok((o, p)) => Some((o, p)),
             Err(e) => {
                 tracing::warn!("radio TX audio device unavailable ({e}); RX only");

@@ -249,7 +249,6 @@ fn mode_digit(m: Mode) -> char {
         | Mode::Adsb
         | Mode::Vdl2
         | Mode::Ais
-        | Mode::Hfdl
         | Mode::HdRadio => '4',
         Mode::Am | Mode::Sam | Mode::Dsb | Mode::Isb | Mode::Drm | Mode::Acars => '5',
         // Everything else is upper sideband: the digital and keyboard modes,
@@ -278,6 +277,7 @@ fn mode_digit(m: Mode) -> char {
         | Mode::AtChat
         | Mode::Rade
         | Mode::Spec
+        | Mode::Hfdl
         | Mode::Sstv
         | Mode::Wefax
         | Mode::Navtex
@@ -590,6 +590,13 @@ mod tests {
         // VFO A's frame is the one `freq_frame` has always sent, so the paths
         // that must stay on VFO A are unaffected by having a choice.
         assert_eq!(freq_frame_on(Vfo::A, 7_100_000.0), freq_frame(7_100_000.0));
+    }
+
+    /// HFDL is an HF signal on upper sideband. Sending it as FM put the
+    /// DUO in FM, and its USB report then threw the app out of HFDL (#662).
+    #[test]
+    fn hfdl_puts_the_rig_on_upper_sideband() {
+        assert_eq!(mode_frame(Mode::Hfdl), mode_frame(Mode::Usb));
     }
 
     #[test]

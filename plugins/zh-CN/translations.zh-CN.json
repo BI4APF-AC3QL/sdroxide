@@ -64809,6 +64809,503 @@
       "parameters": [],
       "module": "display.satellite.mode",
       "status": "shared-ui-label-resource"
+    },
+    "display.enum.audio_routing_both": {
+      "source": "Left + right",
+      "translation": "左右声道",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-types/src/audio.rs",
+          "line": 28
+        }
+      ],
+      "parameters": [],
+      "module": "display.enum",
+      "status": "shared-ui-label-resource"
+    },
+    "display.enum.audio_routing_left": {
+      "source": "Left only",
+      "translation": "仅左声道",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-types/src/audio.rs",
+          "line": 29
+        }
+      ],
+      "parameters": [],
+      "module": "display.enum",
+      "status": "shared-ui-label-resource"
+    },
+    "display.enum.audio_routing_right": {
+      "source": "Right only",
+      "translation": "仅右声道",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-types/src/audio.rs",
+          "line": 30
+        }
+      ],
+      "parameters": [],
+      "module": "display.enum",
+      "status": "shared-ui-label-resource"
+    },
+    "settings.eqsl.pass": {
+      "source": "eQSL pass",
+      "translation": "eQSL 密码",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 3192
+        }
+      ],
+      "parameters": [],
+      "module": "settings.eqsl",
+      "status": "adapter-generated"
+    },
+    "settings.eqsl.qth": {
+      "source": "eQSL QTH",
+      "translation": "eQSL QTH 名称",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 3193
+        }
+      ],
+      "parameters": [],
+      "module": "settings.eqsl",
+      "status": "adapter-generated"
+    },
+    "settings.eqsl.qth_hint": {
+      "source": "The QTH Nickname of the eQSL profile to upload to and download from — needed only when the account owns more than one; leave it blank otherwise.",
+      "translation": "用于上传和下载的 eQSL 台址昵称（QTH Nickname）。只有账号拥有多个台址资料时才需要填写；只有一个资料时留空。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 3196
+        }
+      ],
+      "parameters": [],
+      "module": "settings.eqsl",
+      "status": "adapter-generated"
+    },
+    "settings.eqsl.user": {
+      "source": "eQSL user",
+      "translation": "eQSL 用户名",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 3191
+        }
+      ],
+      "parameters": [],
+      "module": "settings.eqsl",
+      "status": "adapter-generated"
+    },
+    "settings.general.audio_routing_hint": {
+      "source": "Which speaker channel(s) the received audio reaches. Left or right puts everything, mixed to mono, on that side only.",
+      "translation": "选择接收音频输出到哪些扬声器声道。选择左声道或右声道时，所有接收音频会混合为单声道后输出到指定一侧。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/general.rs",
+          "line": 521
+        }
+      ],
+      "parameters": [],
+      "module": "settings.general",
+      "status": "adapter-generated"
+    },
+    "settings.general.channels": {
+      "source": "Channels",
+      "translation": "声道",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/general.rs",
+          "line": 510
+        }
+      ],
+      "parameters": [],
+      "module": "settings.general",
+      "status": "adapter-generated"
+    },
+    "settings.servers.cw_udp_hint": {
+      "source": "The CW panel's copy as plain text, one UDP datagram per piece as it settles — for a station controller, a logger's CW window or a script. No protocol: a listener appends what arrives; `nc -ul 9999` shows it as it comes. Only settled text is sent, never the tail the decoder is still revising. Each radio has its own switch.",
+      "translation": "将 CW 面板确认后的解码文本以纯文本 UDP 数据报发送，适用于电台控制器、日志软件的 CW 窗口或脚本。没有额外协议：接收程序直接追加收到的内容，也可用 `nc -ul 9999` 实时查看。只发送已确认的文本，不发送神经网络解码器仍在修订的尾部内容。每台电台都有独立开关。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 144
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated"
+    },
+    "settings.servers.cw_udp_host_hint": {
+      "source": "127.0.0.1 reaches programs on this machine; a LAN address or this subnet's broadcast address reaches others.",
+      "translation": "127.0.0.1 用于本机程序；填写局域网地址或本子网的广播地址可发送给其他设备。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 161
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated"
+    },
+    "settings.servers.decoded_cw_udp": {
+      "source": "Decoded CW over UDP",
+      "translation": "通过 UDP 输出 CW 解码文本",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 140
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated"
+    },
+    "settings.servers.port_9999_hint": {
+      "source": "9999 by default",
+      "translation": "默认值为 9999",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 167
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated"
+    },
+    "settings.ui.clock": {
+      "source": "Clock",
+      "translation": "时钟",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+          "line": 137
+        }
+      ],
+      "parameters": [],
+      "module": "settings.ui",
+      "status": "adapter-generated"
+    },
+    "settings.ui.clock_utc_local": {
+      "source": "UTC + local on the panadapter",
+      "translation": "在全景频谱显示 UTC 和本地时间",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+          "line": 138
+        }
+      ],
+      "parameters": [],
+      "module": "settings.ui",
+      "status": "adapter-generated"
+    },
+    "settings.ui.clock_utc_local_hint": {
+      "source": "A wall clock at the top-right of the panadapter, in UTC and your own time.",
+      "translation": "在全景频谱右上角显示 UTC 和你的本地时间。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/ui_tab.rs",
+          "line": 139
+        }
+      ],
+      "parameters": [],
+      "module": "settings.ui",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record": {
+      "source": "Auto-record",
+      "translation": "自动录音",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3567
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_10s": {
+      "source": "10 s",
+      "translation": "10 秒",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3593
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_2s": {
+      "source": "2 s",
+      "translation": "2 秒",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3590
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_3s": {
+      "source": "3 s",
+      "translation": "3 秒",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3591
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_5s": {
+      "source": "5 s",
+      "translation": "5 秒",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3592
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_armed": {
+      "source": "Auto-record armed: a file per transmission, closed after {} s of silence",
+      "translation": "已启用自动录音：每次发射单独保存，静默 {} 秒后关闭文件",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 2990
+        }
+      ],
+      "parameters": [
+        ""
+      ],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_file_per_transmission": {
+      "source": "Record each transmission to its own file, closed after {} seconds of silence",
+      "translation": "每次发射单独录制到一个文件，静默 {} 秒后关闭",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3603
+        }
+      ],
+      "parameters": [
+        ""
+      ],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_needs_sdr_squelch": {
+      "source": "Auto-record needs an SDR front end with a software squelch",
+      "translation": "自动录音需要带软件静噪的 SDR 前端",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3582
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_needs_squelch": {
+      "source": "Set a squelch — auto-record needs one to know silence",
+      "translation": "请设置静噪；自动录音需要据此判断静默状态",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3580
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_off": {
+      "source": "off",
+      "translation": "关闭",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3589
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_recording": {
+      "source": "recording",
+      "translation": "正在录音",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3630
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_silence_countdown": {
+      "source": "recording · {} s of silence (closes after {} s)",
+      "translation": "正在录音 · 已静默 {} 秒（{} 秒后关闭）",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3629
+        }
+      ],
+      "parameters": [
+        "",
+        ""
+      ],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_stop_following": {
+      "source": "Stop following the squelch",
+      "translation": "停止跟随静噪状态",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3601
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.auto_record_waiting": {
+      "source": "waiting for a signal",
+      "translation": "等待信号",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 3633
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.ceil_hint": {
+      "source": "The level drawn at the top. Bring it down until the strongest signal you care about reaches full colour. Setting it switches FIT off.",
+      "translation": "频谱顶部所代表的电平。调低到你关注的最强信号刚好达到满色即可。手动设置后会关闭“适配”。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 5431
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "topbar.floor_hint": {
+      "source": "The level drawn at the bottom of the spectrum and as the darkest waterfall colour. Bring it up until the noise floor just darkens. Setting it switches FIT off.",
+      "translation": "频谱底部和瀑布图最暗颜色所代表的电平。调高到噪声底刚好变暗即可。手动设置后会关闭“适配”。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/top_bar.rs",
+          "line": 5415
+        }
+      ],
+      "parameters": [],
+      "module": "topbar",
+      "status": "adapter-generated"
+    },
+    "window.hfdl.already_has_chip": {
+      "source": "{} kHz already has a chip",
+      "translation": "{} kHz 已有对应信道按钮",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/hfdl.rs",
+          "line": 125
+        }
+      ],
+      "parameters": [
+        ""
+      ],
+      "module": "window.hfdl",
+      "status": "adapter-generated"
+    },
+    "window.hfdl.save_own_chip": {
+      "source": "Save the current channel ({} kHz) as one of your own chips",
+      "translation": "将当前信道（{} kHz）保存为个人快捷按钮",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/hfdl.rs",
+          "line": 127
+        }
+      ],
+      "parameters": [
+        ""
+      ],
+      "module": "window.hfdl",
+      "status": "adapter-generated"
+    },
+    "window.hfdl.user_chip": {
+      "source": "One of your saved channels — click to tune, right-click to remove.",
+      "translation": "你保存的信道：单击即可调谐，右键单击可移除。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/hfdl.rs",
+          "line": 114
+        }
+      ],
+      "parameters": [],
+      "module": "window.hfdl",
+      "status": "adapter-generated"
+    },
+    "display.clock.utc": {
+      "source": "{} UTC",
+      "translation": "{} UTC",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/time.rs",
+          "line": 28
+        }
+      ],
+      "parameters": [
+        ""
+      ],
+      "module": "display.clock",
+      "status": "adapter-generated"
+    },
+    "display.clock.utc_and_local": {
+      "source": "{} UTC · {} local",
+      "translation": "{} UTC · {} 本地时间",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/time.rs",
+          "line": 32
+        }
+      ],
+      "parameters": [
+        "",
+        ""
+      ],
+      "module": "display.clock",
+      "status": "adapter-generated"
     }
   }
 }

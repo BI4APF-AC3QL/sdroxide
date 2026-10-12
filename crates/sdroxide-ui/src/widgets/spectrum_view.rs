@@ -284,9 +284,14 @@ fn follow_view_into_the_band(
         return;
     }
     let (v_lo, v_hi) = (view.view_lo_hz, view.view_hi_hz);
-    // Already looking at what is being received: the passband covers the view.
+    // Already looking at what is being received: the view overlaps the
+    // passband. Containment was too strict: RTTY centres the view on its tone
+    // pair 2210 Hz above the dial at the passband's own width, so on a 4 kHz
+    // audio window it poked out by 210 Hz with the dial off its edge. That read
+    // as a zoom elsewhere, asked for the view's centre, re-centred 2210 Hz
+    // higher, and the dial walked up the band a frame at a time (#576).
     let (dev_lo, dev_hi) = (dev_center - dev_span / 2.0, dev_center + dev_span / 2.0);
-    if v_lo >= dev_lo && v_hi <= dev_hi {
+    if v_lo < dev_hi && v_hi > dev_lo {
         return;
     }
     // Already asked: the dial is in the view and the engine is bringing the
@@ -4019,6 +4024,27 @@ mod tests {
         let vhf = (DEV_C, 8_040_000.0);
         let caught_up = WindowPan::default().with_outer(Some(vhf), DEV_SPAN);
         assert_eq!(caught_up.view_bounds(DEV_C, DEV_SPAN), vhf);
+    }
+
+    /// Issue #576: an audio-mode rig with a scope lane, in RTTY. The view sits
+    /// on the tone pair, at the 4 kHz audio window's width, so it pokes out of
+    /// that window with the dial just off its low edge. Asking for the view's
+    /// centre there moved the dial 2210 Hz, which moved the view 2210 Hz, and
+    /// the radio scanned up the band.
+    #[test]
+    fn an_rtty_view_on_the_tone_pair_is_not_a_tuning_request() {
+        const DIAL: f64 = 14_080_000.0;
+        const DEV_SPAN: f64 = 4_000.0;
+        let pan = WindowPan::default().with_outer(Some((DIAL, 100_000.0)), DEV_SPAN);
+        let state = RadioState { vfo_a_hz: DIAL, active_vfo: Vfo::A, ..RadioState::default() };
+        let view = ViewState {
+            view_lo_hz: DIAL + 210.0,
+            view_hi_hz: DIAL + 4_210.0,
+            ..Default::default()
+        };
+        let mut cmds = Vec::new();
+        follow_view_into_the_band(&view, &state, DIAL + 2_000.0, DEV_SPAN, pan, &mut cmds);
+        assert!(cmds.is_empty(), "the dial walked: {cmds:?}");
     }
 
     /// Still zoomed out: panning about the band view must not retune anything.

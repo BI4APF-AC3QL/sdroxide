@@ -32,6 +32,11 @@ pub trait AudioBridge {
     fn set_device(&mut self, output: bool, name: Option<String>) {
         let _ = (output, name);
     }
+    /// Which speaker channel(s) the received audio reaches (#654). The browser
+    /// bridge keeps the default — the browser owns device routing there.
+    fn set_routing(&mut self, routing: sdroxide_types::AudioRouting) {
+        let _ = routing;
+    }
 }
 
 /// How long an over may run with the microphone producing nothing before the
@@ -922,6 +927,12 @@ impl RadioController for RemoteController {
     fn set_audio_device(&mut self, output: bool, name: Option<String>) {
         if let Some(a) = self.audio.as_mut() {
             a.set_device(output, name);
+        }
+    }
+
+    fn set_audio_routing(&mut self, routing: sdroxide_types::AudioRouting) {
+        if let Some(a) = self.audio.as_mut() {
+            a.set_routing(routing);
         }
     }
 

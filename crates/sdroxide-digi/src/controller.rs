@@ -136,6 +136,11 @@ pub enum DigiAction {
     SendCw { text: String, seconds: f32 },
     /// Stop CW the rig is part way through sending.
     AbortCw,
+    /// CW: receive text newly settled since the last poll — whole characters
+    /// and the spaces between words, never the unsettled tail the panel
+    /// revises — for the engine to pass on to other programs (the decoded-CW
+    /// UDP output).
+    CwText(String),
     /// PI4: what a completed one-minute cycle's search decoded.
     ///
     /// Not `Decodes`, for the same reason [`DigiAction::WsprSpots`] is not: a

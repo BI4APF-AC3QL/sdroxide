@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "locale": "zh-CN",
+  "upstream_commit": "31ebe99e0dda7f8bd2e95b24b36641254dee0ff1",
+  "source_manual_sha256": "8b89084fa7c1ccfe981cadf7b4d6e2f5e75b31e22465ae34c441a5d057b265b9",
+  "translated_manual_resource_sha256": "13c9c3ad6d53e2eb725638acd69a54c53ec213c6480b69642e9ac92a9a134998",
+  "review_method": "对照上游新增手册原文逐项核验功能条件、数值、文件名、字段及射频行为边界。",
+  "records": [
+    {
+      "section": "FIT manual adjustment",
+      "source_claims": [
+        "Manual floor/ceiling changes disable FIT."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Panadapter clock",
+      "source_claims": [
+        "UTC and local time display; UTC-only in UTC timezone; pointer avoidance."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Audio channel routing",
+      "source_claims": [
+        "Left+right/left/right mono routing; unaffected alert/speech/TX audio; config keys."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Full duplex spectrum",
+      "source_claims": [
+        "Receive panadapter and waterfall remain visible during transmit."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Icom LAN AF/IF and HD Radio",
+      "source_claims": [
+        "Per-radio preference; mode-dependent AF/IF fallback and restore; HD Radio bandwidth constraints."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "I.F. panadapter source",
+      "source_claims": [
+        "Fixed intermediate frequency, offset examples, dial behavior, inversion; no radio command."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Receiver S-meter",
+      "source_claims": [
+        "I/Q S-meter uses radio-specific calibration."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Automatic recording",
+      "source_claims": [
+        "Squelch gate, silence choices, file segmentation, eligibility, lifecycle and UI states."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Olivia interoperability",
+      "source_claims": [
+        "fldigi reference compatibility and decoder search behavior."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "SSTV slant and frequency correction",
+      "source_claims": [
+        "±250 Hz bound, sync-line fit, second pass, saved PNG, no drift tracking."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "HFDL custom channels",
+      "source_claims": [
+        "Add/tune/remove and hfdl_channels.json persistence."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "CW MIDI/PTT behavior",
+      "source_claims": [
+        "Keying without PTT; hold PTT without carrier while MIDI key sends; immediate release."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "CW decoded UDP",
+      "source_claims": [
+        "UTF-8 settled text, per-radio enable/address/port, CW-only, excludes skimmer spots."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "eQSL QTH",
+      "source_claims": [
+        "Optional nickname for multi-QTH accounts; upload/test/confirmation download."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    },
+    {
+      "section": "Hamlib levels",
+      "source_claims": [
+        "RF/SQL/AGC/NR ranges, scaling, support and device limitations."
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已将对应行为、限制及适用条件写入中文手册更新补充。"
+      ]
+    }
+  ],
+  "limitations": "仅审阅文本和资源，不连接实机，不执行发射或 PTT 测试。"
+}

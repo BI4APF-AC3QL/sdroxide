@@ -84,9 +84,10 @@ pub fn make_modulator(mode: Mode, rate: f64, passband: (f32, f32)) -> Option<Box
         // FM modulator would. APRS is 1200 baud packet on a shared channel and
         // modulates identically.
         Mode::Packet | Mode::Aprs => Some(Box::new(PacketFmMod::new(rate))),
-        // CW has none, deliberately. A manual PTT in CW keys a carrier — that
-        // is what a straight key does — and modulating the microphone instead
-        // would put speech on the air in a CW segment. The panel's keyer needs
+        // CW has none, deliberately: modulating the microphone would put speech
+        // on the air in a CW segment. A manual PTT in CW holds the transmitter
+        // for the panel's keyer with no carrier of its own (#625); only with no
+        // keyer to hand it to does it key a steady carrier. The panel's keyer needs
         // single-sideband all the same, and asks for it by name
         // (`Engine::tx_block_digi`).
         // DRM joins them for a plainer reason than CW's: it is a broadcast

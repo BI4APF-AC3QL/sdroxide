@@ -2902,7 +2902,9 @@ pub(in crate::app) fn settings_icomnet_tab(
              12 kHz IF: the radio sends its DRM intermediate frequency instead and \
              sdroxide demodulates, which brings its own filters, noise reduction and \
              decoders to bear over about ±12 kHz. Either way the wide waterfall is the \
-             radio's own scope — no Icom outputs I/Q."),
+             radio's own scope — no Icom outputs I/Q. An IF preference temporarily uses AF \
+             for wider modes such as WFM, then restores IF for compatible modes. \
+             An AF preference stays AF. HD Radio is unavailable on this connection."),
         );
         ComboBox::from_id_salt("icomnet_rx_source")
             .selected_text(crate::language_plugin::display_label(net.rx_source.label()))

@@ -383,6 +383,11 @@ left and a transmit compositor on the right:
 - **Receive** decodes incoming pictures scanline-by-scanline into the gallery;
   the VIS header sets the mode automatically (and pre-selects it for your next
   transmit). Received images are saved under `~/.config/sdroxide/sstv_rx/`.
+  Slant is corrected automatically: lines are placed along a line fitted
+  through the sync pulses, so a fade or a sender whose sound-card clock is off
+  does not shear the picture, and once the picture is complete it is decoded
+  again along the sync column of the whole image — the saved picture is the
+  straightened one.
 - **Transmit** from a strip of five image slots — click to select, double-click
   (or click an empty slot) to pick a file, which is auto-cropped/scaled to the
   mode's size. A multi-line message is overlaid on the image, **each line in a
@@ -1046,8 +1051,11 @@ Most amateur software reaches a radio through **Hamlib**, over the network
 protocol its `rigctld` daemon speaks. sdroxide serves that protocol directly, so
 **WSJT-X, fldigi, JS8Call, N1MM, Log4OM, GPredict and CQRLOG** can drive it with
 no extra daemon, no serial cable and no virtual COM port pair — frequency, mode
-and passband, PTT, VFO A/B and split, RIT/XIT, power and volume levels, the
-NB/NR/ANF/MUTE functions, and the VFO operations.
+and passband, PTT, VFO A/B and split, RIT/XIT, power, volume, RF gain,
+squelch, AGC and NR-strength levels, the NB/NR/ANF/MUTE functions, and the VFO
+operations. NR over rigctl keeps the engine chosen in the NR panel: `U NR 1`
+brings back the engine and strength last on, and the `NR` level sets only the
+strength. RF gain is the stage the Gain slider moves, 0 to 1 across its range.
 
 It is **off by default** — port 4532 is often already held by a real `rigctld`,
 and the protocol has no authentication — and lives on the **Servers** tab next

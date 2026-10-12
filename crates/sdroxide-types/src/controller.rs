@@ -399,6 +399,8 @@ pub struct AudioDevices {
     pub inputs: Vec<String>,
     pub selected_output: Option<String>,
     pub selected_input: Option<String>,
+    /// Which speaker channel(s) the received audio reaches (#654).
+    pub routing: crate::AudioRouting,
 }
 
 /// Locally known producer of the last event's UI text. Never serialized.
@@ -510,6 +512,12 @@ pub trait RadioController {
         let _ = (output, name);
     }
 
+    /// Which speaker channel(s) the received audio reaches (#654). Defaulted to
+    /// nothing: a platform without switchable audio has one output.
+    fn set_audio_routing(&mut self, routing: crate::AudioRouting) {
+        let _ = routing;
+    }
+
     /// Ask the machine the radio is attached to about its devices.
     ///
     /// Three answers, and the caller has to handle all of them:
@@ -542,6 +550,19 @@ pub trait RadioController {
     /// client can't own it (the browser remote client).
     fn radio_config(&self) -> Option<crate::RadioConfig> {
         None
+    }
+
+    /// Another radio's persisted config at this station: the one this radio
+    /// borrows as its panadapter receiver, whose diversity filter is driven
+    /// from this radio's strip (#637). `None` where it cannot be read.
+    fn lender_radio_config(&self, id: u32) -> Option<crate::RadioConfig> {
+        let _ = id;
+        None
+    }
+
+    /// Persist [`Self::lender_radio_config`] back. No-op where unsupported.
+    fn set_lender_radio_config(&mut self, id: u32, cfg: crate::RadioConfig) {
+        let _ = (id, cfg);
     }
 
     /// Persist an updated radio-backend config. This only stores it; call

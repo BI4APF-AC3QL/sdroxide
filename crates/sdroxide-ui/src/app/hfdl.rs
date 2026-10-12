@@ -87,7 +87,11 @@ impl SdroxideApp {
         ui.add_space(4.0);
 
         // The plan as pick chips, so a spot of a few kHz on the band is a
-        // single click away rather than a DragValue spin.
+        // single click away rather than a DragValue spin. The operator's own
+        // saved channels follow it, then a "+" to save the one in force — the
+        // busy assigned frequencies that are not in the published plan.
+        let mut remove_khz: Option<u32> = None;
+        let mut add_now = false;
         ui.horizontal_wrapped(|ui| {
             for &khz in HFDL_PLAN_KHZ {
                 let on = (cfg.frequency_hz / 1e3).round() as u32 == khz;
@@ -103,7 +107,41 @@ impl SdroxideApp {
                     cfg.frequency_hz = f64::from(khz) * 1e3;
                 }
             }
+            let cur_khz = (cfg.frequency_hz / 1e3).round() as u32;
+            for &khz in &self.hfdl_channels {
+                let resp =
+                    crate::chrome::chip(ui, cur_khz == khz, format!("{:.3} M", khz as f32 / 1e3))
+                        .on_hover_text(crate::language_plugin::text("window.hfdl.user_chip", "One of your saved channels — click to tune, right-click to remove."));
+                if resp.clicked() {
+                    cfg.frequency_hz = f64::from(khz) * 1e3;
+                }
+                if resp.secondary_clicked() {
+                    remove_khz = Some(khz);
+                }
+            }
+            let already = self.hfdl_channels.contains(&cur_khz) || HFDL_PLAN_KHZ.contains(&cur_khz);
+            let add = crate::chrome::chip_enabled(ui, !already, false, "+");
+            let add = if already {
+                add.on_disabled_hover_text(crate::language_plugin::format("window.hfdl.already_has_chip", "{} kHz already has a chip", &[cur_khz.to_string()]))
+            } else {
+                add.on_hover_text(crate::language_plugin::format("window.hfdl.save_own_chip", "Save the current channel ({} kHz) as one of your own chips", &[cur_khz.to_string()]))
+            };
+            if add.clicked() {
+                add_now = true;
+            }
         });
+        if let Some(khz) = remove_khz {
+            self.hfdl_channels.retain(|&k| k != khz);
+            crate::app::persist::persist_hfdl_channels(&self.hfdl_channels);
+        }
+        if add_now {
+            let cur_khz = (cfg.frequency_hz / 1e3).round() as u32;
+            if !HFDL_PLAN_KHZ.contains(&cur_khz)
+                && add_hfdl_channel(&mut self.hfdl_channels, cur_khz)
+            {
+                crate::app::persist::persist_hfdl_channels(&self.hfdl_channels);
+            }
+        }
 
         // Selecting the mode builds the lane and lets the waterfall and the
         // level meter run whether or not the decoder is switched on, so a
@@ -364,10 +402,35 @@ fn slot(ui: &mut egui::Ui, w: f32, text: impl AsRef<str>, color: egui::Color32) 
     );
 }
 
+/// Save the channel in force as one of the operator's own chips, keeping the
+/// list sorted and refusing a channel already on it — so the file is written
+/// only on a real edit and the chip row does not reshuffle under the pointer.
+fn add_hfdl_channel(list: &mut Vec<u32>, khz: u32) -> bool {
+    if list.contains(&khz) {
+        return false;
+    }
+    list.push(khz);
+    list.sort_unstable();
+    true
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use sdroxide_types::{HFDL_DEFAULT_HZ, HfdlFix};
+
+    /// Saving the channel in force is idempotent and keeps the chips sorted, so
+    /// the file is only written on a real edit and the row does not reshuffle.
+    #[test]
+    fn saving_a_channel_is_idempotent_and_sorted() {
+        let mut list = Vec::new();
+        assert!(add_hfdl_channel(&mut list, 11_184));
+        assert!(add_hfdl_channel(&mut list, 5_451));
+        assert!(add_hfdl_channel(&mut list, 8_843));
+        assert_eq!(list, vec![5_451, 8_843, 11_184]);
+        assert!(!add_hfdl_channel(&mut list, 8_843), "the same channel changes nothing");
+        assert_eq!(list, vec![5_451, 8_843, 11_184]);
+    }
 
     fn dec(kind: &str, gs: Option<&str>) -> HfdlDecode {
         HfdlDecode {

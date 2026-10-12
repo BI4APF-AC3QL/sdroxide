@@ -1000,8 +1000,9 @@ them all at once.
   a station coming up for a moment doesn't move the contrast — and no more than
   one refit is started every five seconds. Switching FIT **on** fits at once,
   which is also how to ask for a one-off fit: click it off and on again.
-  Switching it off leaves the levels wherever you set them (the floor and
-  ceiling in the FFT popup are yours to keep only while FIT is off).
+  Switching it off leaves the levels wherever you set them. Moving the floor or
+  ceiling by hand (the FFT popup, or a mapped knob) switches FIT off for you, so
+  the level you set stays where you put it.
 - **CTR** — keep the tuned frequency in the **middle** of the panadapter. Lit,
   the window slides under the dial every time you tune **and every time you
   zoom**, so the marker stays put and the band scrolls past it. It is **off**
@@ -1983,8 +1984,11 @@ shorter throw is easier to send a decent fist on.
 **A MIDI key.** The same action can be bound to a MIDI note — the key-down
 note of a keyer or paddle interface — in Settings → Controls
 ([6.4.3](#643-midi-controller)). The note keys while it is on, whatever button
-mode the binding has, and its first press switches **KEY** on by itself. Bind
-the key note, not **PTT**: PTT in CW transmits a steady carrier.
+mode the binding has, and its first press switches **KEY** on by itself. A
+keyer that also sends a PTT note can have it bound to **PTT**: in CW, PTT keys
+the transmitter with no carrier of its own and holds it — no idle hang — while
+the key note sends inside it, and releasing PTT ends the over at once. Without a
+PTT binding the key note keys the over by itself, as above.
 
 - The first press keys the transmitter; there is no need to press **TX**. Between
   elements the transmitter holds the frequency the way **TX** does, and releases
@@ -2923,6 +2927,28 @@ the radio is on — the server's music folder, not yours
 configured it says so rather than recording silence. It stops by itself if the
 audio output device is changed under it, and one still running when you quit is
 closed properly, so there is never a half-written file to repair.
+
+**Auto-record.** The **Auto-record** row of the picker follows the receiver's
+squelch and gives each transmission its own file: a recording starts when the
+squelch opens, and closes after the number of seconds of silence you pick —
+**2 s**, **3 s**, **5 s**, **10 s**, or **off**. A monitoring session then
+becomes one stamped file per transmission rather than a single file that grows
+all afternoon through the gaps. The squelch is what defines silence here, so
+the chips are only offered when one is set; with the squelch wide open there is
+nothing to follow and the row says so. It is a session setting like **Stop
+after**, not a stored preference, and arming one clears the other — they are two
+answers to when a recording ends. Setting this row to **off** only stops
+following the squelch; a **Stop after** timer or a quick clip already running is
+left alone. It keeps running for a radio whose tab is not the one on screen, so
+a monitor can be left in the background — but the program's window has to stay
+open: while it is minimised, some desktops stop drawing it, and then nothing is
+started or closed (the same holds for **Stop after**). A quick clip, or a
+**Stop after** time, disarms auto-record. It needs a front end whose squelch the
+program itself applies (an SDR); a CAT radio's squelch belongs to the radio and its
+meters carry no passband level to follow, so the row says that rather than
+arming a recorder that would never close. The REC chip shows the difference:
+armed but waiting is a steady red outline, while a file actually being written
+fills the chip red and the fill breathes.
 
 **Quick clip.** The **Quick clip** row is for a short sample rather than a
 session: press **30 s** or **1 min** and the recording starts by itself and
@@ -3965,6 +3991,11 @@ not to have sent the mistake. Each mode's submode is chosen on its setup page
   coding. Choose the **tone count** (2, 4, 8, 16, 32, 64) and **bandwidth**
   (125–2000 Hz). The symbol rate is bandwidth ÷ tones; **32/1000** and **16/500**
   are the common combinations. Both stations must use the same tones/bandwidth.
+  The modem follows fldigi's (Pawel Jalocha's reference design) bit for bit —
+  scrambler, interleaver and the raised-cosine symbols — so it works with
+  fldigi and MultiPSK. The receiver searches about four tones either side of
+  where you tuned, and prints a block a few blocks after it arrives, because that
+  is how long it takes to be sure of it.
 - **THOR** — a DominoEX-family 18-tone mode using incremental frequency keying
   (IFK+) with convolutional forward error correction. Choose a submode
   (**THOR4 … THOR32**); THOR16 is the usual default. The tone bank edges are drawn
@@ -4189,6 +4220,12 @@ one of the two.
 - In **Auto**, the mode is identified from the VIS header (or the sync cadence if
   you tuned in mid-picture) and pre-selected for your next transmission — no need
   to pick it.
+- **Tuning and slant are corrected for you.** A station a little off frequency
+  (up to about ±250 Hz) is measured on its leader or its sync pulses and tuned
+  in for that picture only. Line timing follows a straight line fitted through
+  the sync pulses, so a faded or noise-faked pulse does not shift the picture,
+  and when the picture ends a second pass straightens the whole of it. The
+  saved PNG is the straightened one. Drift *during* a picture is not followed.
 - **Restart RX** abandons the picture being received and starts listening for the
   next header. Once the decoder has locked on it is committed for the whole
   length of that mode, and the slow ones are long — Scottie DX runs four and a
@@ -5818,7 +5855,7 @@ Choose **HFDL** from the end of the **DIGITAL** row, or press the **HFDL** chip 
 | --- | --- |
 | **LISTEN** | Switches the decoder on and off. It costs a downconverter and a worker thread whether the panel is on screen or not, so it starts off, and it is off again next time you start sdroxide. |
 | The kHz field | The channel to listen on. Anything from 2 800 to 30 000 kHz. |
-| The frequency chips | The published assigned frequencies, one click each. **21.931 M** — Riverhead, covering the northern Atlantic and North America — is the default. |
+| The frequency chips | The published assigned frequencies, one click each. **21.931 M** — Riverhead, covering the northern Atlantic and North America — is the default. Your own channels follow them: **+** saves the channel in force as a chip, a click tunes to one, a right-click removes it. They are kept per machine in `hfdl_channels.json`. |
 
 Changing the channel moves the dial with it, so the panadapter shows the signal the decoder is working on. The channel frequency is the *assigned* frequency, which is where the suppressed carrier of the upper-sideband channel sits; the decoder finds its own subcarrier 1440 Hz above that, so put the assigned frequency on the dial and do not offset it by hand.
 
@@ -6950,10 +6987,14 @@ board) the setting is simply inert, which is why it costs nothing to leave on.
 separate from any sound card wired to a radio:
 
 - **Output** — where receive audio is played.
+- **Channels** — **Left + right** (the default), **Left only** or **Right only**.
+  One side gets everything you hear (both receivers, WFM stereo, sidetone)
+  mixed to mono, for one earpiece or a single speaker. Alerts, speech and a
+  radio's own TX sound card are unaffected.
 - **Input** — your microphone for voice transmit.
 
-Both default to **System default** and can be changed live. In `config.toml`
-they are `audio_output` and `audio_input`.
+All three can be changed live. Output and input default to **System default**.
+In `config.toml` they are `audio_output`, `audio_routing` and `audio_input`.
 
 The microphone is opened in the background — at startup and whenever you change
 the selection. A capture device the system's sound server cannot deliver can take
@@ -9189,7 +9230,8 @@ stream in both directions and trying produces a transmission full of holes.
 
 Turn it on for a board on **real Ethernet** — a LibreSDR, or a Pluto behind a
 gigabit adapter — and you keep hearing the receiver through your own
-transmission. That is what a QO-100 station wants: the downlink comes back
+transmission, and the panadapter and waterfall keep drawing it instead of
+switching to the transmit monitor. That is what a QO-100 station wants: the downlink comes back
 through the transponder about a quarter of a second later, and listening to it
 while you talk is how you check your own audio, your drive and your frequency.
 It works for anything else split across two bands too — a crossband repeater
@@ -9903,6 +9945,22 @@ Select`), which decides who does the demodulating:
   ±12 kHz is genuinely usable is not documented by Icom and has not been
   measured here, so treat the width as approximate.
 
+The choice is remembered separately for each configured radio. With **12 kHz
+IF** selected, choosing a mode whose default passband extends beyond the IF's
+roughly ±12 kHz window (for example **WFM**) temporarily switches the LAN output
+to **AF**. Returning to a compatible mode restores **IF**, including its spectrum
+orientation. This does not overwrite the saved **Receive from** preference.
+If the preference is **AF**, mode changes leave it on AF.
+
+**HD Radio** is greyed out on Icom LAN connections: neither the narrow IF nor
+demodulated AF supplies the wideband I/Q needed to decode its digital sidebands.
+The radio's wide scope picture cannot substitute for those samples.
+An attached panadapter receiver is an exception: HD Radio is available when
+that receiver supplies sufficient I/Q bandwidth (400 kHz for FM HD, 30 kHz
+for AM HD) and the station has the decoder library. The Icom's own IF limit
+does not restrict the attached receiver. Mode-dependent AF/IF switching still
+applies to the Icom, without changing the panadapter's receive stream.
+
 Transmit is unaffected by the choice: it is always audio the radio modulates.
 
 ##### IF spectrum: which way round the IF runs
@@ -10525,14 +10583,19 @@ what the offset below it means:
 
 - **Antenna (shared with the radio)** — a splitter, or the transceiver's RX-out
   loop. The receiver simply tunes to the dial and the offset stays `0`.
-- **The radio's I.F. output** — the receiver watches the transceiver's
-  intermediate frequency and never really tunes at all: the rig's own first
-  oscillator moves the band underneath it. The **Offset** is that intermediate
-  frequency — `9000000` for a 9 MHz I.F., `70455000` for a 70.455 MHz one.
+- **The radio's I.F. output** — the receiver is parked on the transceiver's
+  intermediate frequency and never tunes at all: the rig's own first oscillator
+  moves the band underneath it. The **Offset** is that intermediate frequency —
+  `8215000` for a K3's KXV3B, `9000000` for a 9 MHz I.F. The panadapter then
+  behaves like a rig's own I/Q output: its centre is the rig's dial, clicking or
+  dragging on it tunes the rig, and turning the rig's knob moves the picture.
+  **Follow the dial** has nothing to do here, since the receiver never moves. A
+  rig whose oscillator sits above the signal (the K3 does) hands the band over
+  backwards — tick **Invert spectrum**.
 
-The offset is **in hertz** and its sign follows the same rule as the converter's
-above: the receiver is tuned to `dial + offset`. Nothing you type here is ever
-sent to either radio.
+The offset is **in hertz**. On an antenna tap the receiver is tuned to
+`dial + offset`; on an I.F. tap it sits on the offset. Nothing you type here is
+ever sent to either radio.
 
 **This is a third offset field, and the three do different things.** The
 **Converter** offset above retunes the radio itself, for hardware in the antenna
@@ -10574,6 +10637,8 @@ let the radio go elsewhere.
 
 - **The attached receiver** — sdroxide demodulates its I/Q, so the filter, AGC,
   noise reduction, notch and squelch in the panel are the ones doing the work.
+  The S-meter reads the receiver's I/Q too, against this radio's own S-meter
+  calibration.
 - **The transceiver** — its own demodulated audio, over its sound card. Then the
   rig is the receiver in every sense that can be heard: the digital-mode
   decoders, the CW skimmer's keyboard decoder and the recorder all work on that
@@ -11595,6 +11660,9 @@ spoken announcements below them under `[speech]`:
   can look lower-resolution than the transform behind it really is. A bigger FFT
   (the **FFT** chip, [2.8](#28-the-display-and-fft-controls)) is the other half
   of that, and the two are worth setting together.
+- **Clock** — on by default. A wall clock at the panadapter's top-right shows
+  UTC and your local time (`13:08:42 UTC · 14:08 local`; just UTC when you are
+  on UTC). It steps aside while the pointer is near it.
 - **Spectrum background** — a vertical gradient behind the spectrum line, filled
   from the **top** colour down to the **bottom** colour (default dark red →
   black). Untick **Gradient** for a plain background.
@@ -12021,7 +12089,11 @@ stored in plaintext in `net.json`. How the features behave is
   rather than picking your fields out of all four services' at once.
   - **QRZ** — the **QRZ log key**, your QRZ *logbook* API key. Not the
     XML-lookup login above; the two are unrelated.
-  - **eQSL** — **eQSL user** and **pass**.
+  - **eQSL** — **eQSL user** and **pass**, and **eQSL QTH**: the QTH Nickname
+    of the profile to use, needed only by an account with more than one QTH
+    profile (eQSL refuses the login otherwise). It is sent on upload, on
+    **Test** and on the confirmation download; leave it blank for a single
+    profile.
   - **HamQTH** — **HamQTH user** and **pass**, which are the *same two boxes* as
     the ones under *Callsign lookup*. HamQTH issues one login per operator and
     its logbook authenticates with it, so type them into whichever pair you
@@ -12241,11 +12313,22 @@ fails on 4532, the usual cause is a real `rigctld` already running.
 
 Supported: frequency, mode and passband, PTT, VFO A/B and split (including split
 frequency and mode), RIT and XIT, the `RFPOWER` / `AF` / `MICGAIN` / `STRENGTH`
-levels, the `NB` / `NR` / `ANF` / `MUTE` functions, the `XCHG` / `CPY` /
+/ `RF` / `SQL` / `AGC` / `NR` levels, the `NB` / `NR` / `ANF` / `MUTE` functions,
+the `XCHG` / `CPY` /
 `TOGGLE` / `BAND_UP` / `BAND_DOWN` / `TUNE` VFO operations, and the voice keyer
 (`send_voice_mem 1`…`10`, `stop_voice_mem` — see
 [2.11](#211-voice-keyer)). The voice keyer obeys **Allow clients to transmit**
 like PTT does.
+
+`RF` is the receiver's front-end gain — the stage the top bar's **Gain** slider
+moves — as 0 to 1 across that stage's range, landing on its own steps. A radio
+with no RX gain the software can set has no `RF` level and does not advertise
+one. On a PlutoSDR whose own AGC is running, the part ignores the setting, as
+it ignores the slider. `SQL` is the squelch threshold, 0 open to 1 closed; on
+a radio whose own squelch sdroxide drives, it is that squelch. `AGC` is
+Hamlib's `RIG_AGC_*` number: 0 off, 2 fast, 5 medium, 3 slow. The `NR` level
+is the strength (a third, two thirds, 1 for low, medium, high) of the engine
+chosen in the NR panel, which it leaves alone.
 
 Setting up clients:
 
@@ -12381,6 +12464,22 @@ multipliers and points — go out empty, and deliberately. Each means whatever a
 particular contest's rules say it means, and a number invented here would be a
 claim about a contest that was not being worked; the logger receiving the
 contact is the thing that knows the rules.
+
+**Decoded CW over UDP**, also on this page with its own switch, sends the CW
+panel's copy ([2.14](#214-cw-decoding-and-keyboard-sending)) as plain UTF-8
+text, a datagram at a time as it settles — for a station controller, a
+logger's CW window or a script. There is no protocol: a listener appends what
+arrives, and `nc -ul 9999` shows it as it comes. Only settled text goes out,
+never the last word or two the neural decoder is still revising, so nothing
+sent is ever taken back. Each radio has its own switch and sends only its own
+copy; two radios sending to one port arrive interleaved.
+
+- **Send to** — `127.0.0.1` for this machine; a LAN address, or this subnet's
+  broadcast address, for others.
+- **Port** — 9999.
+
+It sends only while the radio is in CW with the panel decoding; the skimmer's
+spots are not part of it.
 
 ### 6.10 TLE: satellites and their frequencies
 
@@ -14758,6 +14857,7 @@ and not the station's.
 | `broadcast_stations.json` | JSON | *Your own* broadcast stations and corrections, merged over the downloaded schedule ([§10.6](#106-broadcast-stations-on-longwave-and-shortwave)). Never written by sdroxide, and absent until you create it. |
 | `broadcast/` | CSV | The broadcasting season's schedule as downloaded from eibispace.de, one file per season. Managed by sdroxide: refetched when the season changes, and safe to delete. |
 | `sstv_messages.json` | JSON | The overlay message stored for each of the five SSTV transmit slots. |
+| `hfdl_channels.json` | JSON | Your own HFDL frequency chips, in kHz ([§3.19](#319-hfdl-aircraft-on-shortwave)). |
 | `voice_names.json` | JSON | The label given to each of the ten voice-keyer slots. |
 | `voice/` | dir | The voice-keyer recordings (`slot1.wav`…`slot10.wav`), 48 kHz mono. Drop your own WAV in to replace a message. |
 | `speech_voices/` | dir | Extra voices for the spoken announcements: a Piper `.onnx` model and its `.onnx.json` config, side by side. Absent until you create it — the shipped voice lives with the program, not here. Note this is *not* `voice/`, which is the voice keyer. |

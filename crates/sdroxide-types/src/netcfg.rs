@@ -322,6 +322,14 @@ pub struct NetworkConfig {
     /// wire requires.
     #[serde(default)]
     pub auto_upload_wrl: bool,
+
+    /// The **QTH Nickname** an eQSL upload is filed under (issue #647). eQSL
+    /// only asks for it when the account owns more than one QTH profile —
+    /// without it the upload is refused rather than guessed at. Empty means the
+    /// field is not sent, which is what a single-profile account wants.
+    /// Appended last, as the wire requires.
+    #[serde(default)]
+    pub eqsl_qth_nickname: String,
 }
 
 impl Default for NetworkConfig {
@@ -353,6 +361,7 @@ impl Default for NetworkConfig {
             auto_upload_hamqth: false,
             wrl_api_key: String::new(),
             auto_upload_wrl: false,
+            eqsl_qth_nickname: String::new(),
         }
     }
 }

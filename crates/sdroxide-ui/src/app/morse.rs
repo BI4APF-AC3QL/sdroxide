@@ -250,15 +250,13 @@ fn worker(
     stop: &AtomicBool,
     error: &std::sync::Mutex<Option<crate::language_plugin::UiNotice>>,
 ) {
-    let (out, mut ring) = match start_output(device.as_deref(), 48_000) {
+    let (out, mut ring) = match start_output(device.as_deref(), 48_000, sdroxide_types::AudioRouting::Both) {
         Ok(v) => v,
         Err(e) => {
             *error.lock().unwrap() = Some(crate::language_plugin::UiNotice::new(format!("no audio output: {e}"), "no audio output: {e}", vec![e.to_string()]));
             // Drain so a send does not block forever.
             while let Ok(job) = rx.recv() {
-                if matches!(job, Job::Quit) {
-                    break;
-                }
+                if matches!(job, Job::Quit) { break; }
             }
             return;
         }

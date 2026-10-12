@@ -5,7 +5,7 @@
 use sdroxide_radio::crossbeam_channel::{Receiver, Sender};
 use sdroxide_radio::{AudioParams, EngineHandles, EngineSwap, MicParams, triple_buffer};
 use sdroxide_types::{
-    AudioDevices, Command, RadioConfig, RadioController, RadioEvent, SpectrumFrame,
+    AudioDevices, AudioRouting, Command, RadioConfig, RadioController, RadioEvent, SpectrumFrame,
 };
 use tracing::warn;
 
@@ -33,6 +33,8 @@ pub struct LocalController {
     /// Currently selected device names; `None` = system default.
     out_name: Option<String>,
     in_name: Option<String>,
+    /// Which speaker channel(s) the received audio reaches (#654).
+    routing: AudioRouting,
     /// Where this radio's `radio.json` lives — radio 0 is the legacy root.
     store: sdroxide_config::Store,
 }
@@ -44,6 +46,7 @@ impl LocalController {
         pending_mic: Option<sdroxide_audio::PendingInput>,
         out_name: Option<String>,
         in_name: Option<String>,
+        routing: AudioRouting,
         store: sdroxide_config::Store,
     ) -> Self {
         LocalController {
@@ -58,6 +61,7 @@ impl LocalController {
             pending_mic,
             out_name,
             in_name,
+            routing,
             store,
         }
     }
@@ -81,6 +85,7 @@ impl LocalController {
         let mut s = sdroxide_config::Settings::load();
         s.audio_output = self.out_name.clone();
         s.audio_input = self.in_name.clone();
+        s.audio_routing = self.routing;
         if let Err(e) = s.save() {
             warn!("saving audio device selection: {e}");
         }
@@ -135,6 +140,7 @@ impl RadioController for LocalController {
             inputs: sdroxide_audio::input_device_names(),
             selected_output: self.out_name.clone(),
             selected_input: self.in_name.clone(),
+            routing: self.routing,
         })
     }
 
@@ -142,7 +148,7 @@ impl RadioController for LocalController {
         if output {
             // Drop the old stream first so an exclusive device is released.
             self.audio_out = None;
-            match sdroxide_audio::start_output(name.as_deref(), 48_000) {
+            match sdroxide_audio::start_output(name.as_deref(), 48_000, self.routing) {
                 Ok((out, producer)) => {
                     let out_rate = out.sample_rate;
                     self.audio_out = Some(out);
@@ -171,6 +177,17 @@ impl RadioController for LocalController {
         self.persist_selection();
     }
 
+    fn set_audio_routing(&mut self, routing: AudioRouting) {
+        if routing == self.routing {
+            return;
+        }
+        self.routing = routing;
+        // Rebuild the output stream so the new routing lands at once — the same
+        // path a device change takes, and it re-saves the selection.
+        let name = self.out_name.clone();
+        self.set_audio_device(true, name);
+    }
+
     /// Every device question this machine can answer, in one place — see
     /// [`crate::devices`]. Answered inline: the radio is on this machine, and
     /// the settings dialog calls this after its window closure rather than
@@ -185,6 +202,16 @@ impl RadioController for LocalController {
 
     fn radio_config(&self) -> Option<RadioConfig> {
         Some(self.store.load_radio_config())
+    }
+
+    fn lender_radio_config(&self, id: u32) -> Option<RadioConfig> {
+        Some(sdroxide_config::Store::radio(id).load_radio_config())
+    }
+
+    fn set_lender_radio_config(&mut self, id: u32, cfg: RadioConfig) {
+        if let Err(e) = sdroxide_config::Store::radio(id).save_radio_config(&cfg) {
+            warn!("saving radio {}'s config: {e}", id + 1);
+        }
     }
 
     fn set_radio_config(&mut self, cfg: RadioConfig) {

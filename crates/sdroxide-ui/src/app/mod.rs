@@ -70,8 +70,8 @@ use self::panels::fsq::fsq_load_contacts;
 use self::panels::rf_paint::RfPaintUi;
 use self::panels::sstv::SstvUi;
 use self::persist::{
-    load_alerts_settings, load_broadcast_stations, load_morse_progress, load_qso_log,
-    load_speech_settings, load_ui_settings,
+    load_alerts_settings, load_broadcast_stations, load_hfdl_channels, load_morse_progress,
+    load_qso_log, load_speech_settings, load_ui_settings,
 };
 use self::settings::servers::TciServerStatus;
 use self::settings::{SatEditState, SettingsTab, TestOutcome};
@@ -306,6 +306,10 @@ pub struct SdroxideApp {
     /// the whole station: every radio tab holds the same one.
     alerts: alerts::AlertRuntime,
     radio_cfg: Option<sdroxide_types::RadioConfig>,
+    /// The config of the radio lent to this one as its panadapter receiver,
+    /// by id: its diversity filter is the one this radio's DIV box drives
+    /// (#637). Loaded once per lender rather than every frame.
+    div_lender: Option<(u32, sdroxide_types::RadioConfig)>,
     /// The converter offset being typed on the Radio tab, in Hz. Held apart
     /// from `radio_cfg` because every other field on that tab is written to
     /// `radio.json` as it is typed, and the engine rereads that file whenever it
@@ -453,6 +457,10 @@ pub struct SdroxideApp {
     /// HFDL: filter for the decode log; matches a kind, a ground station or the
     /// payload details.
     hfdl_filter: String,
+    /// The operator's own HFDL channels, in kHz (`hfdl_channels.json`) — the
+    /// busy assigned frequencies that are not in the published plan, drawn as
+    /// one-click chips beside it in the HFDL panel.
+    hfdl_channels: Vec<u32>,
     show_settings: bool,
     /// Scroll the Settings window back to its tab bar on the frame it opens.
     /// The window's scroll offset is egui memory, which outlives both the
@@ -507,6 +515,21 @@ pub struct SdroxideApp {
     /// dropped if the start never takes. See
     /// [`Self::poll_recording_timer`].
     rec_clip: Option<(i64, u16)>,
+    /// The silence auto-split hold, in seconds, or `None` when it is off.
+    ///
+    /// While armed, the MP3 recording follows the receiver's squelch: a file
+    /// starts when the squelch opens and the one running is closed after this
+    /// many seconds of silence, so a session of many transmissions becomes one
+    /// stamped file each rather than one file that grows all afternoon (issue
+    /// #546). UI-owned and session-only, exactly like
+    /// [`Self::recording_stop_at`], and ticked once a frame by
+    /// [`Self::poll_recording_gate`] — for a tab that is not on screen as well
+    /// as the one that is, so a monitor left in the background still splits.
+    rec_gate_s: Option<u16>,
+    /// Everything the gate carries between frames — the run of silence, a start
+    /// still pending, and the holds that stop a manual stop or a refused
+    /// start being undone every frame. See [`Self::poll_recording_gate`].
+    rec_gate: top_bar::RecGate,
     /// Fade clock for the receive-filter popup behind the BW chip, like
     /// `nr_popup_since`.
     bw_popup_since: Option<f64>,
@@ -1351,6 +1374,7 @@ impl SdroxideApp {
             speech_voices: Vec::new(),
             alerts: alerts::AlertRuntime::station(load_alerts_settings(storage)),
             radio_cfg: None,
+            div_lender: None,
             converter_edit_hz: None,
             range_edit: None,
             rx_site_edit: None,
@@ -1413,6 +1437,7 @@ impl SdroxideApp {
             hfdl_status: None,
             hfdl_map: crate::hfdl_map::HfdlMapState::default(),
             hfdl_filter: String::new(),
+            hfdl_channels: load_hfdl_channels(storage),
             show_settings: false,
             settings_scroll_top: true,
             voice: sdroxide_types::VoiceStatus::default(),
@@ -1428,6 +1453,8 @@ impl SdroxideApp {
             rec_popup_since: None,
             recording_stop_at: None,
             rec_clip: None,
+            rec_gate_s: None,
+            rec_gate: Default::default(),
             bw_popup_since: None,
             duplex_popup_since: None,
             rpt_tone_popup_since: None,

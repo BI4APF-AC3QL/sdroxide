@@ -684,6 +684,8 @@ pub struct UiSettings {
     /// operator's. The 3D globe is untouched — its cities are night-side lights
     /// rather than markers, and nothing is written across a contact there.
     pub map_cities: bool,
+    /// The UTC + local wall clock at the panadapter's top-right (#655).
+    pub panadapter_clock: bool,
     /// Where the solar-system 3D window last was — see [`Solar3dWindow`].
     ///
     /// Here rather than in the operator's view state because window geometry is
@@ -790,6 +792,7 @@ impl Default for UiSettings {
             decode_cq_only: false,
             decode_new_only: false,
             map_cities: true,
+            panadapter_clock: true,
             solar3d_window: None,
         }
     }

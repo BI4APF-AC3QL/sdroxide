@@ -527,7 +527,11 @@ fn worker(
     status: Arc<Mutex<AlertStatus>>,
     stop: &AtomicBool,
 ) {
-    let (out, mut ring) = match sdroxide_audio::start_output(device.as_deref(), 48_000) {
+    let (out, mut ring) = match sdroxide_audio::start_output(
+        device.as_deref(),
+        48_000,
+        sdroxide_types::AudioRouting::Both,
+    ) {
         Ok(ok) => ok,
         Err(e) => {
             *status.lock().unwrap() = AlertStatus::Failed(e.to_string().into());

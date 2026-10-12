@@ -26,17 +26,20 @@ fn build_controller(
     rade: &Arc<RadeWatch>,
     tr: &Arc<TrSwitch>,
 ) -> LocalController {
-    let (audio_out, audio_params) =
-        match sdroxide_audio::start_output(settings.audio_output.as_deref(), 48_000) {
-            Ok((out, producer)) => {
-                let rate = out.sample_rate;
-                (Some(out), Some(AudioParams { producer, out_rate: rate }))
-            }
-            Err(e) => {
-                warn!("no audio output ({e}); running silent");
-                (None, None)
-            }
-        };
+    let (audio_out, audio_params) = match sdroxide_audio::start_output(
+        settings.audio_output.as_deref(),
+        48_000,
+        settings.audio_routing,
+    ) {
+        Ok((out, producer)) => {
+            let rate = out.sample_rate;
+            (Some(out), Some(AudioParams { producer, out_rate: rate }))
+        }
+        Err(e) => {
+            warn!("no audio output ({e}); running silent");
+            (None, None)
+        }
+    };
     // Opening the microphone is a blocking call into the sound stack, and that
     // stack can sit on it for half a minute at a time — the system's default
     // source being a monitor of a card this radio has already claimed is enough
@@ -76,6 +79,7 @@ fn build_controller(
         pending_mic,
         settings.audio_output.clone(),
         settings.audio_input.clone(),
+        settings.audio_routing,
         boot.store,
     )
 }
@@ -227,6 +231,8 @@ struct CpalBridge {
     /// Selected device names; `None` = system default.
     out_name: Option<String>,
     in_name: Option<String>,
+    /// Which speaker channel(s) the received audio reaches (#654).
+    routing: sdroxide_types::AudioRouting,
 }
 
 impl CpalBridge {
@@ -245,6 +251,7 @@ impl CpalBridge {
             raw: Vec::new(),
             out_name: settings.audio_output.clone(),
             in_name: settings.audio_input.clone(),
+            routing: settings.audio_routing,
         };
         bridge.open_output();
         bridge.open_input();
@@ -254,7 +261,7 @@ impl CpalBridge {
     fn open_output(&mut self) {
         self._out = None;
         self.out = None;
-        match sdroxide_audio::start_output(self.out_name.as_deref(), 48_000) {
+        match sdroxide_audio::start_output(self.out_name.as_deref(), 48_000, self.routing) {
             Ok((o, p)) => {
                 self._out = Some(o);
                 self.out = Some(p);
@@ -318,6 +325,7 @@ impl sdroxide_ui::AudioBridge for CpalBridge {
             inputs: sdroxide_audio::input_device_names(),
             selected_output: self.out_name.clone(),
             selected_input: self.in_name.clone(),
+            routing: self.routing,
         })
     }
     fn set_device(&mut self, output: bool, name: Option<String>) {
@@ -332,8 +340,22 @@ impl sdroxide_ui::AudioBridge for CpalBridge {
         let mut s = sdroxide_config::Settings::load();
         s.audio_output = self.out_name.clone();
         s.audio_input = self.in_name.clone();
+        s.audio_routing = self.routing;
         if let Err(e) = s.save() {
             warn!("saving audio device selection: {e}");
+        }
+    }
+
+    fn set_routing(&mut self, routing: sdroxide_types::AudioRouting) {
+        if routing == self.routing {
+            return;
+        }
+        self.routing = routing;
+        self.open_output();
+        let mut s = sdroxide_config::Settings::load();
+        s.audio_routing = self.routing;
+        if let Err(e) = s.save() {
+            warn!("saving audio routing: {e}");
         }
     }
 }

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-10T21:03:38+08:00",
+  "generated_at": "2026-10-13T01:27:00+08:00",
   "completeness": "complete",
-  "catalog_entries": 5348,
-  "catalog_sha256": "09f5fdae390c9b165e75a85e87e53bce18c6e050a352235942b920af448e3017",
+  "catalog_entries": 5385,
+  "catalog_sha256": "30b3af2fc3df38b14d538d755a7d88eb33bdbb9f2adcd08b1767ba8fca487993",
   "direct_display_adapters": 3862,
   "unresolved_generated_adapters": 0,
   "placeholders": "passed; catalog format descriptors validated by language-pack tests",
@@ -191,7 +191,7 @@
     "that_entry": "settings.ui.speech.rtty_psk_label; protocol and digital-mode names only",
     "scope": "heuristic scan only; not a semantic translation review"
   },
-  "manual_sha256": "675b536111a9859ac6f569367c5ba278789a5fb8674a52415499b0a9a9624071",
+  "manual_sha256": "8b89084fa7c1ccfe981cadf7b4d6e2f5e75b31e22465ae34c441a5d057b265b9",
   "manual_semantic_review": {
     "section": "6.2.19 KiwiSDR / Web-888 (network receivers)",
     "result": "逐段核对只接收属性、公共代理的 80 端口与默认 8073、用户密码和显示呼号、频带瀑布图开销（约 20 kB/s 对 I/Q 约 44 kB/s）、1–4 更新速度、1024 点跨度/分辨率示例、远端 AGC，以及只读 HTTP 测试连接不占频道。保留公共接收机数量和代理比例为原文历史估计，未通过网络查询验证；本轮未连接公共接收机。",
@@ -1844,18 +1844,18 @@
   },
   "native_gui_acceptance": "partial: current complete-pack build launched with Backend=None; Chinese first-run and saved English fallback titles verified and windows responded/closed. Full settings/help screenshot layout review remains pending.",
   "latest_incremental_validation": {
-    "checked_at": "2026-10-06T14:57:21.4276873+08:00",
-    "change": "Added exact translations for Switched off, Panadapter receiver and Signal generator; No radio remains covered.",
-    "catalog_entries": 5345,
-    "focused_test": "language_plugin::tests::fixed_radio_placeholders_localize_and_real_capability_labels_are_preserved",
+    "checked_at": "2026-10-13T01:27:00+08:00",
+    "change": "Synchronized upstream main 31ebe99; added 37 UI translations, translated 15 new manual claim groups, fixed automatic-recording tooltip and clock display to resolve through the language pack.",
+    "catalog_entries": 5385,
+    "focused_test": "cargo test -p sdroxide-ui plus cargo test -p sdroxide-language-pack",
     "focused_test_result": "passed",
-    "full_ui_unit_tests": "800 passed; 0 failed",
-    "language_pack_tests": "5 passed; bundled pack/font tests 3 passed; 0 failed",
-    "receive_safety": "Backend=None; no real receiver, transmission or PTT action.",
-    "web_localhost_smoke": "Browser sample verified first-run Chinese, no-radio notice, settings checkbox, manual TOC/scroll and saved English fallback. Full review remains pending.",
-    "focused_plugin_fallback_tests": "43 passed; 0 failed",
-    "manual_tests": "18 passed; 0 failed",
-    "manual_translation": "244/244 current-source fragments; 987,045/987,045 source characters covered; zero English-only prose candidates in 2,481 paragraphs"
+    "full_ui_unit_tests": "810 passed; 0 failed",
+    "shader_tests": "4 passed; 0 failed",
+    "language_pack_tests": "5 passed; bundled pack/font/manual tests 3 passed; 0 failed",
+    "ui_library_check": "cargo check -p sdroxide-ui --lib passed",
+    "manual_source_sha256": "8b89084fa7c1ccfe981cadf7b4d6e2f5e75b31e22465ae34c441a5d057b265b9",
+    "manual_review_records_added": 15,
+    "receive_safety": "No physical receiver, transmission or PTT action."
   },
   "windows_release_refresh": {
     "built_at": "2026-10-06T14:57:21.4276873+08:00",
@@ -1952,5 +1952,24 @@
       "rustfmt": "unavailable: rustfmt component is not installed",
       "physical_radio_tx_or_ptt": "not performed"
     }
+  },
+  "upstream_incremental_validation_31ebe99": {
+    "checked_at": "2026-10-13T01:27:00+08:00",
+    "upstream_repository": "dividebysandwich/sdroxide",
+    "upstream_branch": "main",
+    "upstream_commit": "31ebe99e0dda7f8bd2e95b24b36641254dee0ff1",
+    "upstream_commit_delta_from_plugin_base": 56,
+    "ui_catalog_increment": 37,
+    "ui_increment_source_refs_complete": true,
+    "catalog_entries": 5385,
+    "csv_json_keys_and_values_match": true,
+    "manual_source_sha256_matches": true,
+    "manual_semantic_review": "15 feature groups reviewed in plugins/zh-CN/manual-review-31ebe99.json",
+    "tests": {
+      "cargo_check_sdroxide_ui_lib": "passed",
+      "cargo_test_sdroxide_ui": "810 passed; shader tests 4 passed",
+      "cargo_test_sdroxide_language_pack": "5 passed; bundled catalog/font/manual tests 3 passed"
+    },
+    "receive_boundary": "No physical radio connection, transmission or PTT operation."
   }
 }

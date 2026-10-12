@@ -6167,3 +6167,40 @@ settings.net.freedv_reporter_title,FreeDV Reporter,FreeDV 通联上报,settings.
 display.satellite.link.iss_sstv_70cm,SSTV 70 cm,SSTV（70 厘米）,display.satellite.link,shared-ui-label-resource,
 display.satellite.link.iss_sstv_2m,SSTV 2 m,SSTV（2 米）,display.satellite.link,shared-ui-label-resource,
 display.satellite.mode.sstv_fm_pd120,SSTV FM / PD120,SSTV FM／PD120（慢扫描电视）,display.satellite.mode,shared-ui-label-resource,
+display.enum.audio_routing_both,Left + right,左右声道,display.enum,shared-ui-label-resource,crates/sdroxide-types/src/audio.rs:28
+display.enum.audio_routing_left,Left only,仅左声道,display.enum,shared-ui-label-resource,crates/sdroxide-types/src/audio.rs:29
+display.enum.audio_routing_right,Right only,仅右声道,display.enum,shared-ui-label-resource,crates/sdroxide-types/src/audio.rs:30
+settings.eqsl.pass,eQSL pass,eQSL 密码,settings.eqsl,adapter-generated,crates/sdroxide-ui/src/app/settings/mod.rs:3192
+settings.eqsl.qth,eQSL QTH,eQSL QTH 名称,settings.eqsl,adapter-generated,crates/sdroxide-ui/src/app/settings/mod.rs:3193
+settings.eqsl.qth_hint,The QTH Nickname of the eQSL profile to upload to and download from — needed only when the account owns more than one; leave it blank otherwise.,用于上传和下载的 eQSL 台址昵称（QTH Nickname）。只有账号拥有多个台址资料时才需要填写；只有一个资料时留空。,settings.eqsl,adapter-generated,crates/sdroxide-ui/src/app/settings/mod.rs:3196
+settings.eqsl.user,eQSL user,eQSL 用户名,settings.eqsl,adapter-generated,crates/sdroxide-ui/src/app/settings/mod.rs:3191
+settings.general.audio_routing_hint,"Which speaker channel(s) the received audio reaches. Left or right puts everything, mixed to mono, on that side only.",选择接收音频输出到哪些扬声器声道。选择左声道或右声道时，所有接收音频会混合为单声道后输出到指定一侧。,settings.general,adapter-generated,crates/sdroxide-ui/src/app/settings/general.rs:521
+settings.general.channels,Channels,声道,settings.general,adapter-generated,crates/sdroxide-ui/src/app/settings/general.rs:510
+settings.servers.cw_udp_hint,"The CW panel's copy as plain text, one UDP datagram per piece as it settles — for a station controller, a logger's CW window or a script. No protocol: a listener appends what arrives; `nc -ul 9999` shows it as it comes. Only settled text is sent, never the tail the decoder is still revising. Each radio has its own switch.",将 CW 面板确认后的解码文本以纯文本 UDP 数据报发送，适用于电台控制器、日志软件的 CW 窗口或脚本。没有额外协议：接收程序直接追加收到的内容，也可用 `nc -ul 9999` 实时查看。只发送已确认的文本，不发送神经网络解码器仍在修订的尾部内容。每台电台都有独立开关。,settings.servers,adapter-generated,crates/sdroxide-ui/src/app/settings/servers.rs:144
+settings.servers.cw_udp_host_hint,127.0.0.1 reaches programs on this machine; a LAN address or this subnet's broadcast address reaches others.,127.0.0.1 用于本机程序；填写局域网地址或本子网的广播地址可发送给其他设备。,settings.servers,adapter-generated,crates/sdroxide-ui/src/app/settings/servers.rs:161
+settings.servers.decoded_cw_udp,Decoded CW over UDP,通过 UDP 输出 CW 解码文本,settings.servers,adapter-generated,crates/sdroxide-ui/src/app/settings/servers.rs:140
+settings.servers.port_9999_hint,9999 by default,默认值为 9999,settings.servers,adapter-generated,crates/sdroxide-ui/src/app/settings/servers.rs:167
+settings.ui.clock,Clock,时钟,settings.ui,adapter-generated,crates/sdroxide-ui/src/app/settings/ui_tab.rs:137
+settings.ui.clock_utc_local,UTC + local on the panadapter,在全景频谱显示 UTC 和本地时间,settings.ui,adapter-generated,crates/sdroxide-ui/src/app/settings/ui_tab.rs:138
+settings.ui.clock_utc_local_hint,"A wall clock at the top-right of the panadapter, in UTC and your own time.",在全景频谱右上角显示 UTC 和你的本地时间。,settings.ui,adapter-generated,crates/sdroxide-ui/src/app/settings/ui_tab.rs:139
+topbar.auto_record,Auto-record,自动录音,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3567
+topbar.auto_record_10s,10 s,10 秒,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3593
+topbar.auto_record_2s,2 s,2 秒,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3590
+topbar.auto_record_3s,3 s,3 秒,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3591
+topbar.auto_record_5s,5 s,5 秒,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3592
+topbar.auto_record_armed,"Auto-record armed: a file per transmission, closed after {} s of silence",已启用自动录音：每次发射单独保存，静默 {} 秒后关闭文件,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:2990
+topbar.auto_record_file_per_transmission,"Record each transmission to its own file, closed after {} seconds of silence",每次发射单独录制到一个文件，静默 {} 秒后关闭,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3603
+topbar.auto_record_needs_sdr_squelch,Auto-record needs an SDR front end with a software squelch,自动录音需要带软件静噪的 SDR 前端,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3582
+topbar.auto_record_needs_squelch,Set a squelch — auto-record needs one to know silence,请设置静噪；自动录音需要据此判断静默状态,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3580
+topbar.auto_record_off,off,关闭,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3589
+topbar.auto_record_recording,recording,正在录音,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3630
+topbar.auto_record_silence_countdown,recording · {} s of silence (closes after {} s),正在录音 · 已静默 {} 秒（{} 秒后关闭）,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3629
+topbar.auto_record_stop_following,Stop following the squelch,停止跟随静噪状态,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3601
+topbar.auto_record_waiting,waiting for a signal,等待信号,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:3633
+topbar.ceil_hint,The level drawn at the top. Bring it down until the strongest signal you care about reaches full colour. Setting it switches FIT off.,频谱顶部所代表的电平。调低到你关注的最强信号刚好达到满色即可。手动设置后会关闭“适配”。,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:5431
+topbar.floor_hint,The level drawn at the bottom of the spectrum and as the darkest waterfall colour. Bring it up until the noise floor just darkens. Setting it switches FIT off.,频谱底部和瀑布图最暗颜色所代表的电平。调高到噪声底刚好变暗即可。手动设置后会关闭“适配”。,topbar,adapter-generated,crates/sdroxide-ui/src/app/top_bar.rs:5415
+window.hfdl.already_has_chip,{} kHz already has a chip,{} kHz 已有对应信道按钮,window.hfdl,adapter-generated,crates/sdroxide-ui/src/app/hfdl.rs:125
+window.hfdl.save_own_chip,Save the current channel ({} kHz) as one of your own chips,将当前信道（{} kHz）保存为个人快捷按钮,window.hfdl,adapter-generated,crates/sdroxide-ui/src/app/hfdl.rs:127
+window.hfdl.user_chip,"One of your saved channels — click to tune, right-click to remove.",你保存的信道：单击即可调谐，右键单击可移除。,window.hfdl,adapter-generated,crates/sdroxide-ui/src/app/hfdl.rs:114
+display.clock.utc,{} UTC,{} UTC,display.clock,adapter-generated,crates/sdroxide-ui/src/time.rs:28
+display.clock.utc_and_local,{} UTC · {} local,{} UTC · {} 本地时间,display.clock,adapter-generated,crates/sdroxide-ui/src/time.rs:32

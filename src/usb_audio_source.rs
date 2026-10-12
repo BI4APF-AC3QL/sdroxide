@@ -118,7 +118,11 @@ impl UsbAudioSource {
         // TX playback is best-effort: a missing device just means no TX audio
         // reaching the radio, which on a VOX-keyed radio is the same as never
         // keying.
-        let (out, out_status) = match sdroxide_audio::start_output(audio_out, 48_000) {
+        let (out, out_status) = match sdroxide_audio::start_output(
+            audio_out,
+            48_000,
+            sdroxide_types::AudioRouting::Both,
+        ) {
             Ok((o, p)) => (Some((o, p)), None),
             Err(e) => {
                 let msg = format!(

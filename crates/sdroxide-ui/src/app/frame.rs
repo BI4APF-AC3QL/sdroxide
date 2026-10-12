@@ -24,6 +24,29 @@ const IDLE_POLL_MS: u64 = 250;
 /// The stream counts as stalled after this long without a new frame (seconds).
 const STREAM_STALE_S: f64 = 1.0;
 
+/// The wall clock, top-right of the panadapter: UTC and the operator's own
+/// local time, so a listener always has both in view. Draw-only over the
+/// picture — it never reflows the strip — and the local half is dropped when
+/// the operator is already on UTC. Stood aside while the pointer is near it,
+/// so the hover and filter-edge readouts it would cover can be read.
+fn paint_panadapter_clock(ui: &egui::Ui, area: egui::Rect, on: bool) {
+    if !on {
+        return;
+    }
+    let text = crate::time::utc_and_local_now(now_unix());
+    let p = ui.painter_at(area);
+    let ink = egui::Color32::LIGHT_GRAY;
+    let galley = p.layout_no_wrap(text, egui::FontId::proportional(11.0), ink);
+    let size = galley.size() + egui::vec2(12.0, 7.0);
+    let rect =
+        egui::Rect::from_min_size(egui::pos2(area.right() - size.x - 8.0, area.top() + 8.0), size);
+    if ui.ctx().pointer_hover_pos().is_some_and(|p| rect.expand(48.0).contains(p)) {
+        return;
+    }
+    p.rect_filled(rect, 4.0, egui::Color32::from_black_alpha(150));
+    p.galley(rect.center() - galley.size() / 2.0, galley, ink);
+}
+
 /// Split the digital-mode area between the waterfall and the operating panel.
 ///
 /// Returns `(waterfall height, panel height)`, which always sum to
@@ -223,6 +246,11 @@ impl eframe::App for SdroxideApp {
         // A "stop after" deadline armed in the REC popup: stop the MP3
         // recording once it passes (issue #520).
         self.poll_recording_timer(&mut cmds);
+        // A silence auto-split armed in the REC popup: start and stop the MP3
+        // recording with the receiver's squelch (issue #546). Armed, it also
+        // keeps its own frames coming, so it does not depend on anything else
+        // being on screen to animate.
+        self.poll_recording_gate(&ctx);
         // The keyboard, the mouse buttons and the control surface belong to
         // the focused radio alone. In a split view every visible radio runs
         // this frame loop, and without the gate one arrow key would tune all
@@ -683,6 +711,7 @@ impl eframe::App for SdroxideApp {
                         show_panel,
                         &mut cmds,
                     );
+                    paint_panadapter_clock(ui, ui.max_rect(), self.ui_settings.panadapter_clock);
                 });
             }
             // Only between two things: with the panadapter switched off there
@@ -886,6 +915,7 @@ impl eframe::App for SdroxideApp {
                         show_panel,
                         &mut cmds,
                     );
+                    paint_panadapter_clock(ui, ui.max_rect(), self.ui_settings.panadapter_clock);
                 });
             }
             if show_panel {
@@ -1132,6 +1162,10 @@ impl eframe::App for SdroxideApp {
             let morse = super::persist::shared_morse_progress()
                 .unwrap_or_else(|| self.morse.progress.clone());
             eframe::set_value(storage, "morse_progress", &morse);
+            // The browser's only copy of the HFDL chips; native keeps them in
+            // hfdl_channels.json, written on change.
+            #[cfg(target_arch = "wasm32")]
+            eframe::set_value(storage, "hfdl_channels", &self.hfdl_channels);
         }
     }
 }

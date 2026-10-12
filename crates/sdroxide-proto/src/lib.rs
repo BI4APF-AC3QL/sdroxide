@@ -1516,7 +1516,19 @@ use sdroxide_types::{
 /// `DigiStatus` whole, so a v172 peer reads the extra byte as the start of the
 /// next field and fails to decode every config — the same break as v172's
 /// appended message buttons.
-pub const PROTO_VERSION: u16 = 173;
+///
+/// v174: `NetworkConfig` gains `eqsl_qth_nickname` (`String`) on its tail — the
+/// eQSL QTH profile an upload is filed into, which eQSL requires when an account
+/// owns more than one (issue #647). `NetworkConfig` rides
+/// `Command::SetNetworkConfig` whole, so a v173 peer reads the extra bytes as
+/// the start of the next field and fails to decode the config — the same break
+/// as every appended field before it.
+///
+/// v175: decoded CW over UDP. [`sdroxide_types::WsjtxConfig`] gains `cw_text`
+/// ([`sdroxide_types::CwTextConfig`]) on its tail, beside the N1MM broadcast it
+/// sits with. `WsjtxConfig` rides `Command::SetWsjtxConfig` whole, so a v174
+/// peer handed one reads the extra bytes as the start of the next message.
+pub const PROTO_VERSION: u16 = 175;
 const VERSION_BYTE: u8 = 0x12;
 
 #[derive(Debug, thiserror::Error)]

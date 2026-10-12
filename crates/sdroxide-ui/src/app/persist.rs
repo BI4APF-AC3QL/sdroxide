@@ -242,6 +242,30 @@ pub(in crate::app) fn load_broadcast_stations() -> Vec<sdroxide_types::Broadcast
     sdroxide_types::broadcast::builtin().to_vec()
 }
 
+// ── HFDL custom channels (native: config-dir JSON; wasm: eframe storage) ─────
+
+#[cfg(not(target_arch = "wasm32"))]
+pub(in crate::app) fn load_hfdl_channels(_storage: Option<&dyn eframe::Storage>) -> Vec<u32> {
+    sdroxide_config::load_hfdl_channels()
+}
+
+#[cfg(target_arch = "wasm32")]
+pub(in crate::app) fn load_hfdl_channels(storage: Option<&dyn eframe::Storage>) -> Vec<u32> {
+    storage.and_then(|s| eframe::get_value(s, "hfdl_channels")).unwrap_or_default()
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub(in crate::app) fn persist_hfdl_channels(khz: &[u32]) {
+    if let Err(e) = sdroxide_config::save_hfdl_channels(khz) {
+        eprintln!("failed to save HFDL channels: {e}");
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+pub(in crate::app) fn persist_hfdl_channels(_khz: &[u32]) {
+    // Written with the rest of the browser's storage in `App::save`.
+}
+
 // ── Band conditions ──────────────────────────────────────────────────────────
 //
 // Fetched here rather than by the 3D view, and this is the one product of the

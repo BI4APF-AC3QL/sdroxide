@@ -306,11 +306,11 @@ pub(crate) fn apply_action(
             }
             SpectrumFloorDb => {
                 let v = target.unwrap_or(ui.view.db_floor + delta);
-                ui.view.db_floor = v.clamp(-160.0, ui.view.db_ceil - 5.0);
+                ui.view.set_levels_by_hand(v, ui.view.db_ceil);
             }
             SpectrumCeilDb => {
                 let v = target.unwrap_or(ui.view.db_ceil + delta);
-                ui.view.db_ceil = v.clamp(ui.view.db_floor + 5.0, 40.0);
+                ui.view.set_levels_by_hand(ui.view.db_floor, v);
             }
             _ => {}
         }

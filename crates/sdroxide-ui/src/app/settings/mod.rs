@@ -175,6 +175,9 @@ pub(in crate::app) struct SettingsIo<'a> {
     /// `SdroxideApp::rx_site_edit`.
     rx_site: &'a mut Option<sdroxide_types::RxSite>,
     audio_pick: &'a mut Option<(bool, Option<String>)>,
+    /// Which speaker channel(s) the received audio reaches, applied after the
+    /// window closure (#654).
+    routing_pick: &'a mut Option<sdroxide_types::AudioRouting>,
     hpsdr_discover: &'a mut bool,
     /// The name being typed in the Profiles tab's save box. Owned on the app:
     /// the dialog lives across taps of the tab bar, and a half-typed name is
@@ -1027,6 +1030,7 @@ impl SdroxideApp {
         // Edits collected here and applied after the window closure, which
         // borrows `&self` and so can't touch `&mut self.ctrl`.
         let mut audio_pick: Option<(bool, Option<String>)> = None;
+        let mut routing_pick: Option<sdroxide_types::AudioRouting> = None;
         let mut profile_name = std::mem::take(&mut self.profile_name_edit);
         let mut digi_reseed = false;
         let mut speech_edit = self.speech.settings().clone();
@@ -1198,6 +1202,7 @@ impl SdroxideApp {
                             ranges: &mut ranges,
                             rx_site: &mut rx_site,
                             audio_pick: &mut audio_pick,
+                            routing_pick: &mut routing_pick,
                             hpsdr_discover: &mut hpsdr_discover,
                             profile_name: &mut profile_name,
                             digi_reseed: &mut digi_reseed,
@@ -1400,6 +1405,10 @@ impl SdroxideApp {
         }
         if let Some((output, name)) = audio_pick {
             self.ctrl.set_audio_device(output, name);
+            self.audio_devices_queried = false;
+        }
+        if let Some(routing) = routing_pick {
+            self.ctrl.set_audio_routing(routing);
             self.audio_devices_queried = false;
         }
         // Every device question below is asked after the window closure, which
@@ -1917,7 +1926,7 @@ impl SdroxideApp {
                 // running two rigs at once runs two interfaces at once, and one
                 // pair of pickers on a shared page could only describe one of
                 // them (issue #474).
-                self.settings_user_audio(ui, io.audio_pick);
+                self.settings_user_audio(ui, io.audio_pick, io.routing_pick);
 
                 if let Some(access) = io.access_edit.as_deref_mut() {
                     ui.add_space(10.0);
@@ -3179,8 +3188,16 @@ impl SdroxideApp {
                         );
                     }
                     UploadTarget::Eqsl => {
-                        net_row(ui, crate::language_plugin::text("controls.app.settings.mod.text_3197_866295", "eQSL user"), &mut io.net_edit.eqsl.user, 140.0);
-                        net_secret(ui, crate::language_plugin::text("controls.app.settings.mod.text_3198_1810bb", "eQSL pass"), &mut io.net_edit.eqsl.password, 140.0);
+                        net_row(ui, crate::language_plugin::text("settings.eqsl.user", "eQSL user"), &mut io.net_edit.eqsl.user, 140.0);
+                        net_secret(ui, crate::language_plugin::text("settings.eqsl.pass", "eQSL pass"), &mut io.net_edit.eqsl.password, 140.0);
+                        net_row(ui, crate::language_plugin::text("settings.eqsl.qth", "eQSL QTH"), &mut io.net_edit.eqsl_qth_nickname, 140.0);
+                        ui.label(
+                            RichText::new(
+                                crate::language_plugin::text("settings.eqsl.qth_hint", "The QTH Nickname of the eQSL profile to upload to and download from — needed only when the account owns more than one; leave it blank otherwise."),
+                            )
+                            .size(10.5)
+                            .color(crate::theme::gray(140)),
+                        );
                     }
                     UploadTarget::HamQth => {
                         // The *same* two fields as the lookup section above, not
@@ -3513,12 +3530,7 @@ impl SdroxideApp {
                     .suffix(" Hz"),
             )
             .on_hover_text(
-                crate::language_plugin::text("settings.mod.text_3549", "How far above this radio's dial the receiver sits, in hertz. 0 for a receiver \
-                 on the same antenna; the intermediate frequency for an I.F. tap — 9000000 for \
-                 a 9 MHz I.F., 70455000 for a 70.455 MHz one.\n\nThis is not the Converter field \
-                 above, which retunes the radio, and not the CAT tab's I/Q centre offset, which \
-                 is about this radio's own sound card. Nothing typed here is ever sent to \
-                 either radio.\n\nTakes effect on Apply."),
+                crate::language_plugin::text("settings.mod.text_3549", "How far above this radio's dial the receiver sits, in hertz — 0 for a receiver on the same antenna. For an I.F. tap, the intermediate frequency the receiver is parked on: 8215000 for a K3's KXV3B, 9000000 for a 9 MHz I.F.\n\nThis is not the Converter field above, which retunes the radio, and not the CAT tab's I/Q centre offset, which is about this radio's own sound card. Nothing typed here is ever sent to either radio.\n\nTakes effect on Apply."),
             );
             ui.end_row();
 

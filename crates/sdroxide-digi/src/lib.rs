@@ -206,6 +206,14 @@ pub trait DigiEngine: Send {
     /// else implements either: a straight key only exists on the CW panel.
     fn set_straight(&mut self, _on: bool) {}
     fn key_down(&mut self, _down: bool) {}
+    /// CW: the operator's PTT, held (true) or released. Returns whether the
+    /// mode took it. Held, the transmitter stays keyed with no carrier — the
+    /// T/R switching a keyer's PTT line asks for — and the key or the keyer
+    /// sends inside it; released, the over ends there and then (#625). A mode
+    /// that declines leaves PTT to the voice path.
+    fn set_ptt_hold(&mut self, _on: bool) -> bool {
+        false
+    }
     /// Throw away what has been copied so far, so the operator can start a
     /// fresh page. Only the received text goes: the decoder keeps running, an
     /// over in progress is untouched, and nothing already logged is lost. Inert

@@ -393,8 +393,9 @@ impl SdroxideApp {
         // it cannot be a typist's, so its first press engages the mode itself,
         // as the KEY chip below would.
         let midi_down = self.input.cw_straight_midi_held();
+        // No abort first, unlike the KEY chip: a keyer holding PTT has keyed
+        // the over this note sends inside, and an abort would drop it.
         if midi_down && !self.cw_straight && tx_ok && hand_key_ok && self.focused {
-            cmds.push(Command::DigiAbortTx);
             cmds.push(Command::CwStraight(true));
             self.cw_straight = true;
         }

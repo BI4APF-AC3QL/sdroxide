@@ -126,6 +126,17 @@ pub enum ControlUpdate {
 /// default for anyone running a frequency converter. Add the forward at the
 /// same time.
 pub trait IqSource: Send {
+    /// Select a mode-dependent receive path. `Some` reports whether the
+    /// resulting stream is demodulated audio; `None` leaves capabilities alone.
+    fn prepare_receive_mode(&mut self, _mode: Mode) -> Result<Option<bool>> {
+        Ok(None)
+    }
+
+    /// Hardware-specific reason a modulation mode cannot be received.
+    fn mode_unavailable(&self, _mode: Mode) -> Option<&'static str> {
+        None
+    }
+
     fn sample_rate(&self) -> f64;
     fn center_hz(&self) -> f64;
     fn set_center_hz(&mut self, hz: f64) -> Result<()>;
@@ -1368,6 +1379,14 @@ impl IqSource for ConvertedSource {
     }
 
     // --- forwarded verbatim -------------------------------------------------
+
+    fn prepare_receive_mode(&mut self, mode: Mode) -> Result<Option<bool>> {
+        self.inner.prepare_receive_mode(mode)
+    }
+
+    fn mode_unavailable(&self, mode: Mode) -> Option<&'static str> {
+        self.inner.mode_unavailable(mode)
+    }
 
     fn sample_rate(&self) -> f64 {
         self.inner.sample_rate()

@@ -332,7 +332,11 @@ impl EladSource {
                         .to_string(),
                 );
             }
-            match sdroxide_audio::start_output(audio_out, 48_000) {
+            match sdroxide_audio::start_output(
+                audio_out,
+                48_000,
+                sdroxide_types::AudioRouting::Both,
+            ) {
                 Ok((o, p)) => Some((o, p)),
                 Err(e) => {
                     tracing::warn!("ELAD TX audio device unavailable ({e}); receive only");

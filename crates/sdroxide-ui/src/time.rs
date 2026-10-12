@@ -11,6 +11,37 @@ pub fn now_unix() -> i64 {
     now_unix_f64() as i64
 }
 
+/// The current UTC time as a listener reads it, `HH:MM:SS`.
+pub fn utc_clock(unix: i64) -> String {
+    let (_, _, _, h, mi, s) = sdroxide_types::utc_ymd_hms(unix);
+    format!("{h:02}:{mi:02}:{s:02}")
+}
+
+/// `13:08:42 UTC · 14:08 local` — the wall clock in both zones, or just the UTC
+/// half when the operator is already on UTC.
+///
+/// Split from the reading of the platform offset so the formatting is a pure
+/// function of `(unix, offset)` and can be tested without a timezone.
+pub fn utc_and_local(unix: i64, offset_secs: i64) -> String {
+    let utc = utc_clock(unix);
+    if offset_secs == 0 {
+        crate::language_plugin::format("display.clock.utc", "{} UTC", &[utc])
+    } else {
+        let (_, _, _, h, mi, _) = sdroxide_types::utc_ymd_hms(unix + offset_secs);
+        crate::language_plugin::format(
+            "display.clock.utc_and_local",
+            "{} UTC · {} local",
+            &[utc, format!("{h:02}:{mi:02}")],
+        )
+    }
+}
+
+/// [`utc_and_local`] for `unix`, with the operator's offset read from the
+/// platform.
+pub fn utc_and_local_now(unix: i64) -> String {
+    utc_and_local(unix, local_offset_at(unix))
+}
+
 /// Current Unix time as fractional UTC seconds.
 pub fn now_unix_f64() -> f64 {
     #[cfg(not(target_arch = "wasm32"))]
@@ -55,5 +86,22 @@ pub fn local_offset_at(unix: i64) -> i64 {
         let at = js_sys::Date::new(&wasm_bindgen::JsValue::from_f64(unix as f64 * 1000.0));
         let minutes = at.get_timezone_offset();
         (-minutes * 60.0) as i64
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The clock carries UTC always and the local half only when the operator is
+    /// off UTC.
+    #[test]
+    fn the_clock_shows_utc_and_local() {
+        let unix = 1_700_000_000;
+        let (_, _, _, h, mi, s) = sdroxide_types::utc_ymd_hms(unix);
+        let utc = format!("{h:02}:{mi:02}:{s:02}");
+        assert_eq!(utc_and_local(unix, 0), format!("{utc} UTC"));
+        let (_, _, _, lh, lmi, _) = sdroxide_types::utc_ymd_hms(unix + 7200);
+        assert_eq!(utc_and_local(unix, 7200), format!("{utc} UTC · {lh:02}:{lmi:02} local"));
     }
 }

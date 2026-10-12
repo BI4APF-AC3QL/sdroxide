@@ -101,13 +101,13 @@ pub fn mode_to_civ(m: Mode) -> u8 {
         | Mode::Adsb
         | Mode::Vdl2
         | Mode::Ais
-        | Mode::Hfdl
         | Mode::HdRadio => 0x05,
         // Wide FM has a mode byte of its own on CI-V, and it is not the same
         // one as narrow FM. Sending `0x05` for a broadcast station left the rig
         // in narrow FM, so selecting WFM did nothing at all (issue #494).
         Mode::Wfm => 0x06,
-        Mode::Spec => 0x01,
+        // HFDL is an HF signal on upper sideband; the decoder works the I/Q.
+        Mode::Spec | Mode::Hfdl => 0x01,
     }
 }
 

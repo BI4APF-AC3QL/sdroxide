@@ -243,6 +243,23 @@ fn build_analyzer(
     )
 }
 
+/// How much of the transmitted audio the TX monitor draws outside audio mode
+/// (see [`Engine::make_tx_frame`]); in audio mode it is the rig's own passband.
+const TX_MONITOR_VIEW_HZ: f64 = 3500.0;
+
+/// The TX monitor's analyser: a window sized for the few kilohertz it shows,
+/// not the panadapter's FFT size. At 48 kHz a 131072-point window took 2.7 s
+/// to fill, so after key-down the display froze on the last receive picture
+/// for seconds before the monitor appeared (#618).
+fn tx_monitor_analyzer(
+    fft_size: usize,
+    avg_tc: f32,
+    rows_per_sec: f64,
+    view_hz: f64,
+) -> SpectrumAnalyzer {
+    build_analyzer(fft_size, TX_MONITOR_RATE, avg_tc, rows_per_sec, Some(view_hz))
+}
+
 /// Workers in the pool the block loop forks its lanes onto.
 ///
 /// One block of receive samples divides into three independent pieces — the
@@ -2808,6 +2825,8 @@ struct Engine {
     wsjtx: Option<sdroxide_wsjtx::WsjtxUdp>,
     /// The N1MM contactinfo broadcast, if switched on — see [`Engine::sync_n1mm`].
     n1mm: Option<sdroxide_wsjtx::N1mmUdp>,
+    /// The decoded-CW UDP output, if switched on — see [`Engine::sync_cw_text`].
+    cw_text: Option<sdroxide_wsjtx::CwTextUdp>,
     wsjtx_cfg: sdroxide_types::WsjtxConfig,
     /// When the last WSJT-X heartbeat went out (clients time a station out
     /// without one).
@@ -2879,6 +2898,7 @@ struct Engine {
     /// audio, so the DDC/demod/skimmer path is bypassed for a narrow
     /// audio-band panadapter mapped to RF.
     audio_mode: bool,
+    receive_mode_seen: Option<Mode>,
     /// Sound-card sample rate feeding `analyzer` in audio mode.
     radio_fs: f64,
     /// Front-end decimation, when the operator has asked for any: the raw IQ
@@ -3623,7 +3643,10 @@ fn engine_thread(
     // Whether this machine has an nrsc5 to decode HD Radio with. Asked here, on
     // the machine the decoder would run on, so a remote client greys the mode
     // out for the station's reason rather than its own.
-    state.hd_radio_unavailable = sdroxide_nrsc5::unavailable_reason().map(str::to_string);
+    state.hd_radio_unavailable = source
+        .mode_unavailable(Mode::HdRadio)
+        .or_else(sdroxide_nrsc5::unavailable_reason)
+        .map(str::to_string);
     // Seeded here, next to the other config-derived state, so the very first
     // broadcast carries the real guard settings and no client ever renders the
     // 0.0 that `TxState::default()` would give it.
@@ -4042,7 +4065,12 @@ fn engine_thread(
         wide_seq: 0,
         scope_seq: 0,
         wide_levels: None,
-        tx_analyzer: SpectrumAnalyzer::new(cfg.fft_size as usize, TX_MONITOR_RATE, cfg.avg_tc),
+        tx_analyzer: tx_monitor_analyzer(
+            cfg.fft_size as usize,
+            cfg.avg_tc,
+            f64::from(cfg.rows()),
+            if audio_mode { audio_bw } else { TX_MONITOR_VIEW_HZ },
+        ),
         tx_mon_buf: Vec::new(),
         tune_phase: 0.0,
         sub_tone: None,
@@ -4144,6 +4172,7 @@ fn engine_thread(
         audio_level: 0.0,
         wsjtx: None,
         n1mm: None,
+        cw_text: None,
         wsjtx_cfg: sdroxide_types::WsjtxConfig::default(),
         wsjtx_beat: Instant::now(),
         rigctld: None,
@@ -4180,6 +4209,7 @@ fn engine_thread(
         tci_tx_drain: false,
         tci_last_snap: None,
         audio_mode,
+        receive_mode_seen: None,
         radio_fs,
         decim,
         audio_bw,
@@ -4371,6 +4401,7 @@ fn engine_thread(
         engine.vfo_memory[idle].antenna_rx = rx;
         engine.vfo_memory[idle].antenna_tx = tx;
     }
+    engine.refresh_receive_path();
     engine.push_rx_mode();
     engine.keep_vfo_in_span();
     engine.update_tuning();
@@ -4492,6 +4523,7 @@ fn engine_thread(
         // answers once its control link has been open a round trip.
         engine.refresh_antennas();
         engine.refresh_rx_antenna();
+        engine.refresh_receive_path();
 
         // Drive the FT8/FT4 slot machine (runs in both RX and TX). Returns
         // owned actions to avoid borrowing `engine.digi` and `engine` at once.
@@ -4551,13 +4583,20 @@ fn engine_thread(
             // spends that budget: the transmit ring empties, and hardware that
             // answers an underrun by skipping ahead (SoapySX does) puts the
             // over on the air as chirps. See `IqSource::read_available`.
-            if engine.caps.full_duplex && !engine.audio_mode {
+            if engine.rx_drawn_during_tx() {
                 if let Ok(n @ 1..) = engine.source.read_available(&mut buf) {
+                    lane_samples += n as u64;
                     engine.samples_read += n as u64;
                     engine.last_block = n as u64;
                     engine.adc.observe(&buf[..n]);
+                    if engine.state.noise_blanker {
+                        engine.nb.process(&mut buf[..n]);
+                    }
                     let iq = decimate(engine.decim.as_mut(), &buf[..n], &mut dbuf);
-                    engine.run_audio(iq);
+                    // The panadapter and waterfall too, not just the audio: a
+                    // QO-100 station watches its own downlink through the over
+                    // (#652).
+                    engine.process_block(iq, pool.as_ref());
                 }
             }
         } else {
@@ -4979,6 +5018,12 @@ struct RigDigest {
     noise_blanker: bool,
     noise_reduction: bool,
     auto_notch: bool,
+    nr_level: sdroxide_types::NrLevel,
+    squelch: u32,
+    rig_squelch: Option<u32>,
+    agc: sdroxide_types::AgcMode,
+    /// The front-end gain's setting and range, by bit pattern.
+    rf_gain: Option<(u64, u64, u64)>,
     ranges: (usize, usize),
 }
 
@@ -5005,6 +5050,14 @@ impl RigDigest {
             noise_blanker: s.noise_blanker,
             noise_reduction: s.noise_reduction,
             auto_notch: s.auto_notch,
+            nr_level: s.nr_level,
+            squelch: s.squelch_db.to_bits(),
+            rig_squelch: s.rig_squelch.map(f32::to_bits),
+            agc: s.agc,
+            rf_gain: s
+                .rf_gain
+                .as_ref()
+                .map(|g| (g.value.to_bits(), g.min.to_bits(), g.max.to_bits())),
             ranges: (s.rx_ranges.len(), s.tx_ranges.len()),
         }
     }
@@ -6257,12 +6310,38 @@ impl Engine {
         }
     }
 
+    /// Start, retarget or stop the decoded-CW UDP output to match its config.
+    /// Its own destination and its own switch, like the N1MM broadcast's.
+    fn sync_cw_text(&mut self) {
+        let cfg = &self.wsjtx_cfg.cw_text;
+        let want = cfg.enabled;
+        if want && self.cw_text.as_ref().is_some_and(|c| c.addr() == cfg.addr()) {
+            return;
+        }
+        let had = self.cw_text.take().is_some();
+        if !want {
+            if had {
+                info!("decoded CW UDP output stopped");
+            }
+            return;
+        }
+        match sdroxide_wsjtx::CwTextUdp::start(cfg) {
+            Ok(c) => self.cw_text = Some(c),
+            Err(e) => {
+                warn!("decoded CW UDP output: {e}");
+                let _ =
+                    self.event_tx.send(RadioEvent::NetStatus(Some(format!("CW text UDP: {e}"))));
+            }
+        }
+    }
+
     /// Start, retarget or stop the WSJT-X UDP broadcast to match its config.
     fn sync_wsjtx(&mut self) {
         // The N1MM broadcast rides the same configuration and the same call
         // sites, so it is kept in step here rather than at a second set of
-        // them that could be forgotten.
+        // them that could be forgotten. The decoded-CW output likewise.
         self.sync_n1mm();
+        self.sync_cw_text();
         let want = self.wsjtx_cfg.enabled;
         let same = self
             .wsjtx
@@ -6652,6 +6731,11 @@ impl Engine {
                         // is about to put on the air at full power.
                         self.lead_tr_switch();
                         self.source.send_cw(&text);
+                    }
+                }
+                DigiAction::CwText(text) => {
+                    if let Some(out) = self.cw_text.as_ref() {
+                        out.send(&text);
                     }
                 }
                 DigiAction::AbortCw => {
@@ -7475,7 +7559,7 @@ impl Engine {
         let scope_draws = self.audio_mode
             && self.scope_main_window().is_some()
             && self.audio_zoom_window().is_none();
-        !(self.tx_active || scope_draws)
+        !((self.tx_active && !self.rx_drawn_during_tx()) || scope_draws)
     }
 
     /// Build a full-band frame, if a sweep has arrived since the last one.
@@ -7726,8 +7810,13 @@ impl Engine {
         self.stream_center_hz
     }
 
+    /// See [`TX_MONITOR_VIEW_HZ`].
+    fn tx_monitor_view_hz(&self) -> f64 {
+        if self.audio_mode { self.audio_bw } else { TX_MONITOR_VIEW_HZ }
+    }
+
     fn make_spectrum_frame(&mut self) -> SpectrumFrame {
-        if self.tx_active {
+        if self.tx_active && !self.rx_drawn_during_tx() {
             return self.make_tx_frame();
         }
         let bins = self.cfg.bins();
@@ -7873,7 +7962,7 @@ impl Engine {
         // wideband IQ analyzer — even though it isn't `audio_mode` or digital.
         let mut frame = if self.audio_mode || self.caps.tx_audio || self.channel_analyzer.is_some()
         {
-            let bw = if self.audio_mode { self.audio_bw } else { 3500.0 };
+            let bw = self.tx_monitor_view_hz();
             let vp = if self.state.rx[0].mode.is_carrier_centered() {
                 // RIFP's transmitted signal straddles the dial.
                 let half = (self.state.rx[0].filter_hi - self.state.rx[0].filter_lo).abs() as f64
@@ -8800,10 +8889,11 @@ impl Engine {
                     // once per zoom step rather than once a session.
                     next.seed_from(&self.analyzer, (0.0, 1.0));
                     self.analyzer = next;
-                    self.tx_analyzer = SpectrumAnalyzer::new(
+                    self.tx_analyzer = tx_monitor_analyzer(
                         self.cfg.fft_size as usize,
-                        TX_MONITOR_RATE,
                         self.cfg.avg_tc,
+                        f64::from(self.cfg.rows()),
+                        self.tx_monitor_view_hz(),
                     );
                 } else {
                     self.analyzer.set_avg_tc(self.cfg.avg_tc, rate);
@@ -10731,6 +10821,29 @@ impl Engine {
         }
     }
 
+    /// Put the LO on the dial when an AIS window parked off it misses a
+    /// channel. A front end that offsets its LO left it there on entering
+    /// AIS, since one channel already sat inside the span (#658); centred on
+    /// the dial, which AIS puts between the channels, the window holds both.
+    fn reseat_ais_on_dial(&mut self) {
+        if !self.state.rx[0].mode.is_ais() {
+            return;
+        }
+        let dial = self.state.active_freq_hz();
+        if (self.state.center_hz - dial).abs() < 1.0 {
+            return;
+        }
+        let rate = Ddc::rate_for(self.state.sample_rate, self.ais_target_rate_hz());
+        let total = sdroxide_ais::plan::CHANNELS.len();
+        let reached = |c: f64| sdroxide_ais::plan::channels_in_window(c, rate).len();
+        let here = reached(self.ais_window_center_hz(rate));
+        let on_dial =
+            reached(sdroxide_ais::plan::window_center_for(dial, self.state.sample_rate, rate));
+        if here < total && on_dial > here {
+            self.retune(dial);
+        }
+    }
+
     /// Re-place the window after a retune or a rate change.
     ///
     /// The aircraft table survives: a receiver nudged a hundred kilohertz is
@@ -11396,7 +11509,18 @@ impl Engine {
             strength_dbm: self.last_s_dbm.round() as i32,
             noise_blanker: self.state.noise_blanker,
             noise_reduction: rx.noise_reduction.is_on(),
+            nr_level: rx.noise_reduction,
             auto_notch: rx.auto_notch,
+            squelch_db: rx.squelch_db,
+            rig_squelch: self.caps.commands_squelch.then_some(self.state.rig_squelch),
+            agc: rx.agc,
+            rf_gain: self.rigctld_rf_gain().map(|(g, value)| sdroxide_rigctld::RfGain {
+                element: g.name.clone(),
+                min: g.min_db,
+                max: g.max_db,
+                step: g.step_db,
+                value,
+            }),
             can_tx: self.caps.is_transmit_capable(),
             rx_ranges: self.caps.freq_ranges_rx.clone(),
             tx_ranges: self.caps.freq_ranges_tx.clone(),
@@ -11457,8 +11581,30 @@ impl Engine {
             noise_blanker: self.state.noise_blanker,
             noise_reduction: rx.noise_reduction.is_on(),
             auto_notch: rx.auto_notch,
+            nr_level: rx.noise_reduction,
+            squelch: rx.squelch_db.to_bits(),
+            rig_squelch: self.caps.commands_squelch.then_some(self.state.rig_squelch.to_bits()),
+            agc: rx.agc,
+            rf_gain: self
+                .rigctld_rf_gain()
+                .map(|(g, value)| (value.to_bits(), g.min_db.to_bits(), g.max_db.to_bits())),
             ranges: (self.caps.freq_ranges_rx.len(), self.caps.freq_ranges_tx.len()),
         }
+    }
+
+    /// The RX gain stage rigctl's `RF` level drives, and where it is set: the
+    /// device's first, the one the top bar's Gain slider moves, read the same
+    /// way (its minimum until the engine has recorded a setting).
+    fn rigctld_rf_gain(&self) -> Option<(&sdroxide_types::GainElement, f64)> {
+        let g = self.caps.gains.iter().find(|g| g.direction == sdroxide_types::Direction::Rx)?;
+        let value = self
+            .state
+            .gains
+            .iter()
+            .find(|(n, _)| *n == g.name)
+            .map(|(_, v)| *v)
+            .unwrap_or(g.min_db);
+        Some((g, value))
     }
 
     /// Start, stop or rebind the built-in TCI server to match `tci_cfg`.
@@ -12912,6 +13058,17 @@ impl Engine {
     }
 
     fn set_rx_mode(&mut self, rx: RxId, mode: Mode) {
+        if let Some(why) = self.source.mode_unavailable(mode) {
+            self.notice(why);
+            return;
+        }
+        if rx == RxId::Main
+            && let Err(e) = self.prepare_receive_path(mode)
+        {
+            warn!("changing receive path: {e}");
+            self.notice(&format!("Could not change receive path: {e}"));
+            return;
+        }
         // APRS is a channel, not a band, and which channel is a property of
         // the operator's region: 144.800 in Region 1, 144.390 in the Americas,
         // 145.175 in Australia and New Zealand. A receiver anywhere else is
@@ -13083,6 +13240,7 @@ impl Engine {
             // hands the discriminator a 250 kHz channel with the DC spike
             // inside it. Re-check the clearance and move the LO if it grew.
             if !self.audio_mode {
+                self.reseat_ais_on_dial();
                 // `follow_dial` rather than the span check alone: entering or
                 // leaving CW moves a self-keying transceiver's VFO by a whole
                 // sidetone (`rig_cw_offset_hz`), and that is a move no span
@@ -13841,7 +13999,9 @@ impl Engine {
     /// and the two never met. A refusal the operator cannot see is
     /// indistinguishable from a bug in whatever asked to key.
     fn deny_tx(&mut self, reason: &str) {
-        warn!("TX refused: {reason}");
+        // Named, because a station runs several radios and the refusal is
+        // often one nobody pressed — a WSPR schedule on an idle tab (#566).
+        warn!("TX refused on radio {} ({:?}): {reason}", self.instance + 1, self.state.rx[0].mode);
         self.state.tx.ptt = false;
         self.state.tx.tune = false;
         // Every deny happens before the transmitter keyed, so a gate claimed
@@ -14677,25 +14837,80 @@ impl Engine {
         if factor == self.state.decimation {
             return;
         }
+        self.rebuild_receive_path(factor);
+        info!(factor, rate = self.state.sample_rate, "front-end decimation");
+        self.save_session();
+    }
+
+    fn refresh_receive_path(&mut self) {
+        let hd_unavailable =
+            self.source.mode_unavailable(Mode::HdRadio).or_else(sdroxide_nrsc5::unavailable_reason);
+        if self.state.hd_radio_unavailable.as_deref() != hd_unavailable {
+            self.state.hd_radio_unavailable = hd_unavailable.map(str::to_string);
+            self.emit_state();
+        }
+        let mode = self.state.rx[0].mode;
+        if self.receive_mode_seen == Some(mode) {
+            return;
+        }
+        self.receive_mode_seen = Some(mode);
+        if let Err(e) = self.prepare_receive_path(mode) {
+            warn!("restoring receive path: {e}");
+            self.notice(&format!("Could not restore receive path: {e}"));
+        }
+    }
+
+    fn prepare_receive_path(&mut self, mode: Mode) -> crate::Result<()> {
+        let Some(audio_mode) = self.source.prepare_receive_mode(mode)? else { return Ok(()) };
+        let rate = self.source.sample_rate();
+        if self.audio_mode == audio_mode && self.radio_fs == rate {
+            return Ok(());
+        }
+        self.audio_mode = audio_mode;
+        self.caps.audio_mode = audio_mode;
+        self.caps.label = self.source.describe();
+        self.radio_fs = rate;
+        self.audio_bw = self.source.display_bandwidth().unwrap_or(rate / 2.0);
+        self.center_trail.clear();
+        self.stream_center_hz = self.source.center_hz();
+        self.state.center_hz = self.stream_center_hz;
+        self.rebuild_receive_path(decimation_for(self.want_decimation, rate, audio_mode));
+        let _ = self.event_tx.send(RadioEvent::CapabilitiesUpdated(self.caps.clone()));
+        Ok(())
+    }
+
+    fn rebuild_receive_path(&mut self, factor: u32) {
+        self.zoom = None;
+        self.main_play.clear();
+        self.main_play_r.clear();
+        self.audio_re.clear();
+        self.audio_play.clear();
         self.state.decimation = factor;
         self.decim = (factor > 1).then(|| Decimator::new(factor));
         self.state.sample_rate = self.radio_fs / factor as f64;
 
         self.analyzer = build_analyzer(
             self.cfg.fft_size as usize,
-            self.state.sample_rate,
+            if self.audio_mode { self.radio_fs } else { self.state.sample_rate },
             self.cfg.avg_tc,
             f64::from(self.cfg.rows()),
             self.analyzer_view_span(),
         );
         if self.mixer.is_some() {
-            self.main = Some(RxChain::new(
-                self.state.sample_rate,
-                &self.state.rx[0],
-                self.audio_out_rate,
-                self.state.rx_freq_hz(),
-            ));
-            self.sub = self.state.sub_rx_enabled.then(|| {
+            self.main = (!self.audio_mode).then(|| {
+                RxChain::new(
+                    self.state.sample_rate,
+                    &self.state.rx[0],
+                    self.audio_out_rate,
+                    self.state.rx_freq_hz(),
+                )
+            });
+            self.audio_resampler = if self.audio_mode {
+                MonoResampler::new(self.radio_fs, self.audio_out_rate)
+            } else {
+                None
+            };
+            self.sub = (self.state.sub_rx_enabled && !self.audio_mode).then(|| {
                 RxChain::new(
                     self.state.sample_rate,
                     &self.state.rx[1],
@@ -14755,7 +14970,6 @@ impl Engine {
         self.sync_qo100();
         self.sync_audio_tap();
         self.sync_tci_iq();
-        info!(factor, rate = self.state.sample_rate, "front-end decimation");
 
         // A narrower span may not reach where the sub receiver was parked, and
         // a zero-IF front end's LO offset shrinks with the span (see
@@ -14765,7 +14979,6 @@ impl Engine {
         self.keep_vfo_in_span();
         self.update_tuning();
         self.emit_state();
-        self.save_session();
     }
 
     /// Rebuild the IQ front-end at runtime (backend / CAT audio / HPSDR-TCI
@@ -14941,10 +15154,16 @@ impl Engine {
             let _ = self.source.tx_end();
         }
         self.source = source;
+        self.receive_mode_seen = None;
         // The old front end's pipeline went with it.
         self.center_trail.clear();
         self.stream_center_hz = self.source.center_hz();
         self.caps = caps;
+        self.state.hd_radio_unavailable = self
+            .source
+            .mode_unavailable(Mode::HdRadio)
+            .or_else(sdroxide_nrsc5::unavailable_reason)
+            .map(str::to_string);
         self.caps.center_is_dial = self.source.center_is_dial();
         self.caps.cw_audio_keyed = self.source.cw_audio_keyed();
         self.caps.commands_squelch = self.source.commands_squelch();
@@ -14994,7 +15213,11 @@ impl Engine {
         // that could not go there — a swap to hardware that does not cover this
         // band — has landed somewhere else, and then its own answer is the
         // honest thing to show rather than a dial the radio is not on.
-        if (state.center_hz - self.state.active_freq_hz()).abs() > 1.0 {
+        // 0 Hz is not an answer but a front end that has not heard its dial
+        // yet — an Icom over LAN whose first reply came after the connect
+        // wait. Taken at its word it put both VFOs on 0, clamped them to the
+        // bottom of the range and sent the radio there (#576).
+        if state.center_hz > 0.0 && (state.center_hz - self.state.active_freq_hz()).abs() > 1.0 {
             state.vfo_a_hz = state.center_hz;
             state.vfo_b_hz = state.center_hz;
         }
@@ -15135,6 +15358,7 @@ impl Engine {
         self.broadcast_tci_state();
         // Same as a cold start: the fresh VFO sits on the new front end's LO,
         // which is where zero-IF hardware must not be tuned.
+        self.refresh_receive_path();
         self.push_rx_mode();
         self.keep_vfo_in_span();
         self.update_tuning();
@@ -15556,6 +15780,15 @@ impl Engine {
                 self.emit_digi_status();
                 return;
             }
+        }
+        // CW: PTT holds the transmitter for the keyer with no carrier of its
+        // own; the voice path would key a steady tune-level carrier (#625).
+        if self.state.rx[0].mode == Mode::Cw
+            && let Some(d) = self.digi.as_mut()
+            && d.set_ptt_hold(on)
+        {
+            self.emit_digi_status();
+            return;
         }
         self.state.tx.ptt = on;
         self.sync_tx_state();
@@ -16088,6 +16321,16 @@ impl Engine {
     /// spends the over deaf. Where this is false the sidetone is played live
     /// from the TX loop instead of queued — see [`Self::play_cw_sidetone`].
     fn cw_monitor_drained_during_tx(&self) -> bool {
+        self.rx_drawn_during_tx()
+    }
+
+    /// Whether the receiver is still the picture through an over: a
+    /// full-duplex I/Q source keeps being read (see
+    /// [`Self::cw_monitor_drained_during_tx`]), so the panadapter shows what it
+    /// hears — a satellite station's own downlink, a paired receiver with
+    /// blanking off — rather than the TX monitor (#652). The TX monitor is for
+    /// radios that go deaf when keyed.
+    fn rx_drawn_during_tx(&self) -> bool {
         self.caps.full_duplex && !self.audio_mode
     }
 
@@ -16589,12 +16832,14 @@ impl Engine {
         let drive = self.tx_drive();
         let tune_level = self.tx_tune_level();
         let cessb_db = self.state.tx.cessb_db;
+        let rx_drawn = self.rx_drawn_during_tx();
         let Some(tx) = self.tx.as_mut() else { return Ok(()) };
 
         tx.mod_buf.clear();
         let mut burst_done = false;
         if self.state.tx.tune || tx.modulator.is_none() {
-            // Steady carrier at the tune level (also CW until the keyer exists).
+            // Steady carrier at the tune level. A PTT in CW only gets here with
+            // no keyer to hold the over for (see `set_ptt`).
             let level = tune_level;
             tx.mod_buf.resize(TX_AUDIO_BLOCK, Complex32::new(level, 0.0));
             self.mic_fifo.clear();
@@ -16694,8 +16939,11 @@ impl Engine {
         }
         if !tx.tx_buf.is_empty() {
             self.source.tx_write(&tx.tx_buf)?;
-            // The upconverted IQ feeds the wideband display at its RF position.
-            self.analyzer.process(&tx.tx_buf);
+            // The upconverted IQ feeds the wideband display at its RF position
+            // — unless the receiver is drawing it.
+            if !rx_drawn {
+                self.analyzer.process(&tx.tx_buf);
+            }
         }
         // Keep the device/network TX ring near-empty (HPSDR ≈ 0.5 s, SoapySDR
         // varies) rather than letting a fast loop fill it and delay the signal.
@@ -16735,6 +16983,7 @@ impl Engine {
         }
         // Read before the chain is borrowed, as above.
         let drive = self.tx_drive();
+        let rx_drawn = self.rx_drawn_during_tx();
         let Some(tx) = self.tx.as_mut() else { return Ok(()) };
 
         tx.mod_buf.clear();
@@ -16773,7 +17022,9 @@ impl Engine {
         }
         if !tx.tx_buf.is_empty() {
             self.source.tx_write(&tx.tx_buf)?;
-            self.analyzer.process(&tx.tx_buf); // wideband RF display
+            if !rx_drawn {
+                self.analyzer.process(&tx.tx_buf); // wideband RF display
+            }
         }
         // Pace the burst to real time so it isn't raced into the device ring
         // (which would drop PTT early — the tail matters for FT8 decode).
@@ -17069,6 +17320,12 @@ impl Engine {
     /// decimated receiver sits exactly as far off DC, relatively, as an
     /// undecimated one.
     fn lo_offset_hz(&self) -> f64 {
+        // AIS parks the dial between its two channels, 25 kHz from each, so
+        // DC on the LO lands in the gap. Offsetting the LO by a quarter of a
+        // decimated span pushed AIS A out of the window (#658).
+        if self.state.rx[0].mode.is_ais() {
+            return 0.0;
+        }
         self.source.lo_offset_hz() / self.state.decimation as f64
     }
 
@@ -17361,6 +17618,7 @@ fn rig_mode_class(m: Mode) -> u8 {
         | Mode::PacketHf
         | Mode::AtChat
         | Mode::Fsk441
+        | Mode::Hfdl
         | Mode::Spec => 1,
         // DRM sits on the dial in a channel about as wide as AM's, and a
         // rig has no DRM setting to report back — see `to_hamlib_mode`.
@@ -17381,7 +17639,6 @@ fn rig_mode_class(m: Mode) -> u8 {
         | Mode::Adsb
         | Mode::Vdl2
         | Mode::Ais
-        | Mode::Hfdl
         | Mode::HdRadio => 5,
     }
 }
@@ -17582,6 +17839,13 @@ mod rig_mode_class_tests {
     /// Issue #119: CW keyed as audio (MCW) is commanded to the rig as the digi
     /// sideband, so the rig echoing USB (or DATA-U) back is it doing exactly
     /// as told — not the operator leaving CW — and must be same-class.
+    /// Issue #662: HFDL is commanded to the rig as USB, so a rig reporting
+    /// USB is still in HFDL rather than the operator having left it.
+    #[test]
+    fn a_rig_on_usb_is_where_hfdl_left_it() {
+        assert_eq!(rig_mode_class(Mode::Hfdl), rig_mode_class(Mode::Usb));
+    }
+
     #[test]
     fn a_rig_on_the_sideband_is_where_cw_as_mcw_left_it() {
         let expected = expected_rig_class(Mode::Cw, true, 7_030_000.0);
