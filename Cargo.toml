@@ -26,7 +26,7 @@ ewebsock = { path = "vendor/ewebsock" }
 soapysdr = { path = "vendor/soapysdr" }
 
 [workspace.package]
-version = "1.6.9"
+version = "1.6.10"
 edition = "2024"
 # The native binary links mfsk-core (GPL-3.0-or-later) for FT8/FT4 and the
 # DeepCW model (AGPL-3.0-only) for CW, so the built binary carries both. AGPL is
@@ -41,6 +41,13 @@ license = "GPL-3.0-or-later"
 # DSP is unusably slow unoptimized; keep deps and the sample-rate-hot crates
 # fast in dev builds while the rest stays quick to compile.
 [profile.dev.package."*"]
+opt-level = 2
+
+# Rust 1.99 (LLVM) never finishes optimizing mfsk-core 0.10.0 at opt-level 3 for
+# aarch64 — the Linux and macOS ARM release jobs ran into the 6 h timeout from
+# 1 Oct 2026 on. At 2 it builds in under a minute. Profiles can't be per target,
+# so x86 gets the same; drop this once a toolchain no longer hangs.
+[profile.release.package.mfsk-core]
 opt-level = 2
 
 [profile.dev.package.sdroxide-dsp]

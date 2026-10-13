@@ -44897,8 +44897,8 @@
       "status": "adapter-generated"
     },
     "settings.servers.points_a_motorized_antenna_at_the_satellite_you_are": {
-      "source": "Points a motorized antenna at the satellite you are locked onto, through a Hamlib rotctld daemon (run e.g. “rotctld -m 603 -r /dev/ttyUSB0” for a GS-232B rotator, or “rotctld -m 1” to try it without hardware). One daemon covers every rotator Hamlib drives — EasyComm, GS-232, SPID and the rest.",
-      "translation": "通过 Hamlib rotctld 服务，将电动天线指向当前锁定的卫星。例如 GS-232B 旋转器可使用“rotctld -m 603 -r /dev/ttyUSB0”；无硬件测试可使用“rotctld -m 1”。同一服务接口支持 Hamlib 驱动的各类旋转器，包括 EasyComm、GS-232 和 SPID。",
+      "source": "Points a motorized antenna at the satellite you are locked onto, through a Hamlib rotctld daemon (run e.g. “rotctld -m 603 -r /dev/ttyUSB0” for a GS-232B rotator, or “rotctld -m 1” to try it without hardware). One daemon covers every rotator Hamlib drives — EasyComm, GS-232, SPID and the rest. PSTRotator also works when UDP Control is enabled in its Setup.",
+      "translation": "它会在你锁定卫星时驱动电动天线指向目标，可通过 Hamlib rotctld 守护进程控制（例如 GS-232B 转子可运行 `rotctld -m 603 -r /dev/ttyUSB0`；也可运行 `rotctld -m 1` 在无硬件时试用）。一个守护进程可驱动 Hamlib 支持的各类转子，包括 EasyComm、GS-232、SPID 等。也可使用 PSTRotator；请在其设置中启用 UDP Control。",
       "source_refs": [
         {
           "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
@@ -44907,7 +44907,7 @@
       ],
       "parameters": [],
       "module": "settings.servers",
-      "status": "adapter-generated"
+      "status": "adapter-generated-upstream-75b549b3"
     },
     "settings.servers.port": {
       "source": "Port",
@@ -65306,6 +65306,321 @@
       ],
       "module": "display.clock",
       "status": "adapter-generated"
+    },
+    "display.enum.rotator.hamlib": {
+      "source": "Hamlib rotctld (TCP)",
+      "translation": "Hamlib rotctld（TCP）",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-types/src/rotator.rs",
+          "line": 55
+        }
+      ],
+      "parameters": [],
+      "module": "display.enum",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "display.enum.rotator.pstrotator": {
+      "source": "PSTRotator (UDP)",
+      "translation": "PSTRotator（UDP）",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-types/src/rotator.rs",
+          "line": 56
+        }
+      ],
+      "parameters": [],
+      "module": "display.enum",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "settings.servers.program": {
+      "source": "Program",
+      "translation": "程序",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 354
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "settings.servers.rotator_port_help": {
+      "source": "4533 is rotctld's default. PSTRotator's UDP control port is 12000 by default, and it answers position queries on the next port up, 12001 — which has to be free on this machine.",
+      "translation": "rotctld 默认端口为 4533。PSTRotator 的 UDP 控制端口默认为 12000，位置查询通过下一个端口 12001 响应；运行本程序的计算机上该端口必须空闲。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+          "line": 388
+        }
+      ],
+      "parameters": [],
+      "module": "settings.servers",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.all_satellites": {
+      "source": "all satellites",
+      "translation": "所有卫星",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 746
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.all_satellites_help": {
+      "source": "Off: only satellites with frequencies on file — the ones you can work — and any you pasted in yourself. On: every satellite in the list, which can be thousands with a subscription and takes a while to search.",
+      "translation": "关闭时，仅列出已有频率资料、可进行通联的卫星，以及你自行粘贴星历的卫星。开启后会搜索列表中的所有卫星；订阅源可能包含数千颗卫星，因此搜索需要一些时间。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 746
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.aos": {
+      "source": "AOS",
+      "translation": "升起时间",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 807
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.from_to": {
+      "source": "FROM → TO",
+      "translation": "升起方位 → 落下方位",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 811
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.length": {
+      "source": "LENGTH",
+      "translation": "持续时间",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 809
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.next": {
+      "source": "NEXT",
+      "translation": "未来过境",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 738
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.no_passes": {
+      "source": "No passes in this window. Lower the peak, or widen the window.",
+      "translation": "此时间范围内没有符合条件的过境。可降低最低峰值仰角或扩大时间范围。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 798
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.passes": {
+      "source": "PASSES",
+      "translation": "过境",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 672
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.peak": {
+      "source": "PEAK",
+      "translation": "最高仰角",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 810
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.peak_min": {
+      "source": "PEAK ≥",
+      "translation": "峰值仰角 ≥",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 743
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.satellite": {
+      "source": "SATELLITE",
+      "translation": "卫星",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 806
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.searching": {
+      "source": "searching… {} of {}",
+      "translation": "正在搜索… {}/{}",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 796
+        }
+      ],
+      "parameters": [
+        "",
+        ""
+      ],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.set_grid": {
+      "source": "Set your grid for passes (Settings ▸ General).",
+      "translation": "请先在“设置 ▸ 常规”中设置网格定位，以计算卫星过境。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 729
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.sat.up_now": {
+      "source": "● up now",
+      "translation": "● 当前可见",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/sat.rs",
+          "line": 821
+        }
+      ],
+      "parameters": [],
+      "module": "window.satellite.passes",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.audio_to": {
+      "source": "Audio to",
+      "translation": "音频输出到",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2236
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.gain_per_band": {
+      "source": "Gain per band",
+      "translation": "按波段记忆增益",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2254
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.remember_gain": {
+      "source": "Remember receive gain per band",
+      "translation": "记忆各波段的接收增益",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2256
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.remember_gain_help": {
+      "source": "Each band keeps the receive gain you last set on it, and gets it back when the dial returns — a band button, a drag across a band edge or the radio's own knob. General coverage is split into HF, VHF, UHF and above. A band you have not set a gain on keeps whatever is in force. Off: one gain everywhere.",
+      "translation": "每个波段会记住上次设置的接收增益，并在调谐返回该波段时恢复；无论通过波段按钮、拖过波段边界，还是使用电台自身旋钮切换都适用。通用覆盖范围分为 HF、VHF、UHF 及更高频段。尚未单独设置增益的波段沿用当前增益。关闭后所有波段共用一个增益。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2257
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.s_meter_calibration": {
+      "source": "S-meter calibration",
+      "translation": "S 表校准",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2276
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
+    },
+    "upstream.75b.settings.s_meter_calibration_help": {
+      "source": "Added to this radio's S-meter reading. An SDR's meter starts out reading dBFS — level against the converter's full scale — so a receiver with plenty of gain can show S9 with no antenna connected. Set this to the difference between what the meter shows and a level you know: a signal generator, or a quiet band you trust to sit around S2–S3. Applies at once.\n\nOn top of cal_offset_db in config.toml, which is one figure for the whole station.",
+      "translation": "此校准值会加到这部电台的 S 表读数上。SDR 初始读取的是 dBFS（相对于转换器满量程的电平），因此前级增益较高的接收机即使未连接天线也可能显示 S9。请用表头当前读数减去已知电平，设置两者之差；已知电平可来自信号发生器，或你确认约为 S2–S3 的安静波段。调整后立即生效。\n\n此值叠加在 config.toml 的 cal_offset_db 之上；后者是整个台站共用的校准值。",
+      "source_refs": [
+        {
+          "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+          "line": 2287
+        }
+      ],
+      "parameters": [],
+      "module": "settings.radio",
+      "status": "adapter-generated-upstream-75b549b3"
     }
   }
 }

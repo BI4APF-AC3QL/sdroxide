@@ -2229,6 +2229,78 @@ impl SdroxideApp {
                         }
                     });
                     ui.end_row();
+
+                    // Which speaker channels this radio plays to (#654): one ear
+                    // only puts two radios on one headset, a sub receiver mixed
+                    // into the same ear. Live: an ear is chosen by listening.
+                    ui.label(RichText::new(crate::language_plugin::text("upstream.75b.settings.audio_to", "Audio to")).strong());
+                    let was = cfg.audio_route;
+                    enum_combo(
+                        ui,
+                        "audio-route",
+                        &mut cfg.audio_route,
+                        &sdroxide_types::AudioRoute::ALL,
+                        sdroxide_types::AudioRoute::label,
+                    );
+                    if cfg.audio_route != was {
+                        cmds.push(Command::SetRadioConfig {
+                            cfg: Box::new(cfg.clone()),
+                            reopen: false,
+                        });
+                    }
+                    ui.end_row();
+
+                    // #605: an RTL-SDR wants little gain on HF and a lot on 2 m.
+                    ui.label(RichText::new(crate::language_plugin::text("upstream.75b.settings.gain_per_band", "Gain per band")).strong());
+                    let mut per_band = !cfg.same_gain_all_bands;
+                    if crate::chrome::checkbox(
+                        ui,
+                        &mut per_band,
+                        crate::language_plugin::text("upstream.75b.settings.remember_gain", "Remember receive gain per band"),
+                    )
+                        .on_hover_text(crate::language_plugin::text(
+                            "upstream.75b.settings.remember_gain_help",
+                            "Each band keeps the receive gain you last set on it, and gets it back when the dial returns — a band button, a drag across a band edge or the radio's own knob. General coverage is split into HF, VHF, UHF and above. A band you have not set a gain on keeps whatever is in force. Off: one gain everywhere.",
+                        ))
+                        .changed()
+                    {
+                        cfg.same_gain_all_bands = !per_band;
+                        cmds.push(Command::SetRadioConfig {
+                            cfg: Box::new(cfg.clone()),
+                            reopen: false,
+                        });
+                    }
+                    ui.end_row();
+
+                    // Live, like the receive audio trim: it is set by watching
+                    // the S-meter while dragging (#642).
+                    ui.label(RichText::new(crate::language_plugin::text("upstream.75b.settings.s_meter_calibration", "S-meter calibration")).strong());
+                    ui.horizontal(|ui| {
+                        let was = cfg.s_meter_cal_db;
+                        ui.add(
+                            egui::DragValue::new(&mut cfg.s_meter_cal_db)
+                                .speed(0.5)
+                                .range(-150.0..=50.0)
+                                .fixed_decimals(1)
+                                .suffix(" dB"),
+                        )
+                        .on_hover_text(crate::language_plugin::text(
+                            "upstream.75b.settings.s_meter_calibration_help",
+                            "Added to this radio's S-meter reading. An SDR's meter starts out reading dBFS — level against the converter's full scale — so a receiver with plenty of gain can show S9 with no antenna connected. Set this to the difference between what the meter shows and a level you know: a signal generator, or a quiet band you trust to sit around S2–S3. Applies at once.\n\nOn top of cal_offset_db in config.toml, which is one figure for the whole station.",
+                        ));
+                        if cfg.s_meter_cal_db != 0.0 && ui.button("0 dB").clicked() {
+                            cfg.s_meter_cal_db = 0.0;
+                        }
+                        // Saving the file alone reaches the engine only at the
+                        // next reopen; this is meant to be set while watching.
+                        if cfg.s_meter_cal_db != was {
+                            cmds.push(Command::SetRadioConfig {
+                                cfg: Box::new(cfg.clone()),
+                                reopen: false,
+                            });
+                        }
+                    });
+                    ui.end_row();
                 });
                 if let sdroxide_types::RxSite::Elsewhere(g) = &*site {
                     let g = g.trim();

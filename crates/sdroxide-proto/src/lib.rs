@@ -1528,7 +1528,25 @@ use sdroxide_types::{
 /// ([`sdroxide_types::CwTextConfig`]) on its tail, beside the N1MM broadcast it
 /// sits with. `WsjtxConfig` rides `Command::SetWsjtxConfig` whole, so a v174
 /// peer handed one reads the extra bytes as the start of the next message.
-pub const PROTO_VERSION: u16 = 175;
+///
+/// v176: [`sdroxide_types::RadioConfig`] gains `s_meter_cal_db` (`f32`) on its
+/// tail — a per-radio S-meter calibration, settable from the UI (issue #642).
+/// `RadioConfig` rides `ServerMsg::RadioConfig` and `Command::SetRadioConfig`
+/// whole, so a v175 peer reads the extra bytes as the start of the next field.
+///
+/// v177: [`sdroxide_types::RadioConfig`] gains `audio_route`
+/// ([`sdroxide_types::AudioRoute`], a unit enum) on its tail — which speaker
+/// channels the radio plays to (issue #654). Same break as v176.
+///
+/// v178: [`sdroxide_types::RadioConfig`] gains `same_gain_all_bands` (`bool`)
+/// on its tail — the switch for remembering receive gain per band (issue #605).
+/// Same break as v176.
+///
+/// v179: [`sdroxide_types::RotatorConfig`] gains `protocol`
+/// ([`sdroxide_types::RotatorProtocol`], a unit enum) on its tail — rotctld or
+/// PSTRotator's UDP control (issue #638). It rides `Command::SetRotatorConfig`
+/// and `StationConfig::rotator` whole, so a v178 peer reads it out of step.
+pub const PROTO_VERSION: u16 = 179;
 const VERSION_BYTE: u8 = 0x12;
 
 #[derive(Debug, thiserror::Error)]
@@ -2408,6 +2426,31 @@ mod tests {
         assert_eq!(back, cmd);
     }
 
+    /// The rotator's program choice (#638) survives the wire, both ways, with
+    /// the park position before it off its default.
+    #[test]
+    fn roundtrip_rotator_config() {
+        use sdroxide_types::{RotatorConfig, RotatorProtocol, StationConfig};
+
+        let rotator = RotatorConfig {
+            enabled: true,
+            host: "shack-pc".into(),
+            port: 12000,
+            park: Some((180.0, 10.0)),
+            protocol: RotatorProtocol::PstRotator,
+            ..RotatorConfig::default()
+        };
+        let m = ServerMsg::StationConfig(Box::new(StationConfig {
+            rotator: rotator.clone(),
+            ..no_station()
+        }));
+        let back: ServerMsg = decode(&encode(&m).unwrap()).unwrap();
+        assert_eq!(back, m);
+        let cmd = ClientMsg::Command(Command::SetRotatorConfig(rotator));
+        let back: ClientMsg = decode(&encode(&cmd).unwrap()).unwrap();
+        assert_eq!(back, cmd);
+    }
+
     /// Every orbit-ring position survives the wire, including the one a bare
     /// index would land on by accident if the mapping ever slipped.
     #[test]
@@ -2533,6 +2576,11 @@ mod tests {
                 sdroxide_types::BandDriveTrim { band: sdroxide_types::Band::M6, db: 2.0 },
             ],
             converter_offset_hz: 125_000_000.0,
+            // The new tail field, off its default so a peer one version behind
+            // cannot pass this by reading zeros.
+            s_meter_cal_db: -42.5,
+            audio_route: sdroxide_types::AudioRoute::Right,
+            same_gain_all_bands: true,
             // The transmit converter is an enum with a payload on one variant
             // only — the shape a self-describing format forgives and postcard
             // does not, so it is carried here rather than left at its default.

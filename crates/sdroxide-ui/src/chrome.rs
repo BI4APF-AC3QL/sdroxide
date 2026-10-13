@@ -2017,11 +2017,29 @@ impl TabBar {
         // The face has to be painted under the content, and its size is only
         // known once the content has been laid out — so reserve the slot now
         // and fill it in afterwards.
+        //
+        // A tab is never squeezed: one that will not fit what is left of the
+        // row starts the next row whole. Left to the wrapping layout, it got
+        // the sliver at the end of the line and stacked its own chips down
+        // the page inside it — in a split view's half-width column, a strip
+        // hundreds of points tall that pushed the radio below the window
+        // (#653). The width is last frame's, so a strip settles in two.
+        let width_id = ui.next_auto_id().with("tab-width");
+        if let Some(w) = ui.data(|d| d.get_temp::<f32>(width_id)) {
+            let at_start = ui.cursor().left() <= ui.max_rect().left() + 0.5;
+            let left = ui.max_rect().right() - ui.cursor().left();
+            if ui.layout().main_wrap && !at_start && left + 0.5 < w {
+                ui.end_row();
+            }
+        }
         let slot = ui.painter().add(Shape::Noop);
         let pad = tab_padding(ui);
         let (x, y) = (pad.x.round() as i8, pad.y.round() as i8);
         let spacing = self.spacing;
-        let out = ui.scope_builder(egui::UiBuilder::new().sense(Sense::click()), |ui| {
+        // Its own contents on one line, whatever room is left.
+        let inner =
+            egui::UiBuilder::new().sense(Sense::click()).layout(ui.layout().with_main_wrap(false));
+        let out = ui.scope_builder(inner, |ui| {
             egui::Frame::new()
                 .inner_margin(egui::Margin {
                     left: x,
@@ -2048,6 +2066,7 @@ impl TabBar {
                 .inner
         });
         let rect = out.response.rect;
+        ui.data_mut(|d| d.insert_temp(width_id, rect.width()));
         if ui.is_rect_visible(rect) {
             // `contains_pointer`, not `hovered`: the pointer resting on a tab's
             // own mute button is still on the tab, and a tab that unlit itself
@@ -2254,6 +2273,46 @@ fn tab_shape(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Issue #653: in a split view's half-width column the radio strip wraps,
+    /// and a tab that did not fit got the sliver left at the end of the row,
+    /// stacked its chips down the page inside it, and made the strip hundreds
+    /// of points tall. A tab that does not fit starts the next row whole.
+    #[test]
+    fn a_tab_that_does_not_fit_starts_the_next_row_whole() {
+        let ctx = egui::Context::default();
+        let input = || egui::RawInput {
+            screen_rect: Some(Rect::from_min_size(egui::Pos2::ZERO, vec2(600.0, 400.0))),
+            ..Default::default()
+        };
+        let mut tabs: Vec<Rect> = Vec::new();
+        for _ in 0..3 {
+            tabs.clear();
+            ctx.run_ui(input(), |ui| {
+                tab_bar(ui, |ui, bar| {
+                    for i in 0..6 {
+                        let out = bar.tab_body(ui, i == 0, |ui| {
+                            ui.label(format!("Radio number {i}"));
+                            chip(ui, false, "LINK");
+                            chip(ui, false, "⊞");
+                        });
+                        tabs.push(out.response.rect);
+                    }
+                });
+            })
+            .drop_without_applying_deltas();
+        }
+        let widest = tabs.iter().map(|r| r.width()).fold(0.0f32, f32::max);
+        let tallest = tabs.iter().map(|r| r.height()).fold(0.0f32, f32::max);
+        for (i, r) in tabs.iter().enumerate() {
+            assert!(r.right() <= 600.5, "tab {i} runs off the edge: {r:?}");
+            assert!(r.width() > widest * 0.6, "tab {i} was squeezed: {r:?}");
+            assert!(r.height() <= tallest + 0.5, "tab {i} stacked its contents: {r:?}");
+        }
+        let rows =
+            tabs.iter().map(|r| r.top().round() as i32).collect::<std::collections::BTreeSet<_>>();
+        assert!(rows.len() >= 2, "six tabs fit one 600 pt row? {tabs:?}");
+    }
 
     /// Press Return with `modifiers` into a fresh context and report whether
     /// [`take_return`] claimed it, and how many events were left behind for the

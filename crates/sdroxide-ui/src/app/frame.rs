@@ -1196,9 +1196,8 @@ impl SdroxideApp {
                     // The window title belongs to the focused tab; a hidden
                     // radio reconnecting must not retitle the window over it.
                     if self.focused {
-                        ctx.send_viewport_cmd(egui::ViewportCommand::Title(format!(
-                            "sdroxide — {}",
-                            crate::language_plugin::radio_label(&c.label)
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Title(crate::window_title(
+                            &crate::language_plugin::radio_label(&c.label),
                         )));
                     }
                     // A different interface on this radio: the stored zoom
@@ -1413,9 +1412,18 @@ impl SdroxideApp {
                         let grid = self.my_grid();
                         self.prop.observe_decodes(&d, src, dial, &grid, crate::time::now_unix());
                     }
+                    // Newest slot first, and each decode at the top of its own
+                    // slot's rows: FT8 streams a slot's slower finds after the
+                    // quick ones (#667), and on a slow machine they can land
+                    // after the next slot's — they belong under it, not above.
                     for dec in d.into_iter().rev() {
-                        self.digi_decodes.insert(0, dec);
-                        self.digi_decode_dials.insert(0, dial);
+                        let at = self
+                            .digi_decodes
+                            .iter()
+                            .position(|x| x.slot_utc <= dec.slot_utc)
+                            .unwrap_or(self.digi_decodes.len());
+                        self.digi_decodes.insert(at, dec);
+                        self.digi_decode_dials.insert(at, dial);
                     }
                     self.digi_decodes.truncate(200);
                     self.digi_decode_dials.truncate(200);

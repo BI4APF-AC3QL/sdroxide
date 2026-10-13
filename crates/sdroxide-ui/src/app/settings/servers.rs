@@ -337,7 +337,8 @@ pub(in crate::app) fn settings_rotator_tab(
             crate::language_plugin::text("settings.servers.points_a_motorized_antenna_at_the_satellite_you_are", "Points a motorized antenna at the satellite you are locked onto, through a Hamlib \
              rotctld daemon (run e.g. \u{201c}rotctld -m 603 -r /dev/ttyUSB0\u{201d} for a GS-232B \
              rotator, or \u{201c}rotctld -m 1\u{201d} to try it without hardware). One daemon covers \
-             every rotator Hamlib drives — EasyComm, GS-232, SPID and the rest."),
+             every rotator Hamlib drives — EasyComm, GS-232, SPID and the rest. PSTRotator also \
+             works when UDP Control is enabled in its Setup."),
         )
         .weak(),
     );
@@ -346,6 +347,21 @@ pub(in crate::app) fn settings_rotator_tab(
     ui.add_space(6.0);
     ui.add_enabled_ui(cfg.enabled, |ui| {
         egui::Grid::new("rotator-grid").num_columns(2).spacing([12.0, 6.0]).show(ui, |ui| {
+            ui.label(crate::language_plugin::text("settings.servers.program", "Program"));
+            let was = cfg.protocol;
+            super::enum_combo(
+                ui,
+                "rotator-protocol",
+                &mut cfg.protocol,
+                &sdroxide_types::RotatorProtocol::ALL,
+                sdroxide_types::RotatorProtocol::label,
+            );
+            // A port still on the old program's default follows to the new one's.
+            if cfg.protocol != was && cfg.port == was.default_port() {
+                cfg.port = cfg.protocol.default_port();
+            }
+            ui.end_row();
+
             ui.label(crate::language_plugin::text("settings.servers.host", "Host"));
             crate::chrome::field(
                 ui,
@@ -357,7 +373,10 @@ pub(in crate::app) fn settings_rotator_tab(
 
             ui.label(crate::language_plugin::text("settings.servers.port", "Port"));
             ui.add(egui::DragValue::new(&mut cfg.port).range(1..=65535))
-                .on_hover_text(crate::language_plugin::text("settings.servers.4533_is_rotctld_s_default", "4533 is rotctld's default"));
+                .on_hover_text(crate::language_plugin::text(
+                    "settings.servers.rotator_port_help",
+                    "4533 is rotctld's default. PSTRotator's UDP control port is 12000 by default, and it answers position queries on the next port up, 12001 — which has to be free on this machine.",
+                ));
             ui.end_row();
 
             ui.label(crate::language_plugin::text("settings.servers.min_elevation", "Min elevation"));

@@ -1319,11 +1319,12 @@ the receiver measures the signal in its own passband, calibrated to dBm by
 > label on it. On a receiver with plenty of gain ahead of an 8-bit converter, an
 > RTL-SDR among them, its own noise sits high enough on that scale to read S9
 > with nothing plugged into the antenna socket. Nothing is wrong with the
-> receiver; the scale has not been told where zero is. Set `cal_offset_db` to
-> the difference between what the meter shows and a level you know — a signal
-> generator, or a band-noise reading you trust — and it will read in dBm from
-> then on. It is one number for the station, so where two radios differ, set it
-> for the one you judge signals on. Changing the front end's gain moves the
+> receiver; the scale has not been told where zero is. Set **S-meter
+> calibration** in Settings → Radio to the difference between what the meter
+> shows and a level you know — a signal generator, or a band-noise reading you
+> trust — and it will read in dBm from then on. It belongs to the radio, applies
+> as you drag it, and is added to `cal_offset_db` in `config.toml`, the older
+> station-wide figure. Changing the front end's gain moves the
 > reading with it, exactly as an attenuator ahead of a real receiver would.
 >
 > **Except on an SDRplay RSP**, which is the one front end here that reports
@@ -2133,8 +2134,14 @@ lock on, and every voice and digital mode works through it with Doppler
 corrected continuously. The button glows green while a lock is running, because
 the correction keeps being applied whether or not the window is open.
 
-The window has two tabs. **SATELLITES** is the picker and the live lock
-described below. **QO-100** is the beacon calibration
+The window has three tabs. **SATELLITES** is the picker and the live lock
+described below. **PASSES** lists every pass over the next **24 h** or **48 h**,
+soonest first, from every satellite with frequencies on file (tick **all
+satellites** for the whole list, which takes longer to search): when it rises
+in UTC and local time, how long until then, how long it lasts, how high it
+peaks, and which way it rises and sets. **PEAK ≥** hides the low ones — 10° by
+default. Click a row to pick that satellite on the SATELLITES tab, with its
+pass diagram and links. **QO-100** is the beacon calibration
 ([2.22](#222-qo-100-beacon-plugin)) — a geostationary bird needs no
 Doppler, but it does need its LNB offset measured, and that is the whole of
 working it. Either tab carries a dot while its own work is running, and the
@@ -2207,8 +2214,8 @@ corrections is one too many.
 
 ![Rotator setup](images/rotator.jpg)
 
-sdroxide points motorized antennas as a **Hamlib rotctld client** — configure
-it in Settings ▸ Servers. Run a daemon next to the hardware, for example:
+sdroxide points motorized antennas as a **Hamlib rotctld client**, or through
+**PSTRotator** (below) — configure it in Settings ▸ Servers. Run a daemon next to the hardware, for example:
 
 ```bash
 rotctld -m 603 -r /dev/ttyUSB0    # a Yaesu GS-232B interface
@@ -2223,6 +2230,15 @@ which the rotator parks (set it to your local roofline), an azimuth offset for
 a rotator whose north is off, the smallest movement worth commanding (motors
 last longer not chasing tenths of a degree), and an optional park position.
 The status line shows where the hardware actually reports itself pointing.
+
+**PSTRotator** works too: choose it under **Program**, with the host it runs
+on and its UDP control port (12000 unless you changed it). In PSTRotator, turn
+on **UDP Control** in Setup. sdroxide takes over from PSTRotator's own tracking
+when it starts pointing, and asks where the antenna is once a second; PSTRotator
+answers on the next port up (12001), which must be free on the machine
+sdroxide runs on. Until it answers the status line says so — PSTRotator stays
+silent while it has no controller connected — but the pointing commands still
+go out.
 
 ### 2.17 Running more than one radio
 
@@ -3418,8 +3434,12 @@ Click **SETUP** in the QSO area to open the **FT8 / FT4 / FT2 Setup** window:
 - **Decode depth** (FT8) — how hard the decoder digs for weak signals hidden
   under stronger ones. The quick single pass is always shown first, so a reply
   is never held up; **Normal** and **Deep** then add a signal-subtraction pass
-  whose extra decodes arrive up to a second or so later. **Fast** skips it,
-  **Deep** (the default) finds the most.
+  whose extra decodes appear one by one as it finds them, up to a second or so
+  later on a fast machine. **Fast** skips it, **Deep** (the default) finds the
+  most. On a machine too slow to finish a Deep pass before the next slot is
+  ready, the slower passes of a slot are skipped while a newer one waits, so the
+  list never falls further behind than one pass — choose **Normal** if that
+  happens often.
 - **TX watchdog / Give up after** — how long unattended transmitting may
   continue with no progress, and how many unanswered calls to one station are
   worth making. Both 0 to disable.
@@ -6814,7 +6834,7 @@ section of the General tab is only shown there.
 
 At the top is **SDRoxide** and the version number this copy was built from —
 the one to quote in a bug report, so there is no need to go looking for the
-binary to ask it.
+binary to ask it. The main window's title bar carries it too.
 
 **Station** — your **Callsign** and **Grid square**. This is the identity the
 whole program uses: FT8/FT4/FT2 exchanges, the SSTV image header, the logbook, the
@@ -7348,7 +7368,7 @@ with it. That matters most when a tab is pointed at a public receiver
 brings a range of its own: the transceiver that was in the tab gets its own
 ranges back when you switch the interface back to it.
 
-**Antenna is**, the last row of the block, says where this radio actually
+**Antenna is** says where this radio actually
 listens from. *At the station* — the default — means the antenna is yours, so
 your own locator (**My grid**,
 [3.2.1](#321-one-time-setup-your-callsign-and-grid)) describes it. *Somewhere else*
@@ -7369,6 +7389,28 @@ somebody else's antenna from your own square is worse than not reporting it.
 Like the ranges above, it belongs to the interface it was typed for: changing
 **Radio interface** puts it back to *At the station*, because where the antenna
 was belonged to the receiver you have just left.
+
+**Audio to** sends this radio's audio to **both channels** (the default, with a
+sub receiver on the right), or to the **left** or **right** channel only — two
+radios on one headset, one in each ear. A sub receiver is then mixed into the
+same ear. Recordings are not affected. Applies at once. It is the per-radio
+counterpart of **Channels** under General
+([6.1](#61-general-station-audio-and-remote-access)), which sends *everything*
+you hear to one side; that one is applied last, so with it on **Left only** a
+radio set to the right here is heard on the left too.
+
+**Gain per band** — on by default — gives each band back the receive gain you
+last set on it when the dial returns there, however it got there: a band
+button, a drag across a band edge, or the radio's own knob. General coverage
+counts as four ranges (HF, VHF, UHF and above), so short-wave broadcast and the
+airband keep their own. A band you have never set a gain on keeps whatever is
+in force. Only the gain stages are remembered, not AGC switches or a bias tee.
+The gain sliders on some radios' own setup pages (RTL-SDR, RX-888) show the
+figure saved there rather than the one in force; the gain controls on the strip
+show the live one. Untick it for one gain everywhere.
+
+**S-meter calibration** is added to this radio's S-meter reading, and applies as
+you drag it; see [2.9](#29-the-s-meter) for why an SDR needs it.
 
 **Transmit drive by band** is a calibration table, one trim per band, that makes
 one **Drive** setting mean one output power everywhere. Every amplifier has a

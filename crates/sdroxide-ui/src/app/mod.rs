@@ -1690,9 +1690,8 @@ impl SdroxideApp {
         if focused {
             self.speech.announcer.reseed();
             if let Some(c) = &self.caps {
-                ctx.send_viewport_cmd(egui::ViewportCommand::Title(format!(
-                    "sdroxide — {}",
-                    crate::language_plugin::radio_label(&c.label)
+                ctx.send_viewport_cmd(egui::ViewportCommand::Title(crate::window_title(
+                    &crate::language_plugin::radio_label(&c.label),
                 )));
             }
         } else {

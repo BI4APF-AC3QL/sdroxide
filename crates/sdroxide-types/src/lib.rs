@@ -208,8 +208,8 @@ pub use publicsdr::{PublicSdrDirectory, PublicSdrEntry, PublicSdrNetwork};
 pub use q65::Q65Mode;
 pub use qo100::{QO100_BEACON_HZ, Qo100Settings, Qo100Status};
 pub use radio::{
-    AirspyConfig, AirspyDevice, AirspyGain, AirspyHfConfig, AirspyHfDevice, AirspyHfModel, Backend,
-    BandDriveTrim, CAT_IQ_DC_BLOCK_MAX_HZ, CAT_IQ_RATES, CAT_SCOPE_MIN_BAUD,
+    AirspyConfig, AirspyDevice, AirspyGain, AirspyHfConfig, AirspyHfDevice, AirspyHfModel,
+    AudioRoute, Backend, BandDriveTrim, CAT_IQ_DC_BLOCK_MAX_HZ, CAT_IQ_RATES, CAT_SCOPE_MIN_BAUD,
     CONVERTER_OFFSET_MAX_HZ, CONVERTER_PRESETS, CatConfig, CatFamily, ConverterTx, CwKeying,
     DIV_FREEZE_ELEMENT, DIV_MODE_ELEMENT, DIV_RATE_ELEMENT, DIV_RESET_ELEMENT, DIV_TAPS_ELEMENT,
     DIVERSITY_MAX_TAPS, DigiMode, DiversityMode, ELAD_ATTENUATOR_DB, ELAD_CAT_BAUDS,
@@ -248,7 +248,7 @@ pub use rifp::{
     RifpSize, RifpStatus,
 };
 pub use rigctld::RigctldConfig;
-pub use rotator::RotatorConfig;
+pub use rotator::{RotatorConfig, RotatorProtocol};
 pub use satcfg::{
     CELESTRAK_GROUPS, CelestrakGroup, CustomTle, OrbitRings, Passband, SatConfig, SatFreqs,
     SatLink, TleSubStatus, TleSubscription, fmt_mhz as fmt_sat_mhz, parse_tle_block,

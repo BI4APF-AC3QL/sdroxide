@@ -1357,6 +1357,13 @@ pub struct Session {
     /// assertion, the same rule the two memories above follow.
     #[serde(default)]
     pub vfo_antennas: Option<[(Option<String>, Option<String>); 2]>,
+    /// The receive gain stages last set on each band (#605), restored as the
+    /// dial crosses into it — an RTL-SDR wants little gain on HF and a lot on
+    /// 2 m. Keyed by a band's stable name, general coverage split by range;
+    /// only bands the operator has set a gain on appear, and absent in a
+    /// session written before this existed.
+    #[serde(default)]
+    pub band_gains: BandGains,
 }
 
 /// Which antenna socket was last chosen on each band — see
@@ -1364,6 +1371,11 @@ pub struct Session {
 /// direction has no port to choose.
 pub type BandAntennas =
     std::collections::HashMap<sdroxide_types::Band, (Option<String>, Option<String>)>;
+
+/// Receive gain stages, `(element, dB)`, per band — see
+/// [`Session::band_gains`]. Keyed by name rather than by `Band`, because
+/// general coverage is split into ranges that are not bands.
+pub type BandGains = std::collections::BTreeMap<String, Vec<(String, f64)>>;
 
 impl Default for Session {
     fn default() -> Self {
@@ -1409,6 +1421,7 @@ impl Default for Session {
             // chosen on it — nothing moves a relay before the operator has
             // said what belongs where.
             vfo_antennas: None,
+            band_gains: BandGains::new(),
         }
     }
 }
@@ -2383,6 +2396,10 @@ mod tests {
             vfo_antennas: Some([
                 (Some("ANT1".into()), None),
                 (Some("ANT2".into()), Some("ANT2".into())),
+            ]),
+            band_gains: BandGains::from([
+                ("M40".to_string(), vec![("LNA".to_string(), 10.0)]),
+                ("GEN_VHF".to_string(), vec![("LNA".to_string(), 40.0)]),
             ]),
         };
         let back: Session = serde_json::from_str(&serde_json::to_string(&s).unwrap()).unwrap();

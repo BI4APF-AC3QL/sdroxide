@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "locale": "zh-CN",
+  "upstream_commit": "75b549b3",
+  "source_manual_sha256": "92c3ef889429a2f69dbc0b117e6b9a1bf370f6a59cc232a3fdfe7041cfaa0dbe",
+  "translated_manual_resource_sha256": "94d46cd2e1aa31cc7a625b931a6dc5c555ce26c363691356f4a572691dd6b661",
+  "review_method": "逐项对照上游 1.6.10 手册新增说明，核对界面名称、数值、端口、配置字段及接收/发射行为边界。",
+  "records": [
+    {
+      "section": "Satellite pass list",
+      "source_claims": [
+        "24 h/48 h horizon",
+        "all-satellite search can take longer",
+        "minimum peak elevation filter",
+        "rise/local time, duration, peak elevation, azimuth",
+        "row selects satellite"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已逐项覆盖过境范围、筛选、排序、显示列、网格前置条件和点行后跳转行为。"
+      ]
+    },
+    {
+      "section": "PSTRotator UDP rotator",
+      "source_claims": [
+        "UDP Control must be enabled",
+        "default control and query ports are 12000/12001",
+        "query port must be free",
+        "status may be silent before controller connection",
+        "commands still go out"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "保留 TCP/UDP 协议、默认端口、端口空闲条件和状态应答限制；未将接收/状态查询描述为硬件已实测。"
+      ]
+    },
+    {
+      "section": "Per-radio audio routing",
+      "source_claims": [
+        "both/left/right routes",
+        "sub-receiver mixing",
+        "recordings unaffected",
+        "per-radio route precedes global route"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "中文说明保留路由选项、混音、录音边界和应用顺序。"
+      ]
+    },
+    {
+      "section": "Per-band gain",
+      "source_claims": [
+        "remember receive gain per band",
+        "general coverage split into four ranges",
+        "unconfigured bands keep current gain",
+        "AGC and bias tee are not remembered"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "中文说明保留默认开启、频段分类和不记忆 AGC/偏置供电的限制。"
+      ]
+    },
+    {
+      "section": "S-meter calibration",
+      "source_claims": [
+        "radio-specific immediate calibration",
+        "adds to station-wide cal_offset_db",
+        "SDR dBFS can show high S with no antenna"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "保留每台电台独立、即时生效、与旧配置叠加及未校准读数提示。"
+      ]
+    },
+    {
+      "section": "FT8 streaming decode",
+      "source_claims": [
+        "slow decodes arrive incrementally",
+        "stale slot passes may be skipped",
+        "Normal is an alternative"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "说明快轮先显示、慢轮补入、过期轮次跳过及可改普通深度。"
+      ]
+    },
+    {
+      "section": "Window title version",
+      "source_claims": [
+        "main title includes build version"
+      ],
+      "result": "pass",
+      "translation_checks": [
+        "已写入版本识别说明。"
+      ]
+    }
+  ],
+  "limitations": "仅按源码和手册文本审阅，未连接真实电台，不执行发射或 PTT 操作。"
+}

@@ -531,6 +531,14 @@ mod v3dv_tests {
     }
 }
 
+/// The main window's title: the program and its version, then what it is
+/// connected to. The version is there so a screenshot says which build it came
+/// from (#664).
+pub fn window_title(detail: &str) -> String {
+    let base = concat!("sdroxide ", env!("CARGO_PKG_VERSION"));
+    if detail.is_empty() { base.to_string() } else { format!("{base} — {detail}") }
+}
+
 /// The application icon, for [`eframe::egui::ViewportBuilder::with_icon`].
 ///
 /// This is what window managers show in the taskbar/dock and in alt-tab; the

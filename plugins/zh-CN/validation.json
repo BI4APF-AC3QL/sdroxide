@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-13T01:27:00+08:00",
+  "generated_at": "2026-10-14T01:08:47+08:00",
   "completeness": "complete",
-  "catalog_entries": 5385,
-  "catalog_sha256": "30b3af2fc3df38b14d538d755a7d88eb33bdbb9f2adcd08b1767ba8fca487993",
+  "catalog_entries": 5409,
+  "catalog_sha256": "957f79425a5a4281077235c4f5e1840636743828025120fc38a956211e2c56b6",
   "direct_display_adapters": 3862,
   "unresolved_generated_adapters": 0,
   "placeholders": "passed; catalog format descriptors validated by language-pack tests",
@@ -1844,18 +1844,35 @@
   },
   "native_gui_acceptance": "partial: current complete-pack build launched with Backend=None; Chinese first-run and saved English fallback titles verified and windows responded/closed. Full settings/help screenshot layout review remains pending.",
   "latest_incremental_validation": {
-    "checked_at": "2026-10-13T01:27:00+08:00",
-    "change": "Synchronized upstream main 31ebe99; added 37 UI translations, translated 15 new manual claim groups, fixed automatic-recording tooltip and clock display to resolve through the language pack.",
-    "catalog_entries": 5385,
-    "focused_test": "cargo test -p sdroxide-ui plus cargo test -p sdroxide-language-pack",
-    "focused_test_result": "passed",
-    "full_ui_unit_tests": "810 passed; 0 failed",
-    "shader_tests": "4 passed; 0 failed",
-    "language_pack_tests": "5 passed; bundled pack/font/manual tests 3 passed; 0 failed",
-    "ui_library_check": "cargo check -p sdroxide-ui --lib passed",
-    "manual_source_sha256": "8b89084fa7c1ccfe981cadf7b4d6e2f5e75b31e22465ae34c441a5d057b265b9",
-    "manual_review_records_added": 15,
-    "receive_safety": "No physical receiver, transmission or PTT action."
+    "checked_at": "2026-10-14T01:08:47+08:00",
+    "upstream_repository": "dividebysandwich/sdroxide",
+    "upstream_branch": "main",
+    "upstream_commit": "75b549b388a14b706e529289b9de970b0abd7fb4",
+    "upstream_version": "1.6.10",
+    "language_pack_version": "0.2.5-preview",
+    "upstream_delta_from_previous_sync": "11 commits",
+    "change": "Merged upstream main through 75b549b3; localized the satellite pass list, rotator program/protocol controls, per-radio audio routing, per-band receive gain, S-meter calibration, and updated the Chinese help appendix.",
+    "catalog_entries": 5409,
+    "new_catalog_entries": 24,
+    "catalog_sha256": "957f79425a5a4281077235c4f5e1840636743828025120fc38a956211e2c56b6",
+    "csv_json_keys_and_values_match": true,
+    "manual_source_sha256": "92c3ef889429a2f69dbc0b117e6b9a1bf370f6a59cc232a3fdfe7041cfaa0dbe",
+    "manual_resource_sha256": "94d46cd2e1aa31cc7a625b931a6dc5c555ce26c363691356f4a572691dd6b661",
+    "manual_review_record": "plugins/zh-CN/manual-review-75b549b3.json",
+    "manual_review_records": 7,
+    "translated_manual_fragments": 250,
+    "tests": {
+      "cargo_check_sdroxide_ui_lib": "passed",
+      "cargo_test_sdroxide_ui": "812 passed; 0 failed",
+      "cargo_test_sdroxide_ui_shaders": "4 passed; 0 failed",
+      "cargo_test_sdroxide_language_pack": "5 unit + 3 bundled pack/font/manual tests passed",
+      "cargo_test_types_config_rotator": "passed serially (45 config, 8 rotator, 498 types tests plus integration/doctest targets)"
+    },
+    "new_fallback_test": "upstream_75b_language_tests::new_pass_settings_and_rotator_labels_translate_and_fall_back included in the passing sdroxide-ui suite",
+    "release_artifact": "Build attempted with cargo build --release --bin sdroxide; blocked because SoapySDR/PothosSDR is unavailable and the MSVC environment has no detected C compiler for the vendored Rade build. No new EXE/package was produced.",
+    "receive_boundary": "No physical receiver connection, transmission, PTT, or rotator control.",
+    "format_check": "not run: rustfmt component is not installed for the active stable-x86_64-pc-windows-msvc toolchain",
+    "static_catalog_key_scan": "passed: zero missing literal language_plugin::text/format keys across sdroxide-ui Rust sources"
   },
   "windows_release_refresh": {
     "built_at": "2026-10-06T14:57:21.4276873+08:00",
@@ -1871,17 +1888,16 @@
     "scope": "Local Backend=None web settings, first-run Chinese, warning, manual TOC/scroll, and saved English fallback; full settings/manual visual acceptance pending."
   },
   "manual_review_coverage": {
-    "report": "outputs/SDRoxide_手册逐片段审校覆盖.json",
-    "drafts": 248,
-    "current_hash_matched_reviews": 248,
-    "mention_only": 0,
+    "report": "plugins/zh-CN/manual-review-75b549b3.json",
+    "translated_fragments": 250,
+    "current_hash_matched_reviews": 250,
     "without_review_record": 0,
-    "latest_batch": 109,
-    "scope": "244 previously reviewed fragments plus 4 additions from upstream 9addfec; all 248 translated source fragments now have current review records.",
-    "latest_batch_report": "plugins/zh-CN/manual-review-9addfec.json",
-    "review_resource_sha256": "b9b8437cf53542267a840101995ac4ad837df5ae235be9e2da45589dadc437f5",
-    "source_manual_sha256": "b48a12c60a889c247a3f6b54eba99ef4115a3d975e777e141a6a3a9a42eaa7be",
-    "last_reviewed_at_utc": "2026-10-11T17:06:04Z"
+    "latest_batch": 110,
+    "scope": "Previous 249 translated fragments plus a reviewed 1.6.10 supplement covering seven upstream feature groups; source hash matches current docs/USER_MANUAL.md.",
+    "review_record_batch": "plugins/zh-CN/manual-review-75b549b3.json",
+    "review_resource_sha256": "3b4d30dcfa659a655b4d8c269ed6d76a554d0b6d464aa8f112c1d3b8c934a4dd",
+    "source_manual_sha256": "92c3ef889429a2f69dbc0b117e6b9a1bf370f6a59cc232a3fdfe7041cfaa0dbe",
+    "last_reviewed_at_utc": "2026-10-13T17:08:47Z"
   },
   "current_source_ui_audit": {
     "report": "outputs/SDRoxide_当前UI直接显示未命中审计.json",
@@ -1923,34 +1939,32 @@
   },
   "manual_translation": {
     "report": "outputs/SDRoxide_中文手册全量翻译审计.json",
-    "source_sha256": "64d5c581b2ea16c2fa5d28cdeecca4d9c2889db33a345a272bc8b3a2631d9b92",
-    "source_characters": 987045,
+    "source_sha256": "92c3ef889429a2f69dbc0b117e6b9a1bf370f6a59cc232a3fdfe7041cfaa0dbe",
+    "source_characters": 997874,
     "structural_and_anchor_tests": "passed: 18 help tests; translated manual retained all source anchors and images",
-    "translated_source_characters": 987045,
+    "translated_source_characters": 997874,
     "status": "passed",
-    "translated_fragments": 244,
-    "scope": "Historical coverage audit at 591d21d; the four help additions through 9addfec are translated in the current manual resource, while new semantic review and runtime visual review remain separate.",
+    "translated_fragments": 250,
+    "scope": "Historical full-manual review plus the seven reviewed 1.6.10 update topics in manual-review-75b549b3.json; bundled help test confirms exact source-manual hash.",
     "english_prose_candidates": 0,
-    "upstream_commit": "591d21d0b1bcddfcc7aaab8146141c953727e616",
+    "upstream_commit": "75b549b388a14b706e529289b9de970b0abd7fb4",
     "prose_paragraphs_checked": 2481,
     "missing_source_ranges": 0
   },
   "upstream_sync": {
     "upstream_repository": "dividebysandwich/sdroxide",
     "upstream_branch": "main",
-    "upstream_commit": "9addfec60f0679a63f14c027d277978f0260ffbb",
-    "verified_at_utc": "2026-10-10T13:03:38Z",
+    "upstream_commit": "75b549b388a14b706e529289b9de970b0abd7fb4",
+    "verified_at_utc": "2026-10-13T17:08:47Z",
     "tests": {
-      "sdroxide-ui": "801 passed; 4 shader tests passed",
-      "satellite_sstv_and_local_time": "passed, including placeholder/fallback coverage",
-      "sdroxide-config_wsper_per_radio": "1 passed",
-      "sdroxide-icomnet": "49 unit + 18 loopback + 1 doctest passed",
-      "sdroxide-types": "497 passed"
+      "sdroxide-ui": "812 passed; 4 shader tests passed",
+      "language-pack": "5 unit + 3 bundled catalog/font/manual tests passed",
+      "sdroxide-ui library check": "passed"
     },
     "not_run_or_blocked": {
-      "sdroxide-radio": "blocked: SoapySDR/PothosSDR native dependency not installed in this Windows environment",
-      "rustfmt": "unavailable: rustfmt component is not installed",
-      "physical_radio_tx_or_ptt": "not performed"
+      "radio_hardware": "not connected",
+      "transmission_or_ptt": "not performed",
+      "windows_release_exe": "Attempted; blocked by missing SoapySDR/PothosSDR and unavailable C compiler in current MSVC environment."
     }
   },
   "upstream_incremental_validation_31ebe99": {

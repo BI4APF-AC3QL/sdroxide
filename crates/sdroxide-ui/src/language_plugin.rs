@@ -1859,3 +1859,36 @@ mod atchat_roster_status_language_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod upstream_75b_language_tests {
+    use super::{format, scope_text, test_pack_enabled, text};
+
+    #[test]
+    fn new_pass_settings_and_rotator_labels_translate_and_fall_back() {
+        let cases = [
+            ("upstream.75b.sat.passes", "PASSES", "过境"),
+            ("upstream.75b.sat.set_grid", "Set your grid for passes (Settings ▸ General).", "请先在“设置 ▸ 常规”中设置网格定位，以计算卫星过境。"),
+            ("upstream.75b.sat.all_satellites", "all satellites", "所有卫星"),
+            ("upstream.75b.sat.no_passes", "No passes in this window. Lower the peak, or widen the window.", "此时间范围内没有符合条件的过境。可降低最低峰值仰角或扩大时间范围。"),
+            ("upstream.75b.settings.audio_to", "Audio to", "音频输出到"),
+            ("upstream.75b.settings.gain_per_band", "Gain per band", "按波段记忆增益"),
+            ("upstream.75b.settings.s_meter_calibration", "S-meter calibration", "S 表校准"),
+            ("settings.servers.program", "Program", "程序"),
+        ];
+        for enabled in [true, false, true, false] {
+            test_pack_enabled(enabled);
+            for (key, source, chinese) in cases {
+                assert_eq!(text(key, source), if enabled { chinese } else { source });
+            }
+            assert_eq!(
+                format("upstream.75b.sat.searching", "searching… {} of {}", &["3".into(), "20".into()]),
+                if enabled { "正在搜索… 3/20" } else { "searching… 3 of 20" },
+            );
+            assert_eq!(
+                scope_text("display.enum.", "PSTRotator (UDP)"),
+                if enabled { "PSTRotator（UDP）" } else { "PSTRotator (UDP)" },
+            );
+        }
+    }
+}

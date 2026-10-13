@@ -24442,5 +24442,149 @@
     "file": "crates/sdroxide-solar/src/satfreq.rs",
     "line": 0,
     "status": "shared-ui-label-resource"
+  },
+  {
+    "key": "display.enum.rotator.hamlib",
+    "file": "crates/sdroxide-types/src/rotator.rs",
+    "line": 55,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "display.enum.rotator.pstrotator",
+    "file": "crates/sdroxide-types/src/rotator.rs",
+    "line": 56,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "settings.servers.program",
+    "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+    "line": 354,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "settings.servers.rotator_port_help",
+    "file": "crates/sdroxide-ui/src/app/settings/servers.rs",
+    "line": 388,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.all_satellites",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 746,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.all_satellites_help",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 746,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.aos",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 807,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.from_to",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 811,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.length",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 809,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.next",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 738,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.no_passes",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 798,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.passes",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 672,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.peak",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 810,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.peak_min",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 743,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.satellite",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 806,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.searching",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 796,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.set_grid",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 729,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.sat.up_now",
+    "file": "crates/sdroxide-ui/src/app/sat.rs",
+    "line": 821,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.audio_to",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2236,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.gain_per_band",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2254,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.remember_gain",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2256,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.remember_gain_help",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2257,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.s_meter_calibration",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2276,
+    "status": "adapter-generated-upstream-75b549b3"
+  },
+  {
+    "key": "upstream.75b.settings.s_meter_calibration_help",
+    "file": "crates/sdroxide-ui/src/app/settings/mod.rs",
+    "line": 2287,
+    "status": "adapter-generated-upstream-75b549b3"
   }
 ]
