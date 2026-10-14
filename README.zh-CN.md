@@ -2,13 +2,13 @@
 
 > SDRoxide 是一款面向业余无线电爱好者的 SDR 收发软件。本帖介绍的是第三方简体中文语言插件预览包的安装、切换和恢复方式。它不是 SDRoxide 官方发布，也不代表上游项目的支持或背书。
 >
-> **版本基线**：汉化插件 `0.2.2-preview`，适配上游 SDRoxide `1.6.9`。
+> **当前源码版本**：汉化插件 `0.2.5-preview`，适配上游 SDRoxide `1.6.10`（`75b549b3`）。
 >
-> **GitHub 下载**：[v0.2.2-preview 发布页](https://github.com/BI4APF-AC3QL/sdroxide/releases/tag/v0.2.2-preview)。发布附件：[完整语言包 ZIP（314.1 MB）](https://github.com/BI4APF-AC3QL/sdroxide/releases/download/v0.2.2-preview/SDRoxide-zh-CN-package-20261006-145929.zip)；[一键安装／恢复 EXE（317.6 MB）](https://github.com/BI4APF-AC3QL/sdroxide/releases/download/v0.2.2-preview/SDRoxide-zh-CN-Installer-Restore-20261006.exe)。[汉化源码与 README](https://github.com/BI4APF-AC3QL/sdroxide/tree/zh-cn-language-plugin)。下载 ZIP 后完整解压，并保留同级 `plugins` 目录；也可以先阅读下文的安装步骤。
+> **可下载的 Windows 安装包仍是旧版**：目前发布页上的 [v0.2.2-preview 安装包与切换器](https://github.com/BI4APF-AC3QL/sdroxide/releases/tag/v0.2.2-preview) 适配 SDRoxide `1.6.9`。当前 `1.6.10`／`0.2.5-preview` 源码尚未产出新的 EXE，**不要把旧安装包用于 1.6.10**。[当前汉化源码与资源](https://github.com/BI4APF-AC3QL/sdroxide/tree/zh-cn-language-plugin)可在此查看；新版 Windows 包完成构建和验收后再发布。
 
 ## 一、语言插件是什么
 
-汉化文本、字体和手册以语言插件文件提供；为加载插件，需要配套的汉化宿主。切换器会先备份你选择的原版 EXE，再将它替换为随包提供的兼容宿主，并安装 `plugins\zh-CN`。上游原版 `sdroxide.exe` 本身不能直接加载此插件。发布包还包含中文字体、中文手册、恢复工具和对应源码。
+汉化文本、字体和手册以语言插件文件提供；为加载插件，需要配套的汉化宿主。下文安装步骤只适用于上述旧版 `1.6.9` 发布包：切换器会先备份原 EXE，再放入该包的兼容宿主并安装 `plugins\zh-CN`。上游原版 `sdroxide.exe` 本身不能直接加载语言包。当前 `1.6.10` 源码包没有对应的新版 EXE，因此暂时不能按这些步骤安装当前源码版本。
 
 界面中的动态呼号、频率、模式缩写、设备型号及协议字段会按原样保留，避免影响电台操作和数据识别。当前包随附的中文手册覆盖全文；关闭插件后，界面与手册回到英文。
 
@@ -65,4 +65,4 @@
 
 ---
 
-**发布版本**：`v0.2.2-preview`（适配 SDRoxide `1.6.9`）。下载文件：`SDRoxide-zh-CN-package-20261006-145929.zip` 与 `SDRoxide-zh-CN-Installer-Restore-20261006.exe`。
+**本文安装步骤对应的历史发布版本**：`v0.2.2-preview`（适配 SDRoxide `1.6.9`）。文件名为 `SDRoxide-zh-CN-package-20261006-145929.zip` 与 `SDRoxide-zh-CN-Installer-Restore-20261006.exe`。当前源码为 `v0.2.5-preview`（适配 `1.6.10`）；新版 Windows 安装包尚未生成。
