@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T01:08:47+08:00",
+  "generated_at": "2026-10-16T00:58:42+08:00",
   "completeness": "complete",
   "catalog_entries": 5409,
   "catalog_sha256": "957f79425a5a4281077235c4f5e1840636743828025120fc38a956211e2c56b6",
@@ -1843,6 +1843,23 @@
     "latest_change": "Localized fixed null-radio notices and corrected Panadapter receiver to the v6 term 频谱接收机; browser first run now enables Chinese when no saved preference exists."
   },
   "native_gui_acceptance": "partial: current complete-pack build launched with Backend=None; Chinese first-run and saved English fallback titles verified and windows responded/closed. Full settings/help screenshot layout review remains pending.",
+  "current_recheck": {
+    "checked_at": "2026-10-16T00:58:42+08:00",
+    "upstream_repository": "dividebysandwich/sdroxide",
+    "upstream_branch": "main",
+    "upstream_commit": "75b549b388a14b706e529289b9de970b0abd7fb4",
+    "upstream_changed_since_previous_check": false,
+    "catalog_entries": 5409,
+    "distinct_literal_text_format_call_keys": 3651,
+    "missing_literal_call_keys": 0,
+    "manual_fragments": 250,
+    "manual_source_hash_matches_resource_and_review": true,
+    "tests": {
+      "cargo_test_sdroxide_ui_lib": "812 passed; 0 failed",
+      "cargo_test_sdroxide_language_pack": "5 unit + 3 bundled catalog/font/manual tests passed"
+    },
+    "receive_boundary": "No physical receiver connection, transmission, PTT, or rotator control."
+  },
   "latest_incremental_validation": {
     "checked_at": "2026-10-14T01:08:47+08:00",
     "upstream_repository": "dividebysandwich/sdroxide",
